@@ -3,7 +3,6 @@
 import { Moon, Sun } from 'lucide-react'
 import { useEffect, useState } from 'react'
 
-import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 
 type ThemeToggleProps = {
@@ -23,16 +22,17 @@ export function ThemeToggle({ className }: ThemeToggleProps) {
   }, [dark])
 
   return (
-    <Button
+    <button
       type="button"
-      variant="ghost"
-      size="icon-sm"
-      className={cn('rounded-full', className)}
+      className={cn(
+        'inline-flex size-7 items-center justify-center rounded-full text-muted-foreground/60 transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50',
+        className
+      )}
       aria-label={dark ? 'Passer en thème clair' : 'Passer en thème sombre'}
       aria-pressed={dark}
       onClick={() => setDark((d) => !d)}
     >
-      {dark ? <Sun className="size-4" /> : <Moon className="size-4" />}
-    </Button>
+      {dark ? <Sun className="size-3.5" /> : <Moon className="size-3.5" />}
+    </button>
   )
 }

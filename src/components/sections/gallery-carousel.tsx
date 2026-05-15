@@ -5,24 +5,12 @@ import { ChevronLeft, ChevronRight } from 'lucide-react'
 import Image from 'next/image'
 import { useCallback, useEffect, useRef, useState } from 'react'
 
-import { AmbientShapes } from '@/components/ui/ambient-shapes'
 import { Button } from '@/components/ui/button'
 import { useContent } from '@/hooks/use-content'
+import { galleryContent } from '@/lib/site-content'
 
-const defaultImages = [
-  'https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=720&q=80',
-  'https://images.unsplash.com/photo-1553877522-43269d4ea984?auto=format&fit=crop&w=720&q=80',
-  'https://images.unsplash.com/photo-1600880292203-757bb62b4baf?auto=format&fit=crop&w=720&q=80',
-  'https://images.unsplash.com/photo-1524758631624-e2822e304c36?auto=format&fit=crop&w=720&q=80',
-  'https://images.unsplash.com/photo-1542744173-8e7e53415bb0?auto=format&fit=crop&w=720&q=80',
-  'https://images.unsplash.com/photo-1556761175-5973dc0f32e7?auto=format&fit=crop&w=720&q=80',
-]
-
-const defaults = {
-  eyebrow: 'Galerie',
-  title: 'En coulisses',
-  images: defaultImages,
-}
+const defaultImages = galleryContent.images
+const defaults = galleryContent
 
 const GAP = 20
 const CARD_WIDTH = 340
@@ -58,9 +46,8 @@ export function GalleryCarousel() {
   )
 
   return (
-    <section className="relative isolate overflow-hidden border-b border-border/60">
-      <AmbientShapes variant="light-accent" />
-      <div className="relative mx-auto max-w-6xl px-4 py-20 sm:px-6 lg:px-8 lg:py-28">
+    <section className="border-b border-border/60 bg-background">
+      <div className="mx-auto max-w-6xl px-4 py-20 sm:px-6 lg:px-8 lg:py-28">
         <div className="flex items-end justify-between gap-4">
           <div className="space-y-3">
             <p className="font-display text-xs font-semibold tracking-[0.22em] text-primary uppercase">

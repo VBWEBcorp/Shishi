@@ -1,44 +1,177 @@
 'use client'
 
-import { motion } from 'framer-motion'
-import {
-  ArrowUpRight,
-  BarChart3,
-  Code,
-  Globe,
-  Megaphone,
-  Palette,
-  Search,
-  ShieldCheck,
-  Smartphone,
-} from 'lucide-react'
+import { motion, useReducedMotion, useScroll, useTransform } from 'framer-motion'
+import Image from 'next/image'
+import { useRef } from 'react'
 
 import { CtaSection } from '@/components/sections/cta-section'
 import { PremiumHero } from '@/components/sections/premium-hero'
-import { AmbientShapes } from '@/components/ui/ambient-shapes'
 import { useContent } from '@/hooks/use-content'
+import { getIcon } from '@/lib/icons'
+import { images as siteImages, servicesContent } from '@/lib/site-content'
 
 const ease = [0.22, 1, 0.36, 1] as const
-const defaultIcons = [Globe, Smartphone, Search, Palette, Megaphone, Code, ShieldCheck, BarChart3]
+const defaultImages = siteImages.services
 
 const defaults = {
-  hero: {
-    eyebrow: 'Nos services',
-    title: "Tout ce qu'il faut pour réussir en ligne",
-    description:
-      "Des prestations complètes, de la conception à l'accompagnement continu, adaptées à toutes les tailles d'entreprise.",
-    image: '',
-  },
-  services: [
-    { title: 'Création de site vitrine', description: 'Un site moderne, rapide et responsive qui présente clairement votre activité et inspire confiance à vos visiteurs.' },
-    { title: 'Application web', description: 'Outils métier, plateformes de réservation, espaces clients : des applications pensées pour simplifier votre quotidien.' },
-    { title: 'Référencement naturel (SEO)', description: 'Optimisation technique, contenu stratégique et suivi de positionnement pour gagner en visibilité sur Google.' },
-    { title: 'Identité visuelle', description: 'Logo, charte graphique, supports de communication : une image cohérente qui vous ressemble.' },
-    { title: 'Communication digitale', description: 'Stratégie de contenu, réseaux sociaux et campagnes pour développer votre audience en ligne.' },
-    { title: 'Développement sur mesure', description: 'Intégrations, automatisations, API : des solutions techniques taillées pour vos besoins spécifiques.' },
-    { title: 'Maintenance & sécurité', description: 'Mises à jour, sauvegardes, monitoring et corrections pour un site toujours performant et sécurisé.' },
-    { title: 'Analyse & reporting', description: 'Tableaux de bord clairs pour suivre vos performances, comprendre vos visiteurs et ajuster votre stratégie.' },
-  ],
+  hero: { ...servicesContent.hero, image: '' as string },
+  services: servicesContent.list,
+}
+
+function ServiceRow({
+  service,
+  index,
+}: {
+  service: any
+  index: number
+}) {
+  const Icon = getIcon(service.iconName ?? servicesContent.list[index]?.iconName)
+  const isReversed = index % 2 === 1
+  const img = service.image || defaultImages[index] || defaultImages[0]
+  const ref = useRef<HTMLElement>(null)
+  const reduceMotion = useReducedMotion()
+
+  // Parallax sur l'image : translateY de -40px → +40px pendant qu'on traverse l'écran
+  const { scrollYProgress } = useScroll({
+    target: ref,
+    offset: ['start end', 'end start'],
+  })
+  const imageY = useTransform(scrollYProgress, [0, 1], reduceMotion ? [0, 0] : [-40, 40])
+
+  // Si l'utilisateur préfère réduire les animations → on désactive tous les slides/parallax
+  const slideX = reduceMotion ? 0 : isReversed ? 60 : -60
+  const textSlideX = reduceMotion ? 0 : isReversed ? -40 : 40
+
+  return (
+    <motion.article
+      ref={ref}
+      className={`grid items-center gap-10 lg:grid-cols-2 lg:gap-16 ${
+        isReversed ? 'lg:[&>*:first-child]:order-2' : ''
+      }`}
+    >
+      {/* Image — slide latéral selon le sens de la rangée + parallax léger au scroll */}
+      <motion.div
+        initial={{ opacity: 0, x: slideX, scale: 0.96 }}
+        whileInView={{ opacity: 1, x: 0, scale: 1 }}
+        viewport={{ once: true, amount: 0.25 }}
+        transition={{ duration: 0.75, ease }}
+        whileHover={{ y: -4 }}
+        className="group relative aspect-[4/3] overflow-hidden rounded-3xl shadow-[0_20px_50px_-20px_oklch(0.2_0.02_264/0.25)] ring-1 ring-border/60"
+      >
+        {/* Wrapper interne avec parallax Y au scroll */}
+        <motion.div className="absolute inset-0 -inset-y-10" style={{ y: imageY }}>
+          <Image
+            src={img}
+            alt={service.title}
+            fill
+            sizes="(min-width:1024px) 50vw, 100vw"
+            loading={index < 2 ? 'eager' : 'lazy'}
+            className="object-cover transition-transform duration-700 group-hover:scale-[1.04]"
+          />
+        </motion.div>
+
+        <div
+          className="pointer-events-none absolute inset-0 bg-gradient-to-tr from-black/10 via-transparent to-transparent"
+          aria-hidden
+        />
+
+        {/* Numéro 0X flottant + fade scroll */}
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.35 }}
+          transition={{ duration: 0.5, delay: 0.25, ease }}
+          className="absolute left-5 top-5 flex items-center gap-2"
+        >
+          <span className="rounded-full bg-background/90 px-3 py-1 font-display text-[11px] font-bold tracking-[0.18em] text-foreground backdrop-blur-sm">
+            0{index + 1}
+          </span>
+        </motion.div>
+      </motion.div>
+
+      {/* Texte — slide opposé + stagger interne sur les enfants */}
+      <motion.div
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, amount: 0.25 }}
+        variants={{
+          hidden: {},
+          visible: { transition: { staggerChildren: 0.08, delayChildren: 0.1 } },
+        }}
+        className="max-w-xl"
+      >
+        {/* Wrapper qui slide depuis le côté */}
+        <motion.span
+          variants={{
+            hidden: { opacity: 0, x: textSlideX, y: 8 },
+            visible: { opacity: 1, x: 0, y: 0, transition: { duration: 0.6, ease } },
+          }}
+          className="inline-flex size-12 items-center justify-center rounded-2xl bg-gradient-to-br from-primary/15 to-primary/5 text-primary ring-1 ring-primary/20"
+        >
+          <Icon className="size-5" aria-hidden />
+        </motion.span>
+
+        <motion.h3
+          variants={{
+            hidden: { opacity: 0, x: textSlideX, y: 8 },
+            visible: { opacity: 1, x: 0, y: 0, transition: { duration: 0.6, ease } },
+          }}
+          className="mt-5 font-display text-[28px] font-semibold leading-tight tracking-[-0.02em] text-foreground sm:text-3xl lg:text-4xl"
+        >
+          {service.title}
+        </motion.h3>
+
+        <motion.p
+          variants={{
+            hidden: { opacity: 0, y: 12 },
+            visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease } },
+          }}
+          className="mt-4 text-base leading-relaxed text-muted-foreground sm:text-lg"
+        >
+          {service.description || service.desc}
+        </motion.p>
+
+        {/* Points clés avec stagger individuel */}
+        {service.points && service.points.length > 0 && (
+          <motion.ul
+            variants={{
+              hidden: {},
+              visible: { transition: { staggerChildren: 0.06, delayChildren: 0.15 } },
+            }}
+            className="mt-6 space-y-2.5"
+          >
+            {service.points.map((p: string, i: number) => (
+              <motion.li
+                key={i}
+                variants={{
+                  hidden: { opacity: 0, x: -8 },
+                  visible: { opacity: 1, x: 0, transition: { duration: 0.45, ease } },
+                }}
+                className="flex items-center gap-3 text-sm text-foreground/80"
+              >
+                <span
+                  className="flex size-5 shrink-0 items-center justify-center rounded-full bg-primary/15 text-primary"
+                  aria-hidden
+                >
+                  <svg viewBox="0 0 12 12" fill="none" className="size-3">
+                    <path
+                      d="M2.5 6L5 8.5L9.5 4"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                </span>
+                {p}
+              </motion.li>
+            ))}
+          </motion.ul>
+        )}
+
+      </motion.div>
+    </motion.article>
+  )
 }
 
 export function ServicesContent() {
@@ -55,94 +188,30 @@ export function ServicesContent() {
         breadcrumb="Services"
         compact
       >
-        {/* KPIs centrés */}
         <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-4 text-sm">
-          <div className="flex items-baseline gap-2">
-            <span className="font-display text-2xl font-semibold tracking-tight text-foreground">8</span>
-            <span className="text-muted-foreground">prestations</span>
-          </div>
-          <span className="hidden h-1 w-1 rounded-full bg-muted-foreground/40 sm:inline" aria-hidden />
-          <div className="flex items-baseline gap-2">
-            <span className="font-display text-2xl font-semibold tracking-tight text-foreground">200+</span>
-            <span className="text-muted-foreground">projets livrés</span>
-          </div>
-          <span className="hidden h-1 w-1 rounded-full bg-muted-foreground/40 sm:inline" aria-hidden />
-          <div className="flex items-baseline gap-2">
-            <span className="font-display text-2xl font-semibold tracking-tight text-foreground">100%</span>
-            <span className="text-muted-foreground">sur mesure</span>
-          </div>
+          {servicesContent.kpis.map((kpi, i, arr) => (
+            <div key={kpi.label} className="flex items-center gap-x-8">
+              <div className="flex items-baseline gap-2">
+                <span className="font-display text-2xl font-semibold tracking-tight text-foreground">
+                  {kpi.value}
+                </span>
+                <span className="text-muted-foreground">{kpi.label}</span>
+              </div>
+              {i < arr.length - 1 && (
+                <span className="hidden h-1 w-1 rounded-full bg-muted-foreground/40 sm:inline" aria-hidden />
+              )}
+            </div>
+          ))}
         </div>
       </PremiumHero>
 
-      <section className="relative isolate overflow-hidden border-b border-border/60 bg-muted/40">
-        <AmbientShapes variant="tinted-violet" />
-        <div className="relative mx-auto max-w-6xl px-4 py-20 sm:px-6 lg:px-8 lg:py-28">
-          {/* En-tête de section */}
-          <div className="mx-auto max-w-2xl text-center">
-            <p className="font-display text-xs font-semibold tracking-[0.22em] text-primary uppercase">
-              En détail
-            </p>
-            <h2 className="mt-4 font-display text-balance text-3xl font-semibold leading-tight tracking-[-0.02em] text-foreground sm:text-4xl">
-              Chaque prestation, expliquée
-            </h2>
-          </div>
-
-          <div className="mt-14 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-            {services.map((s: any, i: number) => {
-              const Icon = defaultIcons[i] ?? Globe
-              return (
-                <motion.div
-                  key={s.title || i}
-                  initial={{ opacity: 0, y: 14 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true, margin: '-80px' }}
-                  transition={{ duration: 0.45, ease, delay: i * 0.03 }}
-                  className="h-full"
-                >
-                  <div className="group relative h-full overflow-hidden rounded-2xl bg-card/80 p-6 shadow-[0_8px_24px_-12px_oklch(0.2_0.02_264/0.15)] backdrop-blur-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_20px_40px_-12px_oklch(0.2_0.02_264/0.25)]">
-                    {/* Bordure dégradée premium */}
-                    <div
-                      className="pointer-events-none absolute inset-0 rounded-2xl p-px"
-                      aria-hidden
-                      style={{
-                        background:
-                          'linear-gradient(135deg, oklch(0.55 0.2 285 / 0.35) 0%, oklch(0.91 0.012 264 / 0.55) 50%, oklch(0.55 0.2 285 / 0.35) 100%)',
-                        WebkitMask:
-                          'linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0)',
-                        WebkitMaskComposite: 'xor',
-                        maskComposite: 'exclude',
-                      }}
-                    />
-                    {/* Soft glow violet on hover */}
-                    <div
-                      aria-hidden
-                      className="pointer-events-none absolute -top-16 -right-16 size-40 rounded-full bg-primary/20 opacity-0 blur-2xl transition-opacity duration-500 group-hover:opacity-100"
-                    />
-
-                    <div className="relative flex h-full flex-col">
-                      <div className="flex items-start justify-between">
-                        <span className="flex size-11 items-center justify-center rounded-2xl bg-gradient-to-br from-primary/15 to-primary/5 text-primary ring-1 ring-primary/20">
-                          <Icon className="size-5" aria-hidden />
-                        </span>
-                        <span className="font-display text-[11px] font-bold tracking-[0.2em] text-muted-foreground/60">
-                          0{i + 1}
-                        </span>
-                      </div>
-                      <h3 className="mt-5 font-display text-base font-semibold tracking-tight text-foreground">
-                        {s.title}
-                      </h3>
-                      <p className="mt-2 flex-1 text-sm leading-relaxed text-muted-foreground">
-                        {s.description}
-                      </p>
-                      <div className="mt-4 flex items-center gap-1 text-xs font-medium text-primary opacity-0 transition-opacity duration-300 group-hover:opacity-100">
-                        En savoir plus
-                        <ArrowUpRight className="size-3 transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
-                      </div>
-                    </div>
-                  </div>
-                </motion.div>
-              )
-            })}
+      {/* Rangées alternées image + texte */}
+      <section className="border-b border-border/60 bg-background">
+        <div className="mx-auto max-w-6xl px-4 py-20 sm:px-6 lg:px-8 lg:py-28">
+          <div className="space-y-24 lg:space-y-32">
+            {services.map((s: any, i: number) => (
+              <ServiceRow key={s.title || i} service={s} index={i} />
+            ))}
           </div>
         </div>
       </section>

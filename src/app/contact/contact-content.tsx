@@ -4,23 +4,17 @@ import { motion } from 'framer-motion'
 import { Clock, Mail, MapPin, Phone, Send } from 'lucide-react'
 
 import { PremiumHero } from '@/components/sections/premium-hero'
-import { AmbientShapes } from '@/components/ui/ambient-shapes'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { useContent } from '@/hooks/use-content'
 import { siteConfig } from '@/lib/seo'
+import { contactContent } from '@/lib/site-content'
 
 const ease = [0.22, 1, 0.36, 1] as const
 
 const defaults = {
-  hero: {
-    eyebrow: 'Contact',
-    title: 'Parlons de votre projet',
-    description: 'Remplissez le formulaire ci-dessous ou contactez-nous directement. Nous répondons sous 24h.',
-    image:
-      'https://images.unsplash.com/photo-1423666639041-f56000c27a9a?auto=format&fit=crop&w=1920&q=80',
-  },
+  hero: { ...contactContent.hero, image: '' as string },
   info: {
     phone: siteConfig.phone,
     email: siteConfig.email,
@@ -69,9 +63,8 @@ export function ContactContent() {
         </div>
       </PremiumHero>
 
-      <section className="relative isolate overflow-hidden border-b border-border/60 bg-muted/40">
-        <AmbientShapes variant="tinted-mix" />
-        <div className="relative mx-auto max-w-6xl px-4 py-20 sm:px-6 lg:px-8 lg:py-28">
+      <section className="border-b border-border/60 bg-background">
+        <div className="mx-auto max-w-6xl px-4 py-20 sm:px-6 lg:px-8 lg:py-28">
           <div className="grid gap-6 lg:grid-cols-[1.2fr_0.8fr]">
             {/* Form card premium */}
             <motion.div
@@ -94,12 +87,6 @@ export function ContactContent() {
                     maskComposite: 'exclude',
                   }}
                 />
-                {/* Soft glow violet top-right */}
-                <div
-                  className="pointer-events-none absolute -top-20 -right-20 size-60 rounded-full bg-primary/15 blur-3xl"
-                  aria-hidden
-                />
-
                 <div className="relative">
                   <div className="flex items-center gap-3">
                     <span className="flex size-10 items-center justify-center rounded-xl bg-gradient-to-br from-primary/15 to-primary/5 text-primary ring-1 ring-primary/20">

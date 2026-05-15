@@ -1,6 +1,6 @@
 export const siteConfig = {
   name: 'Nom Entreprise',
-  url: 'https://www.example.com',
+  url: 'https://ouibo.fr',
   locale: 'fr_FR',
   description:
     'Votre entreprise - description courte et percutante de votre activité. Adaptez cette ligne à votre domaine.',

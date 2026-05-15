@@ -5,32 +5,21 @@ import { ArrowRight } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
 
-import { AmbientShapes } from '@/components/ui/ambient-shapes'
 import { Button } from '@/components/ui/button'
 import { useContent } from '@/hooks/use-content'
+import { ctaContent } from '@/lib/site-content'
 
 const ease = [0.22, 1, 0.36, 1] as const
 
 const defaults = {
-  eyebrow: 'Prêt à démarrer ?',
-  title: 'Parlons de votre projet',
-  description: 'Un échange simple et sans engagement pour comprendre vos besoins et vous proposer la meilleure approche.',
-  button: 'Demander un devis gratuit',
+  eyebrow: ctaContent.eyebrow,
+  title: ctaContent.title,
+  description: ctaContent.description,
+  button: ctaContent.button,
 }
 
-const col1Images = [
-  'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=400&h=500&fit=crop&q=75',
-  'https://images.unsplash.com/photo-1553877522-43269d4ea984?w=400&h=500&fit=crop&q=75',
-  'https://images.unsplash.com/photo-1551434678-e076c223a692?w=400&h=500&fit=crop&q=75',
-  'https://images.unsplash.com/photo-1531973576160-7125cd663d86?w=400&h=500&fit=crop&q=75',
-]
-
-const col2Images = [
-  'https://images.unsplash.com/photo-1600880292203-757bb62b4baf?w=400&h=500&fit=crop&q=75',
-  'https://images.unsplash.com/photo-1542744173-8e7e53415bb0?w=400&h=500&fit=crop&q=75',
-  'https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=400&h=500&fit=crop&q=75',
-  'https://images.unsplash.com/photo-1573164713988-8665fc963095?w=400&h=500&fit=crop&q=75',
-]
+const col1Images = ctaContent.scrollImages.col1
+const col2Images = ctaContent.scrollImages.col2
 
 function ScrollColumn({ images, direction, speed }: { images: string[]; direction: 'up' | 'down'; speed: number }) {
   // Duplicate once for seamless loop (2 copies, translate -50%)
@@ -77,9 +66,8 @@ export function CtaSection() {
   const cta = data.cta ?? defaults
 
   return (
-    <section className="relative isolate overflow-hidden bg-muted/40">
-      <AmbientShapes variant="tinted-mix" />
-      <div className="relative mx-auto max-w-6xl px-4 py-20 sm:px-6 lg:px-8 lg:py-28">
+    <section className="bg-[oklch(0.975_0.012_285)] dark:bg-[oklch(0.16_0.02_285)]">
+      <div className="mx-auto max-w-6xl px-4 py-20 sm:px-6 lg:px-8 lg:py-28">
         <motion.div
           initial={{ opacity: 0, y: 14 }}
           whileInView={{ opacity: 1, y: 0 }}

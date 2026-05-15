@@ -6,8 +6,6 @@ import Image from 'next/image'
 import Link from 'next/link'
 import type { ReactNode } from 'react'
 
-import { AmbientShapes } from '@/components/ui/ambient-shapes'
-
 const ease = [0.22, 1, 0.36, 1] as const
 
 interface PremiumHeroProps {
@@ -45,16 +43,7 @@ export function PremiumHero({
   const hasImage = !compact && Boolean(image)
 
   return (
-    <section className="relative isolate overflow-hidden border-b border-border/60 bg-background">
-      <div
-        className="absolute inset-0 -z-20 bg-gradient-to-b from-background via-background to-muted/40"
-        aria-hidden
-      />
-      <AmbientShapes variant="hero" />
-      <div
-        className="absolute inset-x-0 bottom-0 -z-10 h-32 bg-gradient-to-t from-background to-transparent"
-        aria-hidden
-      />
+    <section className="relative isolate overflow-hidden border-b border-border/60 bg-[oklch(0.975_0.012_285)] dark:bg-[oklch(0.16_0.02_285)]">
 
       <div className="relative mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
         {/* Breadcrumb */}

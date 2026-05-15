@@ -4,11 +4,11 @@ import { usePathname } from 'next/navigation'
 import { useEffect, useState } from 'react'
 
 import { CookieConsent } from '@/components/layout/cookie-consent'
-import { FloatingCallButton } from '@/components/floating-call-button'
 import { Footer } from '@/components/layout/footer'
 import { MarketingBanner } from '@/components/marketing-banner'
 import { MarketingPopup } from '@/components/marketing-popup'
 import { Navbar } from '@/components/layout/navbar'
+import { ScrollToTop } from '@/components/scroll-to-top'
 
 export function RootWrapper({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
@@ -33,7 +33,7 @@ export function RootWrapper({ children }: { children: React.ReactNode }) {
       <Navbar />
       <main className="flex-1">{children}</main>
       <Footer />
-      <FloatingCallButton />
+      <ScrollToTop />
       <MarketingPopup />
       <CookieConsent />
     </>

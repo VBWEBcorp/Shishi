@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 
 import { CtaSection } from '@/components/sections/cta-section'
+import { FaqSection } from '@/components/sections/faq-section'
 import { GalleryCarousel } from '@/components/sections/gallery-carousel'
 import { HeroSection } from '@/components/sections/hero-section'
 import { ServicesPreview } from '@/components/sections/services-preview'
@@ -41,6 +42,7 @@ export default function HomePage() {
       <StorySection />
       <TestimonialsSection />
       <GalleryCarousel />
+      <FaqSection />
       <CtaSection />
       <ValuesMarquee />
     </>

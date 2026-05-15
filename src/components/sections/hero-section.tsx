@@ -7,26 +7,12 @@ import Link from 'next/link'
 import { useEffect, useState } from 'react'
 
 import { ValuesMarquee } from '@/components/sections/values-marquee'
-import { AmbientShapes } from '@/components/ui/ambient-shapes'
 import { Button } from '@/components/ui/button'
 import { useContent } from '@/hooks/use-content'
+import { heroContent as defaults } from '@/lib/site-content'
 
 const ease = [0.22, 1, 0.36, 1] as const
 const INTERVAL = 5000
-
-const defaults = {
-  eyebrow: 'Nouveau · Disponible',
-  title: 'Votre partenaire pour réussir en ligne',
-  description:
-    'Nous accompagnons les entreprises avec des solutions sur mesure, pensées pour durer. Présence digitale, performance et clarté.',
-  button1: 'Prendre contact',
-  button2: 'Découvrir nos services',
-  images: [
-    'https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=1920&q=80',
-    'https://images.unsplash.com/photo-1521737711867-e3b97375f902?auto=format&fit=crop&w=1920&q=80',
-    'https://images.unsplash.com/photo-1553877522-43269d4ea984?auto=format&fit=crop&w=1920&q=80',
-  ],
-}
 
 function splitTitle(title: string): { lead: string; accent: string } {
   const words = title.trim().split(/\s+/)
@@ -54,39 +40,54 @@ export function HeroSection() {
   }, [images.length])
 
   return (
-    <section className="relative isolate overflow-hidden border-b border-border/60 bg-background">
-      {/* Base gradient */}
-      <div className="absolute inset-0 -z-20 bg-gradient-to-b from-background via-background to-muted/40" aria-hidden />
-      <AmbientShapes variant="hero" />
-      {/* Fade vers le bas pour transition avec section suivante */}
-      <div className="absolute inset-x-0 bottom-0 -z-10 h-32 bg-gradient-to-t from-background to-transparent" aria-hidden />
-
-      <div className="relative mx-auto max-w-6xl px-4 pt-28 pb-16 sm:px-6 sm:pt-36 sm:pb-20 lg:px-8 lg:pt-44 lg:pb-24">
-        <div className="mx-auto max-w-3xl text-center">
-          {/* Eyebrow en mono */}
-          <motion.p
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, ease }}
-            className="font-display text-xs font-semibold tracking-[0.22em] uppercase text-primary"
+    <section className="relative isolate overflow-hidden border-b border-border/60">
+      {/* Background : carousel d'images plein écran */}
+      <div className="absolute inset-0 -z-10" aria-hidden>
+        <AnimatePresence initial={false}>
+          <motion.div
+            key={current}
+            initial={{ opacity: 0, scale: 1.08 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 1.2, ease }}
+            className="absolute inset-0"
           >
+            <Image
+              src={images[current]}
+              alt=""
+              fill
+              sizes="100vw"
+              priority={current === 0}
+              className="object-cover"
+            />
+          </motion.div>
+        </AnimatePresence>
+        {/* Overlay sombre pour lisibilité du texte */}
+        <div className="absolute inset-0 bg-black/55" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-black/20" />
+      </div>
+
+      <div className="relative mx-auto max-w-6xl px-4 py-24 sm:px-6 sm:py-32 lg:px-8 lg:py-40">
+        <motion.div
+          initial={{ opacity: 0, y: 18 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.65, ease }}
+          className="mx-auto max-w-3xl text-center"
+        >
+          {/* Eyebrow */}
+          <p className="font-display text-xs font-semibold tracking-[0.22em] uppercase text-white/70">
             {hero.eyebrow}
-          </motion.p>
+          </p>
 
-          {/* Titre avec mots accentués en gradient */}
-          <motion.h1
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.65, delay: 0.08, ease }}
-            className="mt-6 font-display text-balance text-4xl leading-[1.05] font-semibold tracking-[-0.035em] text-foreground sm:text-5xl lg:text-[64px]"
-          >
+          {/* Titre avec mot accentué en serif italic + gradient */}
+          <h1 className="mt-6 font-display text-balance text-4xl leading-[1.05] font-semibold tracking-[-0.035em] text-white sm:text-5xl lg:text-6xl">
             {lead ? (
               <>
                 {lead}{' '}
-                <span className="relative inline-block font-serif italic font-normal tracking-[-0.01em] bg-gradient-to-br from-primary via-[oklch(0.55_0.22_285)] to-[oklch(0.5_0.22_260)] bg-clip-text text-transparent dark:from-primary dark:via-[oklch(0.75_0.16_285)] dark:to-[oklch(0.68_0.18_260)]">
+                <span className="relative inline-block bg-gradient-to-br from-[oklch(0.78_0.15_285)] via-[oklch(0.72_0.18_285)] to-[oklch(0.68_0.18_260)] bg-clip-text font-serif italic font-normal tracking-[-0.01em] text-transparent">
                   {accent}
                   <span
-                    className="absolute -inset-x-2 -bottom-1 -z-10 h-[40%] rounded-full bg-primary/15 blur-2xl"
+                    className="absolute -inset-x-2 -bottom-1 -z-10 h-[40%] rounded-full bg-primary/25 blur-2xl"
                     aria-hidden
                   />
                 </span>
@@ -94,25 +95,14 @@ export function HeroSection() {
             ) : (
               accent
             )}
-          </motion.h1>
+          </h1>
 
-          {/* Description */}
-          <motion.p
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.65, delay: 0.16, ease }}
-            className="mx-auto mt-6 max-w-2xl text-pretty text-base leading-relaxed text-muted-foreground sm:text-lg"
-          >
+          <p className="mx-auto mt-6 max-w-2xl text-pretty text-lg leading-relaxed text-white/75 sm:text-xl">
             {hero.description}
-          </motion.p>
+          </p>
 
           {/* CTAs */}
-          <motion.div
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.65, delay: 0.24, ease }}
-            className="mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row"
-          >
+          <div className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row">
             {/* CTA primary premium */}
             <Link
               href="/contact"
@@ -137,132 +127,62 @@ export function HeroSection() {
               />
             </Link>
 
-            {/* CTA secondary glassy */}
             <Button
               size="lg"
               variant="outline"
-              className="h-11 rounded-xl border-border/80 bg-background/60 px-5 backdrop-blur-sm hover:bg-background/90"
+              className="h-11 rounded-xl border-white/25 bg-white/10 px-5 text-white backdrop-blur-sm hover:bg-white/20 hover:text-white"
               asChild
             >
               <Link href="/services">{hero.button2}</Link>
             </Button>
-          </motion.div>
+          </div>
 
           {/* Social proof : rating + avatars */}
-          <motion.div
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.65, delay: 0.32, ease }}
-            className="mt-10 flex flex-col items-center gap-3 sm:flex-row sm:justify-center sm:gap-5"
-          >
+          <div className="mt-10 flex flex-col items-center gap-3 sm:flex-row sm:justify-center sm:gap-5">
             <div className="flex -space-x-2">
               {[0, 1, 2, 3].map((i) => (
                 <div
                   key={i}
-                  className="size-7 rounded-full bg-gradient-to-br from-primary/30 to-primary/10 ring-2 ring-background"
+                  className="size-7 rounded-full ring-2 ring-black/30"
                   style={{
-                    background: `linear-gradient(135deg, oklch(${0.55 + i * 0.05} 0.18 ${260 + i * 15} / 0.7), oklch(${0.65 + i * 0.04} 0.15 ${285 + i * 10} / 0.5))`,
+                    background: `linear-gradient(135deg, oklch(${0.55 + i * 0.05} 0.18 ${260 + i * 15} / 0.85), oklch(${0.65 + i * 0.04} 0.15 ${285 + i * 10} / 0.65))`,
                   }}
                   aria-hidden
                 />
               ))}
             </div>
             <div className="flex items-center gap-2 text-sm">
-              <div className="flex items-center gap-0.5 text-primary">
+              <div className="flex items-center gap-0.5 text-amber-300">
                 {[0, 1, 2, 3, 4].map((i) => (
                   <Star key={i} className="size-3.5 fill-current" aria-hidden />
                 ))}
               </div>
-              <span className="font-medium text-foreground">4.9/5</span>
-              <span className="text-muted-foreground">· 200+ clients satisfaits</span>
-            </div>
-          </motion.div>
-        </div>
-
-        {/* Preview card glassy avec carousel d'images */}
-        <motion.div
-          initial={{ opacity: 0, y: 32, scale: 0.97 }}
-          animate={{ opacity: 1, y: 0, scale: 1 }}
-          transition={{ duration: 0.8, delay: 0.4, ease }}
-          className="relative mx-auto mt-16 max-w-5xl"
-        >
-          {/* Glow violet derrière la card */}
-          <div
-            className="pointer-events-none absolute -inset-4 -z-10 rounded-[2rem] opacity-70 blur-3xl"
-            aria-hidden
-            style={{
-              background:
-                'radial-gradient(ellipse at center, oklch(0.55 0.2 285 / 0.25) 0%, transparent 70%)',
-            }}
-          />
-
-          <div className="relative overflow-hidden rounded-2xl bg-background/40 p-1.5 shadow-[0_30px_60px_-20px_oklch(0.2_0.02_264/0.3)] backdrop-blur-xl ring-1 ring-border/60">
-            {/* Bordure dégradée */}
-            <div
-              className="pointer-events-none absolute inset-0 rounded-2xl p-px"
-              aria-hidden
-              style={{
-                background:
-                  'linear-gradient(135deg, oklch(0.55 0.2 285 / 0.4) 0%, oklch(0.91 0.012 264 / 0.5) 50%, oklch(0.55 0.2 285 / 0.4) 100%)',
-                WebkitMask:
-                  'linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0)',
-                WebkitMaskComposite: 'xor',
-                maskComposite: 'exclude',
-              }}
-            />
-
-            <div className="relative aspect-[16/9] overflow-hidden rounded-xl">
-              <AnimatePresence initial={false} mode="popLayout">
-                <motion.div
-                  key={current}
-                  initial={{ opacity: 0, scale: 1.05 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 1.02 }}
-                  transition={{ duration: 1, ease }}
-                  className="absolute inset-0"
-                >
-                  <Image
-                    src={images[current]}
-                    alt=""
-                    fill
-                    sizes="(min-width: 1024px) 1024px, 100vw"
-                    priority={current === 0}
-                    className="object-cover"
-                  />
-                </motion.div>
-              </AnimatePresence>
-
-              {/* Overlay gradient subtil pour donner de la profondeur */}
-              <div
-                className="pointer-events-none absolute inset-0 bg-gradient-to-tr from-primary/10 via-transparent to-transparent"
-                aria-hidden
-              />
-
-              {/* Indicateurs */}
-              {images.length > 1 && (
-                <div className="absolute bottom-4 left-1/2 flex -translate-x-1/2 gap-1.5">
-                  {images.map((_, i) => (
-                    <button
-                      key={i}
-                      type="button"
-                      aria-label={`Image ${i + 1}`}
-                      onClick={() => setCurrent(i)}
-                      className={`h-1 rounded-full backdrop-blur-sm transition-all duration-500 ${
-                        i === current
-                          ? 'w-7 bg-white shadow-[0_0_10px_oklch(1_0_0/0.5)]'
-                          : 'w-3 bg-white/40 hover:bg-white/60'
-                      }`}
-                    />
-                  ))}
-                </div>
-              )}
+              <span className="font-medium text-white">4.9/5</span>
+              <span className="text-white/70">· 200+ clients satisfaits</span>
             </div>
           </div>
         </motion.div>
+
+        {/* Indicateurs carousel */}
+        {images.length > 1 && (
+          <div className="mt-12 flex justify-center gap-2">
+            {images.map((_, i) => (
+              <button
+                key={i}
+                type="button"
+                aria-label={`Image ${i + 1}`}
+                onClick={() => setCurrent(i)}
+                className={`h-1 rounded-full transition-all duration-500 ${
+                  i === current ? 'w-8 bg-white' : 'w-4 bg-white/35 hover:bg-white/55'
+                }`}
+              />
+            ))}
+          </div>
+        )}
       </div>
 
       <div className="relative">
-        <ValuesMarquee />
+        <ValuesMarquee variant="dark" />
       </div>
     </section>
   )

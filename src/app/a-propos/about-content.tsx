@@ -1,46 +1,20 @@
 'use client'
 
 import { motion, useScroll, useTransform } from 'framer-motion'
-import { ChevronRight, Heart, Home, Lightbulb, Users } from 'lucide-react'
+import { ChevronRight, Home } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useRef } from 'react'
 
 import { CtaSection } from '@/components/sections/cta-section'
-import { AmbientShapes } from '@/components/ui/ambient-shapes'
 import { SectionTitle } from '@/components/ui/section-title'
 import { useContent } from '@/hooks/use-content'
+import { getIcon } from '@/lib/icons'
+import { aboutContent } from '@/lib/site-content'
 
 const ease = [0.22, 1, 0.36, 1] as const
-const defaultIcons = [Heart, Lightbulb, Users]
 
-const defaults = {
-  hero: {
-    eyebrow: 'À propos',
-    title: 'Une équipe engagée à vos côtés',
-    description:
-      "Nous croyons que chaque entreprise mérite une présence en ligne à la hauteur de ses ambitions. Depuis notre création, nous accompagnons artisans, PME et indépendants avec des solutions simples, efficaces et soignées.",
-    image:
-      'https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=1920&q=80',
-  },
-  values: [
-    { title: 'Proximité', description: 'Un interlocuteur unique, disponible, qui connaît votre projet sur le bout des doigts.' },
-    { title: 'Clarté', description: 'Pas de jargon inutile. Des explications simples, des livrables concrets.' },
-    { title: 'Sur mesure', description: "Chaque projet est différent. Nous adaptons nos solutions à votre réalité, pas l'inverse." },
-  ],
-  gallery: [
-    'https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=600&q=80',
-    'https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=600&q=80',
-    'https://images.unsplash.com/photo-1553877522-43269d4ea984?auto=format&fit=crop&w=600&q=80',
-    'https://images.unsplash.com/photo-1600880292203-757bb62b4baf?auto=format&fit=crop&w=600&q=80',
-  ],
-  stats: [
-    { value: '200+', label: 'Projets livrés' },
-    { value: '98%', label: 'Clients satisfaits' },
-    { value: '5 ans', label: "D'expertise" },
-    { value: '24/7', label: 'Support continu' },
-  ],
-}
+const defaults = aboutContent
 
 function splitTitle(title: string): { lead: string; accent: string } {
   const words = title.trim().split(/\s+/)
@@ -56,17 +30,7 @@ function AboutHero({ hero }: { hero: typeof defaults.hero }) {
   const { lead, accent } = splitTitle(hero.title)
 
   return (
-    <section className="relative isolate overflow-hidden border-b border-border/60 bg-background">
-      {/* Base gradient */}
-      <div
-        className="absolute inset-0 -z-20 bg-gradient-to-b from-background via-background to-muted/40"
-        aria-hidden
-      />
-      <AmbientShapes variant="hero" />
-      <div
-        className="absolute inset-x-0 bottom-0 -z-10 h-32 bg-gradient-to-t from-background to-transparent"
-        aria-hidden
-      />
+    <section className="relative isolate overflow-hidden border-b border-border/60 bg-[oklch(0.975_0.012_285)] dark:bg-[oklch(0.16_0.02_285)]">
 
       <div className="relative mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
         {/* Breadcrumb */}
@@ -248,7 +212,7 @@ function ValuesTimeline({ values }: { values: any[] }) {
 
       <ul className="space-y-12 md:space-y-16">
         {values.map((v: any, i: number) => {
-          const Icon = defaultIcons[i] ?? Heart
+          const Icon = getIcon(v.iconName ?? aboutContent.values[i]?.iconName)
           const isRight = i % 2 === 1
           return (
             <li key={v.title || i} className="relative">
@@ -334,17 +298,15 @@ export function AboutContent() {
     <>
       <AboutHero hero={hero} />
 
-      <section className="relative isolate overflow-hidden border-b border-border/60 bg-muted/40">
-        <AmbientShapes variant="tinted-indigo" />
-        <div className="relative mx-auto max-w-6xl px-4 py-20 sm:px-6 lg:px-8 lg:py-28">
+      <section className="border-b border-border/60 bg-background">
+        <div className="mx-auto max-w-6xl px-4 py-20 sm:px-6 lg:px-8 lg:py-28">
           <SectionTitle eyebrow="Nos valeurs" title="Ce qui nous guide au quotidien" />
           <ValuesTimeline values={values} />
         </div>
       </section>
 
-      <section className="relative isolate overflow-hidden border-b border-border/60">
-        <AmbientShapes variant="light-accent" />
-        <div className="relative mx-auto max-w-6xl px-4 py-20 sm:px-6 lg:px-8 lg:py-28">
+      <section className="border-b border-border/60 bg-[oklch(0.975_0.012_285)] dark:bg-[oklch(0.16_0.02_285)]">
+        <div className="mx-auto max-w-6xl px-4 py-20 sm:px-6 lg:px-8 lg:py-28">
           <SectionTitle eyebrow="En images" title="Notre quotidien" />
           <div className="mt-14 grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-4">
             {gallery.map((src: string, i: number) => (
