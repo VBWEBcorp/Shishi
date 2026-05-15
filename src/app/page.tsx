@@ -39,10 +39,10 @@ export default function HomePage() {
       />
       <HeroSection />
       <ServicesPreview />
+      <FaqSection />
       <StorySection />
       <TestimonialsSection />
       <GalleryCarousel />
-      <FaqSection />
       <CtaSection />
       <ValuesMarquee />
     </>

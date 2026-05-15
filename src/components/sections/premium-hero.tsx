@@ -12,9 +12,12 @@ interface PremiumHeroProps {
   eyebrow: string
   title: string
   description?: string
+  /** Image affichée à droite (mode 2-col, quand `compact` est false) */
   image?: string
+  /** Image de fond plein écran derrière le hero (mode compact + photo) */
+  backgroundImage?: string
   breadcrumb: string
-  /** Affichage compact (sans image, plus centré) */
+  /** Affichage compact (centré, sans image à droite) */
   compact?: boolean
   /** Contenu additionnel sous la description (stats, badges, etc.) */
   children?: ReactNode
@@ -35,32 +38,68 @@ export function PremiumHero({
   title,
   description,
   image,
+  backgroundImage,
   breadcrumb,
   compact = false,
   children,
 }: PremiumHeroProps) {
   const { lead, accent } = splitTitle(title)
   const hasImage = !compact && Boolean(image)
+  const hasBgImage = Boolean(backgroundImage)
+  const darkOver = hasBgImage // texte blanc sur photo sombre
 
   return (
-    <section className="relative isolate overflow-hidden border-b border-border/60 bg-[oklch(0.975_0.012_285)] dark:bg-[oklch(0.16_0.02_285)]">
+    <section
+      className={`relative isolate overflow-hidden border-b border-border/60 ${
+        hasBgImage ? 'bg-background' : 'bg-[oklch(0.975_0.012_285)] dark:bg-[oklch(0.16_0.02_285)]'
+      }`}
+    >
+      {/* Image de fond plein largeur + overlay sombre + fade vers le bas (style Blog) */}
+      {hasBgImage && backgroundImage && (
+        <>
+          <div className="absolute inset-0 -z-20" aria-hidden>
+            <Image
+              src={backgroundImage}
+              alt=""
+              fill
+              sizes="100vw"
+              priority
+              className="object-cover"
+            />
+          </div>
+          {/* Overlay sombre uniforme en haut + s'estompe sur le dernier quart (sinon ça crée du gris quand le fade blanc arrive) */}
+          <div
+            className="absolute inset-0 -z-10"
+            aria-hidden
+            style={{
+              background:
+                'linear-gradient(to bottom, rgba(0,0,0,0.65) 0%, rgba(0,0,0,0.60) 70%, rgba(0,0,0,0) 100%)',
+            }}
+          />
+          {/* Fade vers le bg uniquement sur les ~96px du bas */}
+          <div
+            className="absolute inset-x-0 bottom-0 -z-10 h-24 bg-gradient-to-t from-background to-transparent"
+            aria-hidden
+          />
+        </>
+      )}
 
       <div className="relative mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
         {/* Breadcrumb */}
         <nav aria-label="Fil d'Ariane" className="pt-24 sm:pt-28">
-          <ol className="flex flex-wrap items-center gap-1.5 text-xs text-muted-foreground">
+          <ol className={`flex flex-wrap items-center gap-1.5 text-xs ${darkOver ? 'text-white/60' : 'text-muted-foreground'}`}>
             <li className="flex items-center gap-1.5">
               <Link
                 href="/"
-                className="flex items-center gap-1 transition-colors hover:text-foreground"
+                className={`flex items-center gap-1 transition-colors ${darkOver ? 'hover:text-white' : 'hover:text-foreground'}`}
               >
                 <Home className="size-3" aria-hidden />
                 <span>Accueil</span>
               </Link>
             </li>
             <li className="flex items-center gap-1.5">
-              <ChevronRight className="size-3 text-muted-foreground/50" aria-hidden />
-              <span aria-current="page" className="font-medium text-foreground">
+              <ChevronRight className={`size-3 ${darkOver ? 'text-white/40' : 'text-muted-foreground/50'}`} aria-hidden />
+              <span aria-current="page" className={darkOver ? 'font-medium text-white/90' : 'font-medium text-foreground'}>
                 {breadcrumb}
               </span>
             </li>
@@ -80,27 +119,29 @@ export function PremiumHero({
             transition={{ duration: 0.6, ease }}
             className={hasImage ? '' : 'mx-auto max-w-3xl'}
           >
-            {/* Eyebrow en mono — style Linear/Vercel */}
-            <p className="font-display text-xs font-semibold tracking-[0.22em] uppercase text-primary">
+            {/* Eyebrow */}
+            <p
+              className={`font-display text-xs font-semibold tracking-[0.22em] uppercase ${
+                darkOver ? 'text-white/70' : 'text-primary'
+              }`}
+            >
               {eyebrow}
             </p>
 
             <h1
-              className={
-                hasImage
-                  ? 'mt-6 font-display text-balance text-4xl leading-[1.05] font-semibold tracking-[-0.035em] text-foreground sm:text-5xl lg:text-[56px]'
-                  : 'mt-6 font-display text-balance text-4xl leading-[1.05] font-semibold tracking-[-0.035em] text-foreground sm:text-5xl lg:text-[60px]'
-              }
+              className={`mt-6 font-display text-balance pb-1 text-4xl leading-[1.15] font-semibold tracking-[-0.035em] sm:text-5xl ${
+                hasImage ? 'lg:text-[56px]' : 'lg:text-[60px]'
+              } ${darkOver ? 'text-white' : 'text-foreground'}`}
             >
               {lead ? (
                 <>
                   {lead}{' '}
-                  <span className="relative inline-block font-serif italic font-normal tracking-[-0.01em] bg-gradient-to-br from-primary via-[oklch(0.55_0.22_285)] to-[oklch(0.5_0.22_260)] bg-clip-text text-transparent dark:from-primary dark:via-[oklch(0.75_0.16_285)] dark:to-[oklch(0.68_0.18_260)]">
+                  <span
+                    className={`relative inline-block pb-1 font-serif italic font-normal tracking-[-0.01em] ${
+                      darkOver ? 'text-[oklch(0.78_0.15_285)]' : 'text-primary'
+                    }`}
+                  >
                     {accent}
-                    <span
-                      className="absolute -inset-x-2 -bottom-1 -z-10 h-[40%] rounded-full bg-primary/15 blur-2xl"
-                      aria-hidden
-                    />
                   </span>
                 </>
               ) : (
@@ -110,11 +151,9 @@ export function PremiumHero({
 
             {description && (
               <p
-                className={
-                  hasImage
-                    ? 'mt-6 max-w-xl text-pretty text-base leading-relaxed text-muted-foreground sm:text-lg'
-                    : 'mx-auto mt-6 max-w-2xl text-pretty text-base leading-relaxed text-muted-foreground sm:text-lg'
-                }
+                className={`mt-6 max-w-2xl text-pretty text-base leading-relaxed sm:text-lg ${
+                  hasImage ? 'max-w-xl' : 'mx-auto'
+                } ${darkOver ? 'text-white/75' : 'text-muted-foreground'}`}
               >
                 {description}
               </p>
@@ -130,7 +169,6 @@ export function PremiumHero({
               transition={{ duration: 0.7, delay: 0.15, ease }}
               className="relative"
             >
-              {/* Glow violet derrière */}
               <div
                 className="pointer-events-none absolute -inset-6 -z-10 rounded-[2rem] opacity-70 blur-3xl"
                 aria-hidden

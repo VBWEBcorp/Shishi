@@ -79,17 +79,13 @@ export function HeroSection() {
             {hero.eyebrow}
           </p>
 
-          {/* Titre avec mot accentué en serif italic + gradient */}
-          <h1 className="mt-6 font-display text-balance text-4xl leading-[1.05] font-semibold tracking-[-0.035em] text-white sm:text-5xl lg:text-6xl">
+          {/* Titre avec mot accentué en serif italic + violet uni */}
+          <h1 className="mt-6 font-display text-balance pb-1 text-4xl leading-[1.15] font-semibold tracking-[-0.035em] text-white sm:text-5xl lg:text-6xl">
             {lead ? (
               <>
                 {lead}{' '}
-                <span className="relative inline-block bg-gradient-to-br from-[oklch(0.78_0.15_285)] via-[oklch(0.72_0.18_285)] to-[oklch(0.68_0.18_260)] bg-clip-text font-serif italic font-normal tracking-[-0.01em] text-transparent">
+                <span className="relative inline-block pb-1 font-serif italic font-normal tracking-[-0.01em] text-[oklch(0.78_0.15_285)]">
                   {accent}
-                  <span
-                    className="absolute -inset-x-2 -bottom-1 -z-10 h-[40%] rounded-full bg-primary/25 blur-2xl"
-                    aria-hidden
-                  />
                 </span>
               </>
             ) : (

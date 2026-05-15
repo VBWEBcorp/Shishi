@@ -146,29 +146,19 @@ export function Navbar() {
                       />
                     )}
 
-                    {/* Pill active avec halo violet */}
+                    <span className={cn('relative', isActive && 'font-semibold')}>
+                      {l.label}
+                    </span>
+
+                    {/* Underline fin animé sous le lien actif (style Linear/Vercel) */}
                     {isActive && (
                       <motion.span
-                        layoutId="nav-active-pill"
-                        className="absolute inset-0 rounded-xl bg-gradient-to-b from-primary/15 to-primary/5 ring-1 ring-primary/20"
+                        layoutId="nav-active-underline"
+                        className="absolute inset-x-3 bottom-0.5 h-[2px] rounded-full bg-primary"
                         transition={{ type: 'spring', stiffness: 400, damping: 32 }}
                         aria-hidden
-                      >
-                        <span className="absolute inset-0 rounded-xl shadow-[inset_0_1px_0_oklch(1_0_0/0.5)] dark:shadow-[inset_0_1px_0_oklch(1_0_0/0.08)]" />
-                      </motion.span>
+                      />
                     )}
-
-                    <span className="relative flex items-center gap-1.5">
-                      {l.label}
-                      {isActive && (
-                        <motion.span
-                          layoutId="nav-active-dot"
-                          className="size-1 rounded-full bg-primary shadow-[0_0_10px_oklch(0.55_0.2_285/0.7)]"
-                          transition={{ type: 'spring', stiffness: 400, damping: 32 }}
-                          aria-hidden
-                        />
-                      )}
-                    </span>
                   </Link>
                 )
               })}

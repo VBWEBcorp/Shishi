@@ -37,6 +37,14 @@ export const images = {
   aboutHero:
     'https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=1920&q=80',
 
+  // Page Services — image de fond du hero (workspace/bureau sombre)
+  servicesHero:
+    'https://images.unsplash.com/photo-1497032628192-86f99bcd76bc?auto=format&fit=crop&w=1920&q=80',
+
+  // Page Contact — image de fond du hero
+  contactHero:
+    'https://images.unsplash.com/photo-1423666639041-f56000c27a9a?auto=format&fit=crop&w=1920&q=80',
+
   // Page À propos — galerie 4 images
   aboutGallery: [
     'https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=600&q=80',

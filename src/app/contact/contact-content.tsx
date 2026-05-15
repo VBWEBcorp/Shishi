@@ -9,7 +9,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { useContent } from '@/hooks/use-content'
 import { siteConfig } from '@/lib/seo'
-import { contactContent } from '@/lib/site-content'
+import { contactContent, images as siteImages } from '@/lib/site-content'
 
 const ease = [0.22, 1, 0.36, 1] as const
 
@@ -43,21 +43,22 @@ export function ContactContent() {
         description={hero.description}
         breadcrumb="Contact"
         compact
+        backgroundImage={siteImages.contactHero}
       >
         {/* Trust row */}
-        <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-3 text-sm text-muted-foreground">
+        <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-3 text-sm text-white/80">
           <div className="flex items-center gap-2">
-            <Clock className="size-4 text-primary" aria-hidden />
+            <Clock className="size-4 text-[oklch(0.78_0.15_285)]" aria-hidden />
             <span>Réponse sous 24h</span>
           </div>
-          <span className="hidden h-1 w-1 rounded-full bg-muted-foreground/40 sm:inline" aria-hidden />
+          <span className="hidden h-1 w-1 rounded-full bg-white/40 sm:inline" aria-hidden />
           <div className="flex items-center gap-2">
-            <Send className="size-4 text-primary" aria-hidden />
+            <Send className="size-4 text-[oklch(0.78_0.15_285)]" aria-hidden />
             <span>Devis gratuit</span>
           </div>
-          <span className="hidden h-1 w-1 rounded-full bg-muted-foreground/40 sm:inline" aria-hidden />
+          <span className="hidden h-1 w-1 rounded-full bg-white/40 sm:inline" aria-hidden />
           <div className="flex items-center gap-2">
-            <span className="flex size-2 rounded-full bg-emerald-500 shadow-[0_0_8px_oklch(0.7_0.15_150/0.8)]" aria-hidden />
+            <span className="flex size-2 rounded-full bg-emerald-400 shadow-[0_0_8px_oklch(0.7_0.15_150/0.8)]" aria-hidden />
             <span>Disponible cette semaine</span>
           </div>
         </div>

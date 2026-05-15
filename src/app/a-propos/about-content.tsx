@@ -66,16 +66,12 @@ function AboutHero({ hero }: { hero: typeof defaults.hero }) {
               {hero.eyebrow}
             </p>
 
-            <h1 className="mt-6 font-display text-balance text-4xl leading-[1.05] font-semibold tracking-[-0.035em] text-foreground sm:text-5xl lg:text-[56px]">
+            <h1 className="mt-6 font-display text-balance pb-1 text-4xl leading-[1.15] font-semibold tracking-[-0.035em] text-foreground sm:text-5xl lg:text-[56px]">
               {lead ? (
                 <>
                   {lead}{' '}
-                  <span className="relative inline-block font-serif italic font-normal tracking-[-0.01em] bg-gradient-to-br from-primary via-[oklch(0.55_0.22_285)] to-[oklch(0.5_0.22_260)] bg-clip-text text-transparent dark:from-primary dark:via-[oklch(0.75_0.16_285)] dark:to-[oklch(0.68_0.18_260)]">
+                  <span className="relative inline-block pb-1 font-serif italic font-normal tracking-[-0.01em] text-primary">
                     {accent}
-                    <span
-                      className="absolute -inset-x-2 -bottom-1 -z-10 h-[40%] rounded-full bg-primary/15 blur-2xl"
-                      aria-hidden
-                    />
                   </span>
                 </>
               ) : (

@@ -45,7 +45,8 @@ function ServiceRow({
   return (
     <motion.article
       ref={ref}
-      className={`grid items-center gap-10 lg:grid-cols-2 lg:gap-16 ${
+      id={`service-${index}`}
+      className={`scroll-mt-24 grid items-center gap-10 lg:grid-cols-2 lg:gap-12 ${
         isReversed ? 'lg:[&>*:first-child]:order-2' : ''
       }`}
     >
@@ -187,18 +188,19 @@ export function ServicesContent() {
         description={hero.description}
         breadcrumb="Services"
         compact
+        backgroundImage={siteImages.servicesHero}
       >
         <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-4 text-sm">
           {servicesContent.kpis.map((kpi, i, arr) => (
             <div key={kpi.label} className="flex items-center gap-x-8">
               <div className="flex items-baseline gap-2">
-                <span className="font-display text-2xl font-semibold tracking-tight text-foreground">
+                <span className="font-display text-2xl font-semibold tracking-tight text-white">
                   {kpi.value}
                 </span>
-                <span className="text-muted-foreground">{kpi.label}</span>
+                <span className="text-white/70">{kpi.label}</span>
               </div>
               {i < arr.length - 1 && (
-                <span className="hidden h-1 w-1 rounded-full bg-muted-foreground/40 sm:inline" aria-hidden />
+                <span className="hidden h-1 w-1 rounded-full bg-white/40 sm:inline" aria-hidden />
               )}
             </div>
           ))}
@@ -207,8 +209,8 @@ export function ServicesContent() {
 
       {/* Rangées alternées image + texte */}
       <section className="border-b border-border/60 bg-background">
-        <div className="mx-auto max-w-6xl px-4 py-20 sm:px-6 lg:px-8 lg:py-28">
-          <div className="space-y-24 lg:space-y-32">
+        <div className="mx-auto max-w-6xl px-4 py-14 sm:px-6 lg:px-8 lg:py-20">
+          <div className="space-y-16 lg:space-y-20">
             {services.map((s: any, i: number) => (
               <ServiceRow key={s.title || i} service={s} index={i} />
             ))}
