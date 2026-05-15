@@ -68,7 +68,7 @@ export function PageHero({ eyebrow, title, description, image, breadcrumb }: Pag
             transition={{ duration: 0.6, ease }}
             className="mx-auto max-w-3xl text-center"
           >
-            <p className="font-display text-xs font-semibold tracking-[0.22em] uppercase text-white/70">
+            <p className="font-mono text-[11px] font-medium tracking-[0.2em] uppercase text-white/70">
               {eyebrow}
             </p>
             <h1 className="mt-6 font-display text-balance text-4xl leading-[1.08] tracking-[-0.03em] text-white sm:text-5xl">

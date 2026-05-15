@@ -5,6 +5,7 @@ import { ChevronLeft, ChevronRight } from 'lucide-react'
 import Image from 'next/image'
 import { useCallback, useEffect, useRef, useState } from 'react'
 
+import { AmbientShapes } from '@/components/ui/ambient-shapes'
 import { Button } from '@/components/ui/button'
 import { useContent } from '@/hooks/use-content'
 
@@ -57,11 +58,12 @@ export function GalleryCarousel() {
   )
 
   return (
-    <section className="border-b border-border/60">
-      <div className="mx-auto max-w-6xl px-4 py-20 sm:px-6 lg:px-8 lg:py-28">
+    <section className="relative isolate overflow-hidden border-b border-border/60">
+      <AmbientShapes variant="light-accent" />
+      <div className="relative mx-auto max-w-6xl px-4 py-20 sm:px-6 lg:px-8 lg:py-28">
         <div className="flex items-end justify-between gap-4">
           <div className="space-y-3">
-            <p className="font-display text-xs font-semibold tracking-[0.22em] text-primary uppercase">
+            <p className="font-mono text-[11px] font-medium tracking-[0.2em] text-primary uppercase">
               {gallery.eyebrow}
             </p>
             <h2 className="font-display text-2xl tracking-tight text-foreground sm:text-3xl">

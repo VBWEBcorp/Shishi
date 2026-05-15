@@ -2,6 +2,7 @@
 
 import { Star } from 'lucide-react'
 
+import { AmbientShapes } from '@/components/ui/ambient-shapes'
 import { SectionTitle } from '@/components/ui/section-title'
 import { useContent } from '@/hooks/use-content'
 
@@ -84,8 +85,8 @@ function MarqueeRow({
 
   return (
     <div className="group relative flex gap-6 overflow-hidden">
-      <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-12 bg-gradient-to-r from-background to-transparent sm:w-24" />
-      <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-12 bg-gradient-to-l from-background to-transparent sm:w-24" />
+      <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-12 bg-gradient-to-r from-muted/80 to-transparent sm:w-24" />
+      <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-12 bg-gradient-to-l from-muted/80 to-transparent sm:w-24" />
       <div className={`flex shrink-0 gap-6 py-2 ${animationClass} group-hover:[animation-play-state:paused]`}>
         {items.map((t, i) => (
           <TestimonialCard key={`${t.name}-${i}`} testimonial={t} />
@@ -109,8 +110,9 @@ export function TestimonialsSection() {
   const bottomRow = testimonials.slice(mid)
 
   return (
-    <section className="overflow-hidden border-y border-border/60 bg-muted/10">
-      <div className="mx-auto max-w-6xl px-4 pt-14 sm:px-6 lg:px-8 lg:pt-20">
+    <section className="relative isolate overflow-hidden border-y border-border/60 bg-muted/40">
+      <AmbientShapes variant="tinted-indigo" />
+      <div className="relative mx-auto max-w-6xl px-4 pt-14 sm:px-6 lg:px-8 lg:pt-20">
         <div className="flex justify-center">
           <div className="inline-flex items-center gap-3 rounded-full border border-border/70 bg-card px-4 py-2 shadow-sm">
             <GoogleLogo />

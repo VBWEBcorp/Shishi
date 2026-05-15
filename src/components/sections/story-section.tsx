@@ -5,6 +5,7 @@ import { ArrowUpRight } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
 
+import { AmbientShapes } from '@/components/ui/ambient-shapes'
 import { useContent } from '@/hooks/use-content'
 
 const ease = [0.22, 1, 0.36, 1] as const
@@ -22,8 +23,9 @@ export function StorySection() {
   const story = data.story ?? defaults
 
   return (
-    <section className="border-b border-border/60 bg-background">
-      <div className="mx-auto max-w-6xl px-4 py-24 sm:px-6 sm:py-28 lg:px-8 lg:py-32">
+    <section className="relative isolate overflow-hidden border-b border-border/60 bg-background">
+      <AmbientShapes variant="light-accent" />
+      <div className="relative mx-auto max-w-6xl px-4 py-24 sm:px-6 sm:py-28 lg:px-8 lg:py-32">
         <div className="grid items-center gap-14 md:grid-cols-2 md:gap-16 lg:gap-24">
           {/* Text */}
           <motion.div
@@ -33,7 +35,7 @@ export function StorySection() {
             transition={{ duration: 0.6, ease }}
             className="max-w-xl"
           >
-            <span className="inline-block font-display text-[11px] font-semibold tracking-[0.2em] text-muted-foreground uppercase">
+            <span className="inline-block font-mono text-[11px] font-medium tracking-[0.2em] text-muted-foreground uppercase">
               {story.eyebrow}
             </span>
 

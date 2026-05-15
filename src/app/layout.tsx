@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from 'next'
-import { Inter, Plus_Jakarta_Sans } from 'next/font/google'
+import { Inter, Instrument_Serif, JetBrains_Mono, Plus_Jakarta_Sans } from 'next/font/google'
 
 import { RootWrapper } from '@/components/layout/root-wrapper'
 import { ThemeScript } from '@/components/theme/theme-script'
@@ -17,6 +17,23 @@ const jakarta = Plus_Jakarta_Sans({
   subsets: ['latin'],
   variable: '--font-display',
   weight: ['500', '600', '700'],
+  display: 'swap',
+})
+
+// Serif italic — pour mots accentués dans les titres (style éditorial premium)
+const instrumentSerif = Instrument_Serif({
+  subsets: ['latin'],
+  variable: '--font-serif',
+  weight: ['400'],
+  style: ['normal', 'italic'],
+  display: 'swap',
+})
+
+// Mono — pour eyebrows, KPIs, labels techniques (style Linear/Vercel)
+const jetbrainsMono = JetBrains_Mono({
+  subsets: ['latin'],
+  variable: '--font-mono',
+  weight: ['400', '500', '600'],
   display: 'swap',
 })
 
@@ -72,7 +89,7 @@ export default function RootLayout({
     <html
       lang="fr"
       dir="ltr"
-      className={`${inter.variable} ${jakarta.variable}`}
+      className={`${inter.variable} ${jakarta.variable} ${instrumentSerif.variable} ${jetbrainsMono.variable}`}
       suppressHydrationWarning
     >
       <head>

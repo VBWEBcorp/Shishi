@@ -4,6 +4,7 @@ import { motion } from 'framer-motion'
 import { ArrowRight, Globe, Palette, Search, ShieldCheck } from 'lucide-react'
 import Link from 'next/link'
 
+import { AmbientShapes } from '@/components/ui/ambient-shapes'
 import { SectionTitle } from '@/components/ui/section-title'
 import { Button } from '@/components/ui/button'
 import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -30,8 +31,9 @@ export function ServicesPreview() {
   const services = (data.services ?? defaultServices).slice(0, 4)
 
   return (
-    <section className="border-b border-border/60">
-      <div className="mx-auto max-w-6xl px-4 py-20 sm:px-6 lg:px-8 lg:py-28">
+    <section className="relative isolate overflow-hidden border-b border-border/60 bg-muted/40">
+      <AmbientShapes variant="tinted-violet" />
+      <div className="relative mx-auto max-w-6xl px-4 py-20 sm:px-6 lg:px-8 lg:py-28">
         <SectionTitle
           eyebrow="Nos services"
           title="Des solutions adaptées à votre activité"

@@ -5,6 +5,7 @@ import { ArrowRight } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
 
+import { AmbientShapes } from '@/components/ui/ambient-shapes'
 import { Button } from '@/components/ui/button'
 import { useContent } from '@/hooks/use-content'
 
@@ -76,8 +77,9 @@ export function CtaSection() {
   const cta = data.cta ?? defaults
 
   return (
-    <section>
-      <div className="mx-auto max-w-6xl px-4 py-20 sm:px-6 lg:px-8 lg:py-28">
+    <section className="relative isolate overflow-hidden bg-muted/40">
+      <AmbientShapes variant="tinted-mix" />
+      <div className="relative mx-auto max-w-6xl px-4 py-20 sm:px-6 lg:px-8 lg:py-28">
         <motion.div
           initial={{ opacity: 0, y: 14 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -89,7 +91,7 @@ export function CtaSection() {
           <div className="relative flex items-stretch min-h-[420px] sm:min-h-[460px]">
             {/* Left - Text content */}
             <div className="relative z-10 flex-1 flex flex-col justify-center p-10 sm:p-14 space-y-6">
-              <p className="font-display text-xs font-semibold tracking-[0.22em] text-primary uppercase">
+              <p className="font-mono text-[11px] font-medium tracking-[0.2em] text-primary uppercase">
                 {cta.eyebrow}
               </p>
               <h2 className="max-w-xl font-display text-balance text-3xl tracking-tight text-foreground sm:text-4xl">
