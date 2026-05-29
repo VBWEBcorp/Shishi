@@ -30,12 +30,22 @@ function estimateReadTime(html: string) {
   return Math.max(1, Math.ceil(words / 200))
 }
 
-export default function BlogPostContent({ slug }: { slug: string }) {
-  const [post, setPost] = useState<BlogPost | null>(null)
-  const [loading, setLoading] = useState(true)
+export default function BlogPostContent({
+  slug,
+  initialPost,
+}: {
+  slug: string
+  initialPost?: BlogPost
+}) {
+  const [post, setPost] = useState<BlogPost | null>(initialPost ?? null)
+  const [loading, setLoading] = useState(!initialPost)
   const [notFound, setNotFound] = useState(false)
 
   useEffect(() => {
+    // When the server already provided the post, render it directly — the
+    // content is in the initial HTML and no client fetch is needed.
+    if (initialPost) return
+
     const fetchPost = async () => {
       try {
         const response = await fetch(`/api/blog/posts/${slug}`)
@@ -56,7 +66,7 @@ export default function BlogPostContent({ slug }: { slug: string }) {
       }
     }
     fetchPost()
-  }, [slug])
+  }, [slug, initialPost])
 
   if (loading) {
     return (

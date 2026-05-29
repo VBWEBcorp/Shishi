@@ -79,6 +79,25 @@ export default async function BlogPostPage({ params }: { params: Params }) {
 
     if (!post) notFound()
 
+    // Plain, JSON-serializable copy passed to the client component so the
+    // article body (H1, paragraphs, internal links) is in the initial server
+    // HTML — crawlable by Googlebot without relying on a client-side fetch.
+    const initialPost = {
+      _id: String(post._id),
+      title: post.title,
+      slug: post.slug,
+      excerpt: post.excerpt || '',
+      content: post.content || '',
+      coverImage: post.coverImage || '',
+      category: post.category || '',
+      tags: post.tags || [],
+      author: post.author || '',
+      published: post.published,
+      publishedAt: post.publishedAt ? new Date(post.publishedAt).toISOString() : '',
+      metaTitle: post.metaTitle,
+      metaDescription: post.metaDescription,
+    }
+
     // Render JSON-LD server-side for structured data
     const jsonLd = {
       '@context': 'https://schema.org',
@@ -107,7 +126,7 @@ export default async function BlogPostPage({ params }: { params: Params }) {
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
-        <BlogPostContent slug={slug} />
+        <BlogPostContent slug={slug} initialPost={initialPost} />
       </>
     )
   } catch {
