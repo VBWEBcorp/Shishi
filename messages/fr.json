@@ -1,0 +1,104 @@
+{
+  "Nav": {
+    "menu": "Menu",
+    "close": "Fermer",
+    "bookNow": "Réserver",
+    "book": "Réserver",
+    "about": "À propos",
+    "contact": "Contact",
+    "ourActivities": "Nos activités",
+    "bookACourt": "Réserver un terrain",
+    "location": "Lamai · Koh Samui"
+  },
+  "Home": {
+    "hero": {
+      "badge": "Lamai · Koh Samui · Thaïlande",
+      "title": "Le social club <accent>resort</accent> premium du sud de Samui",
+      "subtitle": "Sport, bien-être et convivialité au même endroit. Tennis, le repaire du pickleball sur l'île, une salle premium, un restaurant healthy, un kids club et une piscine. Réservez en ligne en moins d'une minute.",
+      "bookCourt": "Réserver un terrain",
+      "explore": "Découvrir les activités",
+      "statActivities": "Activités",
+      "statBooking": "Réservation en ligne",
+      "statToBook": "Pour réserver",
+      "loved": "Plébiscité par la communauté locale"
+    },
+    "tiles": {
+      "eyebrow": "Nos activités",
+      "title": "Un club, six façons de profiter de l'île",
+      "subtitle": "Choisissez une activité pour découvrir l'espace, les tarifs et réserver votre session en un geste.",
+      "signature": "Signature"
+    },
+    "values": {
+      "sportTitle": "Sport",
+      "sportText": "Tennis, pickleball et une salle premium pour jouer, vous entraîner et progresser sur des installations de qualité.",
+      "wellnessTitle": "Bien-être",
+      "wellnessText": "Cuisine healthy, piscine et cadre insulaire apaisant pour récupérer et vous sentir au mieux.",
+      "socialTitle": "Lien social",
+      "socialText": "Un véritable esprit club où expatriés, nomades et voyageurs se rencontrent, jouent et créent du lien."
+    },
+    "story": {
+      "eyebrow": "Notre histoire",
+      "title": "Deux jeunes fondateurs français, une ambition insulaire",
+      "p1": "Shi Shi est né d'une idée simple : apporter l'énergie d'un social club premium au sud de Koh Samui. Deux jeunes entrepreneurs français ont repris une société thaïlandaise existante pour en faire la référence du sport et du lifestyle à Lamai.",
+      "p2": "Articulé autour de ses trois valeurs (sport, bien-être et lien social), Shi Shi est l'endroit où la communauté locale vient jouer au pickleball, s'entraîner, bien manger et passer de bons moments ensemble.",
+      "cta": "En savoir plus sur Shi Shi"
+    },
+    "cta": {
+      "title": "Prêt à jouer ?",
+      "subtitle": "Consultez les disponibilités en temps réel, choisissez votre créneau et payez en ligne en toute sécurité. Votre terrain est à une minute.",
+      "bookCourt": "Réserver un terrain",
+      "getInTouch": "Nous contacter"
+    }
+  },
+  "Booking": {
+    "metaTitle": "Réserver un terrain en ligne",
+    "eyebrow": "Réservation en ligne",
+    "title": "Réservez votre session en moins d'une minute",
+    "subtitle": "Choisissez une activité pour voir les disponibilités et réserver votre place. Paiement sécurisé et confirmation immédiate, fini les allers-retours de messages.",
+    "whatToBook": "Que souhaitez-vous réserver ?",
+    "howItWorks": "Comment ça marche",
+    "step1Title": "Choisissez un créneau",
+    "step1Text": "Sélectionnez votre activité, la date et l'heure selon les disponibilités en temps réel.",
+    "step2Title": "Payez en sécurité",
+    "step2Text": "Confirmez votre réservation avec un paiement en ligne sécurisé via Stripe.",
+    "step3Title": "Recevez la confirmation",
+    "step3Text": "Recevez une confirmation par email immédiate et un rappel WhatsApp.",
+    "engineSoon": "Moteur de réservation en temps réel, bientôt disponible",
+    "engineText": "Le calendrier de disponibilités en direct avec paiement Stripe, confirmation par email (Resend) et notifications WhatsApp est en cours d'intégration. En attendant, réservez directement via WhatsApp.",
+    "bookOnWhatsapp": "Réserver sur WhatsApp",
+    "scanToChat": "Scannez pour discuter",
+    "scanText": "Scannez avec votre téléphone pour nous écrire sur WhatsApp."
+  },
+  "Activity": {
+    "about": "À propos du {name}",
+    "openDaily": "Ouvert tous les jours",
+    "pricing": "Tarifs",
+    "pricingNote": "Formules indicatives. Tarifs définitifs à confirmer avec le club.",
+    "dropIn": "Session à l'unité",
+    "dropInHint": "Visite unique",
+    "passLabel": "Carnet 5 sessions",
+    "passHint": "Économisez en jouant régulièrement",
+    "memberLabel": "Abonnement mensuel",
+    "memberHint": "Accès illimité",
+    "bookName": "Réserver {name}",
+    "securePayment": "Paiement sécurisé · Confirmation immédiate",
+    "exploreOther": "Découvrir les autres activités",
+    "breadcrumbHome": "Accueil",
+    "breadcrumbActivities": "Activités"
+  },
+  "Footer": {
+    "tagline": "Un social club resort premium à Lamai, Koh Samui. Sport, bien-être et convivialité. Tennis, pickleball, fitness, cuisine healthy, kids club & piscine.",
+    "activities": "Activités",
+    "explore": "Explorer",
+    "contact": "Contact",
+    "home": "Accueil",
+    "bookACourt": "Réserver un terrain",
+    "about": "À propos",
+    "legalNotice": "Mentions légales",
+    "privacy": "Confidentialité",
+    "terms": "CGU",
+    "cookies": "Cookies",
+    "rights": "Tous droits réservés.",
+    "craftedBy": "Réalisé par"
+  }
+}

@@ -1,7 +1,6 @@
 import type { Metadata, Viewport } from 'next'
 import { Inter, Instrument_Serif, JetBrains_Mono, Plus_Jakarta_Sans } from 'next/font/google'
 
-import { RootWrapper } from '@/components/layout/root-wrapper'
 import { ThemeScript } from '@/components/theme/theme-script'
 import { siteConfig } from '@/lib/seo'
 
@@ -20,7 +19,6 @@ const jakarta = Plus_Jakarta_Sans({
   display: 'swap',
 })
 
-// Serif italic — pour mots accentués dans les titres (style éditorial premium)
 const instrumentSerif = Instrument_Serif({
   subsets: ['latin'],
   variable: '--font-serif',
@@ -29,7 +27,6 @@ const instrumentSerif = Instrument_Serif({
   display: 'swap',
 })
 
-// Mono — pour eyebrows, KPIs, labels techniques (style Linear/Vercel)
 const jetbrainsMono = JetBrains_Mono({
   subsets: ['latin'],
   variable: '--font-mono',
@@ -71,9 +68,6 @@ export const metadata: Metadata = {
     icon: '/favicon.svg',
     apple: '/apple-touch-icon.png',
   },
-  alternates: {
-    canonical: '/',
-  },
 }
 
 export const viewport: Viewport = {
@@ -87,7 +81,7 @@ export default function RootLayout({
 }) {
   return (
     <html
-      lang="fr"
+      lang="en"
       dir="ltr"
       className={`${inter.variable} ${jakarta.variable} ${instrumentSerif.variable} ${jetbrainsMono.variable}`}
       suppressHydrationWarning
@@ -95,9 +89,7 @@ export default function RootLayout({
       <head>
         <ThemeScript />
       </head>
-      <body className="flex min-h-dvh flex-col">
-        <RootWrapper>{children}</RootWrapper>
-      </body>
+      <body className="flex min-h-dvh flex-col">{children}</body>
     </html>
   )
 }

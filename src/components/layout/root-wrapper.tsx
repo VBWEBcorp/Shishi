@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react'
 
 import { CookieConsent } from '@/components/layout/cookie-consent'
 import { Footer } from '@/components/layout/footer'
+import { FloatingWhatsApp } from '@/components/floating-whatsapp'
 import { MarketingBanner } from '@/components/marketing-banner'
 import { MarketingPopup } from '@/components/marketing-popup'
 import { Navbar } from '@/components/layout/navbar'
@@ -33,6 +34,7 @@ export function RootWrapper({ children }: { children: React.ReactNode }) {
       <Navbar />
       <main className="flex-1">{children}</main>
       <Footer />
+      <FloatingWhatsApp />
       <ScrollToTop />
       <MarketingPopup />
       <CookieConsent />

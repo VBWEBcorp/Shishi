@@ -1,64 +1,34 @@
 'use client'
 
 import { AnimatePresence, motion } from 'framer-motion'
-import { ArrowRight, Menu, X } from 'lucide-react'
-import Link from 'next/link'
-import { usePathname } from 'next/navigation'
-import { useState, useEffect } from 'react'
+import { ArrowRight, ArrowUpRight, Instagram } from 'lucide-react'
+import Image from 'next/image'
+import { useLocale, useTranslations } from 'next-intl'
+import { useEffect, useState, useTransition } from 'react'
 
+import { ActivityIcon } from '@/components/activity-icon'
 import { Logo } from '@/components/layout/logo'
-import { ThemeToggle } from '@/components/theme/theme-toggle'
+import { Link, usePathname, useRouter } from '@/i18n/navigation'
+import type { Locale } from '@/i18n/routing'
+import { routing } from '@/i18n/routing'
+import { activities } from '@/lib/activities'
+import { siteConfig } from '@/lib/seo'
 import { cn } from '@/lib/utils'
 
-interface NavLink {
-  to: string
-  label: string
-}
-
-const defaultLinks: NavLink[] = [
-  { to: '/', label: 'Accueil' },
-  { to: '/a-propos', label: 'À propos' },
-  { to: '/services', label: 'Services' },
-  { to: '/gallery', label: 'Galerie' },
-  { to: '/blog', label: 'Blog' },
-  { to: '/contact', label: 'Contact' },
-]
+const navItems = [
+  { to: '/booking', key: 'book' },
+  { to: '/a-propos', key: 'about' },
+  { to: '/contact', key: 'contact' },
+] as const
 
 export function Navbar() {
+  const t = useTranslations('Nav')
   const [open, setOpen] = useState(false)
-  const [links, setLinks] = useState<NavLink[]>(defaultLinks)
   const [scrolled, setScrolled] = useState(false)
-  const [hoveredKey, setHoveredKey] = useState<string | null>(null)
   const pathname = usePathname()
 
-  useEffect(() => {
-    const checkFeatures = async () => {
-      try {
-        const [galleryRes, blogRes] = await Promise.all([
-          fetch('/api/gallery/settings'),
-          fetch('/api/blog/settings'),
-        ])
-        const gallery = await galleryRes.json()
-        const blog = await blogRes.json()
-
-        const dynamicLinks: NavLink[] = [
-          { to: '/', label: 'Accueil' },
-          { to: '/a-propos', label: 'À propos' },
-          { to: '/services', label: 'Services' },
-        ]
-
-        if (gallery?.enabled !== false) dynamicLinks.push({ to: '/gallery', label: 'Galerie' })
-        if (blog?.enabled !== false) dynamicLinks.push({ to: '/blog', label: 'Blog' })
-
-        dynamicLinks.push({ to: '/contact', label: 'Contact' })
-        setLinks(dynamicLinks)
-      } catch {
-        // Liens par défaut conservés en cas d'erreur
-      }
-    }
-
-    checkFeatures()
-  }, [])
+  const hasDarkHero = pathname === '/' || pathname?.startsWith('/activities')
+  const lightText = open || (!!hasDarkHero && !scrolled)
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 8)
@@ -68,264 +38,281 @@ export function Navbar() {
   }, [])
 
   useEffect(() => {
-    if (open) {
-      document.body.style.overflow = 'hidden'
-    } else {
-      document.body.style.overflow = ''
-    }
+    document.body.style.overflow = open ? 'hidden' : ''
     return () => {
       document.body.style.overflow = ''
     }
   }, [open])
 
+  useEffect(() => {
+    setOpen(false)
+  }, [pathname])
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && setOpen(false)
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [])
+
   return (
-    <header className="fixed inset-x-0 top-0 z-50 pt-3 sm:pt-4">
-      <div className="mx-auto max-w-6xl px-3 sm:px-4 lg:px-6">
-        {/* Wrapper avec bordure dégradée premium */}
-        <div
-          className={cn(
-            'relative rounded-2xl transition-all duration-500',
-            scrolled
-              ? 'shadow-[0_20px_50px_-20px_oklch(0.2_0.02_264/0.25),0_0_0_1px_oklch(0.55_0.2_285/0.08)]'
-              : 'shadow-[0_8px_24px_-12px_oklch(0.2_0.02_264/0.12)]'
-          )}
+    <>
+      <header
+        className={cn(
+          'fixed inset-x-0 top-0 z-[110] transition-colors duration-500',
+          !open && scrolled
+            ? 'border-b border-border bg-background/80 backdrop-blur-xl'
+            : 'border-b border-transparent'
+        )}
+      >
+        <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+          <Logo light={lightText} />
+
+          <div className="flex items-center gap-2 sm:gap-3">
+            <LangSwitch light={lightText} />
+
+            <Link
+              href="/booking"
+              className={cn(
+                'hidden h-9 items-center gap-1.5 rounded-full px-4 text-[13px] font-semibold transition-all sm:inline-flex',
+                lightText
+                  ? 'bg-white/15 text-white ring-1 ring-white/25 backdrop-blur hover:bg-white/25'
+                  : 'bg-accent text-accent-foreground shadow-[0_6px_18px_-6px_oklch(0.7_0.16_38/0.55)] hover:brightness-105',
+                open && 'pointer-events-none opacity-0'
+              )}
+            >
+              {t('bookNow')}
+              <ArrowRight className="size-3.5" aria-hidden />
+            </Link>
+
+            <button
+              type="button"
+              onClick={() => setOpen((v) => !v)}
+              aria-expanded={open}
+              aria-label={open ? t('close') : t('menu')}
+              className={cn(
+                'group inline-flex items-center gap-2.5 rounded-full py-2 pl-4 pr-3 text-[13px] font-semibold uppercase tracking-wide transition-colors',
+                lightText ? 'text-white hover:bg-white/10' : 'text-foreground hover:bg-foreground/[0.06]'
+              )}
+            >
+              <span>{open ? t('close') : t('menu')}</span>
+              <span className="relative flex h-4 w-5 flex-col justify-center gap-[5px]">
+                <motion.span
+                  animate={open ? { rotate: 45, y: 3.5 } : { rotate: 0, y: 0 }}
+                  transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+                  className={cn('h-[2px] w-full rounded-full', lightText ? 'bg-white' : 'bg-foreground')}
+                />
+                <motion.span
+                  animate={open ? { rotate: -45, y: -3.5 } : { rotate: 0, y: 0 }}
+                  transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+                  className={cn('h-[2px] w-full rounded-full', lightText ? 'bg-white' : 'bg-foreground')}
+                />
+              </span>
+            </button>
+          </div>
+        </div>
+      </header>
+
+      <FullscreenMenu open={open} onClose={() => setOpen(false)} pathname={pathname} />
+    </>
+  )
+}
+
+function FullscreenMenu({
+  open,
+  onClose,
+  pathname,
+}: {
+  open: boolean
+  onClose: () => void
+  pathname: string
+}) {
+  const t = useTranslations('Nav')
+  const locale = useLocale() as Locale
+  const [hovered, setHovered] = useState<string | null>(null)
+
+  return (
+    <AnimatePresence>
+      {open && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+          className="fixed inset-0 z-[100] overflow-y-auto bg-[oklch(0.17_0.022_168)]"
         >
-          {/* Halo gradient subtil derrière la navbar quand on scroll */}
-          <div
-            className={cn(
-              'pointer-events-none absolute -inset-x-8 -inset-y-4 -z-10 rounded-[2rem] bg-gradient-to-r from-primary/0 via-primary/[0.07] to-primary/0 blur-2xl transition-opacity duration-700',
-              scrolled ? 'opacity-100' : 'opacity-0'
-            )}
-            aria-hidden
-          />
+          <div className="pointer-events-none absolute inset-0" aria-hidden>
+            {activities.map((a) => (
+              <div
+                key={a.slug}
+                className={cn(
+                  'absolute inset-0 transition-opacity duration-700',
+                  hovered === a.slug ? 'opacity-100' : 'opacity-0'
+                )}
+              >
+                <Image src={a.image} alt="" fill sizes="100vw" className="object-cover" />
+                <div className="absolute inset-0 bg-[oklch(0.17_0.022_168/0.78)]" />
+              </div>
+            ))}
+            <div
+              className={cn(
+                'absolute inset-0 bg-gradient-to-b from-[oklch(0.17_0.022_168/0.6)] to-[oklch(0.13_0.02_168/0.9)] transition-opacity duration-700',
+                hovered ? 'opacity-40' : 'opacity-100'
+              )}
+            />
+          </div>
 
-          {/* Bordure dégradée via mask */}
-          <div
-            className="pointer-events-none absolute inset-0 rounded-2xl p-px"
-            aria-hidden
-            style={{
-              background:
-                'linear-gradient(135deg, oklch(0.55 0.2 285 / 0.35) 0%, oklch(0.91 0.012 264 / 0.4) 35%, oklch(0.91 0.012 264 / 0.4) 65%, oklch(0.55 0.2 285 / 0.35) 100%)',
-              WebkitMask:
-                'linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0)',
-              WebkitMaskComposite: 'xor',
-              maskComposite: 'exclude',
-            }}
-          />
-
-          <div className="flex h-14 items-center justify-between gap-2 rounded-2xl bg-background/70 pl-3 pr-1.5 backdrop-blur-xl supports-[backdrop-filter]:bg-background/55 sm:pl-4">
-            <Logo />
+          <div className="relative mx-auto flex min-h-dvh max-w-7xl flex-col px-4 sm:px-6 lg:px-8">
+            <div className="h-16 shrink-0" aria-hidden />
 
             <nav
-              className="hidden items-center gap-0.5 lg:flex"
-              aria-label="Navigation principale"
-              onMouseLeave={() => setHoveredKey(null)}
+              className="flex flex-1 flex-col justify-center py-10"
+              aria-label="Activities"
+              onMouseLeave={() => setHovered(null)}
             >
-              {links.map((l) => {
-                const isActive = pathname === l.to
-                const isHovered = hoveredKey === l.to
-                return (
+              <p className="mb-4 font-mono text-[11px] font-semibold uppercase tracking-[0.25em] text-accent">
+                {t('ourActivities')}
+              </p>
+              <ul>
+                {activities.map((a, i) => {
+                  const active = pathname === `/activities/${a.slug}`
+                  return (
+                    <motion.li
+                      key={a.slug}
+                      initial={{ opacity: 0, y: 24 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.5, delay: 0.08 + i * 0.06, ease: [0.22, 1, 0.36, 1] }}
+                      className="border-b border-white/10"
+                    >
+                      <Link
+                        href={`/activities/${a.slug}`}
+                        onClick={onClose}
+                        onMouseEnter={() => setHovered(a.slug)}
+                        className="group flex items-center gap-4 py-3.5 sm:gap-6 sm:py-4"
+                      >
+                        <ActivityIcon
+                          name={a.icon}
+                          className="size-5 shrink-0 text-white/50 transition-colors group-hover:text-accent sm:size-6"
+                        />
+                        <span className="flex-1 font-display text-3xl font-bold leading-tight tracking-tight text-white/85 transition-all duration-300 group-hover:translate-x-2 group-hover:text-white sm:text-5xl lg:text-6xl">
+                          {a.name[locale]}
+                          {a.featured && (
+                            <sup className="ml-2 align-super text-[10px] font-bold uppercase tracking-widest text-accent sm:text-xs">
+                              Signature
+                            </sup>
+                          )}
+                        </span>
+                        <span className="hidden max-w-[34%] truncate text-sm text-white/50 transition-opacity group-hover:text-white/80 md:block">
+                          {a.tagline[locale]}
+                        </span>
+                        <ArrowUpRight
+                          className={cn(
+                            'size-6 shrink-0 text-white/40 transition-all duration-300 group-hover:translate-x-1 group-hover:-translate-y-1 group-hover:text-accent sm:size-7',
+                            active && 'text-accent'
+                          )}
+                          aria-hidden
+                        />
+                      </Link>
+                    </motion.li>
+                  )
+                })}
+              </ul>
+            </nav>
+
+            <motion.div
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.5 }}
+              className="flex shrink-0 flex-col gap-6 border-t border-white/10 py-6 sm:flex-row sm:items-center sm:justify-between"
+            >
+              <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
+                {navItems.map((l) => (
                   <Link
                     key={l.to}
                     href={l.to}
-                    onMouseEnter={() => setHoveredKey(l.to)}
-                    className={cn(
-                      'group relative whitespace-nowrap rounded-xl px-3 py-1.5 text-[13px] font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/60',
-                      isActive
-                        ? 'text-foreground'
-                        : 'text-muted-foreground hover:text-foreground'
-                    )}
+                    onClick={onClose}
+                    className="text-sm font-medium text-white/70 transition-colors hover:text-white"
                   >
-                    {/* Hover background qui suit la souris */}
-                    {isHovered && !isActive && (
-                      <motion.span
-                        layoutId="nav-hover-pill"
-                        className="absolute inset-0 rounded-xl bg-foreground/[0.07] ring-1 ring-foreground/[0.04]"
-                        transition={{ type: 'spring', stiffness: 380, damping: 30 }}
-                        aria-hidden
-                      />
-                    )}
-
-                    <span className={cn('relative', isActive && 'font-semibold')}>
-                      {l.label}
-                    </span>
-
-                    {/* Underline fin animé sous le lien actif (style Linear/Vercel) */}
-                    {isActive && (
-                      <motion.span
-                        layoutId="nav-active-underline"
-                        className="absolute inset-x-3 bottom-0.5 h-[2px] rounded-full bg-primary"
-                        transition={{ type: 'spring', stiffness: 400, damping: 32 }}
-                        aria-hidden
-                      />
-                    )}
+                    {t(l.key)}
                   </Link>
-                )
-              })}
-            </nav>
-
-            <div className="flex shrink-0 items-center gap-1.5">
-              <ThemeToggle />
-
-              {/* CTA premium : gradient + shimmer + arrow */}
-              <Link
-                href="/contact"
-                className="group/cta relative hidden h-8 items-center gap-1.5 overflow-hidden rounded-xl px-3 text-[13px] font-medium text-primary-foreground shadow-[0_4px_14px_-4px_oklch(0.48_0.22_285/0.5)] transition-all hover:shadow-[0_6px_20px_-4px_oklch(0.48_0.22_285/0.6)] active:translate-y-px sm:inline-flex"
-              >
-                {/* Fond gradient */}
-                <span
-                  className="absolute inset-0 bg-gradient-to-br from-primary via-primary to-[oklch(0.42_0.22_280)] dark:from-primary dark:via-primary dark:to-[oklch(0.65_0.18_280)]"
-                  aria-hidden
-                />
-                {/* Shimmer animé au hover */}
-                <span
-                  className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/25 to-transparent transition-transform duration-700 ease-out group-hover/cta:translate-x-full"
-                  aria-hidden
-                />
-                {/* Highlight haut */}
-                <span
-                  className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/40 to-transparent"
-                  aria-hidden
-                />
-                <span className="relative">Nous contacter</span>
-                <ArrowRight
-                  className="relative size-3.5 transition-transform duration-300 group-hover/cta:translate-x-0.5"
-                  aria-hidden
-                />
-              </Link>
-
-              {/* Burger mobile */}
-              <button
-                type="button"
-                className="relative inline-flex size-8 items-center justify-center rounded-xl text-foreground transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/60 lg:hidden"
-                aria-expanded={open}
-                aria-controls="mobile-nav"
-                aria-label={open ? 'Fermer le menu' : 'Ouvrir le menu'}
-                onClick={() => setOpen((v) => !v)}
-              >
-                <AnimatePresence initial={false} mode="wait">
-                  {open ? (
-                    <motion.span
-                      key="close"
-                      initial={{ rotate: -90, opacity: 0 }}
-                      animate={{ rotate: 0, opacity: 1 }}
-                      exit={{ rotate: 90, opacity: 0 }}
-                      transition={{ duration: 0.18, ease: [0.22, 1, 0.36, 1] }}
-                      className="absolute inset-0 flex items-center justify-center"
-                    >
-                      <X className="size-5" />
-                    </motion.span>
-                  ) : (
-                    <motion.span
-                      key="open"
-                      initial={{ rotate: 90, opacity: 0 }}
-                      animate={{ rotate: 0, opacity: 1 }}
-                      exit={{ rotate: -90, opacity: 0 }}
-                      transition={{ duration: 0.18, ease: [0.22, 1, 0.36, 1] }}
-                      className="absolute inset-0 flex items-center justify-center"
-                    >
-                      <Menu className="size-5" />
-                    </motion.span>
-                  )}
-                </AnimatePresence>
-              </button>
-            </div>
-          </div>
-        </div>
-
-        {/* Mobile menu avec stagger animation */}
-        <AnimatePresence>
-          {open ? (
-            <motion.div
-              id="mobile-nav"
-              initial={{ opacity: 0, y: -8, scale: 0.98 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: -8, scale: 0.98 }}
-              transition={{ duration: 0.24, ease: [0.22, 1, 0.36, 1] }}
-              className="relative mt-2 overflow-hidden rounded-2xl bg-background/95 shadow-[0_30px_60px_-20px_oklch(0.2_0.02_264/0.25)] backdrop-blur-xl lg:hidden"
-            >
-              {/* Bordure dégradée mobile */}
-              <div
-                className="pointer-events-none absolute inset-0 rounded-2xl p-px"
-                aria-hidden
-                style={{
-                  background:
-                    'linear-gradient(135deg, oklch(0.55 0.2 285 / 0.3) 0%, oklch(0.91 0.012 264 / 0.4) 50%, oklch(0.55 0.2 285 / 0.3) 100%)',
-                  WebkitMask:
-                    'linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0)',
-                  WebkitMaskComposite: 'xor',
-                  maskComposite: 'exclude',
-                }}
-              />
-
-              <div className="relative flex flex-col gap-1 p-3">
-                {links.map((l, i) => {
-                  const isActive = pathname === l.to
-                  return (
-                    <motion.div
-                      key={l.to}
-                      initial={{ opacity: 0, x: -8 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{
-                        duration: 0.22,
-                        delay: 0.04 + i * 0.035,
-                        ease: [0.22, 1, 0.36, 1],
-                      }}
-                    >
-                      <Link
-                        href={l.to}
-                        className={cn(
-                          'flex items-center justify-between rounded-xl px-3 py-2.5 text-sm font-medium transition-colors',
-                          isActive
-                            ? 'bg-gradient-to-r from-primary/15 to-primary/5 text-foreground ring-1 ring-primary/20'
-                            : 'text-muted-foreground hover:bg-foreground/[0.06] hover:text-foreground'
-                        )}
-                        onClick={() => setOpen(false)}
-                      >
-                        <span>{l.label}</span>
-                        {isActive && (
-                          <span
-                            className="size-1.5 rounded-full bg-primary shadow-[0_0_10px_oklch(0.55_0.2_285/0.7)]"
-                            aria-hidden
-                          />
-                        )}
-                      </Link>
-                    </motion.div>
-                  )
-                })}
-
-                <motion.div
-                  initial={{ opacity: 0, y: 8 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{
-                    duration: 0.24,
-                    delay: 0.04 + links.length * 0.035,
-                    ease: [0.22, 1, 0.36, 1],
-                  }}
-                  className="mt-2 border-t border-border/60 pt-3"
+                ))}
+                <a
+                  href={siteConfig.instagram}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 text-sm font-medium text-white/70 transition-colors hover:text-white"
                 >
-                  <Link
-                    href="/contact"
-                    onClick={() => setOpen(false)}
-                    className="group/cta relative flex h-10 w-full items-center justify-center gap-1.5 overflow-hidden rounded-xl text-sm font-medium text-primary-foreground shadow-[0_8px_24px_-8px_oklch(0.48_0.22_285/0.5)]"
-                  >
-                    <span
-                      className="absolute inset-0 bg-gradient-to-br from-primary via-primary to-[oklch(0.42_0.22_280)] dark:to-[oklch(0.65_0.18_280)]"
-                      aria-hidden
-                    />
-                    <span
-                      className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/40 to-transparent"
-                      aria-hidden
-                    />
-                    <span className="relative">Nous contacter</span>
-                    <ArrowRight className="relative size-4" aria-hidden />
-                  </Link>
-                </motion.div>
+                  <Instagram className="size-4" aria-hidden />
+                  @shishisamui
+                </a>
+              </div>
+
+              <div className="flex items-center gap-4">
+                <Link
+                  href="/booking"
+                  onClick={onClose}
+                  className="group inline-flex h-11 items-center gap-2 rounded-full bg-accent px-6 text-sm font-semibold text-accent-foreground shadow-[0_10px_30px_-8px_oklch(0.7_0.16_38/0.6)] transition-all hover:brightness-105"
+                >
+                  {t('bookACourt')}
+                  <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" aria-hidden />
+                </Link>
               </div>
             </motion.div>
-          ) : null}
-        </AnimatePresence>
-      </div>
-    </header>
+          </div>
+        </motion.div>
+      )}
+    </AnimatePresence>
+  )
+}
+
+/** Sélecteur de langue fonctionnel (next-intl) — couleurs adaptées au fond */
+function LangSwitch({ light }: { light?: boolean }) {
+  const locale = useLocale() as Locale
+  const router = useRouter()
+  const pathname = usePathname()
+  const [isPending, startTransition] = useTransition()
+
+  const switchTo = (next: Locale) => {
+    if (next === locale) return
+    startTransition(() => {
+      router.replace(pathname, { locale: next })
+    })
+  }
+
+  return (
+    <div
+      className={cn(
+        'inline-flex items-center rounded-full p-0.5 text-[11px] font-semibold uppercase ring-1 transition-colors',
+        light ? 'bg-white/10 ring-white/15' : 'bg-foreground/[0.05] ring-border',
+        isPending && 'opacity-60'
+      )}
+    >
+      {routing.locales.map((l) => (
+        <button
+          key={l}
+          type="button"
+          onClick={() => switchTo(l)}
+          disabled={isPending}
+          className={cn(
+            'relative rounded-full px-2 py-1 transition-colors',
+            locale === l
+              ? 'text-accent-foreground'
+              : light
+                ? 'text-white/60 hover:text-white'
+                : 'text-muted-foreground hover:text-foreground'
+          )}
+          aria-pressed={locale === l}
+        >
+          {locale === l && (
+            <motion.span
+              layoutId="lang-pill-nav"
+              className="absolute inset-0 -z-10 rounded-full bg-accent"
+              transition={{ type: 'spring', stiffness: 400, damping: 32 }}
+              aria-hidden
+            />
+          )}
+          {l}
+        </button>
+      ))}
+    </div>
   )
 }

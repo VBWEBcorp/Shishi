@@ -4,10 +4,10 @@ import { AboutContent } from './about-content'
 import { breadcrumbJsonLd, webPageJsonLd } from '@/components/seo/json-ld'
 
 const description =
-  'Découvrez notre histoire, nos valeurs et notre équipe. Nous accompagnons les entreprises dans leur développement digital.'
+  'Shi Shi Samui, a premium social club resort in Lamai, Koh Samui. Discover the story of two young French founders building the reference for sport and lifestyle in South Samui.'
 
 export const metadata: Metadata = {
-  title: 'À propos',
+  title: 'About',
   description,
   alternates: { canonical: '/a-propos' },
 }
@@ -15,10 +15,10 @@ export const metadata: Metadata = {
 const jsonLd = {
   '@context': 'https://schema.org',
   '@graph': [
-    webPageJsonLd('À propos', description, '/a-propos'),
+    webPageJsonLd('About', description, '/a-propos'),
     breadcrumbJsonLd([
-      { name: 'Accueil', path: '/' },
-      { name: 'À propos', path: '/a-propos' },
+      { name: 'Home', path: '/' },
+      { name: 'About', path: '/a-propos' },
     ]),
   ],
 }

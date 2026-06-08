@@ -1,20 +1,25 @@
 export const siteConfig = {
-  name: 'Nom Entreprise',
-  url: 'https://ouibo.fr',
-  locale: 'fr_FR',
+  name: 'Shi Shi Samui',
+  url: 'https://shi-shi-samui.com',
+  locale: 'en_US',
   description:
-    'Votre entreprise - description courte et percutante de votre activité. Adaptez cette ligne à votre domaine.',
-  ogImage: 'https://www.example.com/og.png',
-  twitterHandle: '@votrecompte',
-  themeColor: '#6d28d9',
-  phone: '+33 1 23 45 67 89',
-  email: 'contact@example.com',
+    'Shi Shi Samui, premium social club resort in Lamai, Koh Samui. Tennis, pickleball, fitness, healthy restaurant, kids club and pool. Book your court online 24/7.',
+  ogImage: 'https://shi-shi-samui.com/og.png',
+  twitterHandle: '@shishisamui',
+  themeColor: '#0f5c4e',
+  phone: '+66 00 000 0000',
+  // Numéro WhatsApp au format international sans "+" ni espaces (placeholder à remplacer)
+  whatsapp: '66000000000',
+  email: 'contact.shishisamui@gmail.com',
+  instagram: 'https://www.instagram.com/shishisamui',
   address: {
-    street: '12 Rue Exemple',
-    city: 'Paris',
-    postalCode: '75001',
-    country: 'FR',
+    street: 'Lamai',
+    city: 'Koh Samui',
+    postalCode: '84310',
+    country: 'TH',
   },
+  // Coordonnées de Lamai (Koh Samui) pour le widget météo
+  geo: { lat: 9.4642, lon: 100.0419 },
 } as const
 
 export type SeoMeta = {
