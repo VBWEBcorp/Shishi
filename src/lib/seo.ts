@@ -8,8 +8,9 @@ export const siteConfig = {
   twitterHandle: '@shishisamui',
   themeColor: '#0f5c4e',
   phone: '+66 00 000 0000',
-  // Numéro WhatsApp au format international sans "+" ni espaces (placeholder à remplacer)
-  whatsapp: '66000000000',
+  // Numéro WhatsApp au format international sans "+" ni espaces.
+  // Configurable via NEXT_PUBLIC_WHATSAPP_NUMBER dans .env.local (placeholder par défaut).
+  whatsapp: process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '66000000000',
   email: 'contact.shishisamui@gmail.com',
   instagram: 'https://www.instagram.com/shishisamui',
   address: {

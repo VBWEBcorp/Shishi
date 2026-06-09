@@ -1,9 +1,11 @@
-import { CalendarCheck, CreditCard, MessageCircle, ShieldCheck } from 'lucide-react'
+import { Suspense } from 'react'
+import { CalendarCheck, CreditCard, ShieldCheck } from 'lucide-react'
 import type { Metadata } from 'next'
 import { useLocale, useTranslations } from 'next-intl'
 import { getTranslations, setRequestLocale } from 'next-intl/server'
 
 import { ActivityIcon } from '@/components/activity-icon'
+import { BookingForm } from './booking-form'
 import { Link } from '@/i18n/navigation'
 import type { Locale } from '@/i18n/routing'
 import { activities } from '@/lib/activities'
@@ -104,20 +106,9 @@ function BookingContent() {
 
       <section className="mx-auto max-w-6xl px-4 py-16 sm:px-6 lg:px-8">
         <div className="grid gap-6 lg:grid-cols-[1.6fr_1fr]">
-          <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-border bg-card/50 p-10 text-center">
-            <CalendarCheck className="size-10 text-primary" aria-hidden />
-            <h3 className="mt-4 font-display text-xl font-bold text-foreground">{t('engineSoon')}</h3>
-            <p className="mt-2 max-w-md text-sm text-muted-foreground">{t('engineText')}</p>
-            <a
-              href={waLink}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="mt-6 inline-flex h-11 items-center gap-2 rounded-xl bg-[#25D366] px-6 text-sm font-semibold text-white shadow-sm transition-transform hover:scale-[1.02]"
-            >
-              <MessageCircle className="size-4" aria-hidden />
-              {t('bookOnWhatsapp')}
-            </a>
-          </div>
+          <Suspense fallback={null}>
+            <BookingForm />
+          </Suspense>
 
           <div className="flex flex-col items-center justify-center rounded-2xl border border-border bg-card p-8 text-center">
             <p className="font-mono text-xs font-semibold uppercase tracking-[0.18em] text-primary">

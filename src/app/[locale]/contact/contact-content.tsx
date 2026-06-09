@@ -1,7 +1,8 @@
 'use client'
 
+import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { Clock, Mail, MapPin, Phone, Send } from 'lucide-react'
+import { CheckCircle2, Clock, Loader2, Mail, MapPin, Phone, Send } from 'lucide-react'
 
 import { PremiumHero } from '@/components/sections/premium-hero'
 import { Button } from '@/components/ui/button'
@@ -24,10 +25,47 @@ const defaults = {
   },
 }
 
+type FormStatus = 'idle' | 'sending' | 'success' | 'error'
+
+// Endpoint Formspree (cf. .env.local). Accepte un ID ou une URL complète.
+const FORMSPREE_RAW = process.env.NEXT_PUBLIC_FORMSPREE_ENDPOINT || ''
+const FORMSPREE_ENDPOINT = FORMSPREE_RAW.startsWith('http')
+  ? FORMSPREE_RAW
+  : FORMSPREE_RAW
+    ? `https://formspree.io/f/${FORMSPREE_RAW}`
+    : ''
+
 export function ContactContent() {
   const { data } = useContent('contact', defaults)
   const hero = data.hero ?? defaults.hero
   const info = data.info ?? defaults.info
+
+  const [status, setStatus] = useState<FormStatus>('idle')
+
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault()
+    if (status === 'sending') return
+    if (!FORMSPREE_ENDPOINT) {
+      // Endpoint pas encore configuré dans .env.local
+      setStatus('error')
+      return
+    }
+    const form = e.currentTarget
+    const fd = new FormData(form)
+    setStatus('sending')
+    try {
+      const res = await fetch(FORMSPREE_ENDPOINT, {
+        method: 'POST',
+        headers: { Accept: 'application/json' },
+        body: fd,
+      })
+      if (!res.ok) throw new Error('request-failed')
+      setStatus('success')
+      form.reset()
+    } catch {
+      setStatus('error')
+    }
+  }
 
   const phone = info.phone || siteConfig.phone
   const email = info.email || siteConfig.email
@@ -103,7 +141,7 @@ export function ContactContent() {
 
                   <form
                     className="mt-7 space-y-5"
-                    onSubmit={(e) => e.preventDefault()}
+                    onSubmit={handleSubmit}
                   >
                     <div className="grid gap-5 sm:grid-cols-2">
                       <div className="space-y-2">
@@ -161,10 +199,36 @@ export function ContactContent() {
                         className="w-full rounded-xl border border-input bg-background/70 px-3.5 py-3 text-sm leading-relaxed text-foreground transition-shadow placeholder:text-muted-foreground focus-visible:border-ring focus-visible:shadow-[0_0_0_4px_oklch(0.55_0.2_285/0.1)] focus-visible:outline-none"
                       />
                     </div>
-                    <Button type="submit" size="lg" className="w-full group">
-                      Envoyer le message
-                      <Send className="size-4 transition-transform duration-300 group-hover:translate-x-0.5" aria-hidden />
+                    <Button
+                      type="submit"
+                      size="lg"
+                      disabled={status === 'sending'}
+                      className="w-full group"
+                    >
+                      {status === 'sending' ? (
+                        <>
+                          Envoi en cours…
+                          <Loader2 className="size-4 animate-spin" aria-hidden />
+                        </>
+                      ) : (
+                        <>
+                          Envoyer le message
+                          <Send className="size-4 transition-transform duration-300 group-hover:translate-x-0.5" aria-hidden />
+                        </>
+                      )}
                     </Button>
+
+                    {status === 'success' && (
+                      <p className="flex items-center gap-2 rounded-xl bg-emerald-500/10 px-4 py-3 text-sm font-medium text-emerald-700 ring-1 ring-emerald-500/20">
+                        <CheckCircle2 className="size-4 shrink-0" aria-hidden />
+                        Merci ! Votre message a bien été envoyé, nous revenons vers vous sous 24h.
+                      </p>
+                    )}
+                    {status === 'error' && (
+                      <p className="rounded-xl bg-red-500/10 px-4 py-3 text-sm font-medium text-red-700 ring-1 ring-red-500/20">
+                        Une erreur est survenue. Réessayez ou écrivez-nous directement à {email}.
+                      </p>
+                    )}
                   </form>
                 </div>
               </div>
