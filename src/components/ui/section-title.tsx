@@ -24,9 +24,10 @@ export function SectionTitle({
       )}
     >
       {eyebrow ? (
-        <p className="font-display text-xs font-semibold tracking-[0.22em] text-primary uppercase">
+        <span className="inline-flex items-center gap-2 rounded-full bg-foreground px-3.5 py-1.5 text-[11px] font-semibold uppercase tracking-[0.18em] text-white">
+          <span className="size-1.5 rotate-45 bg-accent" aria-hidden />
           {eyebrow}
-        </p>
+        </span>
       ) : null}
       <h2 className="font-display text-balance text-3xl leading-[1.12] tracking-[-0.02em] text-foreground sm:text-4xl md:text-[2.6rem]">
         {title}

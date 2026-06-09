@@ -8,7 +8,8 @@
     "contact": "Contact",
     "ourActivities": "Nos activités",
     "bookACourt": "Réserver un terrain",
-    "location": "Lamai · Koh Samui"
+    "location": "Lamai · Koh Samui",
+    "home": "Accueil"
   },
   "Home": {
     "hero": {
@@ -20,7 +21,12 @@
       "statActivities": "Activités",
       "statBooking": "Réservation en ligne",
       "statToBook": "Pour réserver",
-      "loved": "Plébiscité par la communauté locale"
+      "loved": "Plébiscité par la communauté locale",
+      "stickerLine1": "RÉSERVE TON TERRAIN",
+      "stickerLine2": "MAINTENANT !",
+      "chooseActivity": "Quelle activité ?",
+      "bookNow": "Réserver",
+      "pickActivity": "Choisir une activité"
     },
     "tiles": {
       "eyebrow": "Nos activités",
@@ -126,5 +132,53 @@
     "cookies": "Cookies",
     "rights": "Tous droits réservés.",
     "craftedBy": "Réalisé par"
+  },
+  "About": {
+    "breadcrumb": "À propos",
+    "hero": {
+      "eyebrow": "À propos",
+      "titleLead": "Le social club resort du sud de",
+      "titleAccent": "Koh Samui",
+      "description": "À Lamai, Shi Shi Samui réunit le sport, le bien-être et la convivialité dans un même lieu de vie. Un club premium pensé pour les résidents, expatriés et voyageurs en quête d'un quotidien actif sous les tropiques."
+    },
+    "stats": [
+      {
+        "value": "6",
+        "label": "Activités"
+      },
+      {
+        "value": "7/7",
+        "label": "Ouvert tous les jours"
+      },
+      {
+        "value": "Lamai",
+        "label": "Koh Samui, Thaïlande"
+      }
+    ],
+    "story": {
+      "eyebrow": "Notre histoire",
+      "title": "Un lieu de vie, pas seulement un club",
+      "p1": "Shi Shi Samui est né d'une envie simple : créer, au sud de Koh Samui, un endroit où l'on vient bouger, se détendre et se retrouver. Tennis et pickleball, salle de sport, restaurant healthy, kids club et piscine — tout est réuni pour profiter, seul, entre amis ou en famille.",
+      "p2": "Plus qu'une salle ou un terrain, c'est un véritable social club tropical : on y passe une heure ou la journée entière, on s'entraîne le matin et on déjeune au bord de l'eau, les enfants jouent pendant que les parents soufflent. Une parenthèse active, dans une ambiance île détendue."
+    },
+    "pillars": {
+      "eyebrow": "Notre état d'esprit",
+      "title": "Trois piliers, une même énergie",
+      "sportTitle": "Sport",
+      "sportText": "Des installations de qualité pour jouer et s'entraîner toute l'année, du débutant au passionné.",
+      "wellnessTitle": "Bien-être",
+      "wellnessText": "Piscine, cuisine healthy et cadre tropical : prendre soin de soi en profitant de l'instant.",
+      "socialTitle": "Convivialité",
+      "socialText": "Un lieu pensé pour les rencontres, la famille et la communauté locale de Lamai."
+    },
+    "complex": {
+      "eyebrow": "Le complexe",
+      "title": "Tout ce qu'il faut pour une journée parfaite",
+      "description": "Six pôles à deux pas les uns des autres, à réserver en ligne en moins d'une minute."
+    },
+    "gallery": {
+      "eyebrow": "En images",
+      "title": "Bienvenue chez Shi Shi"
+    }
   }
 }

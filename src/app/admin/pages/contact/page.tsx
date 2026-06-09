@@ -6,16 +6,16 @@ import { FieldEditor, SectionEditor, ImageField } from '@/components/admin/field
 const defaults = {
   hero: {
     eyebrow: 'Contact',
-    title: 'Parlons de votre projet',
-    description: 'Remplissez le formulaire ci-dessous ou contactez-nous directement. Nous répondons sous 24h.',
-    image: 'https://images.unsplash.com/photo-1423666639041-f56000c27a9a?auto=format&fit=crop&w=1920&q=80',
+    title: 'Une question ? Écrivez-nous',
+    description: 'Remplissez le formulaire ou contactez-nous directement par WhatsApp. Pour réserver une activité, passez par la page Réservation.',
+    image: '/photos/pool-bar.jpg',
   },
   info: {
-    phone: '',
-    email: '',
-    street: '',
-    postalCode: '',
-    city: '',
+    phone: '+33 6 51 69 27 02',
+    email: 'contact.shishisamui@gmail.com',
+    street: 'Lamai',
+    postalCode: '84310',
+    city: 'Koh Samui',
   },
 }
 

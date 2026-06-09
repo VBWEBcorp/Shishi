@@ -22,10 +22,10 @@ export interface ActivityBookingConfig {
 
 /** Activités réservables par créneau. `restaurant` n'est pas réservable ici. */
 export const BOOKING_CONFIG: Record<string, ActivityBookingConfig> = {
-  pickleball: { open: '08:00', close: '21:00', slotMinutes: 60, capacity: 3 },
-  tennis: { open: '07:00', close: '21:00', slotMinutes: 60, capacity: 2 },
-  fitness: { open: '06:00', close: '22:00', slotMinutes: 60, capacity: 20 },
-  'kids-club': { open: '09:00', close: '18:00', slotMinutes: 60, capacity: 10 },
+  pickleball: { open: '08:00', close: '20:00', slotMinutes: 60, capacity: 3 },
+  tennis: { open: '08:00', close: '20:00', slotMinutes: 60, capacity: 2 },
+  fitness: { open: '08:00', close: '20:00', slotMinutes: 60, capacity: 20 },
+  'kids-club': { open: '08:00', close: '16:00', slotMinutes: 60, capacity: 10 },
   pool: { open: '08:00', close: '20:00', slotMinutes: 60, capacity: 25 },
 }
 

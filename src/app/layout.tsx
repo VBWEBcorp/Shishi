@@ -1,29 +1,24 @@
 import type { Metadata, Viewport } from 'next'
-import { Inter, Instrument_Serif, JetBrains_Mono, Plus_Jakarta_Sans } from 'next/font/google'
+import { Cinzel, JetBrains_Mono, Montserrat } from 'next/font/google'
 
 import { ThemeScript } from '@/components/theme/theme-script'
 import { siteConfig } from '@/lib/seo'
 
 import '../index.css'
 
-const inter = Inter({
+// Textes — Montserrat (charte graphique)
+const montserrat = Montserrat({
   subsets: ['latin'],
   variable: '--font-sans',
+  weight: ['400', '500', '600', '700'],
   display: 'swap',
 })
 
-const jakarta = Plus_Jakarta_Sans({
+// Logo & titres élégants — Cinzel (charte graphique)
+const cinzel = Cinzel({
   subsets: ['latin'],
   variable: '--font-display',
-  weight: ['500', '600', '700'],
-  display: 'swap',
-})
-
-const instrumentSerif = Instrument_Serif({
-  subsets: ['latin'],
-  variable: '--font-serif',
-  weight: ['400'],
-  style: ['normal', 'italic'],
+  weight: ['400', '500', '600', '700'],
   display: 'swap',
 })
 
@@ -83,7 +78,7 @@ export default function RootLayout({
     <html
       lang="en"
       dir="ltr"
-      className={`${inter.variable} ${jakarta.variable} ${instrumentSerif.variable} ${jetbrainsMono.variable}`}
+      className={`${montserrat.variable} ${cinzel.variable} ${jetbrainsMono.variable}`}
       suppressHydrationWarning
     >
       <head>

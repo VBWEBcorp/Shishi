@@ -22,73 +22,69 @@
 // la performance.
 
 export const images = {
-  // Hero homepage — 3 images qui défilent en carousel
+  // Hero homepage — 3 images qui défilent en carousel (photos du complexe)
   heroCarousel: [
-    'https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=1920&q=80',
-    'https://images.unsplash.com/photo-1521737711867-e3b97375f902?auto=format&fit=crop&w=1920&q=80',
-    'https://images.unsplash.com/photo-1553877522-43269d4ea984?auto=format&fit=crop&w=1920&q=80',
+    '/photos/tennis-aerial.jpg',
+    '/photos/pool.jpg',
+    '/photos/restaurant.jpg',
   ],
 
   // Section "Notre histoire" sur la home
-  story:
-    'https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=1200&q=80',
+  story: '/photos/lounge.jpg',
 
   // Page À propos — image principale du hero
-  aboutHero:
-    'https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=1920&q=80',
+  aboutHero: '/photos/tennis-aerial.jpg',
 
-  // Page Services — image de fond du hero (workspace/bureau sombre)
-  servicesHero:
-    'https://images.unsplash.com/photo-1497032628192-86f99bcd76bc?auto=format&fit=crop&w=1920&q=80',
+  // Page Services — image de fond du hero
+  servicesHero: '/photos/fitness.jpg',
 
   // Page Contact — image de fond du hero
-  contactHero:
-    'https://images.unsplash.com/photo-1423666639041-f56000c27a9a?auto=format&fit=crop&w=1920&q=80',
+  contactHero: '/photos/pool-bar.jpg',
 
   // Page À propos — galerie 4 images
   aboutGallery: [
-    'https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=600&q=80',
-    'https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=600&q=80',
-    'https://images.unsplash.com/photo-1553877522-43269d4ea984?auto=format&fit=crop&w=600&q=80',
-    'https://images.unsplash.com/photo-1600880292203-757bb62b4baf?auto=format&fit=crop&w=600&q=80',
+    '/photos/pool.jpg',
+    '/photos/restaurant.jpg',
+    '/photos/fitness.jpg',
+    '/photos/kids-club.jpg',
   ],
 
   // Page Services — 8 images illustrant chaque prestation
   services: [
-    'https://images.unsplash.com/photo-1467232004584-a241de8bcf5d?auto=format&fit=crop&w=1200&q=80',
-    'https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=1200&q=80',
-    'https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=1200&q=80',
-    'https://images.unsplash.com/photo-1626785774573-4b799315345d?auto=format&fit=crop&w=1200&q=80',
-    'https://images.unsplash.com/photo-1611162617474-5b21e879e113?auto=format&fit=crop&w=1200&q=80',
-    'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?auto=format&fit=crop&w=1200&q=80',
-    'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?auto=format&fit=crop&w=1200&q=80',
-    'https://images.unsplash.com/photo-1543286386-713bdd548da4?auto=format&fit=crop&w=1200&q=80',
+    '/photos/pool.jpg',
+    '/photos/restaurant.jpg',
+    '/photos/fitness.jpg',
+    '/photos/kids-welcome.jpg',
+    '/photos/tennis-aerial.jpg',
+    '/photos/lounge.jpg',
+    '/photos/kids-outdoor.jpg',
+    '/photos/pool-2.jpg',
   ],
 
   // Section CTA — 2 colonnes d'images animées en marquee vertical
   ctaScrollColumns: {
     col1: [
-      'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=400&h=500&fit=crop&q=75',
-      'https://images.unsplash.com/photo-1553877522-43269d4ea984?w=400&h=500&fit=crop&q=75',
-      'https://images.unsplash.com/photo-1551434678-e076c223a692?w=400&h=500&fit=crop&q=75',
-      'https://images.unsplash.com/photo-1531973576160-7125cd663d86?w=400&h=500&fit=crop&q=75',
+      '/photos/pool.jpg',
+      '/photos/restaurant.jpg',
+      '/photos/fitness.jpg',
+      '/photos/kids-outdoor.jpg',
     ],
     col2: [
-      'https://images.unsplash.com/photo-1600880292203-757bb62b4baf?w=400&h=500&fit=crop&q=75',
-      'https://images.unsplash.com/photo-1542744173-8e7e53415bb0?w=400&h=500&fit=crop&q=75',
-      'https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=400&h=500&fit=crop&q=75',
-      'https://images.unsplash.com/photo-1573164713988-8665fc963095?w=400&h=500&fit=crop&q=75',
+      '/photos/tennis-aerial.jpg',
+      '/photos/lounge.jpg',
+      '/photos/pool-2.jpg',
+      '/photos/kids-trampoline.jpg',
     ],
   },
 
   // GalleryCarousel sur la home
   homeGallery: [
-    'https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=720&q=80',
-    'https://images.unsplash.com/photo-1553877522-43269d4ea984?auto=format&fit=crop&w=720&q=80',
-    'https://images.unsplash.com/photo-1600880292203-757bb62b4baf?auto=format&fit=crop&w=720&q=80',
-    'https://images.unsplash.com/photo-1524758631624-e2822e304c36?auto=format&fit=crop&w=720&q=80',
-    'https://images.unsplash.com/photo-1542744173-8e7e53415bb0?auto=format&fit=crop&w=720&q=80',
-    'https://images.unsplash.com/photo-1556761175-5973dc0f32e7?auto=format&fit=crop&w=720&q=80',
+    '/photos/pool.jpg',
+    '/photos/restaurant.jpg',
+    '/photos/fitness.jpg',
+    '/photos/kids-welcome.jpg',
+    '/photos/tennis-aerial.jpg',
+    '/photos/lounge.jpg',
   ],
 }
 
@@ -266,73 +262,59 @@ export const aboutContent = {
 
 export const servicesContent = {
   hero: {
-    eyebrow: 'Nos services',
-    title: "Tout ce qu'il faut pour réussir en ligne",
+    eyebrow: 'Nos activités',
+    title: 'Tout pour une journée active à Lamai',
     description:
-      "Des prestations complètes, de la conception à l'accompagnement continu, adaptées à toutes les tailles d'entreprise.",
+      'Sport, bien-être et convivialité au même endroit, à deux pas les uns des autres. Réservez en ligne en moins d\'une minute.',
   },
   kpis: [
-    { value: '8', label: 'prestations' },
-    { value: '200+', label: 'projets livrés' },
-    { value: '100%', label: 'sur mesure' },
+    { value: '6', label: 'activités' },
+    { value: '7/7', label: 'ouvert' },
+    { value: '1 min', label: 'pour réserver' },
   ],
-  // Chaque service : icône, titre, description, 3 points clés, image
+  // Chaque activité : icône, titre, description, 3 points clés, image
   list: [
     {
-      iconName: 'Globe',
-      title: 'Création de site vitrine',
-      description: 'Un site moderne, rapide et responsive qui présente clairement votre activité et inspire confiance à vos visiteurs.',
-      points: ['Design sur mesure', 'Mobile-first', 'Optimisé Google'],
-      image: images.services[0],
+      iconName: 'Trophy',
+      title: 'Tennis',
+      description: 'Jouez sur des courts de qualité au sud de Koh Samui : simple, double, coaching et location de raquette.',
+      points: ['600 ฿ / heure', 'Ouvert 8h – 20h', 'Réservation en ligne'],
+      image: '/photos/tennis-aerial.jpg',
     },
     {
-      iconName: 'Smartphone',
-      title: 'Application web',
-      description: 'Outils métier, plateformes de réservation, espaces clients : des applications pensées pour simplifier votre quotidien.',
-      points: ['Architecture évolutive', 'Sécurité renforcée', 'Hébergement haute dispo'],
-      image: images.services[1],
+      iconName: 'Medal',
+      title: 'Pickleball',
+      description: 'Le repaire du pickleball à Koh Samui : terrains dédiés, initiations et matchs conviviaux pour tous les niveaux.',
+      points: ['Terrains dédiés', 'Accessible & social', 'Location de raquette'],
+      image: '/photos/pickleball.jpg',
     },
     {
-      iconName: 'Search',
-      title: 'Référencement naturel (SEO)',
-      description: 'Optimisation technique, contenu stratégique et suivi de positionnement pour gagner en visibilité sur Google.',
-      points: ['Audit technique', 'Stratégie de contenu', 'Suivi mensuel'],
-      image: images.services[2],
+      iconName: 'Dumbbell',
+      title: 'Salle de sport',
+      description: 'Un espace fitness entièrement équipé (force, cardio, functional training) avec l\'énergie d\'un social club.',
+      points: ['250 ฿ / jour', '1000 ฿ / semaine · 1500 ฿ / mois', 'Ouvert 8h – 20h'],
+      image: '/photos/fitness.jpg',
     },
     {
-      iconName: 'Palette',
-      title: 'Identité visuelle',
-      description: 'Logo, charte graphique, supports de communication : une image cohérente qui vous ressemble.',
-      points: ['Logo & déclinaisons', 'Charte graphique', 'Supports print & web'],
-      image: images.services[3],
+      iconName: 'UtensilsCrossed',
+      title: 'Restaurant',
+      description: 'Une carte fraîche et healthy au bord de la piscine : smoothies, bowls et assiettes feel-good toute la journée.',
+      points: ['Cuisine healthy', 'Au bord de la piscine', 'Options végé & vegan'],
+      image: '/photos/restaurant.jpg',
     },
     {
-      iconName: 'Megaphone',
-      title: 'Communication digitale',
-      description: 'Stratégie de contenu, réseaux sociaux et campagnes pour développer votre audience en ligne.',
-      points: ['Stratégie éditoriale', 'Réseaux sociaux', 'Campagnes Ads'],
-      image: images.services[4],
+      iconName: 'Baby',
+      title: 'Kids Club',
+      description: 'Un espace sûr et ludique pour les enfants, avec activités encadrées et babysitting, pour que toute la famille profite.',
+      points: ['200 ฿ / heure', 'Ouvert 8h – 16h', 'Babysitting sur demande'],
+      image: '/photos/kids-welcome.jpg',
     },
     {
-      iconName: 'Code',
-      title: 'Développement sur mesure',
-      description: 'Intégrations, automatisations, API : des solutions techniques taillées pour vos besoins spécifiques.',
-      points: ['Intégrations sur mesure', 'API & automatisation', 'Code propre & testé'],
-      image: images.services[5],
-    },
-    {
-      iconName: 'ShieldCheck',
-      title: 'Maintenance & sécurité',
-      description: 'Mises à jour, sauvegardes, monitoring et corrections pour un site toujours performant et sécurisé.',
-      points: ['Sauvegardes quotidiennes', 'Mises à jour sécu', 'Monitoring 24/7'],
-      image: images.services[6],
-    },
-    {
-      iconName: 'BarChart3',
-      title: 'Analyse & reporting',
-      description: 'Tableaux de bord clairs pour suivre vos performances, comprendre vos visiteurs et ajuster votre stratégie.',
-      points: ['Dashboards clairs', 'Recommandations', 'Suivi mensuel'],
-      image: images.services[7],
+      iconName: 'Waves',
+      title: 'Piscine',
+      description: 'Détendez-vous au bord de la piscine entre deux sessions ou passez la journée à lézarder, le restaurant à deux pas.',
+      points: ['100 ฿ / accès journée', 'Transats & ombre', 'Cœur du resort'],
+      image: '/photos/pool.jpg',
     },
   ],
 }
@@ -344,9 +326,9 @@ export const servicesContent = {
 export const contactContent = {
   hero: {
     eyebrow: 'Contact',
-    title: 'Parlons de votre projet',
+    title: 'Une question ? Écrivez-nous',
     description:
-      'Remplissez le formulaire ci-dessous ou contactez-nous directement. Nous répondons sous 24h.',
+      'Remplissez le formulaire ou contactez-nous directement par WhatsApp. Pour réserver une activité, passez par la page Réservation.',
   },
   // Les coordonnées (phone, email, address) viennent de siteConfig dans seo.ts
 }

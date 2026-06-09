@@ -8,7 +8,8 @@
     "contact": "Contact",
     "ourActivities": "Our activities",
     "bookACourt": "Book a court",
-    "location": "Lamai · Koh Samui"
+    "location": "Lamai · Koh Samui",
+    "home": "Home"
   },
   "Home": {
     "hero": {
@@ -20,7 +21,12 @@
       "statActivities": "Activities",
       "statBooking": "Online booking",
       "statToBook": "To book a court",
-      "loved": "Loved by the local community"
+      "loved": "Loved by the local community",
+      "stickerLine1": "BOOK YOUR COURT",
+      "stickerLine2": "RIGHT NOW!",
+      "chooseActivity": "Which activity?",
+      "bookNow": "Book",
+      "pickActivity": "Pick an activity"
     },
     "tiles": {
       "eyebrow": "Our activities",
@@ -126,5 +132,53 @@
     "cookies": "Cookies",
     "rights": "All rights reserved.",
     "craftedBy": "Crafted by"
+  },
+  "About": {
+    "breadcrumb": "About",
+    "hero": {
+      "eyebrow": "About",
+      "titleLead": "The social club resort of South",
+      "titleAccent": "Koh Samui",
+      "description": "In Lamai, Shi Shi Samui brings sport, wellness and good company together in one place to live. A premium club designed for residents, expats and travellers after an active tropical lifestyle."
+    },
+    "stats": [
+      {
+        "value": "6",
+        "label": "Activities"
+      },
+      {
+        "value": "7/7",
+        "label": "Open every day"
+      },
+      {
+        "value": "Lamai",
+        "label": "Koh Samui, Thailand"
+      }
+    ],
+    "story": {
+      "eyebrow": "Our story",
+      "title": "A place to live, not just a club",
+      "p1": "Shi Shi Samui was born from a simple idea: to create, in the south of Koh Samui, a place to move, unwind and connect. Tennis and pickleball, a gym, a healthy restaurant, a kids club and a pool — everything in one spot to enjoy, solo, with friends or as a family.",
+      "p2": "More than a gym or a court, it is a true tropical social club: stay an hour or the whole day, train in the morning and have lunch by the water, let the kids play while the parents relax. An active break, with a laid-back island vibe."
+    },
+    "pillars": {
+      "eyebrow": "Our mindset",
+      "title": "Three pillars, one energy",
+      "sportTitle": "Sport",
+      "sportText": "Quality facilities to play and train all year round, from beginner to enthusiast.",
+      "wellnessTitle": "Wellness",
+      "wellnessText": "Pool, healthy food and a tropical setting: taking care of yourself while enjoying the moment.",
+      "socialTitle": "Good company",
+      "socialText": "A place made for meeting people, family time and the local Lamai community."
+    },
+    "complex": {
+      "eyebrow": "The complex",
+      "title": "Everything you need for a perfect day",
+      "description": "Six hubs steps away from each other, bookable online in under a minute."
+    },
+    "gallery": {
+      "eyebrow": "In pictures",
+      "title": "Welcome to Shi Shi"
+    }
   }
 }

@@ -5,30 +5,35 @@ import { FieldEditor, SectionEditor, ImageField } from '@/components/admin/field
 
 const defaults = {
   hero: {
-    eyebrow: 'Bienvenue',
-    title: 'Votre partenaire pour réussir en ligne',
-    description: 'Nous accompagnons les entreprises avec des solutions sur mesure, pensées pour durer. Présence digitale, performance et clarté.',
-    button1: 'Prendre contact',
-    button2: 'Découvrir nos services',
-    images: [
-      'https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=1920&q=80',
-      'https://images.unsplash.com/photo-1521737711867-e3b97375f902?auto=format&fit=crop&w=1920&q=80',
-      'https://images.unsplash.com/photo-1553877522-43269d4ea984?auto=format&fit=crop&w=1920&q=80',
-    ],
+    eyebrow: 'Lamai · Koh Samui · Thaïlande',
+    title: 'Le social club resort premium du sud de Samui',
+    description:
+      'Sport, bien-être et convivialité au même endroit. Tennis, le repaire du pickleball sur l\'île, une salle premium, un restaurant healthy, un kids club et une piscine. Réservez en ligne en moins d\'une minute.',
+    button1: 'Réserver',
+    button2: 'Découvrir les activités',
+    images: ['/photos/tennis-aerial.jpg', '/photos/pool.jpg', '/photos/restaurant.jpg'],
   },
   story: {
     eyebrow: 'Notre histoire',
-    title: 'Une approche humaine, des résultats concrets',
-    paragraph1: 'Depuis nos débuts, nous croyons qu\'un bon site commence par une bonne écoute. Nous prenons le temps de comprendre votre métier, vos clients et vos objectifs avant de concevoir quoi que ce soit.',
-    paragraph2: 'Le résultat : des projets qui vous ressemblent, qui parlent à votre audience, et qui travaillent pour vous 24h/24.',
-    image: 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=800&q=80',
+    title: 'Un lieu de vie, pas seulement un club',
+    paragraph1:
+      'Shi Shi Samui est né d\'une envie simple : créer, au sud de Koh Samui, un endroit où l\'on vient bouger, se détendre et se retrouver. Tout est réuni pour profiter, seul, entre amis ou en famille.',
+    paragraph2:
+      'Plus qu\'une salle ou un terrain, c\'est un véritable social club tropical : on s\'entraîne le matin et on déjeune au bord de l\'eau, les enfants jouent pendant que les parents soufflent.',
+    image: '/photos/lounge.jpg',
   },
   cta: {
-    eyebrow: 'Prêt à démarrer ?',
-    title: 'Parlons de votre projet',
-    description: 'Un échange simple et sans engagement pour comprendre vos besoins et vous proposer la meilleure approche.',
-    button: 'Demander un devis gratuit',
+    eyebrow: 'Prêt à jouer ?',
+    title: 'Réservez votre prochaine session',
+    description:
+      'Tennis, pickleball, fitness, piscine ou kids club : réservez en ligne en moins d\'une minute, confirmation immédiate.',
+    button: 'Réserver un terrain',
   },
+  values: [
+    { title: 'Sport', text: 'Tennis, pickleball et salle premium pour bouger toute l\'année.' },
+    { title: 'Bien-être', text: 'Piscine, cuisine healthy et cadre tropical pour se ressourcer.' },
+    { title: 'Convivialité', text: 'Un social club pour la famille, les amis et la communauté de Lamai.' },
+  ],
 }
 
 export default function AdminHomePage() {
@@ -72,6 +77,19 @@ export default function AdminHomePage() {
             <FieldEditor label="Titre" value={content.cta?.title} onChange={(v) => update('cta.title', v)} />
             <FieldEditor label="Description" value={content.cta?.description} onChange={(v) => update('cta.description', v)} type="textarea" />
             <FieldEditor label="Bouton" value={content.cta?.button} onChange={(v) => update('cta.button', v)} />
+          </SectionEditor>
+
+          <SectionEditor title="Valeurs (bandeau 3 colonnes)">
+            {content.values?.map((val: any, i: number) => (
+              <div key={i} className="space-y-3 rounded-lg border border-border/30 p-4">
+                <FieldEditor label={`Valeur ${i + 1} - Titre`} value={val.title} onChange={(v) => {
+                  const next = [...content.values]; next[i] = { ...next[i], title: v }; update('values', next)
+                }} />
+                <FieldEditor label="Texte" value={val.text} onChange={(v) => {
+                  const next = [...content.values]; next[i] = { ...next[i], text: v }; update('values', next)
+                }} type="textarea" />
+              </div>
+            ))}
           </SectionEditor>
         </>
       )}

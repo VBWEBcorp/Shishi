@@ -54,21 +54,21 @@ export default function AdminLoginPage() {
       {/* Background image */}
       <div className="absolute inset-0 -z-10">
         <Image
-          src="https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=1920&q=75"
+          src="/photos/tennis-aerial.jpg"
           alt=""
           fill
           sizes="100vw"
           priority
           className="object-cover"
         />
-        <div className="absolute inset-0 bg-gradient-to-br from-black/75 via-black/55 to-primary/30" />
+        <div className="absolute inset-0 bg-gradient-to-br from-[oklch(0.18_0_0/0.85)] via-[oklch(0.18_0_0/0.65)] to-[oklch(0.45_0.13_47/0.35)]" />
         <div className="absolute inset-0 backdrop-blur-[2px]" />
       </div>
 
       {/* Decorative ambient glow */}
       <div aria-hidden className="pointer-events-none absolute inset-0 -z-10">
-        <div className="absolute -top-32 -left-32 size-[480px] rounded-full bg-primary/20 blur-[140px]" />
-        <div className="absolute -bottom-40 -right-20 size-[420px] rounded-full bg-sky-400/15 blur-[140px]" />
+        <div className="absolute -top-32 -left-32 size-[480px] rounded-full bg-accent/25 blur-[140px]" />
+        <div className="absolute -bottom-40 -right-20 size-[420px] rounded-full bg-accent/15 blur-[140px]" />
       </div>
 
       <div className="flex min-h-screen flex-col">
@@ -96,13 +96,24 @@ export default function AdminLoginPage() {
           >
             {/* Title outside card */}
             <div className="mb-8 text-center sm:mb-10">
-              <div className="mx-auto mb-5 flex size-12 items-center justify-center rounded-2xl border border-white/20 bg-white/10 backdrop-blur-md">
-                <Lock className="size-5 text-white" />
-              </div>
+              <Image
+                src="/logo-light.png"
+                alt="Shi Shi Samui"
+                width={754}
+                height={573}
+                priority
+                className="mx-auto mb-6 h-16 w-auto"
+              />
               <h1 className="font-display text-3xl font-bold tracking-[-0.02em] text-white sm:text-4xl">
                 Espace admin
               </h1>
-              <p className="mt-2 text-sm text-white/70">
+              {/* Séparateur losange */}
+              <div className="mt-4 flex items-center justify-center gap-3" aria-hidden>
+                <span className="h-px w-10 bg-gradient-to-r from-transparent to-accent/70" />
+                <span className="size-2 rotate-45 bg-accent" />
+                <span className="h-px w-10 bg-gradient-to-l from-transparent to-accent/70" />
+              </div>
+              <p className="mt-4 text-sm text-white/70">
                 Connectez-vous pour gérer le contenu du site
               </p>
             </div>
@@ -159,7 +170,7 @@ export default function AdminLoginPage() {
                 <Button
                   type="submit"
                   disabled={loading}
-                  className="group h-11 w-full rounded-xl bg-white text-black transition-all hover:bg-white/90 hover:shadow-lg"
+                  className="group h-11 w-full rounded-xl bg-accent text-accent-foreground transition-all hover:brightness-105 hover:shadow-lg"
                 >
                   {loading ? (
                     'Connexion en cours...'
@@ -171,27 +182,6 @@ export default function AdminLoginPage() {
                   )}
                 </Button>
 
-                <div className="relative flex items-center gap-3 py-1">
-                  <span className="h-px flex-1 bg-white/15" />
-                  <span className="text-[10px] font-medium uppercase tracking-[0.2em] text-white/40">ou</span>
-                  <span className="h-px flex-1 bg-white/15" />
-                </div>
-
-                <button
-                  type="button"
-                  onClick={() => {
-                    localStorage.setItem('authToken', 'demo-token')
-                    localStorage.setItem(
-                      'authUser',
-                      JSON.stringify({ email: 'demo@template.com', name: 'Demo', role: 'admin' })
-                    )
-                    router.push('/admin/dashboard')
-                  }}
-                  className="group flex h-11 w-full items-center justify-center gap-2 rounded-xl border border-white/15 bg-white/5 text-sm font-medium text-white transition-all hover:border-white/25 hover:bg-white/10"
-                >
-                  Accès démo
-                  <ArrowRight className="size-4 transition-transform duration-300 group-hover:translate-x-0.5" />
-                </button>
               </form>
             </div>
           </motion.div>

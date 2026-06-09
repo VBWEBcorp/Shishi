@@ -35,11 +35,11 @@ export function ScrollToTop() {
           transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
           whileHover={{ y: -2 }}
           whileTap={{ scale: 0.95 }}
-          className="group/scroll fixed bottom-24 right-6 z-[90] flex size-11 items-center justify-center overflow-hidden rounded-full text-primary-foreground shadow-[0_8px_24px_-6px_oklch(0.5_0.1_168/0.5)] transition-shadow hover:shadow-[0_12px_32px_-6px_oklch(0.5_0.1_168/0.65)] sm:size-12"
+          className="group/scroll fixed bottom-24 right-6 z-[90] flex size-11 items-center justify-center overflow-hidden rounded-full text-primary-foreground shadow-[0_8px_24px_-6px_oklch(0.18_0_0/0.5)] transition-shadow hover:shadow-[0_12px_32px_-6px_oklch(0.18_0_0/0.65)] sm:size-12"
         >
           {/* Fond gradient */}
           <span
-            className="absolute inset-0 bg-gradient-to-br from-primary via-primary to-[oklch(0.42_0.09_180)]"
+            className="absolute inset-0 bg-gradient-to-br from-primary via-primary to-[oklch(0.18_0_0)]"
             aria-hidden
           />
           {/* Shimmer au hover */}

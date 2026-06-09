@@ -7,20 +7,18 @@ import { Plus, Trash2 } from 'lucide-react'
 
 const defaults = {
   hero: {
-    eyebrow: 'Services',
-    title: 'Tout ce qu\'il faut pour réussir en ligne',
-    description: 'Des prestations complètes, de la conception à l\'accompagnement continu, adaptées à toutes les tailles d\'entreprise.',
-    image: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=1920&q=80',
+    eyebrow: 'Nos activités',
+    title: 'Tout pour une journée active à Lamai',
+    description: 'Sport, bien-être et convivialité au même endroit, à deux pas les uns des autres. Réservez en ligne en moins d\'une minute.',
+    image: '/photos/fitness.jpg',
   },
   services: [
-    { title: 'Création de site vitrine', description: 'Un site moderne, rapide et responsive qui présente clairement votre activité et inspire confiance à vos visiteurs.' },
-    { title: 'Application web', description: 'Outils métier, plateformes de réservation, espaces clients : des applications pensées pour simplifier votre quotidien.' },
-    { title: 'Référencement naturel (SEO)', description: 'Optimisation technique, contenu stratégique et suivi de positionnement pour gagner en visibilité sur Google.' },
-    { title: 'Identité visuelle', description: 'Logo, charte graphique, supports de communication : une image cohérente qui vous ressemble.' },
-    { title: 'Communication digitale', description: 'Stratégie de contenu, réseaux sociaux et campagnes pour développer votre audience en ligne.' },
-    { title: 'Développement sur mesure', description: 'Intégrations, automatisations, API : des solutions techniques taillées pour vos besoins spécifiques.' },
-    { title: 'Maintenance & sécurité', description: 'Mises à jour, sauvegardes, monitoring et corrections pour un site toujours performant et sécurisé.' },
-    { title: 'Analyse & reporting', description: 'Tableaux de bord clairs pour suivre vos performances, comprendre vos visiteurs et ajuster votre stratégie.' },
+    { title: 'Tennis', description: 'Courts de qualité au sud de Koh Samui : simple, double, coaching et location de raquette. 600 ฿/heure, ouvert 8h–20h.' },
+    { title: 'Pickleball', description: 'Le repaire du pickleball à Koh Samui : terrains dédiés, initiations et matchs conviviaux pour tous les niveaux.' },
+    { title: 'Salle de sport', description: 'Espace fitness entièrement équipé (force, cardio, functional). 250 ฿/jour, 1000 ฿/semaine, 1500 ฿/mois. Ouvert 8h–20h.' },
+    { title: 'Restaurant', description: 'Carte fraîche et healthy au bord de la piscine : smoothies, bowls et assiettes feel-good toute la journée.' },
+    { title: 'Kids Club', description: 'Espace sûr et ludique pour les enfants, activités encadrées et babysitting. 200 ฿/heure, ouvert 8h–16h.' },
+    { title: 'Piscine', description: 'Détente au bord de la piscine ou journée entière à lézarder, le restaurant à deux pas. 100 ฿/accès journée.' },
   ],
 }
 

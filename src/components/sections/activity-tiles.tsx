@@ -19,10 +19,11 @@ export function ActivityTiles() {
   return (
     <section id="activities" className="mx-auto max-w-6xl px-4 py-20 sm:px-6 lg:px-8 lg:py-28">
       <div className="mx-auto max-w-2xl text-center">
-        <span className="font-mono text-xs font-semibold uppercase tracking-[0.2em] text-primary">
+        <span className="inline-flex items-center gap-2 rounded-full bg-foreground px-3.5 py-1.5 text-[11px] font-semibold uppercase tracking-[0.18em] text-white">
+          <span className="size-1.5 rotate-45 bg-accent" aria-hidden />
           {t('eyebrow')}
         </span>
-        <h2 className="mt-3 font-display text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
+        <h2 className="mt-4 font-display text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
           {t('title')}
         </h2>
         <p className="mt-4 text-muted-foreground">{t('subtitle')}</p>
@@ -34,7 +35,7 @@ export function ActivityTiles() {
             key={a.slug}
             href={`/activities/${a.slug}`}
             className={cn(
-              'group relative flex aspect-[4/3] flex-col justify-end overflow-hidden rounded-2xl ring-1 ring-border transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_24px_48px_-20px_oklch(0.2_0.03_165/0.3)]',
+              'group relative flex aspect-[4/3] flex-col justify-end overflow-hidden rounded-2xl ring-1 ring-border transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_24px_48px_-20px_oklch(0.18_0_0/0.3)]',
               a.featured && 'lg:col-span-2 lg:aspect-[16/9]'
             )}
           >
@@ -46,7 +47,7 @@ export function ActivityTiles() {
               className="object-cover transition-transform duration-500 group-hover:scale-105"
               priority={i < 2}
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-[oklch(0.16_0.02_168/0.9)] via-[oklch(0.16_0.02_168/0.3)] to-transparent" aria-hidden />
+            <div className="absolute inset-0 bg-gradient-to-t from-[oklch(0.18_0_0/0.9)] via-[oklch(0.18_0_0/0.3)] to-transparent" aria-hidden />
 
             {a.featured && (
               <span className="absolute left-4 top-4 rounded-full bg-accent px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-accent-foreground">

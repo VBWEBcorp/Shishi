@@ -2,6 +2,7 @@
 
 import { ArrowUpRight, Instagram, MapPin } from 'lucide-react'
 import { useLocale, useTranslations } from 'next-intl'
+import Image from 'next/image'
 
 import { Link } from '@/i18n/navigation'
 import type { Locale } from '@/i18n/routing'
@@ -27,23 +28,19 @@ export function Footer() {
   ]
 
   return (
-    <footer className="bg-[oklch(0.18_0.025_168)] text-zinc-300">
+    <footer className="bg-[oklch(0.18_0_0)] text-zinc-300">
       <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
         <div className="grid gap-12 py-16 sm:grid-cols-2 lg:grid-cols-[1.6fr_1fr_1fr_1fr] lg:gap-12">
           {/* Brand */}
           <div className="space-y-4">
-            <Link
-              href="/"
-              className="inline-flex items-center gap-2 font-display text-base font-semibold tracking-tight text-white"
-            >
-              <span className="flex size-7 items-center justify-center rounded-lg bg-white text-[oklch(0.4_0.09_168)]">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className="size-3.5" aria-hidden>
-                  <circle cx="12" cy="9" r="3" />
-                  <path d="M12 3v1M4 9H3M21 9h-1M6 4l-1-1M18 4l1-1" />
-                  <path d="M3 18c1.6 0 1.6-1 3.2-1S7.8 18 9.4 18s1.6-1 3.2-1 1.6 1 3.2 1 1.6-1 3.2-1 1.6 1 3.2 1" />
-                </svg>
-              </span>
-              Shi Shi Samui
+            <Link href="/" aria-label={`${siteConfig.name} home`} className="inline-flex">
+              <Image
+                src="/logo-light.png"
+                alt={siteConfig.name}
+                width={754}
+                height={573}
+                className="h-16 w-auto"
+              />
             </Link>
             <p className="max-w-sm text-sm leading-relaxed text-zinc-400">{t('tagline')}</p>
             <a

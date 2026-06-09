@@ -76,7 +76,7 @@ export function Navbar() {
                 'hidden h-9 items-center gap-1.5 rounded-full px-4 text-[13px] font-semibold transition-all sm:inline-flex',
                 lightText
                   ? 'bg-white/15 text-white ring-1 ring-white/25 backdrop-blur hover:bg-white/25'
-                  : 'bg-accent text-accent-foreground shadow-[0_6px_18px_-6px_oklch(0.7_0.16_38/0.55)] hover:brightness-105',
+                  : 'bg-accent text-accent-foreground shadow-[0_6px_18px_-6px_oklch(0.63_0.187_47/0.55)] hover:brightness-105',
                 open && 'pointer-events-none opacity-0'
               )}
             >
@@ -138,7 +138,7 @@ function FullscreenMenu({
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-          className="fixed inset-0 z-[100] overflow-y-auto bg-[oklch(0.17_0.022_168)]"
+          className="fixed inset-0 z-[100] overflow-y-auto bg-[oklch(0.18_0_0)]"
         >
           <div className="pointer-events-none absolute inset-0" aria-hidden>
             {activities.map((a) => (
@@ -150,12 +150,12 @@ function FullscreenMenu({
                 )}
               >
                 <Image src={a.image} alt="" fill sizes="100vw" className="object-cover" />
-                <div className="absolute inset-0 bg-[oklch(0.17_0.022_168/0.78)]" />
+                <div className="absolute inset-0 bg-[oklch(0.18_0_0/0.78)]" />
               </div>
             ))}
             <div
               className={cn(
-                'absolute inset-0 bg-gradient-to-b from-[oklch(0.17_0.022_168/0.6)] to-[oklch(0.13_0.02_168/0.9)] transition-opacity duration-700',
+                'absolute inset-0 bg-gradient-to-b from-[oklch(0.18_0_0/0.6)] to-[oklch(0.18_0_0/0.9)] transition-opacity duration-700',
                 hovered ? 'opacity-40' : 'opacity-100'
               )}
             />
@@ -250,7 +250,7 @@ function FullscreenMenu({
                 <Link
                   href="/booking"
                   onClick={onClose}
-                  className="group inline-flex h-11 items-center gap-2 rounded-full bg-accent px-6 text-sm font-semibold text-accent-foreground shadow-[0_10px_30px_-8px_oklch(0.7_0.16_38/0.6)] transition-all hover:brightness-105"
+                  className="group inline-flex h-11 items-center gap-2 rounded-full bg-accent px-6 text-sm font-semibold text-accent-foreground shadow-[0_10px_30px_-8px_oklch(0.63_0.187_47/0.6)] transition-all hover:brightness-105"
                 >
                   {t('bookACourt')}
                   <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" aria-hidden />

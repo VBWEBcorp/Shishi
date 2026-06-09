@@ -1,61 +1,56 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { connectDB } from '@/lib/db'
-import User from '@/models/User'
+
 import { generateToken } from '@/lib/auth'
 
+/**
+ * Connexion admin par identifiants uniques stockés dans `.env.local`
+ * (ADMIN_EMAIL + ADMIN_PASSWORD). Pas de base de données : un seul compte
+ * administrateur pour gérer le site.
+ */
 export async function POST(request: NextRequest) {
   try {
-    await connectDB()
-
     const { email, password } = await request.json()
 
-    // Validation
     if (!email || !password) {
       return NextResponse.json(
-        { error: 'Email and password are required' },
+        { error: 'Email et mot de passe requis' },
         { status: 400 }
       )
     }
 
-    // Find user and get password field
-    const user = await User.findOne({ email: email.toLowerCase() }).select('+password')
-    if (!user) {
+    const ADMIN_EMAIL = process.env.ADMIN_EMAIL
+    const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD
+
+    if (!ADMIN_EMAIL || !ADMIN_PASSWORD) {
+      console.error('[auth] ADMIN_EMAIL / ADMIN_PASSWORD non configurés dans .env.local')
       return NextResponse.json(
-        { error: 'Invalid credentials' },
+        { error: 'Authentification non configurée' },
+        { status: 500 }
+      )
+    }
+
+    const emailOk = String(email).trim().toLowerCase() === ADMIN_EMAIL.toLowerCase()
+    const passwordOk = String(password) === ADMIN_PASSWORD
+
+    if (!emailOk || !passwordOk) {
+      return NextResponse.json(
+        { error: 'Identifiants invalides' },
         { status: 401 }
       )
     }
 
-    // Compare password
-    const isPasswordValid = await user.comparePassword(password)
-    if (!isPasswordValid) {
-      return NextResponse.json(
-        { error: 'Invalid credentials' },
-        { status: 401 }
-      )
-    }
-
-    // Generate token
     const token = generateToken({
-      userId: user._id.toString(),
-      email: user.email,
-      role: user.role,
+      userId: 'admin',
+      email: ADMIN_EMAIL,
+      role: 'admin',
     })
 
     return NextResponse.json({
       token,
-      user: {
-        id: user._id,
-        email: user.email,
-        name: user.name,
-        role: user.role,
-      },
+      user: { id: 'admin', email: ADMIN_EMAIL, name: 'Admin', role: 'admin' },
     })
   } catch (error) {
     console.error('Login error:', error)
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Erreur interne' }, { status: 500 })
   }
 }

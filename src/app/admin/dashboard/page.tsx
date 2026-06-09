@@ -15,6 +15,7 @@ import {
   ArrowRight,
   FileText,
   Database,
+  CalendarCheck,
 } from 'lucide-react'
 
 interface AdminUser {
@@ -68,20 +69,20 @@ export default function AdminDashboardPage() {
       {/* Background image */}
       <div className="absolute inset-0 -z-10">
         <Image
-          src="https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=1920&q=75"
+          src="/photos/tennis-aerial.jpg"
           alt=""
           fill
           sizes="100vw"
           priority
           className="object-cover"
         />
-        <div className="absolute inset-0 bg-gradient-to-br from-black/80 via-black/65 to-primary/30" />
+        <div className="absolute inset-0 bg-gradient-to-br from-[oklch(0.18_0_0/0.88)] via-[oklch(0.18_0_0/0.72)] to-[oklch(0.45_0.13_47/0.35)]" />
       </div>
 
       {/* Ambient glows */}
       <div aria-hidden className="pointer-events-none absolute inset-0 -z-10">
-        <div className="absolute -top-32 -left-24 size-[480px] rounded-full bg-primary/20 blur-[140px]" />
-        <div className="absolute -bottom-40 -right-20 size-[420px] rounded-full bg-sky-400/15 blur-[140px]" />
+        <div className="absolute -top-32 -left-24 size-[480px] rounded-full bg-accent/20 blur-[140px]" />
+        <div className="absolute -bottom-40 -right-20 size-[420px] rounded-full bg-accent/15 blur-[140px]" />
       </div>
 
       <div className="space-y-6 p-4 pt-12 sm:p-6 sm:pt-12 lg:p-8 lg:pt-12">
@@ -92,6 +93,13 @@ export default function AdminDashboardPage() {
           transition={{ duration: 0.5, ease }}
           className="rounded-3xl border border-white/15 bg-white/[0.07] p-7 shadow-[0_30px_60px_-20px_rgba(0,0,0,0.5)] backdrop-blur-xl sm:p-9 lg:p-10"
         >
+          <Image
+            src="/logo-light.png"
+            alt="Shi Shi Samui"
+            width={754}
+            height={573}
+            className="mb-5 h-12 w-auto"
+          />
           <p className="font-display text-[11px] font-semibold uppercase tracking-[0.22em] text-white/60">
             Espace admin
           </p>
@@ -101,6 +109,27 @@ export default function AdminDashboardPage() {
           <p className="mt-2 max-w-xl text-sm text-white/70 sm:text-base">
             Gérez le contenu de votre site depuis cet espace.
           </p>
+        </motion.div>
+
+        {/* Réservations — accès prioritaire */}
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, ease, delay: 0.04 }}
+        >
+          <Link
+            href="/admin/bookings"
+            className="group flex items-center gap-4 rounded-2xl border border-accent/40 bg-accent/15 p-5 backdrop-blur-xl transition-all hover:bg-accent/25"
+          >
+            <div className="flex size-12 shrink-0 items-center justify-center rounded-xl bg-accent text-accent-foreground shadow-[0_10px_24px_-8px_oklch(0.63_0.187_47/0.7)]">
+              <CalendarCheck className="size-6" />
+            </div>
+            <div className="min-w-0 flex-1">
+              <p className="font-display text-lg font-semibold text-white">Réservations</p>
+              <p className="text-sm text-white/70">Voir et gérer les demandes de réservation du site</p>
+            </div>
+            <ArrowRight className="size-5 text-white/60 transition-all group-hover:translate-x-0.5 group-hover:text-white" />
+          </Link>
         </motion.div>
 
         {/* Modules */}
@@ -126,14 +155,14 @@ export default function AdminDashboardPage() {
                     href={mod.href}
                     className="group flex items-center gap-4 rounded-2xl border border-white/15 bg-white/[0.06] p-4 backdrop-blur-xl transition-all hover:border-white/30 hover:bg-white/[0.1]"
                   >
-                    <div className="flex size-11 shrink-0 items-center justify-center rounded-xl border border-white/15 bg-white/10 text-white transition-colors group-hover:bg-white/20">
+                    <div className="flex size-11 shrink-0 items-center justify-center rounded-xl border border-white/15 bg-white/10 text-white transition-colors group-hover:border-accent group-hover:bg-accent group-hover:text-accent-foreground">
                       <Icon className="size-5" />
                     </div>
                     <div className="min-w-0 flex-1">
                       <p className="text-sm font-semibold text-white">{mod.label}</p>
                       <p className="truncate text-xs text-white/60">{mod.desc}</p>
                     </div>
-                    <ArrowRight className="size-4 text-white/40 transition-all group-hover:translate-x-0.5 group-hover:text-white" />
+                    <ArrowRight className="size-4 text-white/40 transition-all group-hover:translate-x-0.5 group-hover:text-accent" />
                   </Link>
                 </motion.div>
               )
@@ -179,7 +208,7 @@ export default function AdminDashboardPage() {
                 }
               }}
               disabled={seeding}
-              className="w-full shrink-0 rounded-xl bg-white px-4 py-2 text-sm font-semibold text-black transition-colors hover:bg-white/90 disabled:opacity-50 sm:w-auto"
+              className="w-full shrink-0 rounded-xl bg-accent px-4 py-2 text-sm font-semibold text-accent-foreground transition-all hover:brightness-105 disabled:opacity-50 sm:w-auto"
             >
               {seeding ? 'Chargement...' : 'Charger les données'}
             </button>

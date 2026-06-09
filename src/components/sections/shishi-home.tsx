@@ -1,17 +1,27 @@
+'use client'
+
 import { Dumbbell, HeartHandshake, Sparkles, ArrowRight } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import Image from 'next/image'
 
+import { useContent } from '@/hooks/use-content'
 import { Link } from '@/i18n/navigation'
 
 export function ValuesBand() {
   const t = useTranslations('Home.values')
-
-  const values = [
-    { icon: Dumbbell, title: t('sportTitle'), text: t('sportText') },
-    { icon: Sparkles, title: t('wellnessTitle'), text: t('wellnessText') },
-    { icon: HeartHandshake, title: t('socialTitle'), text: t('socialText') },
+  const { data } = useContent('home', {} as { values?: { title?: string; text?: string }[] })
+  const cms = data.values
+  const icons = [Dumbbell, Sparkles, HeartHandshake]
+  const fallback = [
+    { title: t('sportTitle'), text: t('sportText') },
+    { title: t('wellnessTitle'), text: t('wellnessText') },
+    { title: t('socialTitle'), text: t('socialText') },
   ]
+  const values = fallback.map((f, i) => ({
+    icon: icons[i],
+    title: cms?.[i]?.title || f.title,
+    text: cms?.[i]?.text || f.text,
+  }))
 
   return (
     <section className="border-y border-border bg-secondary/40">
@@ -34,13 +44,15 @@ export function ValuesBand() {
 
 export function StorySection() {
   const t = useTranslations('Home.story')
+  const { data } = useContent('home', {} as { story?: Record<string, string> })
+  const s = data.story ?? {}
 
   return (
     <section className="mx-auto max-w-6xl px-4 py-20 sm:px-6 lg:px-8 lg:py-28">
       <div className="grid items-center gap-12 lg:grid-cols-2">
         <div className="relative aspect-[4/3] overflow-hidden rounded-3xl ring-1 ring-border">
           <Image
-            src="https://images.unsplash.com/photo-1530549387789-4c1017266635?auto=format&fit=crop&w=1200&q=80"
+            src={s.image || '/photos/lounge.jpg'}
             alt="Shi Shi Samui social club"
             fill
             sizes="(min-width:1024px) 50vw, 100vw"
@@ -48,15 +60,16 @@ export function StorySection() {
           />
         </div>
         <div>
-          <span className="font-mono text-xs font-semibold uppercase tracking-[0.2em] text-primary">
-            {t('eyebrow')}
+          <span className="inline-flex items-center gap-2 rounded-full bg-foreground px-3.5 py-1.5 text-[11px] font-semibold uppercase tracking-[0.18em] text-white">
+            <span className="size-1.5 rotate-45 bg-accent" aria-hidden />
+            {s.eyebrow || t('eyebrow')}
           </span>
-          <h2 className="mt-3 font-display text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
-            {t('title')}
+          <h2 className="mt-4 font-display text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
+            {s.title || t('title')}
           </h2>
           <div className="mt-5 space-y-4 text-muted-foreground">
-            <p>{t('p1')}</p>
-            <p>{t('p2')}</p>
+            <p>{s.paragraph1 || t('p1')}</p>
+            <p>{s.paragraph2 || t('p2')}</p>
           </div>
           <Link
             href="/a-propos"
@@ -73,28 +86,30 @@ export function StorySection() {
 
 export function BookingCta() {
   const t = useTranslations('Home.cta')
+  const { data } = useContent('home', {} as { cta?: Record<string, string> })
+  const c = data.cta ?? {}
 
   return (
     <section className="relative isolate overflow-hidden">
       <Image
-        src="https://images.unsplash.com/photo-1444491741275-3747c53c99b4?auto=format&fit=crop&w=2000&q=80"
+        src="/photos/pool.jpg"
         alt=""
         fill
         sizes="100vw"
         className="object-cover"
       />
-      <div className="absolute inset-0 bg-[oklch(0.2_0.03_168/0.82)]" aria-hidden />
+      <div className="absolute inset-0 bg-[oklch(0.18_0_0/0.82)]" aria-hidden />
       <div className="relative mx-auto max-w-3xl px-4 py-20 text-center sm:px-6 lg:py-28">
         <h2 className="font-display text-3xl font-bold tracking-tight text-white sm:text-4xl">
-          {t('title')}
+          {c.title || t('title')}
         </h2>
-        <p className="mx-auto mt-4 max-w-xl text-white/80">{t('subtitle')}</p>
+        <p className="mx-auto mt-4 max-w-xl text-white/80">{c.description || t('subtitle')}</p>
         <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
           <Link
             href="/booking"
-            className="group inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-accent px-7 text-sm font-semibold text-accent-foreground shadow-[0_10px_30px_-8px_oklch(0.7_0.16_38/0.6)] transition-all hover:brightness-105"
+            className="group inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-accent px-7 text-sm font-semibold text-accent-foreground shadow-[0_10px_30px_-8px_oklch(0.63_0.187_47/0.6)] transition-all hover:brightness-105"
           >
-            {t('bookCourt')}
+            {c.button || t('bookCourt')}
             <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" aria-hidden />
           </Link>
           <Link

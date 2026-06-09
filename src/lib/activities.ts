@@ -44,8 +44,7 @@ export const activities: Activity[] = [
       fr: 'Découvrez le sport de raquette qui monte sur des terrains dédiés à Lamai. Accessible, convivial et terriblement addictif. Réservez un terrain, rejoignez une initiation ou jouez un match.',
     },
     icon: 'pickleball',
-    image:
-      'https://images.unsplash.com/photo-1626224583764-f87db24ac4ea?auto=format&fit=crop&w=1200&q=80',
+    image: '/photos/pickleball.jpg',
     gradient: 'from-emerald-500/15 to-teal-500/5',
     featured: true,
     keywords: ['pickleball koh samui', 'pickleball lamai', 'pickleball court samui'],
@@ -62,8 +61,7 @@ export const activities: Activity[] = [
       fr: 'Jouez sur des courts de tennis de qualité au sud de Koh Samui. Simple, double, coaching et location de raquette : tout pour entrer sur le court en moins d’une minute.',
     },
     icon: 'tennis',
-    image:
-      'https://images.unsplash.com/photo-1622163642998-1ea32b0bbc67?auto=format&fit=crop&w=1200&q=80',
+    image: '/photos/tennis-aerial.jpg',
     gradient: 'from-lime-500/15 to-emerald-500/5',
     keywords: ['tennis koh samui', 'tennis court lamai', 'tennis lessons samui'],
   },
@@ -79,8 +77,7 @@ export const activities: Activity[] = [
       fr: 'Entraînez-vous dans un espace fitness entièrement équipé (force, cardio et functional training) avec l’énergie d’un social club. Pass journée et abonnements disponibles.',
     },
     icon: 'fitness',
-    image:
-      'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&w=1200&q=80',
+    image: '/photos/fitness.jpg',
     gradient: 'from-orange-500/15 to-amber-500/5',
     keywords: ['gym koh samui', 'fitness lamai', 'gym samui day pass'],
   },
@@ -96,8 +93,7 @@ export const activities: Activity[] = [
       fr: 'Rechargez les batteries avec une carte fraîche et healthy au bord de la piscine : smoothies, bowls et assiettes feel-good pensées pour un mode de vie actif, au cœur de Lamai.',
     },
     icon: 'restaurant',
-    image:
-      'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=1200&q=80',
+    image: '/photos/restaurant.jpg',
     gradient: 'from-rose-500/15 to-orange-500/5',
     keywords: ['healthy restaurant lamai', 'restaurant koh samui', 'healthy food samui'],
   },
@@ -113,8 +109,7 @@ export const activities: Activity[] = [
       fr: 'Un espace sûr et ludique pour les enfants, avec activités encadrées et babysitting, pour que toute la famille profite du club. Idéal pour les expatriés et familles de passage.',
     },
     icon: 'kids',
-    image:
-      'https://images.unsplash.com/photo-1597393353415-b3730f3719fe?auto=format&fit=crop&w=1200&q=80',
+    image: '/photos/kids-welcome.jpg',
     gradient: 'from-sky-500/15 to-cyan-500/5',
     keywords: ['kids club koh samui', 'babysitting samui', 'family koh samui'],
   },
@@ -130,8 +125,7 @@ export const activities: Activity[] = [
       fr: 'Détendez-vous au bord de la piscine entre deux sessions ou passez la journée à lézarder. Le cœur social du resort, avec le restaurant à deux pas.',
     },
     icon: 'pool',
-    image:
-      'https://images.unsplash.com/photo-1571902943202-507ec2618e8f?auto=format&fit=crop&w=1200&q=80',
+    image: '/photos/pool.jpg',
     gradient: 'from-cyan-500/15 to-sky-500/5',
     keywords: ['pool lamai', 'swimming pool koh samui', 'pool day pass samui'],
   },

@@ -1,10 +1,12 @@
 'use client'
 
+import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { useState, useEffect } from 'react'
 import {
   LayoutDashboard,
+  CalendarCheck,
   Images,
   LogOut,
   Home,
@@ -27,6 +29,7 @@ import { useSidebar } from '@/components/admin/sidebar-context'
 
 const navItems = [
   { href: '/admin/dashboard', label: 'Tableau de bord', icon: LayoutDashboard },
+  { href: '/admin/bookings', label: 'Réservations', icon: CalendarCheck },
 ]
 
 const pageEditItems = [
@@ -56,7 +59,7 @@ function NavLink({
           'relative flex items-center gap-3 rounded-lg text-[13px] font-medium transition-all',
           collapsed ? 'justify-center px-2 py-2.5' : 'px-3 py-2.5',
           isActive
-            ? 'bg-primary text-white shadow-sm'
+            ? 'bg-accent text-accent-foreground shadow-sm'
             : 'text-zinc-400 hover:bg-white/10 hover:text-white'
         )}
       >
@@ -102,7 +105,7 @@ export function AdminSidebar() {
   const sidebarContent = (
     <aside
       className={cn(
-        'fixed left-0 top-0 h-screen bg-zinc-900 border-r border-white/10 flex flex-col z-50 transition-all duration-200',
+        'fixed left-0 top-0 h-screen bg-[oklch(0.18_0_0)] border-r border-white/10 flex flex-col z-50 transition-all duration-200',
         isMobile ? 'w-[260px]' : collapsed ? 'w-[60px]' : 'w-[220px]'
       )}
     >
@@ -111,11 +114,14 @@ export function AdminSidebar() {
         'h-[60px] flex items-center border-b border-white/10',
         isMobile ? 'justify-between px-4' : collapsed ? 'justify-center px-2' : 'justify-between px-4'
       )}>
-        {(!collapsed || isMobile) && (
-          <div>
-            <p className="text-sm font-bold text-white leading-tight">Admin</p>
-            <p className="text-[10px] text-zinc-400">Gestion du site</p>
-          </div>
+        {(!collapsed || isMobile) ? (
+          <Link href="/admin/dashboard" className="inline-flex items-center" onClick={closeMobile}>
+            <Image src="/logo-light.png" alt="Shi Shi Samui" width={754} height={573} className="h-9 w-auto" />
+          </Link>
+        ) : (
+          <Link href="/admin/dashboard" aria-label="Shi Shi Samui">
+            <span className="size-2 rotate-45 bg-accent" aria-hidden />
+          </Link>
         )}
         {isMobile ? (
           <button

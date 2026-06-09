@@ -9,6 +9,7 @@ import { Link } from '@/i18n/navigation'
 import type { Locale } from '@/i18n/routing'
 import { routing } from '@/i18n/routing'
 import { activities, activitySlugs, getActivity } from '@/lib/activities'
+import { OPENING_HOURS, PRICE_TIERS } from '@/lib/booking-pricing'
 import { siteConfig } from '@/lib/seo'
 import { cn } from '@/lib/utils'
 
@@ -85,12 +86,16 @@ export default async function ActivityPage({
   const t = await getTranslations('Activity')
   const highlights = highlightsBySlug[slug]?.[l] ?? []
   const others = activities.filter((a) => a.slug !== slug)
+  const tiers = PRICE_TIERS[slug] ?? []
+  const hours = OPENING_HOURS[slug]?.[l]
+  const fmtPrice = (amount: number) =>
+    `฿${amount.toLocaleString(l === 'fr' ? 'fr-FR' : 'en-US')}`
 
   return (
     <>
       <section className="relative isolate min-h-[60vh] overflow-hidden pt-14">
         <Image src={activity.image} alt={activity.name[l]} fill priority sizes="100vw" className="object-cover" />
-        <div className="absolute inset-0 bg-gradient-to-b from-[oklch(0.16_0.02_168/0.55)] via-[oklch(0.16_0.02_168/0.5)] to-[oklch(0.16_0.02_168/0.85)]" aria-hidden />
+        <div className="absolute inset-0 bg-gradient-to-b from-[oklch(0.18_0_0/0.55)] via-[oklch(0.18_0_0/0.5)] to-[oklch(0.18_0_0/0.85)]" aria-hidden />
 
         <div className="relative mx-auto flex min-h-[60vh] max-w-6xl flex-col justify-end px-4 pb-14 pt-24 sm:px-6 lg:px-8">
           <nav className="mb-4 flex items-center gap-2 text-xs text-white/70" aria-label="Breadcrumb">
@@ -114,7 +119,7 @@ export default async function ActivityPage({
               <MapPin className="size-4" aria-hidden /> Lamai, Koh Samui
             </span>
             <span className="inline-flex items-center gap-1.5">
-              <Clock className="size-4" aria-hidden /> {t('openDaily')}
+              <Clock className="size-4" aria-hidden /> {hours ?? t('openDaily')}
             </span>
           </div>
         </div>
@@ -147,15 +152,28 @@ export default async function ActivityPage({
               <p className="font-mono text-xs font-semibold uppercase tracking-[0.18em] text-primary">
                 {t('pricing')}
               </p>
-              <p className="mt-3 text-sm text-muted-foreground">{t('pricingNote')}</p>
+              {hours && (
+                <p className="mt-1 text-sm font-medium text-foreground">{hours}</p>
+              )}
               <ul className="mt-5 space-y-3">
-                <PriceRow label={t('dropIn')} hint={t('dropInHint')} value="฿—" />
-                <PriceRow label={t('passLabel')} hint={t('passHint')} value="฿—" />
-                <PriceRow label={t('memberLabel')} hint={t('memberHint')} value="฿—" />
+                {tiers.length > 0 ? (
+                  tiers.map((tier) => (
+                    <PriceRow
+                      key={tier.label[l]}
+                      label={tier.label[l]}
+                      value={fmtPrice(tier.amount)}
+                    />
+                  ))
+                ) : (
+                  <>
+                    <p className="text-sm text-muted-foreground">{t('pricingNote')}</p>
+                    <PriceRow label={t('dropIn')} hint={t('dropInHint')} value="฿—" />
+                  </>
+                )}
               </ul>
               <Link
                 href="/booking"
-                className="group mt-6 flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-accent text-sm font-semibold text-accent-foreground shadow-[0_10px_30px_-8px_oklch(0.7_0.16_38/0.5)] transition-all hover:brightness-105"
+                className="group mt-6 flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-accent text-sm font-semibold text-accent-foreground shadow-[0_10px_30px_-8px_oklch(0.63_0.187_47/0.5)] transition-all hover:brightness-105"
               >
                 {t('bookName', { name: activity.name[l] })}
                 <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" aria-hidden />
@@ -187,12 +205,12 @@ export default async function ActivityPage({
   )
 }
 
-function PriceRow({ label, hint, value }: { label: string; hint: string; value: string }) {
+function PriceRow({ label, hint, value }: { label: string; hint?: string; value: string }) {
   return (
     <li className="flex items-center justify-between gap-3 border-b border-border/60 pb-3 last:border-0 last:pb-0">
       <span>
         <span className="block text-sm font-medium text-foreground">{label}</span>
-        <span className="block text-xs text-muted-foreground">{hint}</span>
+        {hint && <span className="block text-xs text-muted-foreground">{hint}</span>}
       </span>
       <span className="shrink-0 font-display text-sm font-bold text-foreground">{value}</span>
     </li>

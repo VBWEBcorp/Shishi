@@ -6,11 +6,11 @@ export const siteConfig = {
     'Shi Shi Samui, premium social club resort in Lamai, Koh Samui. Tennis, pickleball, fitness, healthy restaurant, kids club and pool. Book your court online 24/7.',
   ogImage: 'https://shi-shi-samui.com/og.png',
   twitterHandle: '@shishisamui',
-  themeColor: '#0f5c4e',
-  phone: '+66 00 000 0000',
+  themeColor: '#111111',
+  phone: '+33 6 51 69 27 02',
   // Numéro WhatsApp au format international sans "+" ni espaces.
   // Configurable via NEXT_PUBLIC_WHATSAPP_NUMBER dans .env.local (placeholder par défaut).
-  whatsapp: process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '66000000000',
+  whatsapp: process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '33651692702',
   email: 'contact.shishisamui@gmail.com',
   instagram: 'https://www.instagram.com/shishisamui',
   address: {

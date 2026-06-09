@@ -1,345 +1,285 @@
 'use client'
 
-import { motion, useScroll, useTransform } from 'framer-motion'
-import { ChevronRight, Home } from 'lucide-react'
+import { motion } from 'framer-motion'
+import { ArrowUpRight, ChevronRight, Dumbbell, Home, Leaf, Users } from 'lucide-react'
+import { useLocale, useTranslations } from 'next-intl'
 import Image from 'next/image'
-import Link from 'next/link'
-import { useRef } from 'react'
 
+import { ActivityIcon } from '@/components/activity-icon'
 import { CtaSection } from '@/components/sections/cta-section'
-import { SectionTitle } from '@/components/ui/section-title'
 import { useContent } from '@/hooks/use-content'
-import { getIcon } from '@/lib/icons'
-import { aboutContent } from '@/lib/site-content'
+import { Link } from '@/i18n/navigation'
+import type { Locale } from '@/i18n/routing'
+import { activities } from '@/lib/activities'
+import { images } from '@/lib/site-content'
 
 const ease = [0.22, 1, 0.36, 1] as const
 
-const defaults = aboutContent
-
-function splitTitle(title: string): { lead: string; accent: string } {
-  const words = title.trim().split(/\s+/)
-  if (words.length <= 2) return { lead: '', accent: title }
-  const accentCount = Math.min(2, Math.max(1, Math.floor(words.length / 3)))
-  return {
-    lead: words.slice(0, words.length - accentCount).join(' '),
-    accent: words.slice(words.length - accentCount).join(' '),
-  }
+/** Séparateur losange repris du logo (── ◆ ──). */
+function DiamondRule({ className = '' }: { className?: string }) {
+  return (
+    <div className={`flex items-center gap-3 ${className}`} aria-hidden>
+      <span className="h-px w-12 bg-gradient-to-r from-transparent to-accent/70" />
+      <span className="size-2 rotate-45 bg-accent" />
+      <span className="h-px w-12 bg-gradient-to-l from-transparent to-accent/70" />
+    </div>
+  )
 }
 
-function AboutHero({ hero }: { hero: typeof defaults.hero }) {
-  const { lead, accent } = splitTitle(hero.title)
+function EyebrowPill({ children }: { children: React.ReactNode }) {
+  return (
+    <span className="inline-flex items-center gap-2 rounded-full bg-foreground px-3.5 py-1.5 text-[11px] font-semibold uppercase tracking-[0.18em] text-white">
+      <span className="size-1.5 rotate-45 bg-accent" aria-hidden />
+      {children}
+    </span>
+  )
+}
+
+function AboutHero({ cms }: { cms?: Record<string, string> }) {
+  const t = useTranslations('About')
+  const tNav = useTranslations('Nav')
+  const stats = t.raw('stats') as { value: string; label: string }[]
+  const heroImage = cms?.image || '/photos/pool.jpg'
+  const eyebrow = cms?.eyebrow || t('hero.eyebrow')
+  const description = cms?.description || t('hero.description')
 
   return (
-    <section className="relative isolate overflow-hidden border-b border-border/60 bg-[oklch(0.975_0.012_285)] dark:bg-[oklch(0.16_0.02_285)]">
+    <section className="relative isolate min-h-[80vh] overflow-hidden">
+      <Image src={heroImage} alt="" fill priority sizes="100vw" className="object-cover" />
+      <div className="absolute inset-0 bg-gradient-to-b from-[oklch(0.18_0_0/0.65)] via-[oklch(0.18_0_0/0.5)] to-[oklch(0.18_0_0/0.92)]" aria-hidden />
+      <div className="absolute inset-0 bg-[oklch(0.45_0.13_47/0.12)] mix-blend-overlay" aria-hidden />
 
-      <div className="relative mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
-        {/* Breadcrumb */}
-        <nav aria-label="Fil d'Ariane" className="pt-24 sm:pt-28">
-          <ol className="flex flex-wrap items-center gap-1.5 text-xs text-muted-foreground">
+      <div className="relative mx-auto flex min-h-[80vh] max-w-4xl flex-col items-center justify-center px-4 pb-16 pt-28 text-center sm:px-6">
+        <nav aria-label="Fil d'Ariane" className="mb-7">
+          <ol className="flex flex-wrap items-center justify-center gap-1.5 text-xs text-white/70">
             <li className="flex items-center gap-1.5">
-              <Link
-                href="/"
-                className="flex items-center gap-1 transition-colors hover:text-foreground"
-              >
+              <Link href="/" className="flex items-center gap-1 transition-colors hover:text-white">
                 <Home className="size-3" aria-hidden />
-                <span>Accueil</span>
+                <span>{tNav('home')}</span>
               </Link>
             </li>
             <li className="flex items-center gap-1.5">
-              <ChevronRight className="size-3 text-muted-foreground/50" aria-hidden />
-              <span aria-current="page" className="font-medium text-foreground">
-                À propos
-              </span>
+              <ChevronRight className="size-3 text-white/40" aria-hidden />
+              <span aria-current="page" className="font-medium text-white">{t('breadcrumb')}</span>
             </li>
           </ol>
         </nav>
 
-        <div className="grid items-center gap-12 pt-10 pb-16 sm:pt-14 sm:pb-20 lg:grid-cols-[1.1fr_1fr] lg:gap-16 lg:pt-20 lg:pb-28">
-          {/* Text */}
-          <motion.div
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, ease }}
-          >
-            {/* Eyebrow en mono */}
-            <p className="font-display text-xs font-semibold tracking-[0.22em] uppercase text-primary">
-              {hero.eyebrow}
-            </p>
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, ease }}
+          className="flex flex-col items-center"
+        >
+          <span className="inline-flex items-center gap-2 rounded-full bg-white/10 px-3.5 py-1.5 text-[11px] font-semibold uppercase tracking-[0.18em] text-white ring-1 ring-white/20 backdrop-blur">
+            <span className="size-1.5 rotate-45 bg-accent" aria-hidden />
+            {eyebrow}
+          </span>
 
-            <h1 className="mt-6 font-display text-balance pb-1 text-4xl leading-[1.15] font-semibold tracking-[-0.035em] text-foreground sm:text-5xl lg:text-[56px]">
-              {lead ? (
-                <>
-                  {lead}{' '}
-                  <span className="relative inline-block pb-1 font-serif italic font-normal tracking-[-0.01em] text-primary">
-                    {accent}
-                  </span>
-                </>
-              ) : (
-                accent
-              )}
-            </h1>
+          <h1 className="mt-6 font-display text-balance text-4xl font-bold leading-[1.1] tracking-tight text-white sm:text-5xl lg:text-6xl">
+            {cms?.title ? (
+              (() => {
+                const w = cms.title.trim().split(/\s+/)
+                const accent = w.pop() as string
+                return (
+                  <>
+                    {w.join(' ')} <span className="text-accent">{accent}</span>
+                  </>
+                )
+              })()
+            ) : (
+              <>
+                {t('hero.titleLead')} <span className="text-accent">{t('hero.titleAccent')}</span>
+              </>
+            )}
+          </h1>
 
-            <p className="mt-6 max-w-xl text-pretty text-base leading-relaxed text-muted-foreground sm:text-lg">
-              {hero.description}
-            </p>
+          <DiamondRule className="mt-6 justify-center" />
 
-            {/* Stats inline */}
-            <div className="mt-10 grid grid-cols-2 gap-x-6 gap-y-5 sm:grid-cols-4">
-              {defaults.stats.map((s, i) => (
-                <motion.div
-                  key={s.label}
-                  initial={{ opacity: 0, y: 12 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: 0.3 + i * 0.06, ease }}
-                >
-                  <div className="font-display text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
-                    {s.value}
-                  </div>
-                  <div className="mt-1 text-xs text-muted-foreground sm:text-sm">
-                    {s.label}
-                  </div>
-                </motion.div>
-              ))}
-            </div>
-          </motion.div>
+          <p className="mt-6 max-w-xl text-pretty text-base leading-relaxed text-white/85 sm:text-lg">
+            {description}
+          </p>
 
-          {/* Image preview card glassy */}
-          <motion.div
-            initial={{ opacity: 0, y: 24, scale: 0.97 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            transition={{ duration: 0.7, delay: 0.15, ease }}
-            className="relative"
-          >
-            {/* Glow violet derrière */}
-            <div
-              className="pointer-events-none absolute -inset-6 -z-10 rounded-[2rem] opacity-70 blur-3xl"
-              aria-hidden
-              style={{
-                background:
-                  'radial-gradient(ellipse at center, oklch(0.55 0.2 285 / 0.3) 0%, transparent 70%)',
-              }}
-            />
+          <div className="mt-10 flex flex-wrap items-center justify-center gap-x-10 gap-y-5">
+            {stats.map((s, i) => (
+              <motion.div
+                key={s.label}
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.3 + i * 0.06, ease }}
+              >
+                <div className="font-display text-2xl font-semibold tracking-tight text-white sm:text-3xl">{s.value}</div>
+                <div className="mt-1 text-xs text-white/60 sm:text-sm">{s.label}</div>
+              </motion.div>
+            ))}
+          </div>
+        </motion.div>
+      </div>
+    </section>
+  )
+}
 
-            <div className="relative overflow-hidden rounded-2xl bg-background/40 p-1.5 shadow-[0_30px_60px_-20px_oklch(0.2_0.02_264/0.3)] backdrop-blur-xl ring-1 ring-border/60">
-              {/* Bordure dégradée */}
-              <div
-                className="pointer-events-none absolute inset-0 rounded-2xl p-px"
-                aria-hidden
-                style={{
-                  background:
-                    'linear-gradient(135deg, oklch(0.55 0.2 285 / 0.4) 0%, oklch(0.91 0.012 264 / 0.5) 50%, oklch(0.55 0.2 285 / 0.4) 100%)',
-                  WebkitMask:
-                    'linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0)',
-                  WebkitMaskComposite: 'xor',
-                  maskComposite: 'exclude',
-                }}
-              />
+function StorySection({ cms }: { cms?: Record<string, string> }) {
+  const t = useTranslations('About.story')
+  const title = cms?.title || t('title')
+  const p1 = cms?.paragraph1 || t('p1')
+  const p2 = cms?.paragraph2 || t('p2')
+  return (
+    <section className="border-b border-border/60 bg-background">
+      <div className="mx-auto grid max-w-6xl items-center gap-12 px-4 py-20 sm:px-6 lg:grid-cols-2 lg:gap-16 lg:px-8 lg:py-28">
+        <motion.div
+          initial={{ opacity: 0, x: -20 }}
+          whileInView={{ opacity: 1, x: 0 }}
+          viewport={{ once: true, margin: '-80px' }}
+          transition={{ duration: 0.6, ease }}
+          className="relative aspect-[4/3] overflow-hidden rounded-3xl ring-1 ring-border lg:aspect-[4/5]"
+        >
+          <Image src="/photos/lounge.jpg" alt="" fill sizes="(min-width:1024px) 50vw, 100vw" className="object-cover" />
+          <div className="pointer-events-none absolute inset-0 bg-gradient-to-tr from-foreground/20 via-transparent to-transparent" aria-hidden />
+        </motion.div>
 
-              <div className="relative aspect-[4/5] overflow-hidden rounded-xl lg:aspect-[3/4]">
-                <Image
-                  src={hero.image}
-                  alt=""
-                  fill
-                  sizes="(min-width: 1024px) 500px, 100vw"
-                  priority
-                  className="object-cover"
-                />
-                <div
-                  className="pointer-events-none absolute inset-0 bg-gradient-to-tr from-primary/15 via-transparent to-transparent"
-                  aria-hidden
-                />
-              </div>
-            </div>
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: '-80px' }}
+          transition={{ duration: 0.6, ease }}
+        >
+          <EyebrowPill>{t('eyebrow')}</EyebrowPill>
+          <h2 className="mt-4 font-display text-3xl font-bold tracking-tight text-foreground sm:text-4xl">{title}</h2>
+          <DiamondRule className="mt-5" />
+          <p className="mt-6 text-base leading-relaxed text-muted-foreground sm:text-lg">{p1}</p>
+          <p className="mt-4 text-base leading-relaxed text-muted-foreground sm:text-lg">{p2}</p>
+        </motion.div>
+      </div>
+    </section>
+  )
+}
 
-            {/* Floating badge sur l'image */}
+function PillarsSection({ values }: { values?: { title?: string; description?: string }[] }) {
+  const t = useTranslations('About.pillars')
+  const icons = [Dumbbell, Leaf, Users]
+  const fallback = [
+    { title: t('sportTitle'), text: t('sportText') },
+    { title: t('wellnessTitle'), text: t('wellnessText') },
+    { title: t('socialTitle'), text: t('socialText') },
+  ]
+  const pillars = fallback.map((f, i) => ({
+    icon: icons[i],
+    title: values?.[i]?.title || f.title,
+    text: values?.[i]?.description || f.text,
+  }))
+  return (
+    <section className="border-b border-border/60 bg-[oklch(0.967_0_0)] dark:bg-[oklch(0.18_0_0)]">
+      <div className="mx-auto max-w-6xl px-4 py-20 sm:px-6 lg:px-8 lg:py-28">
+        <div className="mx-auto max-w-2xl text-center">
+          <EyebrowPill>{t('eyebrow')}</EyebrowPill>
+          <h2 className="mt-4 font-display text-3xl font-bold tracking-tight text-foreground sm:text-4xl">{t('title')}</h2>
+        </div>
+        <div className="mt-14 grid gap-5 sm:grid-cols-3">
+          {pillars.map((p, i) => (
             <motion.div
-              initial={{ opacity: 0, scale: 0.8, y: 10 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.5, ease }}
-              className="absolute -bottom-4 -left-4 hidden rounded-2xl bg-background/90 px-4 py-3 shadow-[0_20px_40px_-12px_oklch(0.2_0.02_264/0.25)] backdrop-blur-xl ring-1 ring-border/60 sm:block lg:-bottom-6 lg:-left-6"
+              key={p.title}
+              initial={{ opacity: 0, y: 16 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: '-60px' }}
+              transition={{ duration: 0.5, delay: i * 0.08, ease }}
+              className="group rounded-3xl border border-border bg-card p-7 shadow-[0_10px_30px_-18px_oklch(0.18_0_0/0.3)] transition-all hover:-translate-y-1 hover:shadow-[0_24px_48px_-20px_oklch(0.18_0_0/0.35)]"
             >
-              <div className="flex items-center gap-3">
-                <div className="flex -space-x-2">
-                  {[0, 1, 2].map((i) => (
-                    <div
-                      key={i}
-                      className="size-7 rounded-full ring-2 ring-background"
-                      style={{
-                        background: `linear-gradient(135deg, oklch(${0.55 + i * 0.05} 0.18 ${260 + i * 15} / 0.8), oklch(${0.65 + i * 0.04} 0.15 ${285 + i * 10} / 0.6))`,
-                      }}
-                      aria-hidden
-                    />
-                  ))}
-                </div>
-                <div className="text-xs">
-                  <div className="font-semibold text-foreground">Une équipe à votre écoute</div>
-                  <div className="text-muted-foreground">Réponse sous 24h</div>
-                </div>
-              </div>
+              <span className="flex size-12 items-center justify-center rounded-2xl bg-accent/10 text-accent ring-1 ring-accent/20">
+                <p.icon className="size-6" aria-hidden />
+              </span>
+              <h3 className="mt-5 font-display text-xl font-semibold text-foreground">{p.title}</h3>
+              <p className="mt-2 text-[15px] leading-relaxed text-muted-foreground">{p.text}</p>
             </motion.div>
-          </motion.div>
+          ))}
         </div>
       </div>
     </section>
   )
 }
 
-function ValuesTimeline({ values }: { values: any[] }) {
-  const ref = useRef<HTMLDivElement>(null)
-  const { scrollYProgress } = useScroll({
-    target: ref,
-    offset: ['start 70%', 'end 60%'],
-  })
-  const lineHeight = useTransform(scrollYProgress, [0, 1], ['0%', '100%'])
-
+function ComplexSection({ cms }: { cms?: Record<string, string> }) {
+  const t = useTranslations('About.complex')
+  const l = useLocale() as Locale
   return (
-    <div ref={ref} className="relative mx-auto mt-14 max-w-4xl">
-      {/* Vertical line (background) */}
-      <div
-        aria-hidden
-        className="absolute left-4 top-0 h-full w-px bg-border md:left-1/2 md:-translate-x-1/2"
-      />
-      {/* Vertical line (animated fill) */}
-      <motion.div
-        aria-hidden
-        style={{ height: lineHeight }}
-        className="absolute left-4 top-0 w-px bg-gradient-to-b from-primary via-primary to-[oklch(0.6_0.18_260)] md:left-1/2 md:-translate-x-1/2"
-      />
+    <section className="border-b border-border/60 bg-background">
+      <div className="mx-auto max-w-6xl px-4 py-20 sm:px-6 lg:px-8 lg:py-28">
+        <div className="mx-auto max-w-2xl text-center">
+          <EyebrowPill>{t('eyebrow')}</EyebrowPill>
+          <h2 className="mt-4 font-display text-3xl font-bold tracking-tight text-foreground sm:text-4xl">{cms?.title || t('title')}</h2>
+          <p className="mt-4 text-muted-foreground">{cms?.description || t('description')}</p>
+        </div>
+        <div className="mt-12 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          {activities.map((a) => (
+            <Link
+              key={a.slug}
+              href={`/activities/${a.slug}`}
+              className="group flex items-center gap-3 rounded-2xl border border-border bg-card p-4 transition-all hover:-translate-y-0.5 hover:border-accent/40"
+            >
+              <span className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-accent/10 text-accent ring-1 ring-accent/15">
+                <ActivityIcon name={a.icon} className="size-5" />
+              </span>
+              <span className="flex-1">
+                <span className="block font-display text-base font-semibold text-foreground">{a.name[l]}</span>
+                <span className="block text-xs text-muted-foreground">{a.tagline[l]}</span>
+              </span>
+              <ArrowUpRight className="size-4 shrink-0 text-muted-foreground transition-all group-hover:text-accent" aria-hidden />
+            </Link>
+          ))}
+        </div>
+      </div>
+    </section>
+  )
+}
 
-      <ul className="space-y-12 md:space-y-16">
-        {values.map((v: any, i: number) => {
-          const Icon = getIcon(v.iconName ?? aboutContent.values[i]?.iconName)
-          const isRight = i % 2 === 1
-          return (
-            <li key={v.title || i} className="relative">
-              {/* Dot */}
-              <motion.div
-                initial={{ scale: 0, opacity: 0 }}
-                whileInView={{ scale: 1, opacity: 1 }}
-                viewport={{ once: true, margin: '-80px' }}
-                transition={{ duration: 0.4, ease, delay: 0.15 }}
-                className="absolute left-4 top-6 z-10 -translate-x-1/2 md:left-1/2"
-              >
-                <span className="relative flex size-10 items-center justify-center rounded-full bg-background ring-1 ring-primary/30 shadow-[0_0_20px_oklch(0.55_0.2_285/0.4)] dark:shadow-[0_0_20px_oklch(0.55_0.2_285/0.5)]">
-                  {/* Overlay gradient sur fond opaque */}
-                  <span
-                    className="absolute inset-0 rounded-full bg-gradient-to-br from-primary/15 to-primary/5"
-                    aria-hidden
-                  />
-                  <span className="absolute inset-0 animate-ping rounded-full bg-primary/20" />
-                  <Icon className="relative size-4 text-primary" aria-hidden />
-                </span>
-              </motion.div>
-
-              {/* Card */}
-              <motion.div
-                initial={{ opacity: 0, x: isRight ? 20 : -20, y: 10 }}
-                whileInView={{ opacity: 1, x: 0, y: 0 }}
-                viewport={{ once: true, margin: '-80px' }}
-                transition={{ duration: 0.55, ease, delay: 0.1 }}
-                className={`ml-14 md:ml-0 md:w-[calc(50%-2.5rem)] ${
-                  isRight ? 'md:ml-[calc(50%+2.5rem)]' : 'md:mr-[calc(50%+2.5rem)]'
-                }`}
-              >
-                <div className="group relative overflow-hidden rounded-2xl bg-card/80 p-6 shadow-[0_8px_24px_-12px_oklch(0.2_0.02_264/0.15)] backdrop-blur-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_20px_40px_-12px_oklch(0.2_0.02_264/0.25)]">
-                  {/* Bordure dégradée premium */}
-                  <div
-                    className="pointer-events-none absolute inset-0 rounded-2xl p-px transition-opacity duration-500 group-hover:opacity-100"
-                    aria-hidden
-                    style={{
-                      background:
-                        'linear-gradient(135deg, oklch(0.55 0.2 285 / 0.35) 0%, oklch(0.91 0.012 264 / 0.6) 50%, oklch(0.55 0.2 285 / 0.35) 100%)',
-                      WebkitMask:
-                        'linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0)',
-                      WebkitMaskComposite: 'xor',
-                      maskComposite: 'exclude',
-                    }}
-                  />
-                  {/* Soft gradient wash on hover */}
-                  <div
-                    aria-hidden
-                    className="pointer-events-none absolute -top-16 -right-16 size-40 rounded-full bg-primary/20 opacity-0 blur-2xl transition-opacity duration-500 group-hover:opacity-100"
-                  />
-                  <div className="relative">
-                    <div className="flex items-center gap-3">
-                      <span className="font-display text-[11px] font-bold tracking-[0.2em] text-primary">
-                        0{i + 1}
-                      </span>
-                      <span className="h-px flex-1 bg-gradient-to-r from-border to-transparent" />
-                    </div>
-                    <h3 className="mt-3 font-display text-xl leading-tight tracking-[-0.01em] text-foreground">
-                      {v.title}
-                    </h3>
-                    <p className="mt-2 text-[15px] leading-relaxed text-muted-foreground">
-                      {v.description}
-                    </p>
-                  </div>
-                </div>
-              </motion.div>
-            </li>
-          )
-        })}
-      </ul>
-    </div>
+function GallerySection({ gallery }: { gallery?: string[] }) {
+  const t = useTranslations('About.gallery')
+  const photos = gallery && gallery.length > 0 ? gallery : images.aboutGallery
+  return (
+    <section className="border-b border-border/60 bg-[oklch(0.967_0_0)] dark:bg-[oklch(0.18_0_0)]">
+      <div className="mx-auto max-w-6xl px-4 py-20 sm:px-6 lg:px-8 lg:py-28">
+        <div className="mx-auto max-w-2xl text-center">
+          <EyebrowPill>{t('eyebrow')}</EyebrowPill>
+          <h2 className="mt-4 font-display text-3xl font-bold tracking-tight text-foreground sm:text-4xl">{t('title')}</h2>
+        </div>
+        <div className="mt-14 grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-4">
+          {photos.map((src, i) => (
+            <motion.div
+              key={i}
+              initial={{ opacity: 0, y: 12 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: '-60px' }}
+              transition={{ duration: 0.45, ease, delay: i * 0.06 }}
+              className={`group relative overflow-hidden rounded-2xl shadow-[0_10px_30px_-12px_oklch(0.18_0_0/0.18)] ring-1 ring-border/60 ${
+                i % 4 === 0 || i % 4 === 3 ? 'aspect-[4/5]' : 'aspect-[4/3]'
+              }`}
+            >
+              <Image src={src} alt="" fill sizes="(min-width:768px) 25vw, 50vw" loading="lazy" className="object-cover transition-transform duration-700 group-hover:scale-105" />
+              <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-foreground/40 via-transparent to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" aria-hidden />
+            </motion.div>
+          ))}
+        </div>
+      </div>
+    </section>
   )
 }
 
 export function AboutContent() {
-  const { data } = useContent('about', defaults)
-  const hero = data.hero ?? defaults.hero
-  const values = data.values ?? defaults.values
-  const gallery = data.gallery ?? defaults.gallery
+  const { data } = useContent('about', {} as {
+    hero?: Record<string, string>
+    story?: Record<string, string>
+    complex?: Record<string, string>
+    values?: { title?: string; description?: string }[]
+    gallery?: string[]
+  })
 
   return (
     <>
-      <AboutHero hero={hero} />
-
-      <section className="border-b border-border/60 bg-background">
-        <div className="mx-auto max-w-6xl px-4 py-20 sm:px-6 lg:px-8 lg:py-28">
-          <SectionTitle eyebrow="Nos valeurs" title="Ce qui nous guide au quotidien" />
-          <ValuesTimeline values={values} />
-        </div>
-      </section>
-
-      <section className="border-b border-border/60 bg-[oklch(0.975_0.012_285)] dark:bg-[oklch(0.16_0.02_285)]">
-        <div className="mx-auto max-w-6xl px-4 py-20 sm:px-6 lg:px-8 lg:py-28">
-          <SectionTitle eyebrow="En images" title="Notre quotidien" />
-          <div className="mt-14 grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-4">
-            {gallery.map((src: string, i: number) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, y: 12 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: '-60px' }}
-                transition={{ duration: 0.45, ease, delay: i * 0.06 }}
-                className={`group relative overflow-hidden rounded-2xl shadow-[0_10px_30px_-12px_oklch(0.2_0.02_264/0.18)] ring-1 ring-border/60 ${
-                  i % 4 === 0 || i % 4 === 3 ? 'aspect-[4/5]' : 'aspect-[4/3]'
-                }`}
-              >
-                <Image
-                  src={src}
-                  alt=""
-                  fill
-                  sizes="(min-width:768px) 25vw, 50vw"
-                  loading="lazy"
-                  className="object-cover transition-transform duration-700 group-hover:scale-105"
-                />
-                {/* Overlay gradient subtle au hover */}
-                <div
-                  className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100"
-                  aria-hidden
-                />
-                {/* Indicator dot top-right */}
-                <div
-                  className="pointer-events-none absolute top-3 right-3 size-1.5 rounded-full bg-white/0 transition-all duration-500 group-hover:bg-white/80 group-hover:shadow-[0_0_10px_oklch(1_0_0/0.6)]"
-                  aria-hidden
-                />
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
+      <AboutHero cms={data.hero} />
+      <StorySection cms={data.story} />
+      <PillarsSection values={data.values} />
+      <ComplexSection cms={data.complex} />
+      <GallerySection gallery={data.gallery} />
       <CtaSection />
     </>
   )
