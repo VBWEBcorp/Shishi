@@ -2,6 +2,8 @@ import type { Metadata } from 'next'
 import { setRequestLocale } from 'next-intl/server'
 
 import { ActivityTiles } from '@/components/sections/activity-tiles'
+import { ExperienceGallery } from '@/components/sections/experience-gallery'
+import { FaqSection } from '@/components/sections/faq-section'
 import { ShishiHero } from '@/components/sections/shishi-hero'
 import { BookingCta, StorySection, ValuesBand } from '@/components/sections/shishi-home'
 import {
@@ -42,8 +44,10 @@ export default async function HomePage({
       />
       <ShishiHero />
       <ActivityTiles />
+      <ExperienceGallery />
       <ValuesBand />
       <StorySection />
+      <FaqSection />
       <BookingCta />
     </>
   )

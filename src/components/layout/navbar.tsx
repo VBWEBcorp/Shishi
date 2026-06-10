@@ -1,7 +1,7 @@
 'use client'
 
 import { AnimatePresence, motion } from 'framer-motion'
-import { ArrowRight, ArrowUpRight, Instagram } from 'lucide-react'
+import { ArrowRight, Instagram, MapPin } from 'lucide-react'
 import Image from 'next/image'
 import { useLocale, useTranslations } from 'next-intl'
 import { useEffect, useState, useTransition } from 'react'
@@ -27,7 +27,11 @@ export function Navbar() {
   const [scrolled, setScrolled] = useState(false)
   const pathname = usePathname()
 
-  const hasDarkHero = pathname === '/' || pathname?.startsWith('/activities')
+  const hasDarkHero =
+    pathname === '/' ||
+    pathname?.startsWith('/activities') ||
+    pathname?.startsWith('/booking') ||
+    pathname?.startsWith('/a-propos')
   const lightText = open || (!!hasDarkHero && !scrolled)
 
   useEffect(() => {
@@ -128,7 +132,6 @@ function FullscreenMenu({
 }) {
   const t = useTranslations('Nav')
   const locale = useLocale() as Locale
-  const [hovered, setHovered] = useState<string | null>(null)
 
   return (
     <AnimatePresence>
@@ -137,126 +140,118 @@ function FullscreenMenu({
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-          className="fixed inset-0 z-[100] overflow-y-auto bg-[oklch(0.18_0_0)]"
+          transition={{ duration: 0.25, ease: 'easeOut' }}
+          className="fixed inset-0 z-[100] overflow-y-auto bg-[oklch(0.2_0.05_232)]"
         >
-          <div className="pointer-events-none absolute inset-0" aria-hidden>
-            {activities.map((a) => (
-              <div
-                key={a.slug}
-                className={cn(
-                  'absolute inset-0 transition-opacity duration-700',
-                  hovered === a.slug ? 'opacity-100' : 'opacity-0'
-                )}
-              >
-                <Image src={a.image} alt="" fill sizes="100vw" className="object-cover" />
-                <div className="absolute inset-0 bg-[oklch(0.18_0_0/0.78)]" />
-              </div>
-            ))}
-            <div
-              className={cn(
-                'absolute inset-0 bg-gradient-to-b from-[oklch(0.18_0_0/0.6)] to-[oklch(0.18_0_0/0.9)] transition-opacity duration-700',
-                hovered ? 'opacity-40' : 'opacity-100'
-              )}
+          {/* Fond bleu flou (image statique pré-floutée — aucun coût de blur en temps réel) */}
+          <div className="pointer-events-none fixed inset-0" aria-hidden>
+            <Image
+              src="/photos/pool.jpg"
+              alt=""
+              fill
+              sizes="100vw"
+              className="scale-110 object-cover blur-2xl"
             />
+            <div className="absolute inset-0 bg-[oklch(0.24_0.07_233/0.78)]" />
+            <div className="absolute inset-0 bg-gradient-to-b from-[oklch(0.18_0.05_235/0.5)] to-[oklch(0.14_0.05_238/0.9)]" />
           </div>
 
           <div className="relative mx-auto flex min-h-dvh max-w-7xl flex-col px-4 sm:px-6 lg:px-8">
             <div className="h-16 shrink-0" aria-hidden />
 
-            <nav
-              className="flex flex-1 flex-col justify-center py-10"
-              aria-label="Activities"
-              onMouseLeave={() => setHovered(null)}
-            >
-              <p className="mb-4 font-mono text-[11px] font-semibold uppercase tracking-[0.25em] text-accent">
+            <nav className="flex flex-1 flex-col justify-center py-10" aria-label="Activities">
+              <p className="mb-5 text-[11px] font-semibold uppercase tracking-[0.28em] text-accent">
                 {t('ourActivities')}
               </p>
-              <ul>
-                {activities.map((a, i) => {
+              <ul className="border-t border-white/10">
+                {activities.map((a) => {
                   const active = pathname === `/activities/${a.slug}`
                   return (
-                    <motion.li
-                      key={a.slug}
-                      initial={{ opacity: 0, y: 24 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.5, delay: 0.08 + i * 0.06, ease: [0.22, 1, 0.36, 1] }}
-                      className="border-b border-white/10"
-                    >
+                    <li key={a.slug} className="border-b border-white/10">
                       <Link
                         href={`/activities/${a.slug}`}
                         onClick={onClose}
-                        onMouseEnter={() => setHovered(a.slug)}
-                        className="group flex items-center gap-4 py-3.5 sm:gap-6 sm:py-4"
+                        className="group flex items-center gap-4 py-3 sm:py-3.5"
                       >
                         <ActivityIcon
                           name={a.icon}
                           className="size-5 shrink-0 text-white/50 transition-colors group-hover:text-accent sm:size-6"
                         />
-                        <span className="flex-1 font-display text-3xl font-bold leading-tight tracking-tight text-white/85 transition-all duration-300 group-hover:translate-x-2 group-hover:text-white sm:text-5xl lg:text-6xl">
-                          {a.name[locale]}
-                          {a.featured && (
-                            <sup className="ml-2 align-super text-[10px] font-bold uppercase tracking-widest text-accent sm:text-xs">
-                              Signature
-                            </sup>
+                        <span
+                          className={cn(
+                            'font-editorial text-[1.9rem] font-normal leading-tight tracking-[-0.01em] transition-colors duration-200 group-hover:text-white sm:text-5xl',
+                            active ? 'text-white' : 'text-white/65'
                           )}
+                        >
+                          {a.name[locale]}
                         </span>
-                        <span className="hidden max-w-[34%] truncate text-sm text-white/50 transition-opacity group-hover:text-white/80 md:block">
+                        {a.featured && (
+                          <span className="rounded-full bg-accent/15 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-accent ring-1 ring-accent/25">
+                            Signature
+                          </span>
+                        )}
+                        <span className="ml-auto hidden truncate text-sm text-white/45 md:block">
                           {a.tagline[locale]}
                         </span>
-                        <ArrowUpRight
-                          className={cn(
-                            'size-6 shrink-0 text-white/40 transition-all duration-300 group-hover:translate-x-1 group-hover:-translate-y-1 group-hover:text-accent sm:size-7',
-                            active && 'text-accent'
-                          )}
-                          aria-hidden
-                        />
                       </Link>
-                    </motion.li>
+                    </li>
                   )
                 })}
               </ul>
             </nav>
 
-            <motion.div
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.5 }}
-              className="flex shrink-0 flex-col gap-6 border-t border-white/10 py-6 sm:flex-row sm:items-center sm:justify-between"
-            >
-              <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
-                {navItems.map((l) => (
-                  <Link
-                    key={l.to}
-                    href={l.to}
-                    onClick={onClose}
-                    className="text-sm font-medium text-white/70 transition-colors hover:text-white"
-                  >
-                    {t(l.key)}
-                  </Link>
-                ))}
+            {/* Bas : contact (gauche) · liens + CTA + réseaux (droite) */}
+            <div className="flex shrink-0 flex-col gap-6 border-t border-white/10 py-6 sm:flex-row sm:items-end sm:justify-between">
+              <div>
+                <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-accent">
+                  {t('getInTouch')}
+                </p>
                 <a
-                  href={siteConfig.instagram}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 text-sm font-medium text-white/70 transition-colors hover:text-white"
+                  href={`mailto:${siteConfig.email}`}
+                  className="mt-2 block w-fit border-b border-white/20 pb-0.5 text-base text-white/85 transition-colors hover:border-white/60 hover:text-white"
                 >
-                  <Instagram className="size-4" aria-hidden />
-                  @shishisamui
+                  {siteConfig.email}
                 </a>
+                <p className="mt-2 inline-flex items-center gap-1.5 text-sm text-white/45">
+                  <MapPin className="size-4" aria-hidden />
+                  Lamai · Koh Samui
+                </p>
               </div>
 
-              <div className="flex items-center gap-4">
-                <Link
-                  href="/booking"
-                  onClick={onClose}
-                  className="group inline-flex h-11 items-center gap-2 rounded-full bg-accent px-6 text-sm font-semibold text-accent-foreground shadow-[0_10px_30px_-8px_oklch(0.63_0.187_47/0.6)] transition-all hover:brightness-105"
-                >
-                  {t('bookACourt')}
-                  <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" aria-hidden />
-                </Link>
+              <div className="flex flex-col gap-4 sm:items-end">
+                <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
+                  {navItems.map((l) => (
+                    <Link
+                      key={l.to}
+                      href={l.to}
+                      onClick={onClose}
+                      className="text-sm font-medium text-white/70 transition-colors hover:text-white"
+                    >
+                      {t(l.key)}
+                    </Link>
+                  ))}
+                </div>
+                <div className="flex items-center gap-3">
+                  <a
+                    href={siteConfig.instagram}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label="Instagram"
+                    className="inline-flex size-10 items-center justify-center rounded-full text-white/70 ring-1 ring-white/20 transition-colors hover:bg-white/10 hover:text-white"
+                  >
+                    <Instagram className="size-4" aria-hidden />
+                  </a>
+                  <Link
+                    href="/booking"
+                    onClick={onClose}
+                    className="group inline-flex h-11 items-center gap-2 rounded-full bg-accent px-6 text-sm font-semibold text-accent-foreground shadow-[0_10px_30px_-8px_oklch(0.63_0.187_47/0.6)] transition-all hover:brightness-105"
+                  >
+                    {t('bookACourt')}
+                    <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" aria-hidden />
+                  </Link>
+                </div>
               </div>
-            </motion.div>
+            </div>
           </div>
         </motion.div>
       )}

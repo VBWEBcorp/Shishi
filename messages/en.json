@@ -9,7 +9,8 @@
     "ourActivities": "Our activities",
     "bookACourt": "Book a court",
     "location": "Lamai · Koh Samui",
-    "home": "Home"
+    "home": "Home",
+    "getInTouch": "Get in touch"
   },
   "Home": {
     "hero": {
@@ -26,13 +27,20 @@
       "stickerLine2": "RIGHT NOW!",
       "chooseActivity": "Which activity?",
       "bookNow": "Book",
-      "pickActivity": "Pick an activity"
+      "pickActivity": "Pick an activity",
+      "when": "When",
+      "whenValue": "Today"
     },
     "tiles": {
       "eyebrow": "Our activities",
       "title": "One club, six ways to enjoy the island",
       "subtitle": "Pick an activity to discover the space, the prices and book your session in a tap.",
-      "signature": "Signature"
+      "signature": "Signature",
+      "intro": "Tennis, pickleball, fitness, a healthy restaurant, kids club and pool: six poles brought together in one place to live, in the south of Koh Samui.",
+      "exploreAll": "Explore the resort",
+      "book": "Book",
+      "discover": "Discover",
+      "from": "from"
     },
     "values": {
       "sportTitle": "Sport",
@@ -53,7 +61,13 @@
       "title": "Ready to play?",
       "subtitle": "Check real-time availability, pick your slot and pay securely online. Your court is one minute away.",
       "bookCourt": "Book a court",
-      "getInTouch": "Get in touch"
+      "getInTouch": "Get in touch",
+      "eyebrow": "Online booking"
+    },
+    "spotlight": {
+      "eyebrow": "The experience",
+      "title": "A day at Shi Shi",
+      "cta": "Discover the place"
     }
   },
   "Booking": {

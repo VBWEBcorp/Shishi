@@ -1,12 +1,12 @@
 import type { Metadata, Viewport } from 'next'
-import { Cinzel, JetBrains_Mono, Montserrat } from 'next/font/google'
+import { Cinzel, Fraunces, Montserrat } from 'next/font/google'
 
 import { ThemeScript } from '@/components/theme/theme-script'
 import { siteConfig } from '@/lib/seo'
 
 import '../index.css'
 
-// Textes — Montserrat (charte graphique)
+// Corps de texte — Montserrat (charte).
 const montserrat = Montserrat({
   subsets: ['latin'],
   variable: '--font-sans',
@@ -14,7 +14,7 @@ const montserrat = Montserrat({
   display: 'swap',
 })
 
-// Logo & titres élégants — Cinzel (charte graphique)
+// Logo — Cinzel (charte).
 const cinzel = Cinzel({
   subsets: ['latin'],
   variable: '--font-display',
@@ -22,10 +22,12 @@ const cinzel = Cinzel({
   display: 'swap',
 })
 
-const jetbrainsMono = JetBrains_Mono({
+// Grands titres éditoriaux — Fraunces (serif chaud, bas-de-casse + italique).
+const fraunces = Fraunces({
   subsets: ['latin'],
-  variable: '--font-mono',
-  weight: ['400', '500', '600'],
+  variable: '--font-editorial',
+  style: ['normal', 'italic'],
+  axes: ['opsz'],
   display: 'swap',
 })
 
@@ -78,7 +80,7 @@ export default function RootLayout({
     <html
       lang="en"
       dir="ltr"
-      className={`${montserrat.variable} ${cinzel.variable} ${jetbrainsMono.variable}`}
+      className={`${montserrat.variable} ${cinzel.variable}`}
       suppressHydrationWarning
     >
       <head>

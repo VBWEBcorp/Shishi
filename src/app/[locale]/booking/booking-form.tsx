@@ -30,8 +30,13 @@ export function BookingForm() {
   const params = useSearchParams()
   const paymentStatus = params.get('status') // success | cancelled
 
-  const [activitySlug, setActivitySlug] = useState('')
-  const [date, setDate] = useState('')
+  // Pré-remplissage depuis la recherche du hero (/booking?activity=&date=)
+  const presetActivity = params.get('activity') ?? ''
+  const presetDate = params.get('date') ?? ''
+  const validActivity = activities.some((a) => a.slug === presetActivity) ? presetActivity : ''
+
+  const [activitySlug, setActivitySlug] = useState(validActivity)
+  const [date, setDate] = useState(presetDate)
   const [slots, setSlots] = useState<Slot[]>([])
   const [loadingSlots, setLoadingSlots] = useState(false)
   const [selectedTime, setSelectedTime] = useState('')
@@ -41,11 +46,22 @@ export function BookingForm() {
 
   const bookable = activitySlug ? isBookable(activitySlug) : true
 
+  // Synchronise l'activité/date du formulaire quand l'URL change
+  // (clic sur un panel « Que souhaitez-vous réserver ? » → ?activity=…).
   useEffect(() => {
-    if (paymentStatus) {
+    if (validActivity) setActivitySlug(validActivity)
+  }, [validActivity])
+
+  useEffect(() => {
+    if (presetDate) setDate(presetDate)
+  }, [presetDate])
+
+  // Défile vers le formulaire au montage ET à chaque (re)sélection via l'URL.
+  useEffect(() => {
+    if (paymentStatus || validActivity) {
       document.getElementById('booking-form')?.scrollIntoView({ behavior: 'smooth' })
     }
-  }, [paymentStatus])
+  }, [paymentStatus, validActivity])
 
   // Charge les créneaux dès qu'une activité réservable + une date sont choisies.
   useEffect(() => {

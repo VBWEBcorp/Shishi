@@ -24,16 +24,16 @@ export function ValuesBand() {
   }))
 
   return (
-    <section className="border-y border-border bg-secondary/40">
+    <section className="bg-[oklch(0.3_0.055_228)] text-white">
       <div className="mx-auto grid max-w-6xl gap-8 px-4 py-16 sm:px-6 md:grid-cols-3 lg:px-8">
         {values.map((v) => (
           <div key={v.title} className="flex gap-4">
-            <span className="flex size-12 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary ring-1 ring-primary/15">
+            <span className="flex size-12 shrink-0 items-center justify-center rounded-xl bg-white/10 text-white ring-1 ring-white/20">
               <v.icon className="size-6" aria-hidden />
             </span>
             <div>
-              <h3 className="font-display text-lg font-semibold text-foreground">{v.title}</h3>
-              <p className="mt-1 text-sm leading-relaxed text-muted-foreground">{v.text}</p>
+              <h3 className="font-editorial text-xl font-medium text-white">{v.title}</h3>
+              <p className="mt-1 text-sm leading-relaxed text-white/75">{v.text}</p>
             </div>
           </div>
         ))}
@@ -64,7 +64,7 @@ export function StorySection() {
             <span className="size-1.5 rotate-45 bg-accent" aria-hidden />
             {s.eyebrow || t('eyebrow')}
           </span>
-          <h2 className="mt-4 font-display text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
+          <h2 className="mt-5 font-editorial text-[2rem] font-normal leading-[1.1] tracking-[-0.01em] text-foreground sm:text-[2.6rem]">
             {s.title || t('title')}
           </h2>
           <div className="mt-5 space-y-4 text-muted-foreground">
@@ -92,29 +92,37 @@ export function BookingCta() {
   return (
     <section className="relative isolate overflow-hidden">
       <Image
-        src="/photos/pool.jpg"
+        src="/photos/pool-2.jpg"
         alt=""
         fill
         sizes="100vw"
         className="object-cover"
       />
-      <div className="absolute inset-0 bg-[oklch(0.18_0_0/0.82)]" aria-hidden />
-      <div className="relative mx-auto max-w-3xl px-4 py-20 text-center sm:px-6 lg:py-28">
-        <h2 className="font-display text-3xl font-bold tracking-tight text-white sm:text-4xl">
+      {/* Voile chaud et doux (Lifetime) + tinte orange discrète */}
+      <div className="absolute inset-0 bg-gradient-to-b from-[oklch(0.16_0.02_55/0.55)] via-[oklch(0.16_0.02_55/0.6)] to-[oklch(0.14_0.02_55/0.82)]" aria-hidden />
+      <div className="absolute inset-0 bg-[oklch(0.55_0.12_55/0.1)] mix-blend-soft-light" aria-hidden />
+
+      <div className="relative mx-auto max-w-3xl px-4 py-24 text-center sm:px-6 lg:py-36">
+        <span className="text-xs font-semibold uppercase tracking-[0.28em] text-white/70">
+          {t('eyebrow')}
+        </span>
+        <h2 className="mt-5 font-editorial text-[2.2rem] font-normal leading-[1.08] tracking-[-0.01em] text-white sm:text-[3rem]">
           {c.title || t('title')}
         </h2>
-        <p className="mx-auto mt-4 max-w-xl text-white/80">{c.description || t('subtitle')}</p>
-        <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
+        <p className="mx-auto mt-5 max-w-xl text-base leading-relaxed text-white/80">
+          {c.description || t('subtitle')}
+        </p>
+        <div className="mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row">
           <Link
             href="/booking"
-            className="group inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-accent px-7 text-sm font-semibold text-accent-foreground shadow-[0_10px_30px_-8px_oklch(0.63_0.187_47/0.6)] transition-all hover:brightness-105"
+            className="group inline-flex h-12 items-center justify-center gap-2 rounded-full bg-accent px-7 text-sm font-semibold text-accent-foreground shadow-[0_14px_34px_-10px_oklch(0.63_0.187_47/0.65)] transition-all hover:-translate-y-0.5 hover:brightness-105"
           >
             {c.button || t('bookCourt')}
             <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" aria-hidden />
           </Link>
           <Link
             href="/contact"
-            className="inline-flex h-12 items-center justify-center rounded-xl bg-white/10 px-7 text-sm font-semibold text-white ring-1 ring-white/25 backdrop-blur transition-colors hover:bg-white/15"
+            className="inline-flex h-12 items-center justify-center rounded-full bg-white/10 px-7 text-sm font-semibold text-white ring-1 ring-white/30 backdrop-blur transition-colors hover:bg-white/15"
           >
             {t('getInTouch')}
           </Link>
