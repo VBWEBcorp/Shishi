@@ -1,6 +1,6 @@
 'use client'
 
-import { CalendarCheck, Dumbbell, HeartHandshake, Sparkles } from 'lucide-react'
+import { BookOpen, CalendarCheck, Dumbbell, HeartHandshake, Sparkles } from 'lucide-react'
 import { useLocale, useTranslations } from 'next-intl'
 import Image from 'next/image'
 
@@ -63,10 +63,7 @@ export function StorySection() {
           />
         </div>
         <div>
-          <span className="inline-flex items-center gap-2 rounded-full bg-foreground px-3.5 py-1.5 text-[11px] font-semibold uppercase tracking-[0.18em] text-white">
-            <span className="size-1.5 rotate-45 bg-accent" aria-hidden />
-            {s.eyebrow || t('eyebrow')}
-          </span>
+          <SectionEyebrow icon={BookOpen}>{s.eyebrow || t('eyebrow')}</SectionEyebrow>
           <h2 className="mt-5 font-editorial text-[2rem] font-normal leading-[1.1] tracking-[-0.01em] text-foreground sm:text-[2.6rem]">
             {s.title || t('title')}
           </h2>
