@@ -1,11 +1,12 @@
 'use client'
 
 import { Dumbbell, HeartHandshake, Sparkles, ArrowRight } from 'lucide-react'
-import { useTranslations } from 'next-intl'
+import { useLocale, useTranslations } from 'next-intl'
 import Image from 'next/image'
 
 import { useContent } from '@/hooks/use-content'
 import { Link } from '@/i18n/navigation'
+import { activities, type Locale } from '@/lib/activities'
 
 export function ValuesBand() {
   const t = useTranslations('Home.values')
@@ -24,16 +25,16 @@ export function ValuesBand() {
   }))
 
   return (
-    <section className="bg-[oklch(0.3_0.055_228)] text-white">
+    <section className="border-y border-border bg-background text-foreground">
       <div className="mx-auto grid max-w-6xl gap-8 px-4 py-16 sm:px-6 md:grid-cols-3 lg:px-8">
         {values.map((v) => (
           <div key={v.title} className="flex gap-4">
-            <span className="flex size-12 shrink-0 items-center justify-center rounded-xl bg-white/10 text-white ring-1 ring-white/20">
+            <span className="flex size-12 shrink-0 items-center justify-center rounded-xl bg-foreground/5 text-foreground ring-1 ring-foreground/10">
               <v.icon className="size-6" aria-hidden />
             </span>
             <div>
-              <h3 className="font-editorial text-xl font-medium text-white">{v.title}</h3>
-              <p className="mt-1 text-sm leading-relaxed text-white/75">{v.text}</p>
+              <h3 className="font-editorial text-xl font-medium text-foreground">{v.title}</h3>
+              <p className="mt-1 text-sm leading-relaxed text-muted-foreground">{v.text}</p>
             </div>
           </div>
         ))}
@@ -84,6 +85,56 @@ export function StorySection() {
   )
 }
 
+/** Emoji par activité pour le bandeau défilant pré-footer. */
+const MARQUEE_EMOJI: Record<string, string> = {
+  pickleball: '🏓',
+  tennis: '🎾',
+  fitness: '💪',
+  restaurant: '🍽️',
+  'kids-club': '🧒',
+  pool: '🏊',
+}
+
+/**
+ * Bandeau de noms d'activités qui défile tout seul, en boucle continue.
+ * Deux copies côte à côte + `animate-marquee-band` (translateX -50%) = boucle
+ * sans couture. Purement décoratif (les mêmes liens existent dans le footer),
+ * d'où aria-hidden sur le conteneur.
+ */
+function ActivityMarquee() {
+  const locale = useLocale() as Locale
+
+  const items: { emoji: string; label: string }[] = [
+    ...activities.map((a) => ({ emoji: MARQUEE_EMOJI[a.slug] ?? '✨', label: a.name[locale] })),
+    { emoji: '🌴', label: 'Koh Samui' },
+    { emoji: '🍹', label: 'Pool Bar' },
+    { emoji: '🧘', label: locale === 'fr' ? 'Bien-être' : 'Wellness' },
+    { emoji: '☀️', label: 'Lamai' },
+  ]
+
+  const loop = [...items, ...items]
+
+  return (
+    <div
+      aria-hidden
+      className="flex overflow-hidden [mask-image:linear-gradient(to_right,transparent,#000_7%,#000_93%,transparent)]"
+    >
+      <ul className="animate-marquee-band flex shrink-0 items-center">
+        {loop.map((it, i) => (
+          <li
+            key={i}
+            className="inline-flex shrink-0 items-center gap-3 text-nowrap pe-8 font-editorial text-lg font-normal tracking-wide text-white/55 sm:pe-12 sm:text-2xl"
+          >
+            <span className="text-[1.1em]">{it.emoji}</span>
+            <span>{it.label}</span>
+            <span className="text-white/25">•</span>
+          </li>
+        ))}
+      </ul>
+    </div>
+  )
+}
+
 export function BookingCta() {
   const t = useTranslations('Home.cta')
   const { data } = useContent('home', {} as { cta?: Record<string, string> })
@@ -98,11 +149,12 @@ export function BookingCta() {
         sizes="100vw"
         className="object-cover"
       />
-      {/* Voile chaud et doux (Lifetime) + tinte orange discrète */}
-      <div className="absolute inset-0 bg-gradient-to-b from-[oklch(0.16_0.02_55/0.55)] via-[oklch(0.16_0.02_55/0.6)] to-[oklch(0.14_0.02_55/0.82)]" aria-hidden />
-      <div className="absolute inset-0 bg-[oklch(0.55_0.12_55/0.1)] mix-blend-soft-light" aria-hidden />
+      {/* Voile neutre pour la lisibilité + fondu noir exact du footer en bas */}
+      <div className="absolute inset-0 bg-gradient-to-b from-[oklch(0.16_0_0/0.3)] via-[oklch(0.15_0_0/0.74)] to-[oklch(0.18_0_0)]" aria-hidden />
+      {/* Fondu blanc en haut : blanc pur au sommet (zéro ligne), puis estompe doux */}
+      <div className="pointer-events-none absolute inset-x-0 top-0 h-28 bg-[linear-gradient(to_bottom,#ffffff_0%,rgba(255,255,255,0.5)_25%,rgba(255,255,255,0)_100%)] sm:h-40" aria-hidden />
 
-      <div className="relative mx-auto max-w-3xl px-4 py-24 text-center sm:px-6 lg:py-36">
+      <div className="relative mx-auto max-w-3xl px-4 pt-36 text-center sm:px-6 sm:pt-44 lg:pt-52">
         <span className="text-xs font-semibold uppercase tracking-[0.28em] text-white/70">
           {t('eyebrow')}
         </span>
@@ -127,6 +179,11 @@ export function BookingCta() {
             {t('getInTouch')}
           </Link>
         </div>
+      </div>
+
+      {/* Bandeau défilant, puis fondu dans le footer */}
+      <div className="relative mt-16 pb-14 sm:mt-24 sm:pb-20">
+        <ActivityMarquee />
       </div>
     </section>
   )

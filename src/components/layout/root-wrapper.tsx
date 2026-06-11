@@ -26,6 +26,13 @@ export function RootWrapper({ children }: { children: React.ReactNode }) {
     return children
   }
 
+  // Page d'accueil = « Coming Soon » plein écran : pas de navbar/footer/bannières.
+  // (localePrefix 'always' → la home est /en ou /fr)
+  const isHome = pathname === '/' || pathname === '/en' || pathname === '/fr'
+  if (isHome) {
+    return <main className="flex-1">{children}</main>
+  }
+
   // Sinon: header + contenu + footer complet
   return (
     <>

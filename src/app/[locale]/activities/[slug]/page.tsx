@@ -132,7 +132,7 @@ export default async function ActivityPage({
         >
           <source src={heroVideo} type="video/mp4" />
         </video>
-        <div className="absolute inset-0 bg-gradient-to-b from-[oklch(0.16_0.02_55/0.55)] via-[oklch(0.16_0.02_55/0.5)] to-[oklch(0.14_0.02_55/0.88)]" aria-hidden />
+        <div className="absolute inset-0 bg-gradient-to-b from-[oklch(0.16_0_0/0.55)] via-[oklch(0.16_0_0/0.5)] to-[oklch(0.14_0_0/0.88)]" aria-hidden />
 
         <div className="relative mx-auto flex min-h-[60vh] max-w-6xl flex-col justify-end px-4 pb-14 pt-24 sm:px-6 lg:px-8">
           <nav className="mb-5 flex items-center gap-2 text-xs text-white/70" aria-label="Breadcrumb">

@@ -1,4 +1,14 @@
 {
+  "ComingSoon": {
+    "location": "Lamai · Koh Samui · Thailand",
+    "badge": "Opening soon",
+    "tagline": "The premium social club resort of South Samui.",
+    "description": "Tennis, the island's home of pickleball, a premium gym, a healthy restaurant, a kids club and a pool — all in one place in the heart of Lamai. We're putting the finishing touches in place. Reach out and we'll let you know the moment we open.",
+    "ctaWhatsapp": "Message us on WhatsApp",
+    "ctaEmail": "Email us",
+    "whatsappPrefill": "Hi Shi Shi Samui! I'd love to know more about the club and your opening.",
+    "rights": "All rights reserved"
+  },
   "Nav": {
     "menu": "Menu",
     "close": "Close",

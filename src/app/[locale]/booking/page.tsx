@@ -67,7 +67,7 @@ function BookingContent() {
         >
           <source src="/videos/hero-pool.mp4" type="video/mp4" />
         </video>
-        <div className="absolute inset-0 bg-gradient-to-b from-[oklch(0.16_0.02_55/0.62)] via-[oklch(0.16_0.02_55/0.55)] to-[oklch(0.14_0.02_55/0.9)]" aria-hidden />
+        <div className="absolute inset-0 bg-gradient-to-b from-[oklch(0.16_0_0/0.62)] via-[oklch(0.16_0_0/0.55)] to-[oklch(0.14_0_0/0.9)]" aria-hidden />
 
         <div className="relative mx-auto max-w-6xl px-4 py-20 sm:px-6 lg:px-8 lg:py-28">
           <span className="text-xs font-semibold uppercase tracking-[0.28em] text-accent">{t('eyebrow')}</span>
@@ -103,7 +103,7 @@ function BookingContent() {
                 sizes="(min-width:1024px) 22rem, (min-width:640px) 50vw, 100vw"
                 className="object-cover transition-transform duration-700 group-hover:scale-[1.05]"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-[oklch(0.14_0.02_55/0.9)] via-[oklch(0.14_0.02_55/0.2)] to-transparent" aria-hidden />
+              <div className="absolute inset-0 bg-gradient-to-t from-[oklch(0.14_0_0/0.9)] via-[oklch(0.14_0_0/0.2)] to-transparent" aria-hidden />
               <div className="relative flex items-center gap-3 p-4">
                 <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-white/15 text-white ring-1 ring-white/25 backdrop-blur">
                   <ActivityIcon name={a.icon} className="size-5" />
@@ -150,7 +150,7 @@ function BookingContent() {
             {/* Photo d'ambiance */}
             <div className="relative hidden min-h-44 overflow-hidden rounded-2xl ring-1 ring-border lg:block">
               <Image src="/photos/lounge.jpg" alt="" fill sizes="24rem" className="object-cover" />
-              <div className="absolute inset-0 bg-gradient-to-t from-[oklch(0.14_0.02_55/0.85)] to-transparent" aria-hidden />
+              <div className="absolute inset-0 bg-gradient-to-t from-[oklch(0.14_0_0/0.85)] to-transparent" aria-hidden />
               <div className="absolute inset-x-0 bottom-0 p-5">
                 <p className="font-editorial text-xl font-medium text-white">Shi Shi Samui</p>
                 <p className="mt-0.5 text-sm text-white/80">Lamai · Koh Samui</p>

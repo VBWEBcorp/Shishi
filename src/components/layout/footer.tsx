@@ -1,6 +1,6 @@
 'use client'
 
-import { ArrowUpRight, Instagram, MapPin } from 'lucide-react'
+import { ArrowUpRight, Instagram, Mail, MapPin, MessageCircle } from 'lucide-react'
 import { useLocale, useTranslations } from 'next-intl'
 import Image from 'next/image'
 
@@ -43,15 +43,34 @@ export function Footer() {
               />
             </Link>
             <p className="max-w-sm text-sm leading-relaxed text-zinc-400">{t('tagline')}</p>
-            <a
-              href={siteConfig.instagram}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 rounded-full bg-white/5 px-3 py-1.5 text-sm text-zinc-300 ring-1 ring-white/10 transition-colors hover:bg-white/10 hover:text-white"
-            >
-              <Instagram className="size-4" aria-hidden />
-              @shishisamui
-            </a>
+            {/* Réseaux sociaux — boutons outline façon Traavellio */}
+            <div className="flex items-center gap-3 pt-1">
+              <a
+                href={siteConfig.instagram}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Instagram"
+                className="grid size-11 place-items-center rounded-xl text-zinc-300 ring-1 ring-white/15 transition-colors hover:bg-white/10 hover:text-white"
+              >
+                <Instagram className="size-[18px]" aria-hidden />
+              </a>
+              <a
+                href={`https://wa.me/${siteConfig.whatsapp}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="WhatsApp"
+                className="grid size-11 place-items-center rounded-xl text-zinc-300 ring-1 ring-white/15 transition-colors hover:bg-white/10 hover:text-white"
+              >
+                <MessageCircle className="size-[18px]" aria-hidden />
+              </a>
+              <a
+                href={`mailto:${siteConfig.email}`}
+                aria-label="Email"
+                className="grid size-11 place-items-center rounded-xl text-zinc-300 ring-1 ring-white/15 transition-colors hover:bg-white/10 hover:text-white"
+              >
+                <Mail className="size-[18px]" aria-hidden />
+              </a>
+            </div>
           </div>
 
           {/* Activities */}

@@ -113,7 +113,7 @@ export function ExperienceGallery() {
                 className="object-cover"
                 priority={i === 0}
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-[oklch(0.14_0.02_55/0.85)] via-transparent to-transparent" aria-hidden />
+              <div className="absolute inset-0 bg-gradient-to-t from-[oklch(0.14_0_0/0.85)] via-transparent to-transparent" aria-hidden />
               <div className="absolute inset-x-0 bottom-0 p-6 sm:p-9">
                 <span className="rounded-full bg-white/15 px-3 py-1 font-mono text-[11px] font-medium text-white ring-1 ring-white/20 backdrop-blur">
                   {m.time}

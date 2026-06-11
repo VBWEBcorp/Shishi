@@ -141,9 +141,9 @@ function FullscreenMenu({
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.25, ease: 'easeOut' }}
-          className="fixed inset-0 z-[100] overflow-y-auto bg-[oklch(0.2_0.05_232)]"
+          className="fixed inset-0 z-[100] overflow-y-auto bg-[oklch(0.2_0_0)]"
         >
-          {/* Fond bleu flou (image statique pré-floutée — aucun coût de blur en temps réel) */}
+          {/* Fond sombre flou (image statique pré-floutée — aucun coût de blur en temps réel) */}
           <div className="pointer-events-none fixed inset-0" aria-hidden>
             <Image
               src="/photos/pool.jpg"
@@ -152,8 +152,8 @@ function FullscreenMenu({
               sizes="100vw"
               className="scale-110 object-cover blur-2xl"
             />
-            <div className="absolute inset-0 bg-[oklch(0.24_0.07_233/0.78)]" />
-            <div className="absolute inset-0 bg-gradient-to-b from-[oklch(0.18_0.05_235/0.5)] to-[oklch(0.14_0.05_238/0.9)]" />
+            <div className="absolute inset-0 bg-[oklch(0.24_0_0/0.78)]" />
+            <div className="absolute inset-0 bg-gradient-to-b from-[oklch(0.18_0_0/0.5)] to-[oklch(0.14_0_0/0.9)]" />
           </div>
 
           <div className="relative mx-auto flex min-h-dvh max-w-7xl flex-col px-4 sm:px-6 lg:px-8">

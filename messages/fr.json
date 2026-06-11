@@ -1,4 +1,14 @@
 {
+  "ComingSoon": {
+    "location": "Lamai · Koh Samui · Thaïlande",
+    "badge": "Ouverture prochaine",
+    "tagline": "Le club resort premium du sud de Koh Samui.",
+    "description": "Tennis, le repaire du pickleball de l'île, une salle de sport premium, un restaurant healthy, un kids club et une piscine — réunis en un seul lieu au cœur de Lamai. Nous peaufinons les derniers détails. Écrivez-nous et nous vous préviendrons dès l'ouverture.",
+    "ctaWhatsapp": "Nous écrire sur WhatsApp",
+    "ctaEmail": "Nous écrire un e-mail",
+    "whatsappPrefill": "Bonjour Shi Shi Samui ! J'aimerais en savoir plus sur le club et votre ouverture.",
+    "rights": "Tous droits réservés"
+  },
   "Nav": {
     "menu": "Menu",
     "close": "Fermer",

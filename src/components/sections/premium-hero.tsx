@@ -51,7 +51,7 @@ export function PremiumHero({
   return (
     <section
       className={`relative isolate overflow-hidden border-b border-border/60 ${
-        hasBgImage ? 'bg-background' : 'bg-[oklch(0.975_0.012_285)] dark:bg-[oklch(0.16_0.02_285)]'
+        hasBgImage ? 'bg-background' : 'bg-background dark:bg-[oklch(0.16_0.02_285)]'
       }`}
     >
       {/* Image de fond plein largeur + overlay sombre + fade vers le bas (style Blog) */}

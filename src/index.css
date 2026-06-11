@@ -5,10 +5,10 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
-  --font-sans: 'Montserrat', ui-sans-serif, system-ui, sans-serif;
-  /* Logo → Cinzel · grands titres → Fraunces (éditorial italique) · corps → Montserrat. */
-  --font-display: 'Cinzel', ui-serif, Georgia, serif;
-  --font-editorial: 'Fraunces', 'Cinzel', ui-serif, Georgia, serif;
+  /* Police unique — Poppins partout (titres + corps), chargée via next/font (--font-poppins). */
+  --font-sans: var(--font-poppins), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-poppins), ui-sans-serif, system-ui, sans-serif;
+  --font-editorial: var(--font-poppins), ui-sans-serif, system-ui, sans-serif;
   --font-serif: var(--font-display);
   --font-mono: var(--font-sans);
 
@@ -64,39 +64,39 @@
 
 :root {
   color-scheme: light;
-  --font-sans: 'Montserrat', ui-sans-serif, system-ui, sans-serif;
-  /* Logo → Cinzel · grands titres → Fraunces · corps → Montserrat. */
-  --font-display: 'Cinzel', ui-serif, Georgia, serif;
-  --font-editorial: 'Fraunces', 'Cinzel', ui-serif, Georgia, serif;
+  /* Police unique — Poppins partout (titres + corps), chargée via next/font (--font-poppins). */
+  --font-sans: var(--font-poppins), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-poppins), ui-sans-serif, system-ui, sans-serif;
+  --font-editorial: var(--font-poppins), ui-sans-serif, system-ui, sans-serif;
   --font-serif: var(--font-display);
   --font-mono: var(--font-sans);
   --radius: 1rem;
 
-  /* Shi Shi Samui — charte officielle réchauffée (DA bohème, mix Lifetime).
-     Noir #111111 → encre chaude · Orange #D95A00 · Blanc cassé → crème/sable. */
-  --background: oklch(0.962 0.011 78); /* crème chaud (ex-blanc cassé) */
-  --foreground: oklch(0.21 0.008 60); /* encre noire chaude */
+  /* Shi Shi Samui — charte neutre.
+     Noir #111111 · Orange #D95A00 · Fond blanc pur, surfaces gris neutre. */
+  --background: oklch(1 0 0); /* blanc pur */
+  --foreground: oklch(0.21 0 0); /* encre noire neutre */
 
-  --card: oklch(0.987 0.006 80);
-  --card-foreground: oklch(0.21 0.008 60);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.21 0 0);
 
-  --popover: oklch(0.987 0.006 80);
-  --popover-foreground: oklch(0.21 0.008 60);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.21 0 0);
 
   /* Encre — identité, texte fort, boutons primaires */
-  --primary: oklch(0.21 0.008 60);
-  --primary-foreground: oklch(0.962 0.011 78);
+  --primary: oklch(0.21 0 0);
+  --primary-foreground: oklch(1 0 0);
 
-  --secondary: oklch(0.925 0.016 76);
-  --secondary-foreground: oklch(0.21 0.008 60);
+  --secondary: oklch(0.96 0 0);
+  --secondary-foreground: oklch(0.21 0 0);
 
-  --muted: oklch(0.94 0.013 76);
-  --muted-foreground: oklch(0.47 0.013 62);
+  --muted: oklch(0.962 0 0);
+  --muted-foreground: oklch(0.47 0 0);
 
-  /* Surfaces bohèmes chaudes */
-  --sand: oklch(0.915 0.019 74); /* bandeau sable */
-  --clay: oklch(0.82 0.035 62); /* terre/argile, accents doux */
-  --ecru: oklch(0.948 0.014 80); /* écru, sections claires */
+  /* Surfaces neutres — blanc pur (les sections se distinguent par leurs bordures) */
+  --sand: oklch(1 0 0); /* blanc */
+  --clay: oklch(0.88 0 0); /* gris doux, accents */
+  --ecru: oklch(1 0 0); /* blanc */
 
   /* Bleu océan désaturé — accent secondaire (mer/piscine/bien-être) */
   --ocean: oklch(0.52 0.078 228);
@@ -109,8 +109,8 @@
   --destructive: oklch(0.55 0.22 25);
   --destructive-foreground: oklch(0.99 0.01 25);
 
-  --border: oklch(0.885 0.014 74);
-  --input: oklch(0.885 0.014 74);
+  --border: oklch(0.91 0 0);
+  --input: oklch(0.91 0 0);
   --ring: oklch(0.63 0.187 47);
 
   --chart-1: oklch(0.18 0 0);
@@ -228,6 +228,29 @@
   /* Bande de noms (showcase activités) : 2 copies + translation -50% = boucle continue. */
   .animate-marquee-band {
     animation: marquee-band 38s linear infinite;
+  }
+
+  /* Révélation d'entrée (Coming Soon) — CSS pur : visible même sans JS.
+     Le stagger se règle via `animation-delay` inline. */
+  .animate-reveal {
+    animation: reveal-up 0.85s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+}
+
+@keyframes reveal-up {
+  from {
+    opacity: 0;
+    transform: translateY(22px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-reveal {
+    animation: none;
   }
 }
 

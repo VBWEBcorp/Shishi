@@ -13,7 +13,7 @@ import { cn } from '@/lib/utils'
  * Section activités — fusion de DA voulue par le client :
  *  · structure "sport-cards" d'AnyBuddy (chip d'info + lien d'action libellé)
  *  · habillage éditorial bohème de lifetime.life (en-tête asymétrique titre +
- *    paragraphe/lien, grandes cartes cinématiques, serif Fraunces, beaucoup d'air).
+ *    paragraphe/lien, grandes cartes cinématiques, Poppins, beaucoup d'air).
  */
 export function ActivityTiles() {
   const t = useTranslations('Home.tiles')
@@ -72,7 +72,7 @@ export function ActivityTiles() {
                 className="object-cover transition-transform duration-[1200ms] ease-out group-hover:scale-[1.06]"
                 priority={i < 2}
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-[oklch(0.16_0.02_55/0.92)] via-[oklch(0.16_0.02_55/0.35)] to-transparent" aria-hidden />
+              <div className="absolute inset-0 bg-gradient-to-t from-[oklch(0.16_0_0/0.92)] via-[oklch(0.16_0_0/0.35)] to-transparent" aria-hidden />
 
               {/* Badges haut — Signature (gauche) + chip info type AnyBuddy (droite) */}
               <div className="absolute inset-x-4 top-4 flex items-start justify-between gap-2">

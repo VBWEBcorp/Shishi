@@ -66,7 +66,7 @@ export function CtaSection() {
   const cta = data.cta ?? defaults
 
   return (
-    <section className="bg-[oklch(0.975_0.012_285)] dark:bg-[oklch(0.16_0.02_285)]">
+    <section className="bg-background dark:bg-[oklch(0.16_0.02_285)]">
       <div className="mx-auto max-w-6xl px-4 py-20 sm:px-6 lg:px-8 lg:py-28">
         <motion.div
           initial={{ opacity: 0, y: 14 }}

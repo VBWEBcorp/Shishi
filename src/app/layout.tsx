@@ -1,33 +1,17 @@
 import type { Metadata, Viewport } from 'next'
-import { Cinzel, Fraunces, Montserrat } from 'next/font/google'
+import { Poppins } from 'next/font/google'
 
 import { ThemeScript } from '@/components/theme/theme-script'
 import { siteConfig } from '@/lib/seo'
 
 import '../index.css'
 
-// Corps de texte — Montserrat (charte).
-const montserrat = Montserrat({
+// Police unique du site — Poppins (titres + corps).
+const poppins = Poppins({
   subsets: ['latin'],
-  variable: '--font-sans',
+  variable: '--font-poppins',
   weight: ['400', '500', '600', '700'],
-  display: 'swap',
-})
-
-// Logo — Cinzel (charte).
-const cinzel = Cinzel({
-  subsets: ['latin'],
-  variable: '--font-display',
-  weight: ['400', '500', '600', '700'],
-  display: 'swap',
-})
-
-// Grands titres éditoriaux — Fraunces (serif chaud, bas-de-casse + italique).
-const fraunces = Fraunces({
-  subsets: ['latin'],
-  variable: '--font-editorial',
   style: ['normal', 'italic'],
-  axes: ['opsz'],
   display: 'swap',
 })
 
@@ -80,7 +64,7 @@ export default function RootLayout({
     <html
       lang="en"
       dir="ltr"
-      className={`${montserrat.variable} ${cinzel.variable}`}
+      className={poppins.variable}
       suppressHydrationWarning
     >
       <head>

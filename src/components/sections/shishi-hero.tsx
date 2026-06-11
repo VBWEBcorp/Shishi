@@ -108,12 +108,11 @@ export function ShishiHero() {
       >
         <source src="/videos/hero-pool.mp4" type="video/mp4" />
       </video>
-      {/* Voile bohème : doux et chaud (esprit Lifetime), assez de contraste pour le texte */}
+      {/* Voile neutre : assez de contraste pour le texte, sans teinte chaude */}
       <div
-        className="absolute inset-0 bg-gradient-to-b from-[oklch(0.2_0.02_60/0.4)] via-[oklch(0.2_0.02_60/0.32)] to-[oklch(0.16_0.02_55/0.86)]"
+        className="absolute inset-0 bg-gradient-to-b from-[oklch(0.2_0_0/0.4)] via-[oklch(0.2_0_0/0.32)] to-[oklch(0.16_0_0/0.86)]"
         aria-hidden
       />
-      <div className="absolute inset-0 bg-[oklch(0.55_0.12_55/0.1)] mix-blend-soft-light" aria-hidden />
 
       <div className="relative mx-auto flex min-h-[94vh] max-w-4xl flex-col items-center justify-center px-4 pb-24 pt-28 text-center sm:px-6">
         {/* Eyebrow localisation + météo — petites capitales espacées (Lifetime) */}
@@ -125,7 +124,7 @@ export function ShishiHero() {
           <WeatherWidget />
         </div>
 
-        {/* Titre éditorial — Fraunces, dernier mot en italique orange (DA) */}
+        {/* Titre éditorial — Poppins, dernier mot en italique orange (DA) */}
         <h1 className="mt-8 font-editorial text-[2.6rem] font-normal leading-[1.05] tracking-[-0.01em] text-white sm:text-6xl lg:text-[4.4rem]">
           {hero.title ? (
             (() => {
