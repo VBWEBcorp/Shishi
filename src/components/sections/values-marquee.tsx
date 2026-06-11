@@ -47,9 +47,9 @@ function ValuesTrack({
   const items = values.map((v) => (
     <span
       key={v.label}
-      className={`inline-flex shrink-0 items-center gap-2.5 text-nowrap font-display text-sm font-medium tracking-wide uppercase sm:text-base ${textClass}`}
+      className={`inline-flex shrink-0 items-center gap-2 text-nowrap font-display text-xs font-medium tracking-wide uppercase sm:text-sm ${textClass}`}
     >
-      <v.icon className={`size-4 ${iconClass}`} aria-hidden />
+      <v.icon className={`size-3.5 ${iconClass}`} aria-hidden />
       {v.label}
       <span className={separatorClass} aria-hidden>
         ·
@@ -60,14 +60,14 @@ function ValuesTrack({
   return (
     <div className="group flex overflow-hidden">
       <div
-        className={`flex shrink-0 items-center gap-6 ${animClass}`}
+        className={`flex shrink-0 items-center gap-4 ${animClass}`}
         style={{ animationDuration: '35s' }}
       >
         {items}
       </div>
       <div
         aria-hidden
-        className={`flex shrink-0 items-center gap-6 ${animClass}`}
+        className={`flex shrink-0 items-center gap-4 ${animClass}`}
         style={{ animationDuration: '35s' }}
       >
         {items}
@@ -79,8 +79,8 @@ function ValuesTrack({
 export function ValuesMarquee({ variant = 'light' }: { variant?: 'light' | 'dark' }) {
   const wrapperClass =
     variant === 'dark'
-      ? 'border-t border-white/10 bg-black/20 backdrop-blur-sm py-4 sm:py-5'
-      : 'border-y border-border/60 bg-muted/15 py-6 sm:py-8'
+      ? 'border-t border-white/10 bg-black/20 backdrop-blur-sm py-2.5 sm:py-3'
+      : 'border-y border-border/60 bg-muted/15 py-4 sm:py-5'
 
   return (
     <div className={wrapperClass}>

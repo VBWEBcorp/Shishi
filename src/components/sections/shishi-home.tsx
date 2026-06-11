@@ -1,9 +1,11 @@
 'use client'
 
-import { Dumbbell, HeartHandshake, Sparkles, ArrowRight } from 'lucide-react'
+import { CalendarCheck, Dumbbell, HeartHandshake, Sparkles } from 'lucide-react'
 import { useLocale, useTranslations } from 'next-intl'
 import Image from 'next/image'
 
+import { CtaButton } from '@/components/cta-button'
+import { SectionEyebrow } from '@/components/section-eyebrow'
 import { useContent } from '@/hooks/use-content'
 import { Link } from '@/i18n/navigation'
 import { activities, type Locale } from '@/lib/activities'
@@ -72,13 +74,9 @@ export function StorySection() {
             <p>{s.paragraph1 || t('p1')}</p>
             <p>{s.paragraph2 || t('p2')}</p>
           </div>
-          <Link
-            href="/a-propos"
-            className="mt-7 inline-flex items-center gap-2 text-sm font-semibold text-primary transition-colors hover:text-foreground"
-          >
+          <CtaButton href="/a-propos" tone="dark" size="sm" className="mt-7">
             {t('cta')}
-            <ArrowRight className="size-4" aria-hidden />
-          </Link>
+          </CtaButton>
         </div>
       </div>
     </section>
@@ -155,9 +153,9 @@ export function BookingCta() {
       <div className="pointer-events-none absolute inset-x-0 top-0 h-28 bg-[linear-gradient(to_bottom,#ffffff_0%,rgba(255,255,255,0.5)_25%,rgba(255,255,255,0)_100%)] sm:h-40" aria-hidden />
 
       <div className="relative mx-auto max-w-3xl px-4 pt-36 text-center sm:px-6 sm:pt-44 lg:pt-52">
-        <span className="text-xs font-semibold uppercase tracking-[0.28em] text-white/70">
+        <SectionEyebrow icon={CalendarCheck} tone="light" className="justify-center">
           {t('eyebrow')}
-        </span>
+        </SectionEyebrow>
         <h2 className="mt-5 font-editorial text-[2.2rem] font-normal leading-[1.08] tracking-[-0.01em] text-white sm:text-[3rem]">
           {c.title || t('title')}
         </h2>
@@ -165,16 +163,12 @@ export function BookingCta() {
           {c.description || t('subtitle')}
         </p>
         <div className="mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row">
-          <Link
-            href="/booking"
-            className="group inline-flex h-12 items-center justify-center gap-2 rounded-full bg-accent px-7 text-sm font-semibold text-accent-foreground shadow-[0_14px_34px_-10px_oklch(0.63_0.187_47/0.65)] transition-all hover:-translate-y-0.5 hover:brightness-105"
-          >
+          <CtaButton href="/book-now" tone="glass" size="sm">
             {c.button || t('bookCourt')}
-            <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" aria-hidden />
-          </Link>
+          </CtaButton>
           <Link
-            href="/contact"
-            className="inline-flex h-12 items-center justify-center rounded-full bg-white/10 px-7 text-sm font-semibold text-white ring-1 ring-white/30 backdrop-blur transition-colors hover:bg-white/15"
+            href="/contact-location"
+            className="inline-flex h-12 items-center justify-center rounded-full bg-white/10 px-6 text-sm font-semibold text-white ring-1 ring-white/30 backdrop-blur transition-colors hover:bg-white/15"
           >
             {t('getInTouch')}
           </Link>

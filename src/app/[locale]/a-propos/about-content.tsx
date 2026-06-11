@@ -213,7 +213,7 @@ function ComplexSection({ cms }: { cms?: Record<string, string> }) {
           {activities.map((a) => (
             <Link
               key={a.slug}
-              href={`/activities/${a.slug}`}
+              href={a.path}
               className="group flex items-center gap-3 rounded-2xl border border-border bg-card p-4 transition-all hover:-translate-y-0.5 hover:border-accent/40"
             >
               <span className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-accent/10 text-accent ring-1 ring-accent/15">

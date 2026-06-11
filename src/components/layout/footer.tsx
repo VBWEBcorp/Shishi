@@ -6,7 +6,7 @@ import Image from 'next/image'
 
 import { Link } from '@/i18n/navigation'
 import type { Locale } from '@/i18n/routing'
-import { activities } from '@/lib/activities'
+import { activities, babysitting } from '@/lib/activities'
 import { siteConfig } from '@/lib/seo'
 
 export function Footer() {
@@ -15,10 +15,14 @@ export function Footer() {
 
   const exploreLinks = [
     { label: t('home'), to: '/' as const },
-    { label: t('bookACourt'), to: '/booking' as const },
+    { label: t('bookACourt'), to: '/book-now' as const },
+    { label: t('prices'), to: '/prices' as const },
     { label: t('about'), to: '/a-propos' as const },
-    { label: t('contact'), to: '/contact' as const },
+    { label: t('contact'), to: '/contact-location' as const },
   ]
+
+  // Pôles + babysitting (page service dédiée — maillage interne audit).
+  const activityLinks = [...activities, babysitting]
 
   const legalLinks = [
     { label: t('legalNotice'), to: '/mentions-legales' as const },
@@ -79,10 +83,10 @@ export function Footer() {
               {t('activities')}
             </h3>
             <ul className="mt-5 space-y-3">
-              {activities.map((a) => (
+              {activityLinks.map((a) => (
                 <li key={a.slug}>
                   <Link
-                    href={`/activities/${a.slug}`}
+                    href={a.path}
                     className="group inline-flex items-center gap-1 text-sm text-zinc-300 transition-colors hover:text-white"
                   >
                     <span className="relative">

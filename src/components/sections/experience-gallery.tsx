@@ -1,10 +1,11 @@
 'use client'
 
-import { ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react'
+import { ArrowRight, ChevronLeft, ChevronRight, Clock } from 'lucide-react'
 import { useLocale, useTranslations } from 'next-intl'
 import Image from 'next/image'
 import { useCallback, useEffect, useState } from 'react'
 
+import { SectionEyebrow } from '@/components/section-eyebrow'
 import { Link } from '@/i18n/navigation'
 import type { Locale } from '@/i18n/routing'
 
@@ -77,7 +78,7 @@ export function ExperienceGallery() {
       {/* En-tête éditorial. */}
       <div className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <span className="text-xs font-semibold uppercase tracking-[0.28em] text-accent">{t('eyebrow')}</span>
+          <SectionEyebrow icon={Clock}>{t('eyebrow')}</SectionEyebrow>
           <h2 className="mt-4 max-w-2xl font-editorial text-[2rem] font-normal leading-[1.1] tracking-[-0.01em] text-foreground sm:text-[2.7rem]">
             {t('title')}
           </h2>

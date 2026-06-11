@@ -1,7 +1,7 @@
 'use client'
 
 import { motion, useReducedMotion, useScroll, useTransform } from 'framer-motion'
-import { ArrowUpRight } from 'lucide-react'
+import { ArrowUpRight, BookOpen } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useRef } from 'react'
@@ -43,8 +43,9 @@ export function StorySection() {
                 hidden: { opacity: 0, x: reduceMotion ? 0 : -32 },
                 visible: { opacity: 1, x: 0, transition: { duration: 0.55, ease } },
               }}
-              className="inline-block font-display text-[11px] font-semibold tracking-[0.2em] text-muted-foreground uppercase"
+              className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.28em] text-accent"
             >
+              <BookOpen className="size-4" aria-hidden />
               {story.eyebrow}
             </motion.span>
 

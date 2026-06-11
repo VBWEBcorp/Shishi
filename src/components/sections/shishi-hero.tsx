@@ -1,11 +1,12 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
-import { CalendarDays, Check, ChevronDown, MapPin, Search, Star } from 'lucide-react'
+import { Check, ChevronDown, MapPin, Search, Star } from 'lucide-react'
 import { useLocale, useTranslations } from 'next-intl'
 import Image from 'next/image'
 
 import { ActivityIcon } from '@/components/activity-icon'
+import { DatePopover } from '@/components/date-popover'
 import { WeatherWidget } from '@/components/weather-widget'
 import { useContent } from '@/hooks/use-content'
 import { Link, useRouter } from '@/i18n/navigation'
@@ -77,7 +78,7 @@ export function ShishiHero() {
     e.preventDefault()
     const qs = new URLSearchParams({ activity: activitySlug })
     if (date) qs.set('date', date)
-    router.push(`/booking?${qs.toString()}`)
+    router.push(`/book-now?${qs.toString()}`)
   }
 
   return (
@@ -224,23 +225,10 @@ export function ShishiHero() {
 
           <span className="hidden w-px self-stretch bg-border sm:block" aria-hidden />
 
-          {/* Date */}
-          <label className="hidden flex-col justify-center px-4 py-2.5 transition-colors focus-within:bg-secondary/60 hover:bg-secondary/40 sm:flex sm:rounded-2xl">
-            <span className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-              {t('when')}
-            </span>
-            <span className="flex items-center gap-1.5">
-              <CalendarDays className="size-4 shrink-0 text-ocean" aria-hidden />
-              <input
-                type="date"
-                aria-label={t('when')}
-                value={date}
-                min={today || undefined}
-                onChange={(e) => setDate(e.target.value)}
-                className="cursor-pointer bg-transparent font-editorial text-[15px] font-medium text-foreground focus:outline-none [color-scheme:light]"
-              />
-            </span>
-          </label>
+          {/* Date — calendrier custom (DA Shi Shi) */}
+          <div className="hidden sm:flex">
+            <DatePopover value={date} today={today} onChange={setDate} locale={l} />
+          </div>
 
           <button
             type="submit"
@@ -256,7 +244,7 @@ export function ShishiHero() {
           {activities.map((a) => (
             <Link
               key={a.slug}
-              href={`/activities/${a.slug}`}
+              href={a.path}
               className={`group inline-flex items-center gap-1.5 rounded-full px-4 py-1.5 text-sm font-medium backdrop-blur transition-all ${
                 a.featured
                   ? 'bg-white/15 text-white ring-1 ring-accent/80'

@@ -113,7 +113,12 @@ export function ComingSoon() {
           className="animate-reveal font-editorial text-[2.9rem] font-normal leading-[1.04] tracking-[-0.015em] text-white sm:text-6xl lg:text-7xl"
           style={reveal(3)}
         >
-          Shi Shi <span className="italic text-accent/95">Samui</span>
+          {/* H1 sémantique « à la lettre » de l'audit (lu par Google / lecteurs
+              d'écran) — le wordmark visuel reste l'identité de marque. */}
+          <span className="sr-only">Sports &amp; Social Club in Lamai, Koh Samui — Shi Shi Samui</span>
+          <span aria-hidden="true">
+            Shi Shi <span className="italic text-accent/95">Samui</span>
+          </span>
         </h1>
 
         <p

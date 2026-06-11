@@ -4,6 +4,7 @@ import { HelpCircle, Minus, Plus } from 'lucide-react'
 import { useLocale } from 'next-intl'
 import { useState } from 'react'
 
+import { SectionEyebrow } from '@/components/section-eyebrow'
 import type { Locale } from '@/i18n/routing'
 
 type Bilingual = { en: string; fr: string }
@@ -77,7 +78,7 @@ const ITEMS: Item[] = [
 /** FAQ deux colonnes (accordéons +/−), style éditorial Shi Shi. */
 export function FaqSection() {
   const locale = useLocale() as Locale
-  const [open, setOpen] = useState<Set<number>>(new Set([0]))
+  const [open, setOpen] = useState<Set<number>>(new Set())
 
   const toggle = (i: number) =>
     setOpen((prev) => {
@@ -95,10 +96,7 @@ export function FaqSection() {
       <div className="mx-auto max-w-6xl px-4 py-20 sm:px-6 lg:px-8 lg:py-28">
       {/* En-tête centré. */}
       <div className="flex flex-col items-center text-center">
-        <span className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.28em] text-accent">
-          <HelpCircle className="size-4" aria-hidden />
-          {EYEBROW[locale]}
-        </span>
+        <SectionEyebrow icon={HelpCircle}>{EYEBROW[locale]}</SectionEyebrow>
         <h2 className="mt-4 max-w-2xl font-editorial text-[2rem] font-normal leading-[1.1] tracking-[-0.01em] text-foreground sm:text-[2.7rem]">
           {TITLE[locale]}
         </h2>

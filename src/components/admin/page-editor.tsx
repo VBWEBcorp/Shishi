@@ -21,7 +21,7 @@ const previewPaths: Record<string, string> = {
   home: '/',
   about: '/a-propos',
   services: '/services',
-  contact: '/contact',
+  contact: '/contact-location',
   testimonials: '/#temoignages',
 }
 

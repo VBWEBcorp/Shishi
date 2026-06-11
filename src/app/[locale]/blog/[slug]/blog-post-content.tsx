@@ -198,7 +198,7 @@ export default function BlogPostContent({
                 Tous les articles
               </Link>
               <Link
-                href="/contact"
+                href="/contact-location"
                 className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white hover:bg-primary/90 transition-colors"
               >
                 Nous contacter

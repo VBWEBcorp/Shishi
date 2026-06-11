@@ -91,8 +91,8 @@ export async function POST(request: NextRequest) {
         },
       ],
       metadata: { bookingId: String(booking._id) },
-      success_url: `${SITE_URL}/${locale}/booking?status=success&id=${booking._id}`,
-      cancel_url: `${SITE_URL}/${locale}/booking?status=cancelled&id=${booking._id}`,
+      success_url: `${SITE_URL}/${locale}/book-now?status=success&id=${booking._id}`,
+      cancel_url: `${SITE_URL}/${locale}/book-now?status=cancelled&id=${booking._id}`,
     })
 
     booking.stripeSessionId = session.id

@@ -6,23 +6,13 @@ import {
   serviceJsonLd,
   webPageJsonLd,
 } from '@/components/seo/json-ld'
+import { activities } from '@/lib/activities'
 
 const description =
-  'Création de site, SEO, identité visuelle, développement sur mesure : découvrez nos services pour développer votre activité en ligne.'
-
-const services = [
-  { title: 'Création de site vitrine', desc: 'Un site moderne, rapide et responsive qui présente clairement votre activité et inspire confiance à vos visiteurs.' },
-  { title: 'Application web', desc: 'Outils métier, plateformes de réservation, espaces clients : des applications pensées pour simplifier votre quotidien.' },
-  { title: 'Référencement naturel (SEO)', desc: 'Optimisation technique, contenu stratégique et suivi de positionnement pour gagner en visibilité sur Google.' },
-  { title: 'Identité visuelle', desc: 'Logo, charte graphique, supports de communication : une image cohérente qui vous ressemble.' },
-  { title: 'Communication digitale', desc: 'Stratégie de contenu, réseaux sociaux et campagnes pour développer votre audience en ligne.' },
-  { title: 'Développement sur mesure', desc: 'Intégrations, automatisations, API : des solutions techniques taillées pour vos besoins spécifiques.' },
-  { title: 'Maintenance & sécurité', desc: 'Mises à jour, sauvegardes, monitoring et corrections pour un site toujours performant et sécurisé.' },
-  { title: 'Analyse & reporting', desc: 'Tableaux de bord clairs pour suivre vos performances, comprendre vos visiteurs et ajuster votre stratégie.' },
-]
+  'Discover everything Shi Shi Samui offers in Lamai, Koh Samui: tennis, pickleball, a premium fitness gym, a healthy restaurant, a kids club and a pool.'
 
 export const metadata: Metadata = {
-  title: 'Services',
+  title: 'Sports & Wellness Activities in Lamai',
   description,
   alternates: { canonical: '/services' },
 }
@@ -30,12 +20,14 @@ export const metadata: Metadata = {
 const jsonLd = {
   '@context': 'https://schema.org',
   '@graph': [
-    webPageJsonLd('Services', description, '/services'),
+    webPageJsonLd('Activities at Shi Shi Samui', description, '/services'),
     breadcrumbJsonLd([
-      { name: 'Accueil', path: '/' },
-      { name: 'Services', path: '/services' },
+      { name: 'Home', path: '/' },
+      { name: 'Activities', path: '/services' },
     ]),
-    ...services.map((s) => serviceJsonLd(s.title, s.desc, '/services')),
+    ...activities.map((a) =>
+      serviceJsonLd(a.h1.en, a.metaDescription.en, a.path, a.image)
+    ),
   ],
 }
 

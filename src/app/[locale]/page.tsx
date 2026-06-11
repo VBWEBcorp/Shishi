@@ -1,7 +1,13 @@
 import type { Metadata } from 'next'
 import { setRequestLocale } from 'next-intl/server'
 
+import { ActivityTiles } from '@/components/sections/activity-tiles'
 import { ComingSoon } from '@/components/sections/coming-soon'
+import { ExperienceGallery } from '@/components/sections/experience-gallery'
+import { FaqSection } from '@/components/sections/faq-section'
+import { PhotoShowcase } from '@/components/sections/photo-showcase'
+import { ShishiHero } from '@/components/sections/shishi-hero'
+import { BookingCta, StorySection, ValuesBand } from '@/components/sections/shishi-home'
 import {
   localBusinessJsonLd,
   organizationJsonLd,
@@ -10,16 +16,33 @@ import {
 } from '@/components/seo/json-ld'
 import { siteConfig } from '@/lib/seo'
 
-// Titre optimisé pour la requête de marque « Shi Shi Samui / shishi samui ».
-const title = 'Shi Shi Samui — Premium Social Club Resort · Lamai, Koh Samui'
+// Titre & description « à la lettre » de l'audit (Accueil), marque incluse.
+const title = 'Sports & Social Club in Lamai, Koh Samui | Shi Shi Samui'
 const description =
-  'Shi Shi Samui, the premium social club resort opening soon in Lamai, Koh Samui. Tennis, pickleball, fitness, healthy restaurant, kids club and pool. Get in touch on WhatsApp.'
+  'Discover Shi Shi Samui, a sports and social club in Lamai with tennis, pickleball, fitness, kids club, healthy food and pool.'
+
+// Mots-clés principaux + complémentaires (audit Accueil).
+const keywords = [
+  'shi shi samui',
+  'sports club lamai',
+  'sports club koh samui',
+  'social club lamai',
+  'social club koh samui',
+  'sports complex koh samui',
+  'multisport club koh samui',
+  'club resort koh samui',
+  'wellness club koh samui',
+  'expat club koh samui',
+  'digital nomad club koh samui',
+  'tennis pickleball fitness lamai',
+]
 
 export const metadata: Metadata = {
   title: {
     absolute: title,
   },
   description,
+  keywords,
   alternates: { canonical: '/' },
   openGraph: {
     title,
@@ -54,6 +77,23 @@ export default async function HomePage({
 }) {
   const { locale } = await params
   setRequestLocale(locale)
+
+  // En dev local : afficher le vrai site complet pour pouvoir le modifier.
+  // En prod : garder la landing « Coming Soon » (indexation requête de marque).
+  if (process.env.NODE_ENV === 'development') {
+    return (
+      <>
+        <ShishiHero />
+        <ActivityTiles />
+        <ExperienceGallery />
+        <ValuesBand />
+        <StorySection />
+        <FaqSection />
+        <PhotoShowcase />
+        <BookingCta />
+      </>
+    )
+  }
 
   return (
     <>

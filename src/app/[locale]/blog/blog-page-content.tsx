@@ -6,6 +6,8 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { ArrowRight, Calendar, User, Search } from 'lucide-react'
 
+import { HeroCurve } from '@/components/hero-curve'
+
 interface BlogPost {
   _id: string
   title: string
@@ -78,7 +80,6 @@ export default function BlogPageContent({ initialSettings, initialPosts }: Props
           )}
         </div>
         <div className="absolute inset-0 bg-black/50" />
-        <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent" />
 
         <div className="relative mx-auto max-w-6xl px-4 py-20 sm:px-6 lg:px-8 lg:py-28 w-full">
           <motion.div
@@ -98,6 +99,7 @@ export default function BlogPageContent({ initialSettings, initialPosts }: Props
             </p>
           </motion.div>
         </div>
+        <HeroCurve />
       </section>
 
       {/* Category filters */}

@@ -6,11 +6,32 @@ import Image from 'next/image'
 import { Suspense } from 'react'
 
 import { ActivityIcon } from '@/components/activity-icon'
+import { HeroCurve } from '@/components/hero-curve'
+import {
+  breadcrumbJsonLd,
+  serviceJsonLd,
+  webPageJsonLd,
+} from '@/components/seo/json-ld'
 import { Link } from '@/i18n/navigation'
-import type { Locale } from '@/i18n/routing'
-import { activities } from '@/lib/activities'
+import { activities, resolveLink } from '@/lib/activities'
+import type { Locale } from '@/lib/activities'
 import { siteConfig } from '@/lib/seo'
 import { BookingForm } from './booking-form'
+
+// Mots-clés audit « Book Now / Reservation ».
+const BOOK_KEYWORDS = [
+  'book tennis court koh samui',
+  'book tennis court lamai',
+  'book pickleball court koh samui',
+  'book pickleball court lamai',
+  'book activities lamai',
+  'sports booking koh samui',
+  'court booking koh samui',
+  'tennis reservation koh samui',
+  'pickleball reservation koh samui',
+  'book gym koh samui',
+  'whatsapp booking koh samui',
+]
 
 export async function generateMetadata({
   params,
@@ -20,23 +41,64 @@ export async function generateMetadata({
   const { locale } = await params
   const t = await getTranslations({ locale, namespace: 'Booking' })
   return {
-    title: t('metaTitle'),
-    description: t('subtitle'),
-    alternates: { canonical: '/booking' },
+    title: { absolute: t('seoTitle') },
+    description: t('seoDescription'),
+    keywords: BOOK_KEYWORDS,
+    alternates: { canonical: '/book-now' },
+    openGraph: {
+      title: t('seoTitle'),
+      description: t('seoDescription'),
+      url: `${siteConfig.url}/book-now`,
+      siteName: siteConfig.name,
+      type: 'website',
+      images: [{ url: '/photos/tennis-aerial.jpg', alt: 'Booking tennis and pickleball at Shi Shi Samui' }],
+    },
   }
 }
 
 const waMessage = encodeURIComponent("Hi Shi Shi Samui! I'd like to book a session.")
 const waLink = `https://wa.me/${siteConfig.whatsapp}?text=${waMessage}`
 
-export default async function BookingPage({
+// Maillage interne audit (Book Now → Tennis, Pickleball, Fitness, Kids Club, Pricing, Contact).
+const BOOK_RELATED = [
+  'tennis-court-lamai',
+  'pickleball-club-lamai',
+  'fitness-gym-lamai',
+  'kids-club-lamai',
+  'prices',
+  'contact',
+]
+
+export default async function BookNowPage({
   params,
 }: {
   params: Promise<{ locale: string }>
 }) {
   const { locale } = await params
   setRequestLocale(locale)
-  return <BookingContent />
+  const t = await getTranslations({ locale, namespace: 'Booking' })
+
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@graph': [
+      webPageJsonLd(t('h1'), t('seoDescription'), '/book-now'),
+      serviceJsonLd(t('h1'), t('seoDescription'), '/book-now', '/photos/tennis-aerial.jpg'),
+      breadcrumbJsonLd([
+        { name: locale === 'fr' ? 'Accueil' : 'Home', path: '/' },
+        { name: t('breadcrumb'), path: '/book-now' },
+      ]),
+    ],
+  }
+
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <BookingContent />
+    </>
+  )
 }
 
 function BookingContent() {
@@ -49,11 +111,15 @@ function BookingContent() {
     { Icon: ShieldCheck, title: t('step3Title'), text: t('step3Text') },
   ]
 
+  const related = BOOK_RELATED
+    .map((token) => resolveLink(token, locale))
+    .filter((x): x is { href: string; label: string } => x !== null)
+
   return (
     <div>
       {/* 1 · HERO — vidéo de fond (photo = poster/repli instantané), sombre */}
       <section className="relative isolate overflow-hidden pt-14">
-        <Image src="/photos/tennis-aerial.jpg" alt="" fill priority sizes="100vw" className="object-cover" />
+        <Image src="/photos/tennis-aerial.jpg" alt="Booking tennis and pickleball at Shi Shi Samui" fill priority sizes="100vw" className="object-cover" />
         {/* Vidéo cinématique. Remplacer /videos/hero-pool.mp4 par la vidéo définitive du client. */}
         <video
           autoPlay
@@ -72,7 +138,7 @@ function BookingContent() {
         <div className="relative mx-auto max-w-6xl px-4 py-20 sm:px-6 lg:px-8 lg:py-28">
           <span className="text-xs font-semibold uppercase tracking-[0.28em] text-accent">{t('eyebrow')}</span>
           <h1 className="mt-4 max-w-2xl font-editorial text-4xl font-normal leading-[1.05] tracking-[-0.01em] text-white sm:text-6xl">
-            {t('title')}
+            {t('h1')}
           </h1>
           <p className="mt-5 max-w-xl text-lg text-white/85">{t('subtitle')}</p>
           <div className="mt-7 flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-white/75">
@@ -84,6 +150,7 @@ function BookingContent() {
             </span>
           </div>
         </div>
+        <HeroCurve />
       </section>
 
       {/* 2 · CHOIX DE L'ACTIVITÉ — crème, avec photos */}
@@ -93,12 +160,12 @@ function BookingContent() {
           {activities.map((a) => (
             <Link
               key={a.slug}
-              href={`/booking?activity=${a.slug}#reserver`}
+              href={`/book-now?activity=${a.slug}#reserver`}
               className="group relative flex aspect-[16/10] flex-col justify-end overflow-hidden rounded-2xl ring-1 ring-border transition-all hover:-translate-y-0.5 hover:shadow-[0_24px_50px_-26px_oklch(0.16_0.02_55/0.45)]"
             >
               <Image
                 src={a.image}
-                alt={a.name[locale]}
+                alt={a.altImages[0]}
                 fill
                 sizes="(min-width:1024px) 22rem, (min-width:640px) 50vw, 100vw"
                 className="object-cover transition-transform duration-700 group-hover:scale-[1.05]"
@@ -113,6 +180,22 @@ function BookingContent() {
                   <span className="block text-xs text-white/75">{a.tagline[locale]}</span>
                 </span>
               </div>
+            </Link>
+          ))}
+        </div>
+
+        {/* Maillage interne — pages service, tarifs & contact */}
+        <div className="mt-8 flex flex-wrap items-center gap-2.5">
+          <span className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+            {t('alsoExplore')}
+          </span>
+          {related.map((link) => (
+            <Link
+              key={link.href}
+              href={link.href}
+              className="rounded-full border border-border px-4 py-1.5 text-sm font-medium text-foreground transition-colors hover:border-accent/40 hover:text-accent"
+            >
+              {link.label}
             </Link>
           ))}
         </div>
@@ -149,7 +232,7 @@ function BookingContent() {
           <aside className="flex flex-col gap-6">
             {/* Photo d'ambiance */}
             <div className="relative hidden min-h-44 overflow-hidden rounded-2xl ring-1 ring-border lg:block">
-              <Image src="/photos/lounge.jpg" alt="" fill sizes="24rem" className="object-cover" />
+              <Image src="/photos/lounge.jpg" alt="Shi Shi Samui sports club in Lamai" fill sizes="24rem" className="object-cover" />
               <div className="absolute inset-0 bg-gradient-to-t from-[oklch(0.14_0_0/0.85)] to-transparent" aria-hidden />
               <div className="absolute inset-x-0 bottom-0 p-5">
                 <p className="font-editorial text-xl font-medium text-white">Shi Shi Samui</p>

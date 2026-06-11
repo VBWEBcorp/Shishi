@@ -1,8 +1,9 @@
-import { ArrowRight, ArrowUpRight } from 'lucide-react'
+import { ArrowRight, ArrowUpRight, LayoutGrid } from 'lucide-react'
 import { useLocale, useTranslations } from 'next-intl'
 import Image from 'next/image'
 
 import { ActivityIcon } from '@/components/activity-icon'
+import { SectionEyebrow } from '@/components/section-eyebrow'
 import { Link } from '@/i18n/navigation'
 import type { Locale } from '@/i18n/routing'
 import { activities } from '@/lib/activities'
@@ -31,9 +32,7 @@ export function ActivityTiles() {
       {/* En-tête éditorial asymétrique (Lifetime) */}
       <div className="flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
         <div className="max-w-2xl">
-          <span className="text-xs font-semibold uppercase tracking-[0.28em] text-accent">
-            {t('eyebrow')}
-          </span>
+          <SectionEyebrow icon={LayoutGrid}>{t('eyebrow')}</SectionEyebrow>
           <h2 className="mt-5 font-editorial text-[2.1rem] font-normal leading-[1.08] tracking-[-0.01em] text-foreground sm:text-[2.9rem]">
             {t('title')}
           </h2>
@@ -41,7 +40,7 @@ export function ActivityTiles() {
         <div className="max-w-sm lg:text-right">
           <p className="text-[15px] leading-relaxed text-muted-foreground">{t('intro')}</p>
           <Link
-            href="/booking"
+            href="/book-now"
             className="group mt-4 inline-flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.16em] text-foreground transition-colors hover:text-accent"
           >
             {t('exploreAll')}
@@ -58,15 +57,15 @@ export function ActivityTiles() {
           return (
             <Link
               key={a.slug}
-              href={`/activities/${a.slug}`}
+              href={a.path}
               className={cn(
-                'group relative flex aspect-[4/3] flex-col justify-end overflow-hidden rounded-3xl ring-1 ring-border transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_28px_56px_-22px_oklch(0.16_0.02_55/0.4)]',
+                'group relative isolate flex aspect-[4/3] transform-gpu flex-col justify-end overflow-hidden rounded-3xl ring-1 ring-border transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_28px_56px_-22px_oklch(0.16_0.02_55/0.4)]',
                 a.featured && 'lg:col-span-2 lg:aspect-[16/9]'
               )}
             >
               <Image
                 src={a.image}
-                alt={a.name[locale]}
+                alt={a.altImages[0]}
                 fill
                 sizes={a.featured ? '(min-width:1024px) 66vw, 100vw' : '(min-width:1024px) 33vw, (min-width:640px) 50vw, 100vw'}
                 className="object-cover transition-transform duration-[1200ms] ease-out group-hover:scale-[1.06]"
@@ -103,7 +102,7 @@ export function ActivityTiles() {
                 <span className="mt-4 inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.16em] text-white/90">
                   {t('discover')}
                   <span className="flex size-7 items-center justify-center rounded-full bg-white/15 ring-1 ring-white/25 backdrop-blur transition-all duration-300 group-hover:bg-accent group-hover:text-accent-foreground group-hover:ring-accent">
-                    <ArrowUpRight className="size-4" aria-hidden />
+                    <ArrowUpRight className="size-4 transition-transform duration-300 group-hover:rotate-45" aria-hidden />
                   </span>
                 </span>
               </div>

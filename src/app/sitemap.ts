@@ -1,25 +1,63 @@
 import type { MetadataRoute } from 'next'
 
-import { siteConfig } from '@/lib/seo'
+import { routing } from '@/i18n/routing'
 import { connectDB } from '@/lib/db'
-import { BlogPost, BlogSettings } from '@/models/Blog'
 import { visiblePostFilter } from '@/lib/blog-filters'
+import { BlogPost, BlogSettings } from '@/models/Blog'
 import { GallerySettings } from '@/models/Gallery'
+import { routes, siteConfig } from '@/lib/seo'
 
 const baseUrl = siteConfig.url
 
+/**
+ * Drapeau de lancement.
+ *  · false  → phase « Coming Soon » : on ne pousse QUE la home pour concentrer
+ *             l'indexation sur la requête de marque « Shi Shi Samui ».
+ *  · true   → site lancé : on pousse TOUTES les pages SEO de l'audit
+ *             (pages service, prices, book-now, contact-location, about),
+ *             par locale, avec alternances hreflang en/fr.
+ *
+ * Au lancement réel : passer LAUNCHED à true (cf. SEO-SHI-SHI.md).
+ */
+const LAUNCHED = false
+
+/** Construit l'URL localisée d'un chemin (/ → /en, /tennis-court-lamai → /en/tennis-court-lamai). */
+function localizedUrl(locale: string, path: string) {
+  return `${baseUrl}/${locale}${path === '/' ? '' : path}`
+}
+
+/** Alternances hreflang en/fr pour un chemin donné. */
+function languageAlternates(path: string) {
+  return Object.fromEntries(
+    routing.locales.map((l) => [l, localizedUrl(l, path)])
+  )
+}
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  // Phase « Coming Soon » : on ne pousse QUE la page d'accueil dans le sitemap,
-  // pour concentrer l'indexation Google sur la home (requête de marque
-  // « Shi Shi Samui »). Les autres pages seront ajoutées au lancement.
-  const pages: MetadataRoute.Sitemap = [
-    {
+  const pages: MetadataRoute.Sitemap = []
+
+  if (LAUNCHED) {
+    // Toutes les pages SEO de l'audit, par locale, avec hreflang.
+    for (const path of routes) {
+      for (const locale of routing.locales) {
+        pages.push({
+          url: localizedUrl(locale, path),
+          lastModified: new Date(),
+          changeFrequency: 'weekly',
+          priority: path === '/' ? 1 : 0.8,
+          alternates: { languages: languageAlternates(path) },
+        })
+      }
+    }
+  } else {
+    // Phase « Coming Soon » : home uniquement.
+    pages.push({
       url: baseUrl,
       lastModified: new Date(),
       changeFrequency: 'weekly',
       priority: 1,
-    },
-  ]
+    })
+  }
 
   try {
     await connectDB()

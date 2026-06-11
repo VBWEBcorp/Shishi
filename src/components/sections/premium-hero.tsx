@@ -6,6 +6,8 @@ import Image from 'next/image'
 import Link from 'next/link'
 import type { ReactNode } from 'react'
 
+import { HeroCurve } from '@/components/hero-curve'
+
 const ease = [0.22, 1, 0.36, 1] as const
 
 interface PremiumHeroProps {
@@ -50,8 +52,8 @@ export function PremiumHero({
 
   return (
     <section
-      className={`relative isolate overflow-hidden border-b border-border/60 ${
-        hasBgImage ? 'bg-background' : 'bg-background dark:bg-[oklch(0.16_0.02_285)]'
+      className={`relative isolate overflow-hidden ${
+        hasBgImage ? 'bg-background' : 'border-b border-border/60 bg-background dark:bg-[oklch(0.16_0.02_285)]'
       }`}
     >
       {/* Image de fond plein largeur + overlay sombre + fade vers le bas (style Blog) */}
@@ -75,11 +77,6 @@ export function PremiumHero({
               background:
                 'linear-gradient(to bottom, rgba(0,0,0,0.65) 0%, rgba(0,0,0,0.60) 70%, rgba(0,0,0,0) 100%)',
             }}
-          />
-          {/* Fade vers le bg uniquement sur les ~96px du bas */}
-          <div
-            className="absolute inset-x-0 bottom-0 -z-10 h-24 bg-gradient-to-t from-background to-transparent"
-            aria-hidden
           />
         </>
       )}
@@ -211,6 +208,7 @@ export function PremiumHero({
           )}
         </div>
       </div>
+      {hasBgImage && <HeroCurve />}
     </section>
   )
 }

@@ -101,7 +101,7 @@ export function HeroSection() {
           <div className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row">
             {/* CTA primary premium */}
             <Link
-              href="/contact"
+              href="/contact-location"
               className="group/cta relative inline-flex h-11 items-center gap-2 overflow-hidden rounded-xl px-5 text-sm font-medium text-primary-foreground shadow-[0_8px_24px_-8px_oklch(0.48_0.22_285/0.5)] transition-all hover:shadow-[0_12px_32px_-8px_oklch(0.48_0.22_285/0.6)] active:translate-y-px"
             >
               <span

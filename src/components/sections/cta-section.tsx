@@ -89,7 +89,7 @@ export function CtaSection() {
                 {cta.description}
               </p>
               <Button size="lg" className="group" asChild>
-                <Link href="/contact">
+                <Link href="/contact-location">
                   {cta.button}
                   <ArrowRight className="transition-transform group-hover:translate-x-0.5" />
                 </Link>
