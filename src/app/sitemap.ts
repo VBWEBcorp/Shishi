@@ -19,7 +19,7 @@ const baseUrl = siteConfig.url
  *
  * Au lancement réel : passer LAUNCHED à true (cf. SEO-SHI-SHI.md).
  */
-const LAUNCHED = false
+const LAUNCHED = true
 
 /** Construit l'URL localisée d'un chemin (/ → /en, /tennis-court-lamai → /en/tennis-court-lamai). */
 function localizedUrl(locale: string, path: string) {
