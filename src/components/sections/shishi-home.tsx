@@ -1,6 +1,6 @@
 'use client'
 
-import { BookOpen, CalendarCheck, Dumbbell, HeartHandshake, Sparkles } from 'lucide-react'
+import { BookOpen, CalendarCheck, Dumbbell, Gem, HeartHandshake, Sparkles } from 'lucide-react'
 import { useLocale, useTranslations } from 'next-intl'
 import Image from 'next/image'
 
@@ -27,19 +27,53 @@ export function ValuesBand() {
   }))
 
   return (
-    <section className="border-y border-border bg-background text-foreground">
-      <div className="mx-auto grid max-w-6xl gap-8 px-4 py-16 sm:px-6 md:grid-cols-3 lg:px-8">
-        {values.map((v) => (
-          <div key={v.title} className="flex gap-4">
-            <span className="flex size-12 shrink-0 items-center justify-center rounded-xl bg-foreground/5 text-foreground ring-1 ring-foreground/10">
-              <v.icon className="size-6" aria-hidden />
-            </span>
-            <div>
-              <h3 className="font-editorial text-xl font-medium text-foreground">{v.title}</h3>
-              <p className="mt-1 text-sm leading-relaxed text-muted-foreground">{v.text}</p>
-            </div>
-          </div>
-        ))}
+    <section className="border-y border-border bg-background">
+      <div className="mx-auto max-w-6xl px-4 py-20 sm:px-6 lg:px-8 lg:py-28">
+        {/* En-tête éditorial */}
+        <div className="max-w-2xl">
+          <SectionEyebrow icon={Gem}>{t('eyebrow')}</SectionEyebrow>
+          <h2 className="mt-5 font-editorial text-[2.1rem] font-normal leading-[1.08] tracking-[-0.01em] text-foreground sm:text-[2.9rem]">
+            {t('title')}
+          </h2>
+        </div>
+
+        {/* Timeline « 3 piliers » — verticale sur mobile, horizontale sur desktop */}
+        <ol className="relative mt-12 grid gap-y-12 md:mt-16 md:grid-cols-3 md:gap-x-8">
+          {/* Rail vertical (mobile) */}
+          <span
+            className="pointer-events-none absolute left-8 top-8 bottom-4 w-px bg-gradient-to-b from-accent/40 via-border to-transparent md:hidden"
+            aria-hidden
+          />
+          {/* Rail horizontal (desktop) */}
+          <span
+            className="pointer-events-none absolute inset-x-0 top-8 hidden h-px bg-gradient-to-r from-transparent via-border to-transparent md:block"
+            aria-hidden
+          />
+
+          {values.map((v) => (
+            <li
+              key={v.title}
+              className="group relative flex items-start gap-5 md:flex-col md:items-center md:gap-0 md:text-center"
+            >
+              {/* Nœud sur le rail */}
+              <span className="relative z-10 flex size-16 shrink-0 items-center justify-center rounded-full bg-background">
+                <span className="flex size-14 items-center justify-center rounded-2xl bg-accent/10 text-accent ring-1 ring-accent/20 transition-all duration-500 group-hover:scale-110 group-hover:bg-accent group-hover:text-accent-foreground group-hover:ring-accent">
+                  <v.icon className="size-7" aria-hidden />
+                </span>
+              </span>
+
+              {/* Contenu */}
+              <div className="pt-2 md:mt-6 md:pt-0">
+                <h3 className="font-editorial text-xl font-medium text-foreground sm:text-2xl">
+                  {v.title}
+                </h3>
+                <p className="mt-2 text-sm leading-relaxed text-muted-foreground md:mx-auto md:max-w-xs">
+                  {v.text}
+                </p>
+              </div>
+            </li>
+          ))}
+        </ol>
       </div>
     </section>
   )
@@ -118,9 +152,9 @@ function ActivityMarquee() {
         {loop.map((it, i) => (
           <li
             key={i}
-            className="inline-flex shrink-0 items-center gap-3 text-nowrap pe-8 font-editorial text-lg font-normal tracking-wide text-white/55 sm:pe-12 sm:text-2xl"
+            className="inline-flex shrink-0 items-center gap-2.5 text-nowrap pe-7 font-editorial text-base font-normal tracking-wide text-white/55 sm:pe-10 sm:text-xl"
           >
-            <span className="text-[1.1em]">{it.emoji}</span>
+            <span className="text-[1em]">{it.emoji}</span>
             <span>{it.label}</span>
             <span className="text-white/25">•</span>
           </li>
@@ -138,7 +172,7 @@ export function BookingCta() {
   return (
     <section className="relative isolate overflow-hidden">
       <Image
-        src="/photos/pool-2.jpg"
+        src="/photos/cta-pret-a-jouer.png"
         alt=""
         fill
         sizes="100vw"
@@ -173,7 +207,7 @@ export function BookingCta() {
       </div>
 
       {/* Bandeau défilant, puis fondu dans le footer */}
-      <div className="relative mt-16 pb-14 sm:mt-24 sm:pb-20">
+      <div className="relative mt-24 pb-8 sm:mt-36 sm:pb-10">
         <ActivityMarquee />
       </div>
     </section>

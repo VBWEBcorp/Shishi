@@ -16,17 +16,6 @@ function reveal(step: number): React.CSSProperties {
   return { animationDelay: `${0.1 + step * 0.09}s` }
 }
 
-/** Petit séparateur losange repris du logo (── ◆ ──). */
-function DiamondRule() {
-  return (
-    <div className="flex items-center justify-center gap-3" aria-hidden>
-      <span className="h-px w-14 bg-gradient-to-r from-transparent to-white/45" />
-      <span className="size-1.5 rotate-45 bg-accent" />
-      <span className="h-px w-14 bg-gradient-to-l from-transparent to-white/45" />
-    </div>
-  )
-}
-
 export function ComingSoon() {
   const t = useTranslations('ComingSoon')
   const l = useLocale() as Locale
@@ -73,7 +62,7 @@ export function ComingSoon() {
         aria-hidden
       />
 
-      <div className="relative z-10 mx-auto flex w-full max-w-3xl flex-1 flex-col items-center justify-center gap-7 px-5 py-16 text-center sm:px-6">
+      <div className="relative z-10 mx-auto flex w-full max-w-3xl flex-1 flex-col items-center justify-center gap-8 px-5 py-16 text-center sm:px-6">
         {/* Logo */}
         <Image
           src="/logo-light.png"
@@ -128,21 +117,10 @@ export function ComingSoon() {
           {t('tagline')}
         </p>
 
-        <div className="animate-reveal" style={reveal(5)}>
-          <DiamondRule />
-        </div>
-
-        <p
-          className="animate-reveal max-w-xl text-[15px] leading-relaxed text-white/75 sm:text-base"
-          style={reveal(6)}
-        >
-          {t('description')}
-        </p>
-
         {/* Pills activités — aperçu de ce qui arrive (et mots-clés) */}
         <ul
           className="animate-reveal flex flex-wrap items-center justify-center gap-2"
-          style={reveal(7)}
+          style={reveal(5)}
         >
           {activities.map((a) => (
             <li key={a.slug}>
@@ -156,9 +134,10 @@ export function ComingSoon() {
 
         {/* CTAs — WhatsApp prioritaire, e-mail, Instagram */}
         <div
-          className="animate-reveal mt-2 flex flex-col items-center gap-3 sm:flex-row sm:justify-center"
-          style={reveal(8)}
+          className="animate-reveal mt-1 flex flex-col items-center gap-4 sm:flex-row sm:justify-center sm:gap-6"
+          style={reveal(6)}
         >
+          {/* CTA principal unique — WhatsApp */}
           <a
             href={whatsappHref}
             target="_blank"
@@ -168,24 +147,28 @@ export function ComingSoon() {
             <MessageCircle className="size-4" aria-hidden />
             {t('ctaWhatsapp')}
           </a>
-          <a
-            href={`mailto:${siteConfig.email}`}
-            className="inline-flex items-center gap-2 rounded-full bg-white/10 px-6 py-3 text-sm font-semibold text-white ring-1 ring-white/25 backdrop-blur transition-all hover:-translate-y-0.5 hover:bg-white/15"
-          >
-            <Mail className="size-4" aria-hidden />
-            {t('ctaEmail')}
-          </a>
-          <a
-            href={siteConfig.instagram}
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label="Instagram"
-            className="inline-flex items-center gap-2 rounded-full px-4 py-3 text-sm font-medium text-white/80 transition-colors hover:text-white"
-          >
-            <Instagram className="size-4" aria-hidden />
-            <span className="hidden sm:inline">Instagram</span>
-            <ArrowUpRight className="size-3.5 opacity-70" aria-hidden />
-          </a>
+
+          {/* Liens secondaires discrets */}
+          <div className="flex items-center gap-5">
+            <a
+              href={`mailto:${siteConfig.email}`}
+              className="inline-flex items-center gap-2 text-sm font-medium text-white/75 transition-colors hover:text-white"
+            >
+              <Mail className="size-4" aria-hidden />
+              {t('ctaEmail')}
+            </a>
+            <a
+              href={siteConfig.instagram}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Instagram"
+              className="inline-flex items-center gap-1.5 text-sm font-medium text-white/75 transition-colors hover:text-white"
+            >
+              <Instagram className="size-4" aria-hidden />
+              <span className="hidden sm:inline">Instagram</span>
+              <ArrowUpRight className="size-3.5 opacity-70" aria-hidden />
+            </a>
+          </div>
         </div>
       </div>
 

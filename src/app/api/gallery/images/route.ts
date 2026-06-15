@@ -30,11 +30,13 @@ export async function POST(request: NextRequest) {
     }
 
     await connectDB()
-    const { title, description, imageUrl, category, order } = await request.json()
+    const { title, description, type, imageUrl, videoUrl, category, order } = await request.json()
 
-    if (!title || !imageUrl) {
+    const mediaType = type === 'video' ? 'video' : 'image'
+    // Une photo a besoin d'une image ; une vidéo d'un lien vidéo (vignette optionnelle).
+    if (!title || (mediaType === 'image' ? !imageUrl : !videoUrl)) {
       return NextResponse.json(
-        { error: 'Title and imageUrl are required' },
+        { error: 'Title and media are required' },
         { status: 400 }
       )
     }
@@ -42,7 +44,9 @@ export async function POST(request: NextRequest) {
     const image = await GalleryImage.create({
       title,
       description,
+      type: mediaType,
       imageUrl,
+      videoUrl,
       category: category || 'general',
       order: order || 0,
     })

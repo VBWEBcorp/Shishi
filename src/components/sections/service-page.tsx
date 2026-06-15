@@ -3,10 +3,10 @@ import { getTranslations } from 'next-intl/server'
 import Image from 'next/image'
 
 import { ActivityIcon } from '@/components/activity-icon'
-import { HeroCurve } from '@/components/hero-curve'
+import { ServicesShowcase } from '@/components/sections/services-showcase'
 import { Link } from '@/i18n/navigation'
 import type { Activity, Locale } from '@/lib/activities'
-import { BOOK_NOW_PATH, CONTACT_PATH, PRICES_PATH, resolveLink } from '@/lib/activities'
+import { BOOK_NOW_PATH, CONTACT_PATH, PRICES_PATH } from '@/lib/activities'
 import { OPENING_HOURS, PRICE_TIERS } from '@/lib/booking-pricing'
 import { siteConfig } from '@/lib/seo'
 
@@ -45,15 +45,10 @@ export async function ServicePage({
     t('whatsappPrefill', { name: service.name[l] })
   )}`
 
-  // Maillage interne (audit) : liens résolus depuis les tokens `related`.
-  const relatedLinks = service.related
-    .map((token) => resolveLink(token, l))
-    .filter((x): x is { href: string; label: string } => x !== null)
-
   return (
     <>
-      {/* 1 · HERO — vidéo de fond (photo = poster/repli), sombre */}
-      <section className="relative isolate min-h-[60vh] overflow-hidden pt-14">
+      {/* 1 · HERO figé — le contenu remonte par-dessus au scroll (effet Traavellio) */}
+      <section className="sticky top-0 z-0 isolate min-h-[60vh] overflow-hidden pt-14">
         <Image
           src={service.image}
           alt={service.altImages[0]}
@@ -76,7 +71,7 @@ export async function ServicePage({
         </video>
         <div className="absolute inset-0 bg-gradient-to-b from-[oklch(0.16_0_0/0.55)] via-[oklch(0.16_0_0/0.5)] to-[oklch(0.14_0_0/0.88)]" aria-hidden />
 
-        <div className="relative mx-auto flex min-h-[60vh] max-w-6xl flex-col justify-end px-4 pb-14 pt-24 sm:px-6 lg:px-8">
+        <div className="relative mx-auto flex min-h-[60vh] max-w-6xl flex-col justify-end px-4 pb-24 pt-24 sm:px-6 sm:pb-28 lg:px-8">
           {/* Fil d'Ariane visible — Home > <service> (BreadcrumbList en JSON-LD) */}
           <nav className="mb-5 flex items-center gap-2 text-xs text-white/70" aria-label="Breadcrumb">
             <Link href="/" className="transition-colors hover:text-white">{t('breadcrumbHome')}</Link>
@@ -118,8 +113,10 @@ export async function ServicePage({
             </Link>
           </div>
         </div>
-        <HeroCurve />
       </section>
+
+      {/* Contenu : panneau opaque à coins arrondis qui glisse par-dessus le hero figé */}
+      <div className="relative z-10 rounded-t-[2rem] bg-background sm:rounded-t-[2.5rem]">
 
       {/* 2 · À PROPOS + TARIFS — crème */}
       <section className="mx-auto max-w-6xl px-4 py-16 sm:px-6 lg:px-8 lg:py-24">
@@ -235,27 +232,13 @@ export async function ServicePage({
         </section>
       )}
 
-      {/* 5 · MAILLAGE INTERNE + CTA de fin — crème */}
-      <section className="border-t border-border">
-        <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6 lg:px-8 lg:py-20">
-          <h2 className="font-editorial text-2xl font-normal text-foreground sm:text-3xl">{t('keepExploring')}</h2>
-          <div className="mt-7 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-            {relatedLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className="group flex items-center justify-between gap-2.5 rounded-2xl border border-border bg-background p-4 transition-colors hover:border-accent/40"
-              >
-                <span className="truncate text-sm font-medium text-foreground">{link.label}</span>
-                <span className="flex size-8 shrink-0 items-center justify-center rounded-full ring-1 ring-border transition-colors group-hover:bg-accent group-hover:text-accent-foreground group-hover:ring-accent">
-                  <ArrowRight className="size-4" aria-hidden />
-                </span>
-              </Link>
-            ))}
-          </div>
+      {/* 5 · MAILLAGE INTERNE — showcase « nos pôles » (image + liste cliquable) */}
+      <ServicesShowcase locale={l} title={t('keepExploring')} excludeSlug={service.slug} />
 
-          {/* CTA de fin de page (audit) */}
-          <div className="mt-10 flex flex-wrap items-center gap-3">
+      {/* 6 · CTA de fin de page (audit) */}
+      <section className="border-t border-border bg-background">
+        <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6 lg:px-8 lg:py-16">
+          <div className="flex flex-wrap items-center gap-3">
             <Link
               href={bookHref}
               className="group inline-flex h-12 items-center gap-2 rounded-full bg-accent px-6 text-sm font-semibold text-accent-foreground shadow-[0_10px_30px_-8px_oklch(0.63_0.187_47/0.5)] transition-all hover:brightness-105"
@@ -278,6 +261,7 @@ export async function ServicePage({
           </div>
         </div>
       </section>
+      </div>
     </>
   )
 }

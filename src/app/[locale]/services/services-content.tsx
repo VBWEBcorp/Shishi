@@ -4,7 +4,6 @@ import { motion, useReducedMotion, useScroll, useTransform } from 'framer-motion
 import Image from 'next/image'
 import { useRef } from 'react'
 
-import { CtaSection } from '@/components/sections/cta-section'
 import { PremiumHero } from '@/components/sections/premium-hero'
 import { useContent } from '@/hooks/use-content'
 import { getIcon } from '@/lib/icons'
@@ -57,7 +56,7 @@ function ServiceRow({
         viewport={{ once: true, amount: 0.25 }}
         transition={{ duration: 0.75, ease }}
         whileHover={{ y: -4 }}
-        className="group relative aspect-[4/3] overflow-hidden rounded-3xl shadow-[0_20px_50px_-20px_oklch(0.2_0.02_264/0.25)] ring-1 ring-border/60"
+        className="group relative aspect-[4/3] overflow-hidden rounded-3xl shadow-[0_20px_50px_-20px_oklch(0.2_0_0/0.25)] ring-1 ring-border/60"
       >
         {/* Wrapper interne avec parallax Y au scroll */}
         <motion.div className="absolute inset-0 -inset-y-10" style={{ y: imageY }}>
@@ -217,8 +216,6 @@ export function ServicesContent() {
           </div>
         </div>
       </section>
-
-      <CtaSection />
     </>
   )
 }

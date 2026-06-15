@@ -21,6 +21,25 @@ export function getActivityPrice(slug: string): number {
   return DROP_IN_PRICE[slug] ?? DEFAULT_PRICE
 }
 
+/**
+ * Activités facturées PAR PERSONNE : chaque participant ajoute son tarif au
+ * total. Le tennis est une réservation de TERRAIN (prix fixe par session, quel
+ * que soit le nombre de joueurs) → il n'est pas dans cette liste.
+ */
+const PRICE_PER_PERSON = new Set(['fitness', 'kids-club', 'pool'])
+
+/** Le tarif se multiplie-t-il par le nombre de participants ? */
+export function isPricePerPerson(slug: string): boolean {
+  return PRICE_PER_PERSON.has(slug)
+}
+
+/** Montant total d'une réservation selon le nombre de participants. */
+export function getBookingAmount(slug: string, partySize: number): number {
+  const unit = getActivityPrice(slug)
+  const n = Math.max(1, Math.floor(partySize) || 1)
+  return isPricePerPerson(slug) ? unit * n : unit
+}
+
 /** Vérifie qu'un slug correspond bien à une activité connue. */
 export function getActivityBySlug(slug: string) {
   return activities.find((a) => a.slug === slug)

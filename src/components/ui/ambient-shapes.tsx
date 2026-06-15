@@ -22,7 +22,7 @@ export function AmbientShapes({ variant = 'tinted-mix', className }: AmbientShap
         className="absolute inset-0 opacity-50 dark:opacity-25"
         style={{
           backgroundImage:
-            'radial-gradient(oklch(0.55 0.05 264 / 0.15) 1px, transparent 1px)',
+            'radial-gradient(oklch(0.5 0 0 / 0.12) 1px, transparent 1px)',
           backgroundSize: '32px 32px',
           maskImage:
             'linear-gradient(to bottom, transparent 0%, black 12%, black 88%, transparent 100%)',
@@ -50,8 +50,8 @@ function Orb({
   opacity?: number
 }) {
   const colors = {
-    violet: 'oklch(0.55 0.2 285 / 0.4)',
-    indigo: 'oklch(0.55 0.2 260 / 0.35)',
+    violet: 'oklch(0.63 0.187 47 / 0.4)',
+    indigo: 'oklch(0.55 0.13 55 / 0.35)',
     cyan: 'oklch(0.7 0.13 210 / 0.3)',
     rose: 'oklch(0.65 0.18 0 / 0.25)',
   }
@@ -77,8 +77,8 @@ function Blob({
   opacity?: number
 }) {
   const colors = {
-    violet: 'oklch(0.55 0.2 285)',
-    indigo: 'oklch(0.55 0.2 260)',
+    violet: 'oklch(0.63 0.187 47)',
+    indigo: 'oklch(0.55 0.13 55)',
     cyan: 'oklch(0.7 0.13 210)',
   }
   return (

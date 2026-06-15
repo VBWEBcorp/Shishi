@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import { usePathname, useRouter } from 'next/navigation'
 import { AdminSidebar, MobileMenuButton } from '@/components/admin/sidebar'
+import { NotificationBell } from '@/components/admin/notification-bell'
 import { SidebarProvider, useSidebar } from '@/components/admin/sidebar-context'
 import { cn } from '@/lib/utils'
 
@@ -61,6 +62,7 @@ export default function AdminLayout({
       <div className="flex min-h-screen">
         <AdminSidebar />
         <MobileMenuButton />
+        <NotificationBell />
         <AdminMain>{children}</AdminMain>
       </div>
     </SidebarProvider>

@@ -3,7 +3,12 @@ import mongoose, { Schema, Document } from 'mongoose'
 export interface IGalleryImage extends Document {
   title: string
   description?: string
-  imageUrl: string
+  /** Type de média : photo ou vidéo. */
+  type: 'image' | 'video'
+  /** Photo, ou poster/vignette d'une vidéo. */
+  imageUrl?: string
+  /** Source vidéo : lien YouTube/Vimeo ou .mp4 (lien ou upload). */
+  videoUrl?: string
   category?: string
   order: number
   active: boolean
@@ -27,10 +32,13 @@ const GalleryImageSchema = new Schema<IGalleryImage>(
       required: [true, 'Title is required'],
     },
     description: String,
-    imageUrl: {
+    type: {
       type: String,
-      required: [true, 'Image URL is required'],
+      enum: ['image', 'video'],
+      default: 'image',
     },
+    imageUrl: String,
+    videoUrl: String,
     category: {
       type: String,
       default: 'general',
@@ -51,9 +59,10 @@ const GalleryImageSchema = new Schema<IGalleryImage>(
 
 const GallerySettingsSchema = new Schema<IGallerySettings>(
   {
+    // Désactivée par défaut : le client l'active quand il le souhaite.
     enabled: {
       type: Boolean,
-      default: true,
+      default: false,
     },
     title: {
       type: String,

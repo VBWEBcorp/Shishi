@@ -6,7 +6,7 @@ import { ExperienceGallery } from '@/components/sections/experience-gallery'
 import { FaqSection } from '@/components/sections/faq-section'
 import { PhotoShowcase } from '@/components/sections/photo-showcase'
 import { ShishiHero } from '@/components/sections/shishi-hero'
-import { BookingCta, StorySection, ValuesBand } from '@/components/sections/shishi-home'
+import { StorySection, ValuesBand } from '@/components/sections/shishi-home'
 
 // Aperçu privé du site complet pendant la phase "Coming Soon".
 // noindex : on ne veut indexer QUE la page d'accueil pour l'instant.
@@ -33,7 +33,6 @@ export default async function PreviewHomePage({
       <StorySection />
       <FaqSection />
       <PhotoShowcase />
-      <BookingCta />
     </>
   )
 }

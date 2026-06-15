@@ -23,6 +23,7 @@ import {
   Megaphone,
   FilePen,
   ChevronDown,
+  Send,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useSidebar } from '@/components/admin/sidebar-context'
@@ -30,6 +31,8 @@ import { useSidebar } from '@/components/admin/sidebar-context'
 const navItems = [
   { href: '/admin/dashboard', label: 'Tableau de bord', icon: LayoutDashboard },
   { href: '/admin/bookings', label: 'Réservations', icon: CalendarCheck },
+  { href: '/admin/contacts', label: 'CRM', icon: Users },
+  { href: '/admin/newsletter', label: 'Newsletter', icon: Send },
 ]
 
 const pageEditItems = [
@@ -72,12 +75,16 @@ function NavLink({
 
 export function MobileMenuButton() {
   const { toggle, mobileOpen } = useSidebar()
+  // Quand le menu est ouvert, c'est la croix du sidebar (en haut à droite) qui ferme.
+  // On masque ce bouton flottant pour éviter qu'il ne chevauche le logo.
+  if (mobileOpen) return null
   return (
     <button
       onClick={toggle}
+      aria-label="Ouvrir le menu"
       className="md:hidden fixed top-3 left-3 z-[60] p-2 rounded-lg bg-zinc-900 text-white shadow-lg"
     >
-      {mobileOpen ? <X className="size-5" /> : <Menu className="size-5" />}
+      <Menu className="size-5" />
     </button>
   )
 }

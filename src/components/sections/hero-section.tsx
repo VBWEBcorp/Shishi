@@ -79,12 +79,12 @@ export function HeroSection() {
             {hero.eyebrow}
           </p>
 
-          {/* Titre avec mot accentué en serif italic + violet uni */}
+          {/* Titre avec mot accentué en serif italic + orange (accent) */}
           <h1 className="mt-6 font-display text-balance pb-1 text-4xl leading-[1.15] font-semibold tracking-[-0.035em] text-white sm:text-5xl lg:text-6xl">
             {lead ? (
               <>
                 {lead}{' '}
-                <span className="relative inline-block pb-1 font-serif italic font-normal tracking-[-0.01em] text-[oklch(0.78_0.15_285)]">
+                <span className="relative inline-block pb-1 font-serif italic font-normal tracking-[-0.01em] text-accent">
                   {accent}
                 </span>
               </>
@@ -102,10 +102,10 @@ export function HeroSection() {
             {/* CTA primary premium */}
             <Link
               href="/contact-location"
-              className="group/cta relative inline-flex h-11 items-center gap-2 overflow-hidden rounded-xl px-5 text-sm font-medium text-primary-foreground shadow-[0_8px_24px_-8px_oklch(0.48_0.22_285/0.5)] transition-all hover:shadow-[0_12px_32px_-8px_oklch(0.48_0.22_285/0.6)] active:translate-y-px"
+              className="group/cta relative inline-flex h-11 items-center gap-2 overflow-hidden rounded-xl px-5 text-sm font-medium text-primary-foreground shadow-[0_8px_24px_-8px_oklch(0.21_0_0/0.5)] transition-all hover:shadow-[0_12px_32px_-8px_oklch(0.21_0_0/0.6)] active:translate-y-px"
             >
               <span
-                className="absolute inset-0 bg-gradient-to-br from-primary via-primary to-[oklch(0.42_0.22_280)] dark:from-primary dark:via-primary dark:to-[oklch(0.65_0.18_280)]"
+                className="absolute inset-0 bg-primary"
                 aria-hidden
               />
               <span
@@ -141,7 +141,7 @@ export function HeroSection() {
                   key={i}
                   className="size-7 rounded-full ring-2 ring-black/30"
                   style={{
-                    background: `linear-gradient(135deg, oklch(${0.55 + i * 0.05} 0.18 ${260 + i * 15} / 0.85), oklch(${0.65 + i * 0.04} 0.15 ${285 + i * 10} / 0.65))`,
+                    background: `linear-gradient(135deg, oklch(${0.6 + i * 0.05} 0.15 ${40 + i * 8} / 0.85), oklch(${0.7 + i * 0.04} 0.12 ${55 + i * 6} / 0.65))`,
                   }}
                   aria-hidden
                 />

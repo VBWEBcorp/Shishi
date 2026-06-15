@@ -158,7 +158,7 @@ export default function BlogPostEditor({ params }: { params: Promise<{ slug: str
     <div className="p-4 sm:p-6 lg:p-8">
       {/* Sticky header */}
       <div className="sticky top-0 z-10 -mx-4 -mt-4 sm:-mx-6 sm:-mt-6 lg:-mx-8 lg:-mt-8 px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 lg:pt-8 pb-4 bg-muted/30 backdrop-blur-sm border-b border-border/30 mb-6">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 max-w-4xl">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 max-w-4xl pt-12 md:pt-0">
           <div className="flex items-center gap-3">
             <Link
               href="/admin/blog"

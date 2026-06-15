@@ -11,10 +11,9 @@ export const siteConfig = {
   // Numéro WhatsApp au format international sans "+" ni espaces.
   // Configurable via NEXT_PUBLIC_WHATSAPP_NUMBER dans .env.local (placeholder par défaut).
   whatsapp: process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '33651692702',
-  email: 'contact.shishisamui@gmail.com',
+  email: 'contact@shi-shi-samui.com',
   instagram: 'https://www.instagram.com/shishisamui',
-  // ⚠️ À confirmer : URL exacte de la page Facebook du club (SEO local / sameAs).
-  facebook: 'https://www.facebook.com/shishisamui',
+  facebook: 'https://www.facebook.com/shishisamui/',
   address: {
     street: 'Lamai',
     city: 'Koh Samui',

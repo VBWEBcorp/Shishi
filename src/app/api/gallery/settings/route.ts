@@ -14,8 +14,9 @@ export async function GET() {
     const settings = await GallerySettings.findOne().lean()
 
     if (!settings) {
+      // Désactivée par défaut tant que l'admin ne l'a pas activée.
       return NextResponse.json(
-        { enabled: true, title: 'Nos réalisations', eyebrow: 'Galerie', description: 'Découvrez nos projets récents et laissez-vous inspirer par notre savoir-faire.' },
+        { enabled: false, title: 'Nos réalisations', eyebrow: 'Galerie', description: 'Découvrez nos projets récents et laissez-vous inspirer par notre savoir-faire.' },
         { headers: CACHE_HEADERS }
       )
     }

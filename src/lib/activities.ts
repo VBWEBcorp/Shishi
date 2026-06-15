@@ -59,6 +59,8 @@ export interface Activity {
   inMenu: boolean
   /** Réservable en ligne (grille + sélecteur de réservation). */
   bookable: boolean
+  /** Prévue dans le module de réservation mais pas encore ouverte (affichée « Bientôt »). */
+  comingSoon?: boolean
 
   // ── SEO on-page (audit « à la lettre ») ────────────────────────────────
   /** H1 unique de la page service. */
@@ -126,7 +128,10 @@ export const activities: Activity[] = [
     gradient: 'from-emerald-500/15 to-teal-500/5',
     featured: true,
     inMenu: true,
-    bookable: true,
+    // Mis de côté pour le moment (travaux pas encore lancés) : non réservable en
+    // ligne, renvoie vers le contact. À repasser à `true` une fois prêt.
+    bookable: false,
+    comingSoon: true,
     h1: {
       en: 'Pickleball Club in Lamai, Koh Samui',
       fr: 'Club de Pickleball à Lamai, Koh Samui',
@@ -486,8 +491,8 @@ export const activities: Activity[] = [
       'children activities in Lamai Koh Samui',
     ],
     highlights: {
-      en: ['Supervised activities', 'Babysitting on request', 'Safe & shaded play area', 'Family-friendly all day'],
-      fr: ['Activités encadrées', 'Babysitting sur demande', 'Aire de jeu sûre & ombragée', 'Convivial pour les familles'],
+      en: ['Supervised activities (1 hour)', 'Lunch for the child at midday', 'Safe & shaded play area', 'Family-friendly all day'],
+      fr: ['Activités encadrées (1 heure)', 'Repas du midi possible pour l’enfant', 'Aire de jeu sûre & ombragée', 'Convivial pour les familles'],
     },
     gallery: ['/photos/kids-welcome.jpg', '/photos/kids-play.jpg', '/photos/kids-outdoor.jpg', '/photos/kids-trampoline.jpg'],
     video: '/videos/kids.mp4',

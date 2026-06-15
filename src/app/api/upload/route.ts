@@ -20,28 +20,39 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'No file provided' }, { status: 400 })
     }
 
-    // Vérifier le type
-    const allowedTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'image/svg+xml']
-    if (!allowedTypes.includes(file.type)) {
+    // Types autorisés : images (optimisées) + vidéos (galerie).
+    const imageTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'image/svg+xml']
+    const videoTypes = ['video/mp4', 'video/webm', 'video/quicktime']
+    const isVideo = videoTypes.includes(file.type)
+    if (!imageTypes.includes(file.type) && !isVideo) {
       return NextResponse.json({ error: 'File type not allowed' }, { status: 400 })
     }
 
-    // Vérifier la taille (10MB max avant optimisation)
-    if (file.size > 10 * 1024 * 1024) {
-      return NextResponse.json({ error: 'File too large (max 10MB)' }, { status: 400 })
+    // Taille max : 10 Mo pour une image, 200 Mo pour une vidéo.
+    const maxSize = isVideo ? 200 * 1024 * 1024 : 10 * 1024 * 1024
+    if (file.size > maxSize) {
+      return NextResponse.json(
+        { error: `File too large (max ${isVideo ? '200' : '10'}MB)` },
+        { status: 400 }
+      )
     }
 
     const rawBuffer = Buffer.from(await file.arrayBuffer())
     const uniqueId = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`
 
-    // SVG: pas d'optimisation
     const isSvg = file.type === 'image/svg+xml'
 
     let finalBuffer: Buffer
     let contentType: string
     let filename: string
 
-    if (isSvg) {
+    if (isVideo) {
+      // Vidéo : pas d'optimisation, on stocke le fichier tel quel.
+      finalBuffer = rawBuffer
+      contentType = file.type
+      const ext = file.type === 'video/webm' ? 'webm' : file.type === 'video/quicktime' ? 'mov' : 'mp4'
+      filename = `${uniqueId}.${ext}`
+    } else if (isSvg) {
       finalBuffer = rawBuffer
       contentType = 'image/svg+xml'
       filename = `${uniqueId}.svg`

@@ -47,11 +47,16 @@ export function DatePopover({
   today,
   onChange,
   locale,
+  variant = 'bar',
+  placeholder,
 }: {
   value: string
   today: string
   onChange: (key: string) => void
   locale: Locale
+  /** `bar` = barre de recherche du hero · `field` = champ de formulaire bordé. */
+  variant?: 'bar' | 'field'
+  placeholder?: string
 }) {
   const [open, setOpen] = useState(false)
   const ref = useRef<HTMLDivElement>(null)
@@ -117,30 +122,51 @@ export function DatePopover({
   const isTomorrow = value === toKey(tomorrow)
 
   return (
-    <div ref={ref} className="relative flex">
-      <button
-        type="button"
-        onClick={() => setOpen((v) => !v)}
-        aria-haspopup="dialog"
-        aria-expanded={open}
-        className="flex flex-col justify-center rounded-2xl px-4 py-2.5 text-left transition-colors hover:bg-secondary/40 aria-expanded:bg-secondary/60"
-      >
-        <span className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-          {labels.when}
-        </span>
-        <span className="flex items-center gap-1.5">
-          <CalendarDays className="size-4 shrink-0 text-ocean" aria-hidden />
-          <span className="font-editorial text-[15px] font-medium text-foreground">
-            {selected ? cap(fmtDisplay.format(selected)) : labels.when}
+    <div ref={ref} className={cn('relative', variant === 'field' ? 'w-full' : 'flex')}>
+      {variant === 'field' ? (
+        <button
+          type="button"
+          onClick={() => setOpen((v) => !v)}
+          aria-haspopup="dialog"
+          aria-expanded={open}
+          className="flex h-11 w-full items-center justify-between gap-2 rounded-xl border border-input bg-background/70 px-3.5 text-left text-sm transition-shadow focus-visible:shadow-[0_0_0_4px_oklch(0.63_0.187_47/0.12)] focus-visible:outline-none aria-expanded:shadow-[0_0_0_4px_oklch(0.63_0.187_47/0.12)]"
+        >
+          <span className={cn('truncate', selected ? 'font-medium text-foreground' : 'text-muted-foreground')}>
+            {selected ? cap(fmtDisplay.format(selected)) : (placeholder ?? labels.when)}
           </span>
-        </span>
-      </button>
+          <CalendarDays className="size-4 shrink-0 text-accent" aria-hidden />
+        </button>
+      ) : (
+        <button
+          type="button"
+          onClick={() => setOpen((v) => !v)}
+          aria-haspopup="dialog"
+          aria-expanded={open}
+          className="flex flex-col justify-center rounded-2xl px-4 py-2.5 text-left transition-colors hover:bg-secondary/40 aria-expanded:bg-secondary/60"
+        >
+          <span className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+            {labels.when}
+          </span>
+          <span className="flex items-center gap-1.5">
+            <CalendarDays className="size-4 shrink-0 text-ocean" aria-hidden />
+            <span className="font-editorial text-[15px] font-medium text-foreground">
+              {selected ? cap(fmtDisplay.format(selected)) : labels.when}
+            </span>
+          </span>
+        </button>
+      )}
 
       {open && (
         <div
           role="dialog"
           aria-label={labels.when}
-          className="absolute right-0 top-[calc(100%+0.6rem)] z-50 w-[min(20rem,calc(100vw-2.5rem))] origin-top rounded-3xl border border-border bg-popover p-4 shadow-[0_30px_70px_-24px_oklch(0.16_0.02_55/0.55)] animate-in fade-in-0 zoom-in-95 slide-in-from-top-2 duration-200 ease-out"
+          className={cn(
+            'absolute top-[calc(100%+0.6rem)] z-50 w-[min(20rem,calc(100vw-2.5rem))] origin-top rounded-3xl border border-border bg-popover p-4 shadow-[0_30px_70px_-24px_oklch(0.16_0.02_55/0.55)] animate-in fade-in-0 zoom-in-95 slide-in-from-top-2 duration-200 ease-out',
+            // Toujours aligné à droite du champ : dans le popup de réservation, le
+            // champ Date est la colonne de droite (étroite) → ouvrir vers l'intérieur
+            // évite tout débordement horizontal et garde le calendrier visible.
+            'right-0'
+          )}
         >
           {/* Raccourcis Aujourd'hui / Demain */}
           <div className="grid grid-cols-2 gap-2">

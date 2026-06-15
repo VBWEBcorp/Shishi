@@ -38,7 +38,7 @@ export function PhotoShowcase() {
           <ul className="animate-marquee-band flex shrink-0 items-end">
             {loop.map((p, i) => (
               <li key={i} className="shrink-0 pe-4 sm:pe-6">
-                <div className="relative h-72 w-56 overflow-hidden rounded-3xl bg-muted shadow-[0_18px_40px_-20px_oklch(0.2_0_0/0.45)] ring-1 ring-black/5 sm:h-96 sm:w-72">
+                <div className="relative h-72 w-56 overflow-hidden rounded-3xl bg-white shadow-[0_18px_40px_-20px_oklch(0.2_0_0/0.45)] ring-1 ring-black/5 sm:h-96 sm:w-72">
                   <Image
                     src={p.src}
                     alt={p.alt}

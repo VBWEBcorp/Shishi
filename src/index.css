@@ -5,10 +5,10 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
-  /* Police unique — Poppins partout (titres + corps), chargée via next/font (--font-poppins). */
+  /* Corps de texte — Poppins (--font-poppins). Gros titres — Cal Sans (--font-cal-sans). */
   --font-sans: var(--font-poppins), ui-sans-serif, system-ui, sans-serif;
-  --font-display: var(--font-poppins), ui-sans-serif, system-ui, sans-serif;
-  --font-editorial: var(--font-poppins), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-cal-sans), var(--font-poppins), ui-sans-serif, system-ui, sans-serif;
+  --font-editorial: var(--font-cal-sans), var(--font-poppins), ui-sans-serif, system-ui, sans-serif;
   --font-serif: var(--font-display);
   --font-mono: var(--font-sans);
 
@@ -64,10 +64,10 @@
 
 :root {
   color-scheme: light;
-  /* Police unique — Poppins partout (titres + corps), chargée via next/font (--font-poppins). */
+  /* Corps de texte — Poppins (--font-poppins). Gros titres — Cal Sans (--font-cal-sans). */
   --font-sans: var(--font-poppins), ui-sans-serif, system-ui, sans-serif;
-  --font-display: var(--font-poppins), ui-sans-serif, system-ui, sans-serif;
-  --font-editorial: var(--font-poppins), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-cal-sans), var(--font-poppins), ui-sans-serif, system-ui, sans-serif;
+  --font-editorial: var(--font-cal-sans), var(--font-poppins), ui-sans-serif, system-ui, sans-serif;
   --font-serif: var(--font-display);
   --font-mono: var(--font-sans);
   --radius: 1rem;
@@ -199,17 +199,24 @@
 }
 
 @layer utilities {
+  /* Cal Sans n'a qu'une seule graisse : on coupe la synthèse de gras du
+     navigateur (faux-bold) pour éviter les titres « trop gras » et garder
+     le rendu net de la police. Les classes font-bold/semibold restent sans
+     effet visuel sur Cal Sans, mais s'appliquent normalement au fallback. */
   .font-display {
     font-family: var(--font-display);
+    font-synthesis-weight: none;
   }
 
   .font-editorial {
     font-family: var(--font-editorial);
     font-optical-sizing: auto;
+    font-synthesis-weight: none;
   }
 
   .font-serif {
     font-family: var(--font-serif);
+    font-synthesis-weight: none;
   }
 
   .font-mono {

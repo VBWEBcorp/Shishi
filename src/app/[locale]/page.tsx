@@ -7,7 +7,7 @@ import { ExperienceGallery } from '@/components/sections/experience-gallery'
 import { FaqSection } from '@/components/sections/faq-section'
 import { PhotoShowcase } from '@/components/sections/photo-showcase'
 import { ShishiHero } from '@/components/sections/shishi-hero'
-import { BookingCta, StorySection, ValuesBand } from '@/components/sections/shishi-home'
+import { StorySection, ValuesBand } from '@/components/sections/shishi-home'
 import {
   localBusinessJsonLd,
   organizationJsonLd,
@@ -90,7 +90,6 @@ export default async function HomePage({
         <StorySection />
         <FaqSection />
         <PhotoShowcase />
-        <BookingCta />
       </>
     )
   }

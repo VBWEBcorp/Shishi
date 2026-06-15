@@ -14,7 +14,6 @@ import {
   Images,
   ArrowRight,
   FileText,
-  Database,
   CalendarCheck,
 } from 'lucide-react'
 
@@ -38,8 +37,6 @@ const ease = [0.22, 1, 0.36, 1] as const
 export default function AdminDashboardPage() {
   const [user, setUser] = useState<AdminUser | null>(null)
   const [loading, setLoading] = useState(true)
-  const [seeding, setSeeding] = useState(false)
-  const [seedDone, setSeedDone] = useState(false)
   const router = useRouter()
 
   useEffect(() => {
@@ -85,7 +82,7 @@ export default function AdminDashboardPage() {
         <div className="absolute -bottom-40 -right-20 size-[420px] rounded-full bg-accent/15 blur-[140px]" />
       </div>
 
-      <div className="space-y-6 p-4 pt-12 sm:p-6 sm:pt-12 lg:p-8 lg:pt-12">
+      <div className="space-y-6 p-4 pt-16 sm:p-6 sm:pt-16 md:pt-6 lg:p-8 lg:pt-8">
         {/* Hero Banner — glassmorphism */}
         <motion.div
           initial={{ opacity: 0, y: 16 }}
@@ -169,51 +166,6 @@ export default function AdminDashboardPage() {
             })}
           </div>
         </motion.div>
-
-        {/* Seed */}
-        {!seedDone && (
-          <motion.div
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, ease, delay: 0.2 }}
-            className="flex flex-col items-start justify-between gap-4 rounded-2xl border border-white/15 bg-white/[0.06] p-5 backdrop-blur-xl sm:flex-row sm:items-center"
-          >
-            <div className="flex items-center gap-3">
-              <span className="flex size-10 shrink-0 items-center justify-center rounded-xl border border-white/15 bg-white/10 text-white">
-                <Database className="size-4" />
-              </span>
-              <div>
-                <p className="text-sm font-semibold text-white">Données d&apos;exemple</p>
-                <p className="text-xs text-white/60">Ajouter des photos galerie et articles blog pour tester le template</p>
-              </div>
-            </div>
-            <button
-              onClick={async () => {
-                setSeeding(true)
-                try {
-                  const token = localStorage.getItem('authToken')
-                  const res = await fetch('/api/seed', {
-                    method: 'POST',
-                    headers: { Authorization: `Bearer ${token}` },
-                  })
-                  if (res.ok) {
-                    setSeedDone(true)
-                  } else {
-                    alert('Erreur lors du seed')
-                  }
-                } catch {
-                  alert('Erreur réseau')
-                } finally {
-                  setSeeding(false)
-                }
-              }}
-              disabled={seeding}
-              className="w-full shrink-0 rounded-xl bg-accent px-4 py-2 text-sm font-semibold text-accent-foreground transition-all hover:brightness-105 disabled:opacity-50 sm:w-auto"
-            >
-              {seeding ? 'Chargement...' : 'Charger les données'}
-            </button>
-          </motion.div>
-        )}
       </div>
     </div>
   )

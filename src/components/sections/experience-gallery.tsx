@@ -1,12 +1,12 @@
 'use client'
 
-import { ArrowRight, ChevronLeft, ChevronRight, Clock } from 'lucide-react'
+import { motion } from 'framer-motion'
+import { Clock } from 'lucide-react'
 import { useLocale, useTranslations } from 'next-intl'
 import Image from 'next/image'
-import { useCallback, useEffect, useState } from 'react'
 
+import { CtaButton } from '@/components/cta-button'
 import { SectionEyebrow } from '@/components/section-eyebrow'
-import { Link } from '@/i18n/navigation'
 import type { Locale } from '@/i18n/routing'
 
 type Moment = {
@@ -16,149 +16,121 @@ type Moment = {
   caption: { en: string; fr: string }
 }
 
+const ease = [0.22, 1, 0.36, 1] as const
+
 /** Récit d'une journée au club — ambiance, pas la liste des activités. */
 const MOMENTS: Moment[] = [
   {
     time: '07:30',
     image: '/photos/fitness.jpg',
     title: { en: 'Morning workout', fr: 'Réveil sportif' },
-    caption: { en: 'Start the day in motion', fr: 'Commencez la journée en mouvement' },
+    caption: {
+      en: 'Start the day in motion in a fully-equipped fitness space.',
+      fr: 'Commencez la journée en mouvement dans un espace fitness complet.',
+    },
   },
   {
     time: '12:30',
     image: '/photos/restaurant.jpg',
     title: { en: 'Healthy lunch', fr: 'Déjeuner healthy' },
-    caption: { en: 'Fresh plates by the pool', fr: 'Des assiettes fraîches au bord de l’eau' },
+    caption: {
+      en: 'Fresh, feel-good plates and smoothies right by the pool.',
+      fr: 'Des assiettes fraîches et des smoothies feel-good au bord de l’eau.',
+    },
   },
   {
     time: '15:00',
     image: '/photos/pool.jpg',
     title: { en: 'Afternoon by the pool', fr: 'Après-midi piscine' },
-    caption: { en: 'Swim, sunbathe, repeat', fr: 'Plonger, bronzer, recommencer' },
+    caption: {
+      en: 'Swim, sunbathe and unwind at the heart of the resort.',
+      fr: 'Plonger, bronzer et se détendre au cœur du resort.',
+    },
   },
   {
     time: '18:30',
     image: '/photos/pool-bar.jpg',
     title: { en: 'Sunset drinks', fr: 'Apéro coucher de soleil' },
-    caption: { en: 'A drink under the Lamai sky', fr: 'Un verre face au ciel de Lamai' },
-  },
-  {
-    time: '21:00',
-    image: '/photos/lounge.jpg',
-    title: { en: 'Lounge evenings', fr: 'Soirée lounge' },
-    caption: { en: 'Meet the community', fr: 'Se retrouver entre membres' },
-  },
-  {
-    time: 'all day',
-    image: '/photos/kids-welcome.jpg',
-    title: { en: 'Family time', fr: 'En famille' },
-    caption: { en: 'The kids club looks after the little ones', fr: 'Le kids club veille sur les petits' },
+    caption: {
+      en: 'A drink under the Lamai sky as the day winds down.',
+      fr: 'Un verre face au ciel de Lamai pour finir la journée.',
+    },
   },
 ]
 
-/** Carrousel d'images simple : défilement auto, flèches, points, pause au survol. */
+/** Grille décalée façon « éditorial » : colonnes alternées image / texte. */
 export function ExperienceGallery() {
   const t = useTranslations('Home.spotlight')
   const locale = useLocale() as Locale
-  const [index, setIndex] = useState(0)
-  const [paused, setPaused] = useState(false)
-  const count = MOMENTS.length
 
-  const go = useCallback((dir: number) => setIndex((i) => (i + dir + count) % count), [count])
-
-  useEffect(() => {
-    if (paused) return
-    const id = setInterval(() => setIndex((i) => (i + 1) % count), 5000)
-    return () => clearInterval(id)
-  }, [paused, count])
+  const more =
+    locale === 'fr'
+      ? 'Et bien plus encore vous attend sur place'
+      : 'And there’s plenty more waiting for you on site'
 
   return (
     <section className="border-y border-border bg-sand">
       <div className="mx-auto max-w-6xl px-4 py-20 sm:px-6 lg:px-8 lg:py-28">
-      {/* En-tête éditorial. */}
-      <div className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
-        <div>
+        {/* En-tête centré. */}
+        <div className="mx-auto max-w-2xl text-center">
           <SectionEyebrow icon={Clock}>{t('eyebrow')}</SectionEyebrow>
-          <h2 className="mt-4 max-w-2xl font-editorial text-[2rem] font-normal leading-[1.1] tracking-[-0.01em] text-foreground sm:text-[2.7rem]">
+          <h2 className="mt-4 font-editorial text-[2rem] font-normal leading-[1.08] tracking-[-0.01em] text-foreground sm:text-[2.7rem]">
             {t('title')}
           </h2>
         </div>
-        <Link
-          href="/a-propos"
-          className="group inline-flex shrink-0 items-center gap-2 text-sm font-semibold uppercase tracking-[0.16em] text-foreground transition-colors hover:text-accent"
-        >
-          {t('cta')}
-          <span className="flex size-7 items-center justify-center rounded-full ring-1 ring-border transition-colors group-hover:bg-accent group-hover:text-accent-foreground group-hover:ring-accent">
-            <ArrowRight className="size-3.5" aria-hidden />
-          </span>
-        </Link>
-      </div>
 
-      {/* Carrousel. */}
-      <div
-        className="group relative mt-10 overflow-hidden rounded-[1.75rem] ring-1 ring-border"
-        onMouseEnter={() => setPaused(true)}
-        onMouseLeave={() => setPaused(false)}
-      >
-        <div
-          className="flex aspect-[4/3] transition-transform duration-700 ease-out sm:aspect-[16/9]"
-          style={{ transform: `translateX(-${index * 100}%)` }}
-        >
-          {MOMENTS.map((m, i) => (
-            <div key={m.title.en} className="relative h-full w-full shrink-0">
-              <Image
-                src={m.image}
-                alt={m.title[locale]}
-                fill
-                sizes="(min-width:1024px) 72rem, 100vw"
-                className="object-cover"
-                priority={i === 0}
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-[oklch(0.14_0_0/0.85)] via-transparent to-transparent" aria-hidden />
-              <div className="absolute inset-x-0 bottom-0 p-6 sm:p-9">
-                <span className="rounded-full bg-white/15 px-3 py-1 font-mono text-[11px] font-medium text-white ring-1 ring-white/20 backdrop-blur">
-                  {m.time}
-                </span>
-                <h3 className="mt-3 font-editorial text-2xl font-medium text-white sm:text-3xl">{m.title[locale]}</h3>
-                <p className="mt-1 text-sm text-white/80">{m.caption[locale]}</p>
-              </div>
-            </div>
-          ))}
+        {/* Grille décalée : colonnes 2 & 4 ont le texte au-dessus de l'image. */}
+        <div className="mt-10 grid grid-cols-2 gap-x-3 gap-y-8 sm:mt-14 sm:gap-x-6 sm:gap-y-12 lg:mt-16 lg:grid-cols-4 lg:gap-x-8">
+          {MOMENTS.map((m, i) => {
+            const textFirst = i % 2 === 1 // colonnes 2 & 4
+            return (
+              <motion.article
+                key={m.title.en}
+                initial={{ opacity: 0, y: 26 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: '-60px' }}
+                transition={{ duration: 0.55, ease, delay: Math.min(i, 4) * 0.08 }}
+                className="group flex flex-col gap-3 sm:gap-5"
+              >
+                <figure className={textFirst ? 'sm:order-2' : ''}>
+                  <div className="relative aspect-[4/5] overflow-hidden rounded-2xl bg-muted sm:rounded-[1.5rem]">
+                    <Image
+                      src={m.image}
+                      alt={m.title[locale]}
+                      fill
+                      sizes="(min-width:1024px) 25vw, 50vw"
+                      className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.06]"
+                      priority={i === 0}
+                    />
+                  </div>
+                </figure>
+
+                <figcaption className={textFirst ? 'sm:order-1' : ''}>
+                  <span className="text-[11px] font-semibold uppercase tracking-[0.16em] text-accent sm:text-xs">
+                    {m.time}
+                  </span>
+                  <h3 className="mt-1 font-display text-base leading-snug text-foreground sm:mt-1.5 sm:text-2xl">
+                    {m.title[locale]}
+                  </h3>
+                  <p className="mt-1.5 text-xs leading-relaxed text-muted-foreground line-clamp-2 sm:mt-2 sm:text-sm sm:line-clamp-none">
+                    {m.caption[locale]}
+                  </p>
+                </figcaption>
+              </motion.article>
+            )
+          })}
         </div>
 
-        {/* Flèches. */}
-        <button
-          type="button"
-          onClick={() => go(-1)}
-          aria-label={locale === 'fr' ? 'Précédent' : 'Previous'}
-          className="absolute left-4 top-1/2 flex size-10 -translate-y-1/2 items-center justify-center rounded-full bg-white/20 text-white opacity-0 ring-1 ring-white/30 backdrop-blur transition-all hover:bg-white/30 focus-visible:opacity-100 group-hover:opacity-100"
-        >
-          <ChevronLeft className="size-5" aria-hidden />
-        </button>
-        <button
-          type="button"
-          onClick={() => go(1)}
-          aria-label={locale === 'fr' ? 'Suivant' : 'Next'}
-          className="absolute right-4 top-1/2 flex size-10 -translate-y-1/2 items-center justify-center rounded-full bg-white/20 text-white opacity-0 ring-1 ring-white/30 backdrop-blur transition-all hover:bg-white/30 focus-visible:opacity-100 group-hover:opacity-100"
-        >
-          <ChevronRight className="size-5" aria-hidden />
-        </button>
-
-        {/* Points. */}
-        <div className="absolute inset-x-0 bottom-5 flex items-center justify-center gap-2">
-          {MOMENTS.map((m, i) => (
-            <button
-              key={m.title.en}
-              type="button"
-              onClick={() => setIndex(i)}
-              aria-label={`${i + 1}`}
-              className={`h-1.5 rounded-full transition-all ${
-                i === index ? 'w-6 bg-accent' : 'w-1.5 bg-white/50 hover:bg-white/80'
-              }`}
-            />
-          ))}
+        {/* Pied de section : invitation — filet — bouton pilule. */}
+        <div className="mt-16 flex flex-col items-center gap-6 sm:flex-row sm:gap-8">
+          <p className="text-sm text-muted-foreground">{more}</p>
+          <span className="hidden h-px flex-1 bg-border sm:block" aria-hidden />
+          {/* Même bouton que « En savoir plus sur Shi Shi » (CtaButton) :
+              forme + animation gooey strictement identiques. */}
+          <CtaButton href="/a-propos" tone="dark" size="sm" className="shrink-0">
+            {t('cta')}
+          </CtaButton>
         </div>
-      </div>
       </div>
     </section>
   )

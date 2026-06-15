@@ -1,4 +1,4 @@
-import { CalendarCheck, CreditCard, MapPin, ShieldCheck } from 'lucide-react'
+import { CalendarCheck, Mail, MapPin, ShieldCheck } from 'lucide-react'
 import type { Metadata } from 'next'
 import { useLocale, useTranslations } from 'next-intl'
 import { getTranslations, setRequestLocale } from 'next-intl/server'
@@ -107,7 +107,7 @@ function BookingContent() {
 
   const steps = [
     { Icon: CalendarCheck, title: t('step1Title'), text: t('step1Text') },
-    { Icon: CreditCard, title: t('step2Title'), text: t('step2Text') },
+    { Icon: Mail, title: t('step2Title'), text: t('step2Text') },
     { Icon: ShieldCheck, title: t('step3Title'), text: t('step3Text') },
   ]
 

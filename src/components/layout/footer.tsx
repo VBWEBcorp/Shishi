@@ -1,9 +1,11 @@
 'use client'
 
-import { ArrowUpRight, Instagram, Mail, MapPin, MessageCircle } from 'lucide-react'
+import { ArrowUpRight, Facebook, Instagram, Mail, MapPin, MessageCircle } from 'lucide-react'
 import { useLocale, useTranslations } from 'next-intl'
 import Image from 'next/image'
+import { useEffect, useState } from 'react'
 
+import { BookingCta } from '@/components/sections/shishi-home'
 import { Link } from '@/i18n/navigation'
 import type { Locale } from '@/i18n/routing'
 import { activities, babysitting } from '@/lib/activities'
@@ -13,10 +15,20 @@ export function Footer() {
   const t = useTranslations('Footer')
   const locale = useLocale() as Locale
 
+  // La galerie n'apparaît dans le footer que lorsqu'elle est activée par l'admin.
+  const [galleryOn, setGalleryOn] = useState(false)
+  useEffect(() => {
+    fetch('/api/gallery/settings')
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => setGalleryOn(!!d?.enabled))
+      .catch(() => {})
+  }, [])
+
   const exploreLinks = [
     { label: t('home'), to: '/' as const },
     { label: t('bookACourt'), to: '/book-now' as const },
     { label: t('prices'), to: '/prices' as const },
+    ...(galleryOn ? [{ label: locale === 'en' ? 'Gallery' : 'Galerie', to: '/gallery' as const }] : []),
     { label: t('about'), to: '/a-propos' as const },
     { label: t('contact'), to: '/contact-location' as const },
   ]
@@ -33,6 +45,10 @@ export function Footer() {
 
   return (
     <footer className="bg-[oklch(0.18_0_0)] text-zinc-300">
+      {/* Section CTA « Prêt à jouer ? » intégrée au footer : son fondu bas
+          (oklch 0.18) se confond avec le fond du footer = un seul bloc. */}
+      <BookingCta />
+
       <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
         <div className="grid gap-12 py-16 sm:grid-cols-2 lg:grid-cols-[1.6fr_1fr_1fr_1fr] lg:gap-12">
           {/* Brand */}
@@ -57,6 +73,15 @@ export function Footer() {
                 className="grid size-11 place-items-center rounded-xl text-zinc-300 ring-1 ring-white/15 transition-colors hover:bg-white/10 hover:text-white"
               >
                 <Instagram className="size-[18px]" aria-hidden />
+              </a>
+              <a
+                href={siteConfig.facebook}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Facebook"
+                className="grid size-11 place-items-center rounded-xl text-zinc-300 ring-1 ring-white/15 transition-colors hover:bg-white/10 hover:text-white"
+              >
+                <Facebook className="size-[18px]" aria-hidden />
               </a>
               <a
                 href={`https://wa.me/${siteConfig.whatsapp}`}

@@ -53,7 +53,7 @@ export function PremiumHero({
   return (
     <section
       className={`relative isolate overflow-hidden ${
-        hasBgImage ? 'bg-background' : 'border-b border-border/60 bg-background dark:bg-[oklch(0.16_0.02_285)]'
+        hasBgImage ? 'bg-background' : 'border-b border-border/60 bg-background'
       }`}
     >
       {/* Image de fond plein largeur + overlay sombre + fade vers le bas (style Blog) */}
@@ -135,7 +135,7 @@ export function PremiumHero({
                   {lead}{' '}
                   <span
                     className={`relative inline-block pb-1 font-serif italic font-normal tracking-[-0.01em] ${
-                      darkOver ? 'text-[oklch(0.78_0.15_285)]' : 'text-primary'
+                      darkOver ? 'text-accent' : 'text-primary'
                     }`}
                   >
                     {accent}
@@ -171,17 +171,17 @@ export function PremiumHero({
                 aria-hidden
                 style={{
                   background:
-                    'radial-gradient(ellipse at center, oklch(0.55 0.2 285 / 0.3) 0%, transparent 70%)',
+                    'radial-gradient(ellipse at center, oklch(0.63 0.187 47 / 0.25) 0%, transparent 70%)',
                 }}
               />
 
-              <div className="relative overflow-hidden rounded-2xl bg-background/40 p-1.5 shadow-[0_30px_60px_-20px_oklch(0.2_0.02_264/0.3)] backdrop-blur-xl ring-1 ring-border/60">
+              <div className="relative overflow-hidden rounded-2xl bg-background/40 p-1.5 shadow-[0_30px_60px_-20px_oklch(0.2_0_0/0.3)] backdrop-blur-xl ring-1 ring-border/60">
                 <div
                   className="pointer-events-none absolute inset-0 rounded-2xl p-px"
                   aria-hidden
                   style={{
                     background:
-                      'linear-gradient(135deg, oklch(0.55 0.2 285 / 0.4) 0%, oklch(0.91 0.012 264 / 0.5) 50%, oklch(0.55 0.2 285 / 0.4) 100%)',
+                      'linear-gradient(135deg, oklch(0.63 0.187 47 / 0.35) 0%, oklch(0.91 0 0 / 0.5) 50%, oklch(0.63 0.187 47 / 0.35) 100%)',
                     WebkitMask:
                       'linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0)',
                     WebkitMaskComposite: 'xor',

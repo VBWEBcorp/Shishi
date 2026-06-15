@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { connectDB } from '@/lib/db'
 import { Booking } from '@/models/Booking'
-import { getActivityBySlug, getActivityPrice } from '@/lib/booking-pricing'
-import { getBookingConfig, isBookable } from '@/lib/availability'
+import { upsertContact } from '@/lib/contacts'
+import { getActivityBySlug, getBookingAmount } from '@/lib/booking-pricing'
+import { getBookingConfig, isBookable, isDayPass } from '@/lib/availability'
 import { isSlotAvailable } from '@/lib/availability-query'
-import { stripe, stripeCurrency, stripeEnabled, toStripeAmount } from '@/lib/stripe'
-
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'
+import { notifyNewBooking } from '@/lib/booking-emails'
+import { langFromPhoneCountry } from '@/lib/country-codes'
 
 export async function POST(request: NextRequest) {
   try {
@@ -17,8 +17,28 @@ export async function POST(request: NextRequest) {
     const name = String(body.name || '').trim()
     const email = String(body.email || '').trim()
     const phone = String(body.phone || '').trim()
+    const phoneCountry = String(body.phoneCountry || '').trim()
     const notes = String(body.notes || '').trim()
-    const locale = body.locale === 'fr' ? 'fr' : 'en'
+    const newsletterOptIn = body.newsletterOptIn === true
+
+    // Participants additionnels (réservation pour plusieurs personnes). Chacun
+    // doit avoir un nom + un email valide ; on borne à 20 par sécurité.
+    const participants = (Array.isArray(body.participants) ? body.participants : [])
+      .map((pp: unknown) => {
+        const o = (pp ?? {}) as Record<string, unknown>
+        return {
+          name: String(o.name || '').trim(),
+          email: String(o.email || '').trim(),
+          phone: String(o.phone || '').trim(),
+        }
+      })
+      .filter((pp: { name: string; email: string }) => pp.name && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(pp.email))
+      .slice(0, 20)
+    const partySize = 1 + participants.length
+    // Langue des emails CLIENT : français si le téléphone est d'un pays
+    // francophone (ex: +33), sinon anglais par défaut. L'alerte interne envoyée
+    // à Shi Shi Samui reste, elle, toujours en français.
+    const locale = langFromPhoneCountry(phoneCountry)
 
     const activity = getActivityBySlug(activitySlug)
     if (!activity) {
@@ -45,9 +65,12 @@ export async function POST(request: NextRequest) {
     const duration = getBookingConfig(activitySlug)?.slotMinutes ?? 60
 
     // Le prix est TOUJOURS calculé côté serveur (jamais envoyé par le client).
-    const amount = getActivityPrice(activitySlug)
+    // Selon l'activité, il se multiplie par le nombre de participants.
+    const amount = getBookingAmount(activitySlug, partySize)
     const activityName = activity.name[locale]
 
+    // Plus de paiement en ligne : la réservation est enregistrée comme une demande
+    // ("pending") visible dans l'admin. La confirmation se fait par email.
     await connectDB()
     const booking = await Booking.create({
       activitySlug,
@@ -60,49 +83,66 @@ export async function POST(request: NextRequest) {
       phone,
       notes,
       amount,
-      currency: stripeCurrency,
+      currency: 'thb',
+      partySize,
+      participants,
       status: 'pending',
+      locale,
+      seen: false,
     })
 
-    // Si Stripe n'est pas encore configuré : on garde la réservation en "pending"
-    // et on renvoie un flag pour que le front bascule sur une confirmation manuelle / WhatsApp.
-    if (!stripeEnabled || !stripe) {
-      return NextResponse.json({
-        ok: true,
-        paymentConfigured: false,
-        bookingId: String(booking._id),
+    // CRM : chaque réservation alimente la fiche contact (best-effort — ne doit
+    // jamais faire échouer la réservation si l'upsert plante).
+    try {
+      await upsertContact({
+        email,
+        name,
+        phone,
+        country: phoneCountry,
+        source: 'booking',
+        optIn: newsletterOptIn,
+        optInSource: 'booking-form',
+        bumpBooking: true,
       })
+      // Chaque participant additionnel devient aussi un contact CRM.
+      for (const pp of participants) {
+        await upsertContact({
+          email: pp.email,
+          name: pp.name,
+          phone: pp.phone,
+          source: 'booking',
+          bumpBooking: true,
+        })
+      }
+    } catch (e) {
+      console.error('[booking] contact upsert failed:', e)
     }
 
-    const session = await stripe.checkout.sessions.create({
-      mode: 'payment',
-      customer_email: email,
-      line_items: [
-        {
-          quantity: 1,
-          price_data: {
-            currency: stripeCurrency,
-            unit_amount: toStripeAmount(amount),
-            product_data: {
-              name: `${activityName} — ${date} ${time}`,
-              description: `Shi Shi Samui · ${duration} min`,
-            },
-          },
-        },
-      ],
-      metadata: { bookingId: String(booking._id) },
-      success_url: `${SITE_URL}/${locale}/book-now?status=success&id=${booking._id}`,
-      cancel_url: `${SITE_URL}/${locale}/book-now?status=cancelled&id=${booking._id}`,
-    })
-
-    booking.stripeSessionId = session.id
-    await booking.save()
+    // Emails (best-effort) : confirmation au client (dans sa langue) + alerte à
+    // l'entreprise. On attend l'envoi (serverless) mais on ne casse jamais la
+    // réservation en cas d'échec d'email.
+    try {
+      await notifyNewBooking({
+        name,
+        email,
+        activityName,
+        date,
+        time,
+        duration,
+        phone,
+        notes,
+        locale,
+        dayPass: isDayPass(activitySlug),
+        partySize,
+        participants,
+      })
+    } catch (e) {
+      console.error('[booking] email notify failed:', e)
+    }
 
     return NextResponse.json({
       ok: true,
-      paymentConfigured: true,
       bookingId: String(booking._id),
-      checkoutUrl: session.url,
     })
   } catch (error) {
     console.error('[booking] error:', error)

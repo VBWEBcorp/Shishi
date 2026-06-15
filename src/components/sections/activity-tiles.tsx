@@ -8,7 +8,6 @@ import { Link } from '@/i18n/navigation'
 import type { Locale } from '@/i18n/routing'
 import { activities } from '@/lib/activities'
 import { getActivityPrice, OPENING_HOURS } from '@/lib/booking-pricing'
-import { cn } from '@/lib/utils'
 
 /**
  * Section activités — fusion de DA voulue par le client :
@@ -51,60 +50,53 @@ export function ActivityTiles() {
         </div>
       </div>
 
-      <div className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      {/* Grille uniforme : toutes les cartes à la même taille (image + texte
+          lisible en dessous), DA « Framer » cohérente avec le blog. */}
+      <div className="mt-10 grid grid-cols-2 gap-x-3 gap-y-8 sm:mt-12 sm:gap-x-6 sm:gap-y-10 lg:mt-14 lg:grid-cols-3 lg:gap-x-8">
         {activities.map((a, i) => {
           const info = chip(a.slug)
           return (
-            <Link
-              key={a.slug}
-              href={a.path}
-              className={cn(
-                'group relative isolate flex aspect-[4/3] transform-gpu flex-col justify-end overflow-hidden rounded-3xl ring-1 ring-border transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_28px_56px_-22px_oklch(0.16_0.02_55/0.4)]',
-                a.featured && 'lg:col-span-2 lg:aspect-[16/9]'
-              )}
-            >
-              <Image
-                src={a.image}
-                alt={a.altImages[0]}
-                fill
-                sizes={a.featured ? '(min-width:1024px) 66vw, 100vw' : '(min-width:1024px) 33vw, (min-width:640px) 50vw, 100vw'}
-                className="object-cover transition-transform duration-[1200ms] ease-out group-hover:scale-[1.06]"
-                priority={i < 2}
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-[oklch(0.16_0_0/0.92)] via-[oklch(0.16_0_0/0.35)] to-transparent" aria-hidden />
-
-              {/* Badges haut — Signature (gauche) + chip info type AnyBuddy (droite) */}
-              <div className="absolute inset-x-4 top-4 flex items-start justify-between gap-2">
-                {a.featured ? (
-                  <span className="rounded-full bg-accent px-3 py-1 text-[10px] font-bold uppercase tracking-[0.12em] text-accent-foreground shadow-sm">
-                    {t('signature')}
-                  </span>
-                ) : (
-                  <span aria-hidden />
-                )}
-                {info && (
-                  <span className="rounded-full bg-ocean/85 px-3 py-1 text-[11px] font-semibold text-ocean-foreground ring-1 ring-white/15 backdrop-blur">
-                    {info}
-                  </span>
-                )}
+            <Link key={a.slug} href={a.path} className="group block">
+              {/* Image */}
+              <div className="relative aspect-[4/3] overflow-hidden rounded-2xl bg-muted ring-1 ring-border sm:rounded-[1.75rem]">
+                <Image
+                  src={a.image}
+                  alt={a.altImages[0]}
+                  fill
+                  sizes="(min-width:1024px) 33vw, 50vw"
+                  className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.06]"
+                  priority={i < 3}
+                />
+                <span className="absolute right-3 top-3 grid size-9 place-items-center rounded-full bg-white/90 text-foreground shadow-sm backdrop-blur-sm transition-all duration-300 group-hover:bg-accent group-hover:text-white sm:right-4 sm:top-4 sm:size-11">
+                  <ArrowUpRight className="size-4 transition-transform duration-300 group-hover:rotate-45 sm:size-5" aria-hidden />
+                </span>
               </div>
 
-              <div className="relative p-5 sm:p-6">
-                <span className="flex size-11 items-center justify-center rounded-2xl bg-white/15 text-white ring-1 ring-white/25 backdrop-blur">
-                  <ActivityIcon name={a.icon} className="size-6" />
-                </span>
-                <h3 className="mt-3.5 font-editorial text-2xl font-medium text-white sm:text-[1.7rem]">
-                  {a.name[locale]}
-                </h3>
-                <p className="mt-1 text-sm text-white/75">{a.tagline[locale]}</p>
+              {/* Texte en dessous */}
+              <div className="mt-3 px-0.5 sm:mt-4 sm:px-1">
+                <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
+                  {a.featured && (
+                    <span className="rounded-full bg-accent/10 px-2 py-0.5 text-[9px] font-bold uppercase tracking-[0.1em] text-accent sm:px-2.5 sm:text-[10px] sm:tracking-[0.12em]">
+                      {t('signature')}
+                    </span>
+                  )}
+                  {info && (
+                    <span className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground sm:text-xs">
+                      {info}
+                    </span>
+                  )}
+                </div>
 
-                {/* Les tuiles mènent à la page détail → « Découvrir » (la réservation se fait là-bas). */}
-                <span className="mt-4 inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.16em] text-white/90">
-                  {t('discover')}
-                  <span className="flex size-7 items-center justify-center rounded-full bg-white/15 ring-1 ring-white/25 backdrop-blur transition-all duration-300 group-hover:bg-accent group-hover:text-accent-foreground group-hover:ring-accent">
-                    <ArrowUpRight className="size-4 transition-transform duration-300 group-hover:rotate-45" aria-hidden />
-                  </span>
-                </span>
+                <div className="mt-1.5 flex items-center gap-1.5 sm:mt-2 sm:gap-2">
+                  <ActivityIcon name={a.icon} className="size-4 shrink-0 text-accent sm:size-5" />
+                  <h3 className="font-display text-base leading-snug text-foreground transition-colors group-hover:text-accent sm:text-[1.35rem]">
+                    {a.name[locale]}
+                  </h3>
+                </div>
+
+                <p className="mt-1.5 text-xs leading-relaxed text-muted-foreground line-clamp-2 sm:mt-2 sm:text-sm sm:line-clamp-none">
+                  {a.tagline[locale]}
+                </p>
               </div>
             </Link>
           )

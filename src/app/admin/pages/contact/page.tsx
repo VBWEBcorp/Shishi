@@ -12,7 +12,7 @@ const defaults = {
   },
   info: {
     phone: '+33 6 51 69 27 02',
-    email: 'contact.shishisamui@gmail.com',
+    email: 'contact@shi-shi-samui.com',
     street: 'Lamai',
     postalCode: '84310',
     city: 'Koh Samui',

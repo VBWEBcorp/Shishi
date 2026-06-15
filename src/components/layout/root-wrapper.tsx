@@ -9,7 +9,6 @@ import { FloatingWhatsApp } from '@/components/floating-whatsapp'
 import { MarketingBanner } from '@/components/marketing-banner'
 import { MarketingPopup } from '@/components/marketing-popup'
 import { Navbar } from '@/components/layout/navbar'
-import { ScrollToTop } from '@/components/scroll-to-top'
 
 export function RootWrapper({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
@@ -43,7 +42,6 @@ export function RootWrapper({ children }: { children: React.ReactNode }) {
       <main className="flex-1">{children}</main>
       <Footer />
       <FloatingWhatsApp />
-      <ScrollToTop />
       <MarketingPopup />
       <CookieConsent />
     </>

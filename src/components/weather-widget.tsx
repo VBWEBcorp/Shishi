@@ -1,8 +1,10 @@
 'use client'
 
 import { Cloud, CloudRain, CloudSun, Sun, Zap } from 'lucide-react'
+import { useLocale } from 'next-intl'
 import { useEffect, useState } from 'react'
 
+import type { Locale } from '@/i18n/routing'
 import { siteConfig } from '@/lib/seo'
 import { cn } from '@/lib/utils'
 
@@ -11,14 +13,25 @@ interface Weather {
   code: number
 }
 
-// Mapping WMO weather code → icône + libellé (open-meteo)
-function describe(code: number): { Icon: typeof Sun; label: string } {
-  if (code === 0) return { Icon: Sun, label: 'Clear' }
-  if (code <= 2) return { Icon: CloudSun, label: 'Partly cloudy' }
-  if (code === 3) return { Icon: Cloud, label: 'Cloudy' }
-  if (code >= 95) return { Icon: Zap, label: 'Storm' }
-  if (code >= 51) return { Icon: CloudRain, label: 'Rain' }
-  return { Icon: CloudSun, label: 'Mild' }
+type WeatherKind = 'clear' | 'partly' | 'cloudy' | 'storm' | 'rain' | 'mild'
+
+const LABELS: Record<WeatherKind, Record<Locale, string>> = {
+  clear: { en: 'Clear', fr: 'Dégagé' },
+  partly: { en: 'Partly cloudy', fr: 'Peu nuageux' },
+  cloudy: { en: 'Cloudy', fr: 'Nuageux' },
+  storm: { en: 'Storm', fr: 'Orage' },
+  rain: { en: 'Rain', fr: 'Pluie' },
+  mild: { en: 'Mild', fr: 'Variable' },
+}
+
+// Mapping WMO weather code → icône + type (open-meteo)
+function describe(code: number): { Icon: typeof Sun; kind: WeatherKind } {
+  if (code === 0) return { Icon: Sun, kind: 'clear' }
+  if (code <= 2) return { Icon: CloudSun, kind: 'partly' }
+  if (code === 3) return { Icon: Cloud, kind: 'cloudy' }
+  if (code >= 95) return { Icon: Zap, kind: 'storm' }
+  if (code >= 51) return { Icon: CloudRain, kind: 'rain' }
+  return { Icon: CloudSun, kind: 'mild' }
 }
 
 /**
@@ -26,6 +39,7 @@ function describe(code: number): { Icon: typeof Sun; label: string } {
  * Demandé par le client ("Affichage des informations météo").
  */
 export function WeatherWidget({ className }: { className?: string }) {
+  const locale = useLocale() as Locale
   const [weather, setWeather] = useState<Weather | null>(null)
 
   useEffect(() => {
@@ -44,7 +58,8 @@ export function WeatherWidget({ className }: { className?: string }) {
 
   if (!weather) return null
 
-  const { Icon, label } = describe(weather.code)
+  const { Icon, kind } = describe(weather.code)
+  const label = LABELS[kind][locale]
 
   return (
     <div

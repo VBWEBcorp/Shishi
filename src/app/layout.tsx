@@ -1,18 +1,30 @@
 import type { Metadata, Viewport } from 'next'
-import { Poppins } from 'next/font/google'
+import { Cal_Sans, Poppins } from 'next/font/google'
 
 import { ThemeScript } from '@/components/theme/theme-script'
 import { siteConfig } from '@/lib/seo'
 
 import '../index.css'
 
-// Police unique du site — Poppins (titres + corps).
+// Corps de texte — Poppins.
 const poppins = Poppins({
   subsets: ['latin'],
   variable: '--font-poppins',
   weight: ['400', '500', '600', '700'],
   style: ['normal', 'italic'],
   display: 'swap',
+})
+
+// Gros titres — Cal Sans (police d'affichage, une seule graisse).
+// adjustFontFallback: false → pas de métriques de fallback à générer pour
+// Cal Sans (police récente absente de la table de Next), ce qui supprime le
+// warning « Failed to find font override values ».
+const calSans = Cal_Sans({
+  subsets: ['latin'],
+  variable: '--font-cal-sans',
+  weight: '400',
+  display: 'swap',
+  adjustFontFallback: false,
 })
 
 export const metadata: Metadata = {
@@ -70,7 +82,7 @@ export default function RootLayout({
     <html
       lang="en"
       dir="ltr"
-      className={poppins.variable}
+      className={`${poppins.variable} ${calSans.variable}`}
       suppressHydrationWarning
     >
       <head>

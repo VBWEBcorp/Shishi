@@ -33,13 +33,31 @@ function estimateReadTime(html: string) {
 export default function BlogPostContent({
   slug,
   initialPost,
+  locale = 'fr',
 }: {
   slug: string
   initialPost?: BlogPost
+  locale?: 'fr' | 'en'
 }) {
   const [post, setPost] = useState<BlogPost | null>(initialPost ?? null)
   const [loading, setLoading] = useState(!initialPost)
   const [notFound, setNotFound] = useState(false)
+
+  const en = locale === 'en'
+  const tx = {
+    back: en ? 'Back to blog' : 'Retour au blog',
+    loading: en ? 'Loading…' : 'Chargement...',
+    notFound: en ? 'Article not found.' : 'Article introuvable.',
+    readTime: (n: number) => (en ? `${n} min read` : `${n} min de lecture`),
+    liked: en ? 'Enjoyed this article?' : 'Cet article vous a plu ?',
+    likedSub: en
+      ? 'Browse our other guides or get in touch to plan your stay.'
+      : 'Découvrez nos autres articles ou contactez-nous pour préparer votre séjour.',
+    all: en ? 'All articles' : 'Tous les articles',
+    contact: en ? 'Contact us' : 'Nous contacter',
+  }
+  const blogHref = `/${locale}/blog`
+  const contactHref = `/${locale}/contact-location`
 
   useEffect(() => {
     // When the server already provided the post, render it directly — the
@@ -71,7 +89,7 @@ export default function BlogPostContent({
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="text-muted-foreground">Chargement...</div>
+        <div className="text-muted-foreground">{tx.loading}</div>
       </div>
     )
   }
@@ -79,16 +97,16 @@ export default function BlogPostContent({
   if (notFound || !post) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center gap-4">
-        <p className="text-muted-foreground text-lg">Article introuvable.</p>
-        <Link href="/blog" className="text-primary underline underline-offset-4 hover:text-primary/80 text-sm">
-          Retour au blog
+        <p className="text-muted-foreground text-lg">{tx.notFound}</p>
+        <Link href={blogHref} className="text-primary underline underline-offset-4 hover:text-primary/80 text-sm">
+          {tx.back}
         </Link>
       </div>
     )
   }
 
   const readTime = estimateReadTime(post.content)
-  const formattedDate = new Date(post.publishedAt).toLocaleDateString('fr-FR', {
+  const formattedDate = new Date(post.publishedAt).toLocaleDateString(en ? 'en-US' : 'fr-FR', {
     day: 'numeric',
     month: 'long',
     year: 'numeric',
@@ -121,11 +139,11 @@ export default function BlogPostContent({
         >
           {/* Back link */}
           <Link
-            href="/blog"
+            href={blogHref}
             className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors mb-6"
           >
             <ArrowLeft className="size-3.5" />
-            Retour au blog
+            {tx.back}
           </Link>
 
           {/* Header */}
@@ -142,7 +160,7 @@ export default function BlogPostContent({
               </span>
               <span className="flex items-center gap-1.5">
                 <Clock className="size-3.5" />
-                {readTime} min de lecture
+                {tx.readTime(readTime)}
               </span>
               {post.author && (
                 <span className="flex items-center gap-1.5">
@@ -186,22 +204,20 @@ export default function BlogPostContent({
 
           {/* CTA bottom */}
           <div className="border-t border-border/60 py-12 text-center space-y-4">
-            <p className="text-lg font-semibold text-foreground">Cet article vous a plu ?</p>
-            <p className="text-sm text-muted-foreground">
-              Découvrez nos autres articles ou contactez-nous pour discuter de votre projet.
-            </p>
+            <p className="text-lg font-semibold text-foreground">{tx.liked}</p>
+            <p className="text-sm text-muted-foreground">{tx.likedSub}</p>
             <div className="flex items-center justify-center gap-3 pt-2">
               <Link
-                href="/blog"
+                href={blogHref}
                 className="rounded-lg border border-border px-4 py-2 text-sm font-medium text-foreground hover:bg-muted transition-colors"
               >
-                Tous les articles
+                {tx.all}
               </Link>
               <Link
-                href="/contact-location"
-                className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white hover:bg-primary/90 transition-colors"
+                href={contactHref}
+                className="rounded-lg bg-accent px-4 py-2 text-sm font-medium text-accent-foreground hover:brightness-105 transition-all"
               >
-                Nous contacter
+                {tx.contact}
               </Link>
             </div>
           </div>

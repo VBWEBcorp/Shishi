@@ -1,14 +1,15 @@
 import type { Metadata } from 'next'
+import { notFound } from 'next/navigation'
 
 import { connectDB } from '@/lib/db'
 import { GallerySettings, GalleryImage } from '@/models/Gallery'
 import { siteConfig } from '@/lib/seo'
 import GalleryContent from './gallery-content'
 
-export const revalidate = 3600
+export const revalidate = 60
 
 const defaultSettings = {
-  enabled: true,
+  enabled: false,
   title: 'Nos réalisations',
   description: 'Découvrez nos projets récents et laissez-vous inspirer par notre savoir-faire.',
   eyebrow: 'Galerie',
@@ -59,7 +60,7 @@ export default async function GalleryPage() {
       GallerySettings.findOne().lean(),
       GalleryImage.find({ active: true })
         .sort({ order: 1 })
-        .select('title description imageUrl category')
+        .select('title description type imageUrl videoUrl category')
         .limit(60)
         .lean(),
     ])
@@ -72,6 +73,9 @@ export default async function GalleryPage() {
   } catch {
     // Fallback gracieux
   }
+
+  // Galerie désactivée → page introuvable (le lien du footer est masqué aussi).
+  if (!settings?.enabled) notFound()
 
   return <GalleryContent initialSettings={settings as any} initialImages={images as any} />
 }

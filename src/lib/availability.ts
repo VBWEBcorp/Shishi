@@ -18,20 +18,39 @@ export interface ActivityBookingConfig {
   slotMinutes: number
   /** Nombre de réservations simultanées possibles par créneau (terrains/places) */
   capacity: number
+  /**
+   * Unité de réservation. 'hour' (défaut) = créneaux horaires (tennis, kids).
+   * 'day' = accès à la journée (salle de sport, piscine) : un seul « créneau »
+   * par jour, sans choix d'horaire.
+   */
+  unit?: 'hour' | 'day'
 }
 
-/** Activités réservables par créneau. `restaurant` n'est pas réservable ici. */
+/**
+ * Activités réservables par créneau.
+ * `restaurant` n'est pas réservable ici. `pickleball` est mis de côté pour le
+ * moment (travaux pas encore lancés) : il bascule donc en « non réservable en
+ * ligne » et renvoie vers le contact. À réactiver une fois les terrains prêts.
+ */
 export const BOOKING_CONFIG: Record<string, ActivityBookingConfig> = {
-  pickleball: { open: '08:00', close: '20:00', slotMinutes: 60, capacity: 3 },
-  tennis: { open: '08:00', close: '20:00', slotMinutes: 60, capacity: 2 },
-  fitness: { open: '08:00', close: '20:00', slotMinutes: 60, capacity: 20 },
-  'kids-club': { open: '08:00', close: '16:00', slotMinutes: 60, capacity: 10 },
-  pool: { open: '08:00', close: '20:00', slotMinutes: 60, capacity: 25 },
+  // Tennis : réservation du terrain, session d'1 h.
+  tennis: { open: '08:00', close: '20:00', slotMinutes: 60, capacity: 2, unit: 'hour' },
+  // Salle de sport : accès illimité à la journée.
+  fitness: { open: '08:00', close: '20:00', slotMinutes: 720, capacity: 20, unit: 'day' },
+  // Kids Club : session d'1 h (repas du midi possible).
+  'kids-club': { open: '08:00', close: '16:00', slotMinutes: 60, capacity: 10, unit: 'hour' },
+  // Piscine : accès à la journée.
+  pool: { open: '08:00', close: '20:00', slotMinutes: 720, capacity: 25, unit: 'day' },
 }
 
 /** Une activité est-elle réservable par créneau ? */
 export function isBookable(slug: string): boolean {
   return slug in BOOKING_CONFIG
+}
+
+/** Accès « à la journée » (salle de sport, piscine) plutôt que créneau horaire. */
+export function isDayPass(slug: string): boolean {
+  return getBookingConfig(slug)?.unit === 'day'
 }
 
 export function getBookingConfig(slug: string): ActivityBookingConfig | null {
@@ -56,6 +75,8 @@ function toHHMM(minutes: number): string {
 export function generateSlots(slug: string): string[] {
   const cfg = getBookingConfig(slug)
   if (!cfg) return []
+  // Accès à la journée : un seul « créneau » par jour (à l'heure d'ouverture).
+  if (cfg.unit === 'day') return [cfg.open]
   const start = toMinutes(cfg.open)
   const end = toMinutes(cfg.close)
   const slots: string[] = []
