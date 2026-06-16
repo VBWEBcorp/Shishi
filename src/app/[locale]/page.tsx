@@ -14,6 +14,7 @@ import {
   webPageJsonLd,
   webSiteJsonLd,
 } from '@/components/seo/json-ld'
+import { LAUNCHED } from '@/lib/launch'
 import { siteConfig } from '@/lib/seo'
 
 // Titre & description « à la lettre » de l'audit (Accueil), marque incluse.
@@ -78,9 +79,9 @@ export default async function HomePage({
   const { locale } = await params
   setRequestLocale(locale)
 
-  // En dev local : afficher le vrai site complet pour pouvoir le modifier.
-  // En prod : garder la landing « Coming Soon » (indexation requête de marque).
-  if (process.env.NODE_ENV === 'development') {
+  // Vrai site complet si on est en dev local OU si le site est lancé (LAUNCHED).
+  // Sinon (prod, non lancé) : landing « Coming Soon » (indexation marque).
+  if (process.env.NODE_ENV === 'development' || LAUNCHED) {
     return (
       <>
         <ShishiHero />

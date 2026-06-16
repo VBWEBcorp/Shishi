@@ -179,7 +179,7 @@ export default async function PricesPage({
                   </Link>
                   <span aria-hidden className="text-border">·</span>
                   <Link
-                    href={a.bookable ? `${BOOK_NOW_PATH}?activity=${a.slug}#reserver` : a.path}
+                    href={a.bookable ? `${BOOK_NOW_PATH}?activity=${a.slug}` : a.path}
                     className="inline-flex items-center gap-1.5 text-sm font-semibold text-accent"
                   >
                     {t('bookNow')}

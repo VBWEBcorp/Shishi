@@ -3,23 +3,16 @@ import type { MetadataRoute } from 'next'
 import { routing } from '@/i18n/routing'
 import { connectDB } from '@/lib/db'
 import { visiblePostFilter } from '@/lib/blog-filters'
+import { LAUNCHED } from '@/lib/launch'
 import { BlogPost, BlogSettings } from '@/models/Blog'
 import { GallerySettings } from '@/models/Gallery'
 import { routes, siteConfig } from '@/lib/seo'
 
 const baseUrl = siteConfig.url
 
-/**
- * Drapeau de lancement.
- *  · false  → phase « Coming Soon » : on ne pousse QUE la home pour concentrer
- *             l'indexation sur la requête de marque « Shi Shi Samui ».
- *  · true   → site lancé : on pousse TOUTES les pages SEO de l'audit
- *             (pages service, prices, book-now, contact-location, about),
- *             par locale, avec alternances hreflang en/fr.
- *
- * Au lancement réel : passer LAUNCHED à true (cf. SEO-SHI-SHI.md).
- */
-const LAUNCHED = true
+// LAUNCHED (cf. src/lib/launch.ts) :
+//  · false → phase « Coming Soon » : on ne pousse QUE la home (indexation marque).
+//  · true  → site lancé : toutes les pages SEO de l'audit, par locale, hreflang.
 
 /** Construit l'URL localisée d'un chemin (/ → /en, /tennis-court-lamai → /en/tennis-court-lamai). */
 function localizedUrl(locale: string, path: string) {

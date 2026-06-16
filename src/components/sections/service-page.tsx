@@ -35,7 +35,7 @@ export async function ServicePage({
 
   // CTA de réservation : en ligne (Book Now) ou contact (restaurant, babysitting).
   const bookHref = service.bookable
-    ? `${BOOK_NOW_PATH}?activity=${service.slug}#reserver`
+    ? `${BOOK_NOW_PATH}?activity=${service.slug}`
     : CONTACT_PATH
   const bookLabel = service.bookable
     ? t('bookName', { name: service.name[l] })

@@ -32,8 +32,8 @@ function detectIso2(value: string): string | null {
 /**
  * Saisie de téléphone international en un seul champ, sans menu déroulant :
  *  · on tape l'indicatif (« +33… ») → le pays est détecté et le drapeau s'affiche ;
- *  · on tape un numéro LOCAL (« 0627301788 ») → converti aussitôt avec l'indicatif
- *    du pays par défaut de la langue (« +33 627301788 »).
+ *  · on tape un numéro LOCAL (commençant par 0) → converti aussitôt avec
+ *    l'indicatif du pays par défaut de la langue (« 06… » → « +33 6… »).
  *
  * Expose via FormData :
  *  · `name`           → numéro complet international (« +33 627301788 »)
@@ -50,6 +50,9 @@ export function PhoneInput({
 
   // Pays affiché : détecté depuis le « + », sinon le pays par défaut (numéro local).
   const iso2 = (value.startsWith('+') ? detectIso2(value) : null) ?? defaultIso2
+  // Exemple générique adapté au pays courant (jamais un vrai numéro) : montre
+  // l'indicatif et le format international, pratique quel que soit le pays.
+  const dial = COUNTRY_BY_ISO2[iso2]?.dial ?? '+'
 
   function onChange(e: React.ChangeEvent<HTMLInputElement>) {
     let v = e.target.value
@@ -72,7 +75,7 @@ export function PhoneInput({
         autoComplete="tel"
         value={value}
         onChange={onChange}
-        placeholder="06 27 30 17 88"
+        placeholder={`${dial} 612 345 678`}
         aria-label="Numéro de téléphone"
         className={cn('h-full min-w-0 flex-1 bg-transparent text-sm text-foreground outline-none placeholder:text-muted-foreground')}
       />

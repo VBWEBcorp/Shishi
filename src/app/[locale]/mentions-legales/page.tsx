@@ -6,7 +6,7 @@ import { Breadcrumb } from '@/components/ui/breadcrumb'
 import { siteConfig } from '@/lib/seo'
 
 const description =
-  "Mentions légales du site : informations sur l'éditeur, l'hébergement, la propriété intellectuelle et les conditions d'utilisation."
+  "Mentions légales du site Shi Shi Samui : éditeur, hébergement, propriété intellectuelle et conditions d'utilisation."
 
 export const metadata: Metadata = {
   title: 'Mentions légales',
@@ -42,7 +42,7 @@ export default function LegalPage() {
             Mentions légales
           </h1>
           <p className="mt-4 text-sm text-muted-foreground">
-            Dernière mise à jour : [JJ/MM/AAAA]
+            Dernière mise à jour : 15 juin 2026
           </p>
 
           <article className="mt-10 space-y-10 text-sm leading-relaxed text-muted-foreground [&_h2]:font-display [&_h2]:text-lg [&_h2]:font-semibold [&_h2]:text-foreground [&_h3]:text-sm [&_h3]:font-semibold [&_h3]:text-foreground">
@@ -53,99 +53,93 @@ export default function LegalPage() {
                 Le site accessible à l&apos;adresse <strong>{siteConfig.url}</strong> est édité par :
               </p>
               <ul className="list-inside list-disc space-y-1 pl-1">
-                <li><strong>Raison sociale :</strong> {siteConfig.name}</li>
-                <li><strong>Forme juridique :</strong> [SARL / SAS / EI / Auto-entrepreneur - à compléter]</li>
-                <li><strong>Capital social :</strong> [Montant] € (si applicable)</li>
-                <li><strong>SIRET :</strong> [N° SIRET à compléter]</li>
-                <li><strong>RCS :</strong> [Ville] B [N° RCS] (si applicable)</li>
-                <li><strong>N° TVA intracommunautaire :</strong> [FR XX XXXXXXXXX - à compléter]</li>
+                <li><strong>Nom commercial :</strong> {siteConfig.name}</li>
                 <li>
-                  <strong>Siège social :</strong> {siteConfig.address.street},{' '}
-                  {siteConfig.address.postalCode} {siteConfig.address.city}
+                  <strong>Activité :</strong> club sportif et social (tennis, pickleball, fitness,
+                  kids club, piscine, restauration) à Lamai, Koh Samui
                 </li>
-                <li><strong>Téléphone :</strong> {siteConfig.phone}</li>
+                <li>
+                  <strong>Adresse :</strong> {siteConfig.address.street}, {siteConfig.address.city},{' '}
+                  {siteConfig.address.region} {siteConfig.address.postalCode}, Thaïlande
+                </li>
+                <li><strong>Responsable de la publication :</strong> Paul Poulain</li>
                 <li><strong>Email :</strong> {siteConfig.email}</li>
+                <li><strong>Téléphone :</strong> {siteConfig.phone}</li>
+                <li>
+                  <strong>Enregistrement (Thaïlande) :</strong> entreprise immatriculée en
+                  Thaïlande [numéro d&apos;enregistrement DBD à compléter par l&apos;exploitant]
+                </li>
               </ul>
               <p>
-                <strong>Directeur de la publication :</strong> [Nom et prénom du responsable - à compléter]
+                Shi Shi Samui est une entreprise établie en Thaïlande. À ce titre, son activité
+                est soumise au droit thaïlandais, notamment au <em>Personal Data Protection Act
+                B.E. 2562 (2019)</em> (« PDPA ») pour la protection des données personnelles.
               </p>
             </section>
 
             <section className="space-y-3">
               <h2>2. Hébergement</h2>
-              <p>Le site est hébergé par :</p>
+              <p>
+                Le site et les données associées sont hébergés en Europe afin de garantir un
+                niveau élevé de protection des données :
+              </p>
               <ul className="list-inside list-disc space-y-1 pl-1">
-                <li><strong>Raison sociale :</strong> [Vercel Inc. / OVHcloud / autre - à compléter]</li>
-                <li><strong>Adresse :</strong> [Adresse de l&apos;hébergeur]</li>
-                <li><strong>Site web :</strong> [URL de l&apos;hébergeur]</li>
+                <li><strong>Hébergeur :</strong> Infomaniak Network SA</li>
+                <li><strong>Adresse :</strong> Rue Eugène-Marziano 25, 1227 Les Acacias, Genève, Suisse</li>
+                <li><strong>Site web :</strong> <a href="https://www.infomaniak.com" target="_blank" rel="noopener noreferrer" className="font-medium text-primary underline underline-offset-4 hover:text-primary/80">www.infomaniak.com</a></li>
+                <li><strong>Localisation des données :</strong> centres de données situés en Suisse et en Europe (données hébergées en Europe)</li>
               </ul>
               <h3 className="pt-2">Services techniques complémentaires</h3>
               <ul className="list-inside list-disc space-y-1 pl-1">
-                <li><strong>Base de données :</strong> MongoDB Atlas (MongoDB Inc.) - Serveurs en Union européenne</li>
-                <li><strong>Stockage de fichiers :</strong> Cloudflare R2 (Cloudflare Inc.) - Stockage objet compatible S3, serveurs en Europe</li>
-                <li><strong>CDN et sécurité réseau :</strong> Cloudflare (Cloudflare Inc.) - Réseau de diffusion de contenu mondial</li>
+                <li><strong>Base de données :</strong> MongoDB Atlas (MongoDB Inc.) — région européenne</li>
+                <li><strong>Emails transactionnels :</strong> Resend (envoi des confirmations de réservation, rappels et messages de contact)</li>
               </ul>
             </section>
 
             <section className="space-y-3">
-              <h2>3. Technologies utilisées</h2>
+              <h2>3. Propriété intellectuelle</h2>
               <p>
-                Conformément à notre engagement de transparence, voici les principales
-                technologies utilisées pour le fonctionnement de ce site :
-              </p>
-              <ul className="list-inside list-disc space-y-1 pl-1">
-                <li><strong>Framework :</strong> Next.js 15 (React 19) - framework open source développé par Vercel</li>
-                <li><strong>Langage :</strong> TypeScript - surensemble typé de JavaScript</li>
-                <li><strong>Interface :</strong> Tailwind CSS, Shadcn/UI, Framer Motion</li>
-                <li><strong>Base de données :</strong> MongoDB avec Mongoose (ODM)</li>
-                <li><strong>Authentification :</strong> JSON Web Tokens (JWT) avec hachage bcrypt</li>
-                <li><strong>Optimisation d&apos;images :</strong> Sharp (conversion WebP, compression côté serveur)</li>
-                <li><strong>Stockage de médias :</strong> Cloudflare R2 (compatible S3)</li>
-              </ul>
-            </section>
-
-            <section className="space-y-3">
-              <h2>4. Propriété intellectuelle</h2>
-              <p>
-                L&apos;ensemble des contenus présents sur le site (textes,
-                photographies, illustrations, logos, icônes, éléments
-                graphiques, vidéos, bases de données, code source, structure,
-                design) est protégé par les lois françaises et internationales
-                relatives à la propriété intellectuelle, notamment les articles
-                L.111-1 et suivants du Code de la propriété intellectuelle.
+                L&apos;ensemble des contenus présents sur le site (textes, photographies,
+                illustrations, logos, marques, éléments graphiques, vidéos, structure et design)
+                est la propriété de {siteConfig.name} ou de ses partenaires, et est protégé par les
+                lois thaïlandaises et internationales relatives à la propriété intellectuelle.
               </p>
               <p>
-                Toute reproduction, représentation, modification, publication,
-                adaptation, totale ou partielle, de ces éléments, quel que soit
-                le moyen ou le procédé utilisé, est interdite sauf autorisation
-                écrite préalable de {siteConfig.name}.
-              </p>
-              <p>
-                Toute exploitation non autorisée sera considérée comme constitutive
-                d&apos;une contrefaçon et poursuivie conformément aux articles L.335-2
-                et suivants du Code de la propriété intellectuelle.
+                Toute reproduction, représentation, modification, publication ou adaptation,
+                totale ou partielle, de ces éléments, quel que soit le moyen ou le procédé
+                utilisé, est interdite sauf autorisation écrite préalable de {siteConfig.name}.
               </p>
               <h3 className="pt-2">Licences open source</h3>
               <p>
-                Ce site utilise des bibliothèques et frameworks open source sous licences
-                MIT, Apache 2.0 et ISC. Les droits d&apos;auteur de ces composants appartiennent
-                à leurs auteurs respectifs. L&apos;utilisation de ces technologies n&apos;implique
-                aucune cession de droits de propriété intellectuelle.
+                Ce site s&apos;appuie sur des bibliothèques et frameworks open source (licences MIT,
+                Apache 2.0, ISC). Les droits d&apos;auteur de ces composants appartiennent à leurs
+                auteurs respectifs et leur utilisation n&apos;emporte aucune cession de droits.
+              </p>
+            </section>
+
+            <section className="space-y-3">
+              <h2>4. Réservations</h2>
+              <p>
+                Le site permet d&apos;envoyer des demandes de réservation pour les activités du
+                club. Une demande de réservation constitue une demande de disponibilité et non un
+                contrat ferme : elle est confirmée par email par {siteConfig.name}. Sauf mention
+                contraire, le règlement s&apos;effectue sur place, au club. Les conditions détaillées
+                figurent dans nos{' '}
+                <Link href="/conditions-generales" className="font-medium text-primary underline underline-offset-4 hover:text-primary/80">
+                  Conditions générales d&apos;utilisation
+                </Link>.
               </p>
             </section>
 
             <section className="space-y-3">
               <h2>5. Limitation de responsabilité</h2>
               <p>
-                {siteConfig.name} s&apos;efforce de fournir des informations aussi
-                précises et actualisées que possible. Toutefois, il ne saurait
-                être tenu responsable des omissions, inexactitudes ou carences
-                dans la mise à jour, qu&apos;elles soient de son fait ou du fait de
-                tiers partenaires.
+                {siteConfig.name} s&apos;efforce de fournir des informations aussi précises et
+                actualisées que possible. Toutefois, l&apos;éditeur ne saurait être tenu responsable
+                des omissions, inexactitudes ou carences dans la mise à jour, qu&apos;elles soient de
+                son fait ou de celui de tiers partenaires.
               </p>
-              <p>
-                {siteConfig.name} décline toute responsabilité en cas de :
-              </p>
+              <p>{siteConfig.name} décline toute responsabilité en cas de :</p>
               <ul className="list-inside list-disc space-y-1 pl-1">
                 <li>Interruption temporaire du site pour maintenance ou mise à jour</li>
                 <li>Dommages résultant d&apos;une intrusion frauduleuse d&apos;un tiers</li>
@@ -157,24 +151,23 @@ export default function LegalPage() {
             <section className="space-y-3">
               <h2>6. Liens hypertextes</h2>
               <p>
-                Le site peut contenir des liens hypertextes vers des sites tiers.
-                {siteConfig.name} ne dispose d&apos;aucun moyen de contrôle sur le contenu
-                de ces sites et décline toute responsabilité quant à leur contenu,
-                publicités, produits, services ou tout autre matériel.
-              </p>
-              <p>
-                La création de liens hypertextes vers ce site est soumise à
-                autorisation préalable et écrite de {siteConfig.name}, sauf pour
-                les liens simples pointant vers la page d&apos;accueil.
+                Le site peut contenir des liens vers des sites tiers (réseaux sociaux, cartes,
+                WhatsApp). {siteConfig.name} ne dispose d&apos;aucun moyen de contrôle sur le contenu
+                de ces sites et décline toute responsabilité quant à leur contenu, leurs produits,
+                services ou pratiques en matière de données.
               </p>
             </section>
 
             <section className="space-y-3">
-              <h2>7. Accessibilité</h2>
+              <h2>7. Données personnelles</h2>
               <p>
-                Nous nous efforçons de rendre ce site accessible au plus grand nombre
-                conformément au Référentiel Général d&apos;Amélioration de l&apos;Accessibilité (RGAA).
-                Si vous rencontrez des difficultés d&apos;accès, contactez-nous à{' '}
+                Le traitement des données personnelles est décrit dans notre{' '}
+                <Link href="/politique-de-confidentialite" className="font-medium text-primary underline underline-offset-4 hover:text-primary/80">
+                  Politique de confidentialité
+                </Link>
+                , conforme au PDPA thaïlandais et, pour les visiteurs résidant dans l&apos;Union
+                européenne, au Règlement Général sur la Protection des Données (RGPD). Pour toute
+                question, contactez-nous à{' '}
                 <a href={`mailto:${siteConfig.email}`} className="font-medium text-primary underline underline-offset-4 hover:text-primary/80">
                   {siteConfig.email}
                 </a>.
@@ -184,38 +177,34 @@ export default function LegalPage() {
             <section className="space-y-3">
               <h2>8. Droit applicable et juridiction compétente</h2>
               <p>
-                Les présentes mentions légales sont régies par le droit français.
-                En cas de litige, et après l&apos;échec de toute tentative de
-                résolution amiable dans un délai de 30 jours, les tribunaux
-                compétents du ressort de [Ville - à compléter] seront seuls
+                Les présentes mentions légales sont régies par le droit thaïlandais. En cas de
+                litige, et après l&apos;échec de toute tentative de résolution amiable, les tribunaux
+                compétents de la province de Surat Thani (Koh Samui), en Thaïlande, seront seuls
                 compétents.
               </p>
               <p>
-                Conformément à l&apos;article L.612-1 du Code de la consommation,
-                le consommateur a le droit de recourir gratuitement à un médiateur
-                de la consommation. Médiateur : [Nom et coordonnées du médiateur - à compléter].
-              </p>
-              <p>
-                Plateforme de règlement en ligne des litiges de la Commission européenne :{' '}
+                Les consommateurs résidant dans l&apos;Union européenne peuvent également recourir à
+                la plateforme de règlement en ligne des litiges de la Commission européenne :{' '}
                 <a
                   href="https://ec.europa.eu/consumers/odr"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="font-medium text-primary underline underline-offset-4 hover:text-primary/80"
                 >
-                  https://ec.europa.eu/consumers/odr
-                </a>
+                  ec.europa.eu/consumers/odr
+                </a>.
               </p>
             </section>
 
             <section className="space-y-3">
               <h2>9. Crédits</h2>
               <ul className="list-inside list-disc space-y-1 pl-1">
-                <li><strong>Conception et développement :</strong> [À compléter]</li>
-                <li><strong>Design :</strong> [À compléter]</li>
-                <li><strong>Crédits photos :</strong> [À compléter - ex: Unsplash, photographe, etc.]</li>
+                <li>
+                  <strong>Conception et développement :</strong>{' '}
+                  <a href="https://vbweb.fr" target="_blank" rel="noopener noreferrer" className="font-medium text-primary underline underline-offset-4 hover:text-primary/80">VBWEB</a>
+                </li>
                 <li><strong>Icônes :</strong> Lucide Icons (licence ISC)</li>
-                <li><strong>Polices :</strong> Inter et Plus Jakarta Sans (Google Fonts, licence Open Font)</li>
+                <li><strong>Crédits photos :</strong> Shi Shi Samui</li>
               </ul>
             </section>
 

@@ -104,12 +104,15 @@ export function BookingForm({
     setToday(new Date().toISOString().slice(0, 10))
   }, [])
 
-  // Défile vers le formulaire à chaque (re)sélection via l'URL (page uniquement,
-  // jamais dans le popup où le formulaire est déjà à l'écran).
+  // Descente FLUIDE vers le formulaire à chaque (re)sélection via l'URL (page
+  // uniquement, jamais dans le popup). Petit délai : on laisse Next finir sa
+  // navigation (sinon son saut instantané prend le dessus sur le scroll doux).
   useEffect(() => {
-    if (variant === 'page' && validActivity) {
-      document.getElementById('booking-form')?.scrollIntoView({ behavior: 'smooth' })
-    }
+    if (variant !== 'page' || !validActivity) return
+    const id = setTimeout(() => {
+      document.getElementById('booking-form')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    }, 120)
+    return () => clearTimeout(id)
   }, [variant, validActivity])
 
   // Charge les créneaux dès qu'une activité réservable + une date sont choisies.

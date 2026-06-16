@@ -160,7 +160,7 @@ function BookingContent() {
           {activities.map((a) => (
             <Link
               key={a.slug}
-              href={`/book-now?activity=${a.slug}#reserver`}
+              href={`/book-now?activity=${a.slug}`}
               className="group relative flex aspect-[16/10] flex-col justify-end overflow-hidden rounded-2xl ring-1 ring-border transition-all hover:-translate-y-0.5 hover:shadow-[0_24px_50px_-26px_oklch(0.16_0.02_55/0.45)]"
             >
               <Image
