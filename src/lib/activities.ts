@@ -126,7 +126,6 @@ export const activities: Activity[] = [
     icon: 'pickleball',
     image: '/photos/pickleball.jpg',
     gradient: 'from-emerald-500/15 to-teal-500/5',
-    featured: true,
     inMenu: true,
     // Mis de côté pour le moment (travaux pas encore lancés) : non réservable en
     // ligne, renvoie vers le contact. À repasser à `true` une fois prêt.

@@ -28,9 +28,36 @@ const defaults = {
   gallery: ['/photos/pool.jpg', '/photos/restaurant.jpg', '/photos/fitness.jpg', '/photos/kids-club.jpg'],
 }
 
+const defaultsEn = {
+  hero: {
+    eyebrow: 'About',
+    title: 'The social club resort of South Koh Samui',
+    description:
+      'In Lamai, Shi Shi Samui brings sport, wellness and good company together in one place to live. A premium club designed for residents, expats and travellers after an active tropical lifestyle.',
+    image: '/photos/pool.jpg',
+  },
+  story: {
+    title: 'A place to live, not just a club',
+    paragraph1:
+      'Shi Shi Samui was born from a simple idea: to create, in the south of Koh Samui, a place to move, unwind and connect. Everything in one spot to enjoy, solo, with friends or as a family.',
+    paragraph2:
+      "More than a gym or a court, it's a true tropical social club: train in the morning and have lunch by the water, let the kids play while the parents relax.",
+  },
+  complex: {
+    title: 'Everything you need for a perfect day',
+    description: 'Six hubs steps away from each other, bookable online in under a minute.',
+  },
+  values: [
+    { title: 'Sport', description: 'Quality facilities to play and train all year round, from beginner to enthusiast.' },
+    { title: 'Wellness', description: 'Pool, healthy food and a tropical setting: taking care of yourself while enjoying the moment.' },
+    { title: 'Good company', description: 'A place made for meeting people, family time and the local Lamai community.' },
+  ],
+  gallery: ['/photos/pool.jpg', '/photos/restaurant.jpg', '/photos/fitness.jpg', '/photos/kids-club.jpg'],
+}
+
 export default function AdminAboutPage() {
   return (
-    <PageEditor pageId="about" title="Page À propos" defaultContent={defaults}>
+    <PageEditor pageId="about" title="Page À propos" defaultContent={defaults} defaultContentEn={defaultsEn}>
       {(content, update) => (
         <>
           <SectionEditor title="Hero">

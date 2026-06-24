@@ -15,12 +15,11 @@ const LOCALE_PREFIX = /^\/(en|fr)(?=\/|$)/
 
 /**
  * Chemins publics pendant la phase Coming Soon (préfixe de locale retiré) :
- *  · « / »        → l'accueil = la landing Coming Soon
- *  · « /preview » → aperçu privé du site complet (noindex, non lié publiquement)
+ *  · « / » → l'accueil = la landing Coming Soon (indexation marque)
  */
 function isPublicDuringComingSoon(pathname: string): boolean {
   const path = pathname.replace(LOCALE_PREFIX, '') || '/'
-  return path === '/' || path === '/preview' || path.startsWith('/preview/')
+  return path === '/'
 }
 
 export default function middleware(req: NextRequest) {

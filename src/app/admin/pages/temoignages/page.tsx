@@ -18,9 +18,22 @@ const defaults = {
   ],
 }
 
+const defaultsEn = {
+  eyebrow: 'Testimonials',
+  title: 'They trust us',
+  description: 'Businesses of all kinds that gained visibility and credibility.',
+  testimonials: [
+    { name: 'Marie D.', company: 'Boulangerie Le Fournil', text: 'Since the new website, I get three times more calls. Customers finally find us on Google.', stars: 5 },
+    { name: 'Thomas L.', company: 'Cabinet Conseil TLR', text: 'Clean work, a clear and professional site. My prospects immediately understand what I offer.', stars: 5 },
+    { name: 'Camille B.', company: 'Atelier Camille', text: "The site perfectly reflects my brand's world. I gained credibility with my clients.", stars: 5 },
+    { name: 'Laurent M.', company: 'LM Rénovation', text: 'In three months, my revenue grew by 40%. The site and SEO really make the difference.', stars: 5 },
+    { name: 'Nadia K.', company: 'Agence NovaTour', text: 'Top-notch support, deadlines met and a result that exceeds my expectations.', stars: 5 },
+  ],
+}
+
 export default function AdminTestimonialsPage() {
   return (
-    <PageEditor pageId="testimonials" title="Témoignages" defaultContent={defaults}>
+    <PageEditor pageId="testimonials" title="Témoignages" defaultContent={defaults} defaultContentEn={defaultsEn}>
       {(content, update) => (
         <>
           <SectionEditor title="En-tête">

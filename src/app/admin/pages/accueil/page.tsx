@@ -36,9 +36,42 @@ const defaults = {
   ],
 }
 
+const defaultsEn = {
+  hero: {
+    eyebrow: 'Lamai · Koh Samui · Thailand',
+    title: 'The premium social club resort of South Samui',
+    description:
+      "Sport, wellness and good company in one place. Tennis, the island's home of pickleball, a premium gym, a healthy restaurant, a kids club and a pool. Book your session online in under a minute.",
+    button1: 'Book a court',
+    button2: 'Explore activities',
+    images: ['/photos/tennis-aerial.jpg', '/photos/pool.jpg', '/photos/restaurant.jpg'],
+  },
+  story: {
+    eyebrow: 'Our story',
+    title: 'A place to live, not just a club',
+    paragraph1:
+      'Shi Shi Samui was born from a simple idea: to create, in the south of Koh Samui, a place to move, unwind and connect. Everything in one spot to enjoy, solo, with friends or as a family.',
+    paragraph2:
+      "More than a gym or a court, it's a true tropical social club: train in the morning and have lunch by the water, let the kids play while the parents relax.",
+    image: '/photos/lounge.jpg',
+  },
+  cta: {
+    eyebrow: 'Ready to play?',
+    title: 'Book your next session',
+    description:
+      'Tennis, pickleball, fitness, pool or kids club: book online in under a minute, instant confirmation.',
+    button: 'Book a court',
+  },
+  values: [
+    { title: 'Sport', text: 'Tennis, pickleball and a premium gym to move all year round.' },
+    { title: 'Wellness', text: 'Pool, healthy food and a tropical setting to recharge.' },
+    { title: 'Social', text: 'A social club for family, friends and the Lamai community.' },
+  ],
+}
+
 export default function AdminHomePage() {
   return (
-    <PageEditor pageId="home" title="Page d'accueil" defaultContent={defaults}>
+    <PageEditor pageId="home" title="Page d'accueil" defaultContent={defaults} defaultContentEn={defaultsEn}>
       {(content, update) => (
         <>
           <SectionEditor title="Hero">

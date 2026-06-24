@@ -19,9 +19,26 @@ const defaults = {
   },
 }
 
+const defaultsEn = {
+  hero: {
+    eyebrow: 'Contact',
+    title: 'A question? Get in touch',
+    description:
+      'Fill in the form or reach us directly on WhatsApp. To book an activity, use the Booking page.',
+    image: '/photos/pool-bar.jpg',
+  },
+  info: {
+    phone: '+33 6 51 69 27 02',
+    email: 'contact@shi-shi-samui.com',
+    street: 'Lamai',
+    postalCode: '84310',
+    city: 'Koh Samui',
+  },
+}
+
 export default function AdminContactPage() {
   return (
-    <PageEditor pageId="contact" title="Page Contact" defaultContent={defaults}>
+    <PageEditor pageId="contact" title="Page Contact" defaultContent={defaults} defaultContentEn={defaultsEn}>
       {(content, update) => (
         <>
           <SectionEditor title="Hero">

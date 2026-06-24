@@ -3,6 +3,7 @@ import type { MetadataRoute } from 'next'
 import { routing } from '@/i18n/routing'
 import { connectDB } from '@/lib/db'
 import { visiblePostFilter } from '@/lib/blog-filters'
+import { builtinArticleSlugPairs } from '@/lib/blog-articles'
 import { LAUNCHED } from '@/lib/launch'
 import { BlogPost, BlogSettings } from '@/models/Blog'
 import { GallerySettings } from '@/models/Gallery'
@@ -42,6 +43,32 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         })
       }
     }
+
+    // Blog : page index + articles intégrés (toujours en ligne), par locale, hreflang.
+    for (const locale of routing.locales) {
+      pages.push({
+        url: localizedUrl(locale, '/blog'),
+        lastModified: new Date(),
+        changeFrequency: 'weekly',
+        priority: 0.7,
+        alternates: { languages: languageAlternates('/blog') },
+      })
+    }
+    for (const pair of builtinArticleSlugPairs()) {
+      const languages = {
+        en: `${baseUrl}/en/blog/${pair.en}`,
+        fr: `${baseUrl}/fr/blog/${pair.fr}`,
+      }
+      for (const locale of routing.locales) {
+        pages.push({
+          url: `${baseUrl}/${locale}/blog/${pair[locale as 'en' | 'fr']}`,
+          lastModified: new Date(),
+          changeFrequency: 'monthly',
+          priority: 0.6,
+          alternates: { languages },
+        })
+      }
+    }
   } else {
     // Phase « Coming Soon » : home uniquement.
     pages.push({
@@ -66,17 +93,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       })
     }
 
-    // Blog pages if enabled
+    // Articles de blog réels (admin/MongoDB) si le blog est activé.
+    // La page index /blog et les articles intégrés sont déjà ajoutés plus haut.
     const blogSettings = await BlogSettings.findOne()
     if (blogSettings?.enabled) {
-      pages.push({
-        url: `${baseUrl}/blog`,
-        lastModified: new Date(),
-        changeFrequency: 'weekly',
-        priority: 0.8,
-      })
-
-      // Individual blog posts
       const posts = await BlogPost.find(visiblePostFilter()).select('slug updatedAt publishedAt')
       for (const post of posts) {
         pages.push({

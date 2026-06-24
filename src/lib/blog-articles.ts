@@ -184,7 +184,170 @@ const FR_FAQ: Faq[] = [
   },
 ]
 
+// ─────────────────────────────────────────────────────────────────────────────
+//  Article 2 — EN, mot-clé : « where to play pickleball in koh samui »
+// ─────────────────────────────────────────────────────────────────────────────
+const EN_CONTENT_PICKLEBALL = `
+<p>Wondering <strong>where to play pickleball in Koh Samui</strong>? The short answer is Lamai, on the island's south-east coast. Pickleball is the fastest-growing sport in the world, and Koh Samui has caught the bug — this local guide explains exactly where to play, what to expect on court, how much it costs and how to book your first game, whether you are a curious beginner or a paddle-carrying regular.</p>
+
+<nav class="toc" aria-label="Table of contents">
+  <strong>In this guide</strong>
+  <ul>
+    <li><a href="#why-samui">Why Koh Samui is a rising pickleball destination</a></li>
+    <li><a href="#where">Where to play pickleball in Koh Samui</a></li>
+    <li><a href="#courts">The courts, open play and rentals</a></li>
+    <li><a href="#beginners">New to the game? Start here</a></li>
+    <li><a href="#book">How to book a court</a></li>
+    <li><a href="#day">Make a day of it</a></li>
+    <li><a href="#faq">FAQ</a></li>
+  </ul>
+</nav>
+
+<h2 id="why-samui">Why Koh Samui is a rising pickleball destination</h2>
+<p>Pickleball blends tennis, badminton and table tennis into a game that takes five minutes to learn and years to master. It is low-impact, intensely social and perfectly suited to the tropical climate, because rallies are short and shaded courts keep play comfortable through the heat of the day. With a large community of expats, digital nomads and returning holidaymakers, Koh Samui has become fertile ground for the sport — and demand for proper, dedicated courts has grown fast. If you are brand new to the rules, <a href="https://usapickleball.org/what-is-pickleball/" target="_blank" rel="noopener">USA Pickleball</a> has a clear beginner overview to get you started.</p>
+
+<h2 id="where">Where to play pickleball in Koh Samui</h2>
+<p>If you are deciding where to play pickleball in Koh Samui, head to Lamai. At <a href="/en/pickleball-club-lamai">Shi Shi Samui's pickleball club</a> you'll find courts built specifically for the sport — not lined-over tennis courts — inside a sports and social club just a few minutes from Lamai Beach. It sits alongside <a href="/en/tennis-court-lamai">tennis courts</a>, a pool, a gym and a healthy restaurant, so a pickleball session slots neatly into a full day out rather than being a trip on its own.</p>
+<p><img src="/photos/pickleball.jpg" alt="Dedicated pickleball courts in Lamai — where to play pickleball in Koh Samui" loading="lazy" /></p>
+
+<h2 id="courts">The courts, open play and rentals</h2>
+<p>Dedicated courts make a real difference. Correct dimensions, the right net height and a good playing surface mean better, safer and more enjoyable rallies. Open play sessions are the heart of any pickleball club: you turn up, rotate through games and meet players of every level, from first-timers to competitive paddlers. Paddles and balls are available to rent, so you can try the sport before spending anything on gear, and social tournaments and friendly mixers keep the calendar lively for regulars.</p>
+
+<h2 id="beginners">New to the game? Start here</h2>
+<p>Pickleball is famously beginner-friendly. The court is small, the underarm serve is easy to learn, and the "kitchen" (the no-volley zone near the net) keeps points fun rather than ferocious. Join a beginner-friendly open play or a short introduction session and you will be rallying within minutes. If you already play tennis or badminton you will feel at home immediately — many players try it once and never look back.</p>
+
+<h2 id="book">How to book a pickleball court in Koh Samui</h2>
+<p>Reserving a spot is simple. Check the latest <a href="/en/prices">prices</a>, then <a href="/en/book-now">book your session online</a> or message the club directly on WhatsApp for the quickest confirmation. If you have questions about levels, equipment or group bookings, the <a href="/en/contact-location">contact page</a> has everything you need, including the location map and opening hours.</p>
+
+<h2 id="day">Make a day of it</h2>
+<p>One of the best things about playing here is everything that surrounds the court. Cool off in the <a href="/en/swimming-pool-lamai">swimming pool</a>, refuel at the <a href="/en/healthy-restaurant-lamai">healthy restaurant</a>, or bring the whole family — there is a <a href="/en/kids-club-lamai">kids club</a> so the little ones are looked after while you play. It turns a quick game into a proper half-day on the island.</p>
+
+<h2 id="faq">FAQ — where to play pickleball in Koh Samui</h2>
+<p><strong>Where can I play pickleball in Koh Samui?</strong> On dedicated courts at Shi Shi Samui in Lamai, south-east Koh Samui, suitable for beginners and experienced players alike.</p>
+<p><strong>Do I need my own paddle?</strong> No. Paddle and ball rental is available, so you can simply turn up and play.</p>
+<p><strong>Is pickleball good for beginners?</strong> Yes — it is one of the easiest racket sports to pick up. An open play or intro session gets you rallying in minutes.</p>
+`
+
+const EN_FAQ_PICKLEBALL: Faq[] = [
+  {
+    q: 'Where can I play pickleball in Koh Samui?',
+    a: 'On dedicated pickleball courts at Shi Shi Samui in Lamai, south-east Koh Samui. The club welcomes beginners and experienced players alike.',
+  },
+  {
+    q: 'Do I need my own paddle to play?',
+    a: 'No. Paddle and ball rental is available at the club, so you can simply turn up and play before deciding whether to buy your own gear.',
+  },
+  {
+    q: 'Is pickleball suitable for beginners?',
+    a: 'Yes. Pickleball is one of the easiest racket sports to pick up — a beginner-friendly open play or introduction session gets you rallying within minutes.',
+  },
+]
+
+// ─────────────────────────────────────────────────────────────────────────────
+//  Article 2 — FR, mot-clé : « où jouer au pickleball à Koh Samui »
+// ─────────────────────────────────────────────────────────────────────────────
+const FR_CONTENT_PICKLEBALL = `
+<p>Vous vous demandez <strong>où jouer au pickleball à Koh Samui</strong> ? Réponse courte : à Lamai, sur la côte sud-est de l'île. Le pickleball est le sport qui connaît la plus forte croissance au monde, et Koh Samui n'y échappe pas — ce guide local vous explique précisément où jouer, à quoi vous attendre sur le terrain, combien ça coûte et comment réserver votre première partie, que vous soyez débutant curieux ou joueur régulier raquette à la main.</p>
+
+<nav class="toc" aria-label="Sommaire">
+  <strong>Dans ce guide</strong>
+  <ul>
+    <li><a href="#why-samui">Pourquoi Koh Samui devient une destination pickleball</a></li>
+    <li><a href="#where">Où jouer au pickleball à Koh Samui</a></li>
+    <li><a href="#courts">Les terrains, le jeu libre et la location</a></li>
+    <li><a href="#beginners">Débutant ? Commencez ici</a></li>
+    <li><a href="#book">Comment réserver un terrain</a></li>
+    <li><a href="#day">Faites-en une vraie sortie</a></li>
+    <li><a href="#faq">FAQ</a></li>
+  </ul>
+</nav>
+
+<h2 id="why-samui">Pourquoi Koh Samui devient une destination pickleball</h2>
+<p>Le pickleball mélange tennis, badminton et tennis de table dans un jeu qui s'apprend en cinq minutes et se perfectionne pendant des années. Peu traumatisant pour les articulations, très convivial et parfaitement adapté au climat tropical : les échanges sont courts et les terrains ombragés gardent le jeu agréable même aux heures chaudes. Avec sa large communauté d'expatriés, de nomades digitaux et de vacanciers fidèles, Koh Samui est devenue un terreau idéal pour ce sport, et la demande de vrais terrains dédiés a explosé. Si vous débutez, <a href="https://usapickleball.org/what-is-pickleball/" target="_blank" rel="noopener">USA Pickleball</a> propose une présentation claire des règles pour bien commencer.</p>
+
+<h2 id="where">Où jouer au pickleball à Koh Samui</h2>
+<p>Si vous hésitez sur où jouer au pickleball à Koh Samui, direction Lamai. Au <a href="/fr/pickleball-club-lamai">club de pickleball de Shi Shi Samui</a>, vous trouverez des terrains conçus spécifiquement pour ce sport — et non de simples courts de tennis retracés — au sein d'un club sportif et social à quelques minutes de la plage de Lamai. Il jouxte des <a href="/fr/tennis-court-lamai">courts de tennis</a>, une piscine, une salle de sport et un restaurant healthy : une session de pickleball s'intègre parfaitement à une journée complète plutôt que d'être une sortie à part.</p>
+<p><img src="/photos/pickleball.jpg" alt="Terrains de pickleball dédiés à Lamai — où jouer au pickleball à Koh Samui" loading="lazy" /></p>
+
+<h2 id="courts">Les terrains, le jeu libre et la location</h2>
+<p>Des terrains dédiés changent tout : bonnes dimensions, hauteur de filet correcte et surface de qualité, pour des échanges meilleurs, plus sûrs et plus agréables. Les sessions de jeu libre sont le cœur d'un club de pickleball — vous arrivez, vous enchaînez les parties et vous rencontrez des joueurs de tous niveaux, du tout débutant au compétiteur. Raquettes et balles sont disponibles à la location : testez le sport avant d'investir dans le matériel. Tournois conviviaux et rencontres amicales animent le calendrier des habitués.</p>
+
+<h2 id="beginners">Débutant ? Commencez ici</h2>
+<p>Le pickleball est réputé accessible. Le terrain est petit, le service à la cuillère s'apprend vite, et la « cuisine » (la zone de non-volée près du filet) rend les points ludiques plutôt que féroces. Rejoignez un jeu libre ouvert aux débutants ou une courte initiation, et vous échangerez en quelques minutes. Si vous pratiquez déjà le tennis ou le badminton, vous serez tout de suite à l'aise — beaucoup essaient une fois et ne s'arrêtent plus.</p>
+
+<h2 id="book">Comment réserver un terrain de pickleball à Koh Samui</h2>
+<p>Réserver est simple. Consultez les <a href="/fr/prices">tarifs</a>, puis <a href="/fr/book-now">réservez votre session en ligne</a> ou écrivez directement au club sur WhatsApp pour une confirmation immédiate. Pour toute question sur les niveaux, le matériel ou les réservations de groupe, la <a href="/fr/contact-location">page contact</a> regroupe tout : carte de localisation et horaires inclus.</p>
+
+<h2 id="day">Faites-en une vraie sortie</h2>
+<p>L'un des grands atouts ici, c'est tout ce qui entoure le terrain. Rafraîchissez-vous dans la <a href="/fr/swimming-pool-lamai">piscine</a>, rechargez les batteries au <a href="/fr/healthy-restaurant-lamai">restaurant healthy</a>, ou venez en famille : un <a href="/fr/kids-club-lamai">kids club</a> s'occupe des enfants pendant que vous jouez. De quoi transformer une simple partie en une vraie demi-journée sur l'île.</p>
+
+<h2 id="faq">FAQ — où jouer au pickleball à Koh Samui</h2>
+<p><strong>Où peut-on jouer au pickleball à Koh Samui ?</strong> Sur des terrains dédiés chez Shi Shi Samui à Lamai, au sud-est de Koh Samui, adaptés aux débutants comme aux joueurs confirmés.</p>
+<p><strong>Faut-il sa propre raquette ?</strong> Non. La location de raquette et de balles est disponible : vous pouvez simplement venir jouer.</p>
+<p><strong>Le pickleball est-il adapté aux débutants ?</strong> Oui — c'est l'un des sports de raquette les plus faciles à prendre en main. Un jeu libre ou une initiation suffit pour échanger en quelques minutes.</p>
+`
+
+const FR_FAQ_PICKLEBALL: Faq[] = [
+  {
+    q: 'Où peut-on jouer au pickleball à Koh Samui ?',
+    a: 'Sur des terrains de pickleball dédiés chez Shi Shi Samui à Lamai, au sud-est de Koh Samui. Le club accueille aussi bien les débutants que les joueurs confirmés.',
+  },
+  {
+    q: 'Faut-il avoir sa propre raquette pour jouer ?',
+    a: 'Non. La location de raquette et de balles est disponible au club : vous pouvez simplement venir jouer avant de décider d’acheter votre propre matériel.',
+  },
+  {
+    q: 'Le pickleball est-il adapté aux débutants ?',
+    a: 'Oui. C’est l’un des sports de raquette les plus faciles à prendre en main — un jeu libre ouvert aux débutants ou une initiation suffit pour échanger en quelques minutes.',
+  },
+]
+
 const ARTICLES: BuiltinArticle[] = [
+  {
+    id: 'where-to-play-pickleball-koh-samui',
+    author: 'Shi Shi Samui',
+    publishedAt: '2026-06-23T08:00:00.000Z',
+    updatedAt: '2026-06-23T08:00:00.000Z',
+    coverImage: '/photos/pickleball.jpg',
+    slug: {
+      en: 'where-to-play-pickleball-koh-samui',
+      fr: 'ou-jouer-pickleball-koh-samui',
+    },
+    title: {
+      en: 'Where to Play Pickleball in Koh Samui: The 2026 Guide',
+      fr: 'Où jouer au pickleball à Koh Samui : le guide 2026',
+    },
+    metaTitle: {
+      en: 'Where to Play Pickleball in Koh Samui (2026 Guide)',
+      fr: 'Où jouer au pickleball à Koh Samui : guide 2026',
+    },
+    metaDescription: {
+      en: 'Wondering where to play pickleball in Koh Samui? Dedicated courts in Lamai, open play, paddle rental and easy booking — your 2026 guide to the island.',
+      fr: 'Où jouer au pickleball à Koh Samui ? Terrains dédiés à Lamai, jeu libre, location de raquette et réservation simple : votre guide 2026 sur l’île.',
+    },
+    excerpt: {
+      en: 'Where to play pickleball in Koh Samui — dedicated courts in Lamai, open play sessions, beginner tips, paddle rental and how to book your first game.',
+      fr: 'Où jouer au pickleball à Koh Samui : terrains dédiés à Lamai, jeu libre, conseils débutants, location de raquette et comment réserver votre première partie.',
+    },
+    focusKeyword: {
+      en: 'where to play pickleball in koh samui',
+      fr: 'où jouer au pickleball à Koh Samui',
+    },
+    coverAlt: {
+      en: 'Dedicated pickleball courts in Lamai — where to play pickleball in Koh Samui',
+      fr: 'Terrains de pickleball dédiés à Lamai — où jouer au pickleball à Koh Samui',
+    },
+    category: {
+      en: 'Sports guide',
+      fr: 'Guide sport',
+    },
+    tags: {
+      en: ['Pickleball', 'Koh Samui', 'Lamai', 'where to play pickleball in koh samui'],
+      fr: ['Pickleball', 'Koh Samui', 'Lamai', 'où jouer au pickleball à Koh Samui'],
+    },
+    content: { en: EN_CONTENT_PICKLEBALL, fr: FR_CONTENT_PICKLEBALL },
+    faq: { en: EN_FAQ_PICKLEBALL, fr: FR_FAQ_PICKLEBALL },
+  },
   {
     id: 'things-to-do-lamai',
     author: 'Shi Shi Samui',
@@ -264,6 +427,11 @@ export function getBuiltinArticles(locale: BlogLocale): ResolvedArticle[] {
 export function getBuiltinArticle(locale: BlogLocale, slug: string): ResolvedArticle | undefined {
   const a = ARTICLES.find((x) => x.slug[locale] === slug)
   return a ? resolve(a, locale) : undefined
+}
+
+/** Paires de slugs (en/fr) des articles intégrés — pour le sitemap (hreflang). */
+export function builtinArticleSlugPairs(): Record<BlogLocale, string>[] {
+  return ARTICLES.map((a) => ({ en: a.slug.en, fr: a.slug.fr }))
 }
 
 /** Paramètres statiques (locale + slug) pour le pré-rendu. */

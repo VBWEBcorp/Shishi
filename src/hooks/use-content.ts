@@ -1,10 +1,26 @@
 'use client'
 
+import { useLocale } from 'next-intl'
 import { useEffect, useState } from 'react'
 
 type CacheEntry = {
   data: any
   fetchedAt: number
+}
+
+/**
+ * Résout la tranche de contenu pour la langue affichée.
+ *  · Nouveau format { fr, en } → renvoie la tranche de la langue (ou null si
+ *    vide → la page retombe alors sur ses défauts/traductions natives).
+ *  · Ancien format « à plat » (mono-langue) → renvoyé tel quel pour les 2 langues.
+ */
+function resolveSlice(rawContent: any, locale: string): Record<string, any> | null {
+  if (!rawContent || typeof rawContent !== 'object') return null
+  if ('fr' in rawContent || 'en' in rawContent) {
+    const slice = rawContent[locale]
+    return slice && typeof slice === 'object' ? slice : null
+  }
+  return rawContent
 }
 
 const CACHE_TTL = 30_000 // 30s: cross-section dedupe + quick nav caching
@@ -41,11 +57,10 @@ export function useContent<T extends Record<string, any>>(
   pageId: string,
   defaults: T
 ): { data: T; loading: boolean } {
+  const locale = useLocale()
   const [data, setData] = useState<T>(() => {
-    const cached = cache.get(pageId)
-    if (cached?.data?.content && Object.keys(cached.data.content).length > 0) {
-      return { ...defaults, ...cached.data.content }
-    }
+    const slice = resolveSlice(cache.get(pageId)?.data?.content, locale)
+    if (slice && Object.keys(slice).length > 0) return { ...defaults, ...slice }
     return defaults
   })
   const [loading, setLoading] = useState(!cache.has(pageId))
@@ -72,8 +87,9 @@ export function useContent<T extends Record<string, any>>(
     fetchContent(pageId)
       .then((result) => {
         if (cancelled) return
-        if (result?.content && Object.keys(result.content).length > 0) {
-          setData({ ...defaults, ...result.content })
+        const slice = resolveSlice(result?.content, locale)
+        if (slice && Object.keys(slice).length > 0) {
+          setData({ ...defaults, ...slice })
         }
       })
       .catch((error) => {
@@ -87,7 +103,7 @@ export function useContent<T extends Record<string, any>>(
       cancelled = true
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pageId])
+  }, [pageId, locale])
 
   return { data, loading }
 }

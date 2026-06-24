@@ -1,9 +1,9 @@
 'use client'
 
-import { HelpCircle, Minus, Plus } from 'lucide-react'
+import { HelpCircle } from 'lucide-react'
 import { useLocale } from 'next-intl'
-import { useState } from 'react'
 
+import { FaqAccordion } from '@/components/faq-accordion'
 import { SectionEyebrow } from '@/components/section-eyebrow'
 import type { Locale } from '@/i18n/routing'
 
@@ -48,8 +48,8 @@ const ITEMS: Item[] = [
   {
     q: { en: 'What is pickleball?', fr: 'Qu’est-ce que le pickleball ?' },
     a: {
-      en: 'A fast, fun racket sport that mixes tennis, badminton and ping-pong. Beginner-friendly and very social — our signature, on dedicated courts in Lamai.',
-      fr: 'Un sport de raquette rapide et fun mêlant tennis, badminton et ping-pong. Accessible et très convivial — notre signature, sur des terrains dédiés à Lamai.',
+      en: 'A fast, fun racket sport that mixes tennis, badminton and ping-pong. Beginner-friendly and very social, on dedicated courts in Lamai.',
+      fr: 'Un sport de raquette rapide et fun mêlant tennis, badminton et ping-pong. Accessible et très convivial, sur des terrains dédiés à Lamai.',
     },
   },
   {
@@ -75,18 +75,9 @@ const ITEMS: Item[] = [
   },
 ]
 
-/** FAQ deux colonnes (accordéons +/−), style éditorial Shi Shi. */
+/** FAQ deux colonnes, accordéon animé « Framer » (cf. FaqAccordion). */
 export function FaqSection() {
   const locale = useLocale() as Locale
-  const [open, setOpen] = useState<Set<number>>(new Set())
-
-  const toggle = (i: number) =>
-    setOpen((prev) => {
-      const next = new Set(prev)
-      if (next.has(i)) next.delete(i)
-      else next.add(i)
-      return next
-    })
 
   const half = Math.ceil(ITEMS.length / 2)
   const columns = [ITEMS.slice(0, half), ITEMS.slice(half)]
@@ -94,60 +85,24 @@ export function FaqSection() {
   return (
     <section className="border-y border-border bg-sand">
       <div className="mx-auto max-w-6xl px-4 py-20 sm:px-6 lg:px-8 lg:py-28">
-      {/* En-tête centré. */}
-      <div className="flex flex-col items-center text-center">
-        <SectionEyebrow icon={HelpCircle}>{EYEBROW[locale]}</SectionEyebrow>
-        <h2 className="mt-4 max-w-2xl font-editorial text-[2rem] font-normal leading-[1.1] tracking-[-0.01em] text-foreground sm:text-[2.7rem]">
-          {TITLE[locale]}
-        </h2>
-      </div>
+        {/* En-tête centré. */}
+        <div className="flex flex-col items-center text-center">
+          <SectionEyebrow icon={HelpCircle}>{EYEBROW[locale]}</SectionEyebrow>
+          <h2 className="mt-4 max-w-2xl font-editorial text-[2rem] font-normal leading-[1.1] tracking-[-0.01em] text-foreground sm:text-[2.7rem]">
+            {TITLE[locale]}
+          </h2>
+        </div>
 
-      {/* Deux colonnes d'accordéons. */}
-      <div className="mx-auto mt-12 grid max-w-5xl gap-4 md:grid-cols-2 md:gap-5">
-        {columns.map((col, c) => (
-          <div key={c} className="flex flex-col gap-4 md:gap-5">
-            {col.map((item, j) => {
-              const i = c * half + j
-              const isOpen = open.has(i)
-              return (
-                <div
-                  key={item.q.en}
-                  className="overflow-hidden rounded-2xl border border-border bg-background transition-colors hover:border-accent/40"
-                >
-                  <button
-                    type="button"
-                    onClick={() => toggle(i)}
-                    aria-expanded={isOpen}
-                    className="flex w-full items-center justify-between gap-4 px-5 py-5 text-left sm:px-6"
-                  >
-                    <span className="font-medium text-foreground">{item.q[locale]}</span>
-                    <span
-                      className={`flex size-7 shrink-0 items-center justify-center rounded-full ring-1 transition-colors ${
-                        isOpen
-                          ? 'bg-accent text-accent-foreground ring-accent'
-                          : 'text-muted-foreground ring-border'
-                      }`}
-                    >
-                      {isOpen ? <Minus className="size-4" aria-hidden /> : <Plus className="size-4" aria-hidden />}
-                    </span>
-                  </button>
-                  <div
-                    className={`grid transition-all duration-300 ease-out ${
-                      isOpen ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'
-                    }`}
-                  >
-                    <div className="overflow-hidden">
-                      <p className="px-5 pb-5 text-sm leading-relaxed text-muted-foreground sm:px-6">
-                        {item.a[locale]}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              )
-            })}
-          </div>
-        ))}
-      </div>
+        {/* Deux colonnes d'accordéons animés. */}
+        <div className="mx-auto mt-12 grid max-w-5xl items-start gap-4 md:grid-cols-2 md:gap-5">
+          {columns.map((col, c) => (
+            <FaqAccordion
+              key={c}
+              startIndex={c}
+              items={col.map((item) => ({ q: item.q[locale], a: item.a[locale] }))}
+            />
+          ))}
+        </div>
       </div>
     </section>
   )

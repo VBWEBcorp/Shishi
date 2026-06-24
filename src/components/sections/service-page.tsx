@@ -3,6 +3,7 @@ import { getTranslations } from 'next-intl/server'
 import Image from 'next/image'
 
 import { ActivityIcon } from '@/components/activity-icon'
+import { FaqAccordion } from '@/components/faq-accordion'
 import { ServicesShowcase } from '@/components/sections/services-showcase'
 import { Link } from '@/i18n/navigation'
 import type { Activity, Locale } from '@/lib/activities'
@@ -218,16 +219,8 @@ export async function ServicePage({
           <h2 className="font-editorial text-2xl font-normal text-foreground sm:text-3xl">
             {t('faqTitle')}
           </h2>
-          <div className="mt-7 divide-y divide-border rounded-3xl border border-border bg-card">
-            {service.faq.map((item) => (
-              <details key={item.q[l]} className="group px-5 py-4 sm:px-6">
-                <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-base font-medium text-foreground">
-                  {item.q[l]}
-                  <span className="text-accent transition-transform group-open:rotate-45" aria-hidden>＋</span>
-                </summary>
-                <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{item.a[l]}</p>
-              </details>
-            ))}
+          <div className="mt-8">
+            <FaqAccordion items={service.faq.map((item) => ({ q: item.q[l], a: item.a[l] }))} />
           </div>
         </section>
       )}

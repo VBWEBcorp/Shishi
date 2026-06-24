@@ -530,8 +530,8 @@ export default function AdminBookingsPage() {
       </div>
 
       {/* Barre d'outils : sélecteur de vue + recherche */}
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex items-center gap-2">
+      <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
+        <div className="flex flex-wrap items-center gap-2">
           <div className="inline-flex w-fit rounded-xl border border-border bg-card p-1">
             {VIEWS.map((v) => (
               <button
@@ -566,7 +566,7 @@ export default function AdminBookingsPage() {
         </div>
 
         {view !== 'stats' && (
-          <div className="relative sm:w-72">
+          <div className="relative w-full sm:w-64 lg:w-72">
             <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" aria-hidden />
             <input
               type="search"
@@ -811,7 +811,7 @@ export default function AdminBookingsPage() {
                     key={key}
                     onClick={() => setSelectedDay(key)}
                     className={cn(
-                      'flex min-h-[78px] flex-col rounded-xl border p-1.5 text-left transition-colors sm:min-h-[104px]',
+                      'flex min-h-[78px] min-w-0 flex-col rounded-xl border p-1.5 text-left transition-colors sm:min-h-[104px]',
                       isSelected
                         ? 'border-accent bg-accent/5 ring-1 ring-accent/40'
                         : 'border-border/60 hover:border-accent/40 hover:bg-muted/40'
@@ -825,7 +825,7 @@ export default function AdminBookingsPage() {
                     >
                       {d.getDate()}
                     </span>
-                    <div className="mt-1 flex-1 space-y-1 overflow-hidden">
+                    <div className="mt-1 min-w-0 flex-1 space-y-1 overflow-hidden">
                       {dayB.slice(0, 3).map((b) => (
                         <span
                           key={b._id}

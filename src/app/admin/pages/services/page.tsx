@@ -22,9 +22,27 @@ const defaults = {
   ],
 }
 
+const defaultsEn = {
+  hero: {
+    eyebrow: 'Our activities',
+    title: 'Everything for an active day in Lamai',
+    description:
+      'Sport, wellness and good company in one place, steps from each other. Book online in under a minute.',
+    image: '/photos/fitness.jpg',
+  },
+  services: [
+    { title: 'Tennis', description: 'Quality courts in the south of Koh Samui: singles, doubles, coaching and racket rental. 600 ฿/hour, open 8am–8pm.' },
+    { title: 'Pickleball', description: "Koh Samui's home of pickleball: dedicated courts, intro sessions and friendly matches for all levels." },
+    { title: 'Fitness gym', description: 'A fully equipped fitness space (strength, cardio, functional). 250 ฿/day, 1000 ฿/week, 1500 ฿/month. Open 8am–8pm.' },
+    { title: 'Restaurant', description: 'A fresh, healthy menu by the pool: smoothies, bowls and feel-good plates all day.' },
+    { title: 'Kids Club', description: 'A safe, fun space for children, supervised activities and babysitting. 200 ฿/hour, open 8am–4pm.' },
+    { title: 'Swimming pool', description: 'Relax by the pool or spend the whole day lounging, with the restaurant steps away. 100 ฿/day access.' },
+  ],
+}
+
 export default function AdminServicesPage() {
   return (
-    <PageEditor pageId="services" title="Page Services" defaultContent={defaults}>
+    <PageEditor pageId="services" title="Page Services" defaultContent={defaults} defaultContentEn={defaultsEn}>
       {(content, update) => (
         <>
           <SectionEditor title="Hero">

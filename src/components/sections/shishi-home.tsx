@@ -1,9 +1,11 @@
 'use client'
 
-import { BookOpen, CalendarCheck, Dumbbell, Gem, HeartHandshake, Sparkles } from 'lucide-react'
+import { BookOpen, CalendarCheck, Dumbbell, Gem, HeartHandshake, Martini, Palmtree, Sparkles, Sun } from 'lucide-react'
 import { useLocale, useTranslations } from 'next-intl'
 import Image from 'next/image'
+import type { ReactNode } from 'react'
 
+import { ActivityIcon } from '@/components/activity-icon'
 import { CtaButton } from '@/components/cta-button'
 import { SectionEyebrow } from '@/components/section-eyebrow'
 import { useContent } from '@/hooks/use-content'
@@ -114,31 +116,25 @@ export function StorySection() {
   )
 }
 
-/** Emoji par activité pour le bandeau défilant pré-footer. */
-const MARQUEE_EMOJI: Record<string, string> = {
-  pickleball: '🏓',
-  tennis: '🎾',
-  fitness: '💪',
-  restaurant: '🍽️',
-  'kids-club': '🧒',
-  pool: '🏊',
-}
-
 /**
- * Bandeau de noms d'activités qui défile tout seul, en boucle continue.
+ * Bandeau d'activités qui défile tout seul, en boucle continue.
  * Deux copies côte à côte + `animate-marquee-band` (translateX -50%) = boucle
  * sans couture. Purement décoratif (les mêmes liens existent dans le footer),
- * d'où aria-hidden sur le conteneur.
+ * d'où aria-hidden sur le conteneur. Icônes en orange (accent), identiques à
+ * celles du haut de page (ActivityIcon) — plus d'emoji.
  */
 function ActivityMarquee() {
   const locale = useLocale() as Locale
 
-  const items: { emoji: string; label: string }[] = [
-    ...activities.map((a) => ({ emoji: MARQUEE_EMOJI[a.slug] ?? '✨', label: a.name[locale] })),
-    { emoji: '🌴', label: 'Koh Samui' },
-    { emoji: '🍹', label: 'Pool Bar' },
-    { emoji: '🧘', label: locale === 'fr' ? 'Bien-être' : 'Wellness' },
-    { emoji: '☀️', label: 'Lamai' },
+  const items: { icon: ReactNode; label: string }[] = [
+    ...activities.map((a) => ({
+      icon: <ActivityIcon name={a.icon} className="size-[1.05em]" />,
+      label: a.name[locale],
+    })),
+    { icon: <Palmtree className="size-[1.05em]" aria-hidden />, label: 'Koh Samui' },
+    { icon: <Martini className="size-[1.05em]" aria-hidden />, label: 'Pool Bar' },
+    { icon: <Sparkles className="size-[1.05em]" aria-hidden />, label: locale === 'fr' ? 'Bien-être' : 'Wellness' },
+    { icon: <Sun className="size-[1.05em]" aria-hidden />, label: 'Lamai' },
   ]
 
   const loop = [...items, ...items]
@@ -154,7 +150,7 @@ function ActivityMarquee() {
             key={i}
             className="inline-flex shrink-0 items-center gap-2.5 text-nowrap pe-7 font-editorial text-base font-normal tracking-wide text-white/55 sm:pe-10 sm:text-xl"
           >
-            <span className="text-[1em]">{it.emoji}</span>
+            <span className="inline-flex text-accent">{it.icon}</span>
             <span>{it.label}</span>
             <span className="text-white/25">•</span>
           </li>
@@ -193,7 +189,7 @@ export function BookingCta() {
         <p className="mx-auto mt-5 max-w-xl text-base leading-relaxed text-white/80">
           {c.description || t('subtitle')}
         </p>
-        <div className="mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row">
+        <div className="mt-9 flex flex-row items-center justify-center gap-2.5 sm:gap-3">
           <CtaButton href="/book-now" tone="glass" size="sm">
             {c.button || t('bookCourt')}
           </CtaButton>

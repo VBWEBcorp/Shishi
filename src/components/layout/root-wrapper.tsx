@@ -9,6 +9,7 @@ import { FloatingWhatsApp } from '@/components/floating-whatsapp'
 import { MarketingBanner } from '@/components/marketing-banner'
 import { MarketingPopup } from '@/components/marketing-popup'
 import { Navbar } from '@/components/layout/navbar'
+import { LAUNCHED } from '@/lib/launch'
 
 export function RootWrapper({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
@@ -26,11 +27,12 @@ export function RootWrapper({ children }: { children: React.ReactNode }) {
     return children
   }
 
-  // Page d'accueil = « Coming Soon » plein écran : pas de navbar/footer/bannières.
+  // Tant que le site n'est pas lancé : l'accueil = « Coming Soon » plein écran,
+  // sans navbar/footer/bannières. Une fois lancé (LAUNCHED), l'accueil reçoit
+  // l'habillage complet comme toutes les autres pages.
   // (localePrefix 'always' → la home est /en ou /fr)
-  // En dev, la home affiche le vrai site → on garde navbar/footer.
   const isHome = pathname === '/' || pathname === '/en' || pathname === '/fr'
-  if (isHome && process.env.NODE_ENV !== 'development') {
+  if (isHome && !LAUNCHED && process.env.NODE_ENV !== 'development') {
     return <main className="flex-1">{children}</main>
   }
 

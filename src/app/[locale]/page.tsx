@@ -79,21 +79,11 @@ export default async function HomePage({
   const { locale } = await params
   setRequestLocale(locale)
 
-  // Vrai site complet si on est en dev local OU si le site est lancé (LAUNCHED).
+  // Site complet si on est en dev local OU si le site est lancé (LAUNCHED).
   // Sinon (prod, non lancé) : landing « Coming Soon » (indexation marque).
-  if (process.env.NODE_ENV === 'development' || LAUNCHED) {
-    return (
-      <>
-        <ShishiHero />
-        <ActivityTiles />
-        <ExperienceGallery />
-        <ValuesBand />
-        <StorySection />
-        <FaqSection />
-        <PhotoShowcase />
-      </>
-    )
-  }
+  // Le JSON-LD (LocalBusiness + SportsActivityLocation + Organization + WebSite
+  // + WebPage) est rendu dans les deux cas — exigé par l'audit SEO (§3).
+  const fullSite = process.env.NODE_ENV === 'development' || LAUNCHED
 
   return (
     <>
@@ -101,7 +91,19 @@ export default async function HomePage({
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <ComingSoon />
+      {fullSite ? (
+        <>
+          <ShishiHero />
+          <ActivityTiles />
+          <ExperienceGallery />
+          <ValuesBand />
+          <StorySection />
+          <FaqSection />
+          <PhotoShowcase />
+        </>
+      ) : (
+        <ComingSoon />
+      )}
     </>
   )
 }

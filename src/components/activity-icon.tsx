@@ -24,13 +24,25 @@ export function ActivityIcon({
         </svg>
       )
     case 'pickleball':
+      // Icône fournie par le client (raquette + balle), affichée via masque CSS
+      // pour hériter de la couleur courante (currentColor), comme les autres icônes.
       return (
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" className={cls} aria-hidden>
-          <path d="M14.5 3.5a4.5 4.5 0 0 1 0 9c-1.6 0-3-.8-3.9-2.1L4.2 17a2 2 0 1 1-2.2-2.2l6.7-6.4A4.5 4.5 0 0 1 14.5 3.5Z" />
-          <circle cx="14.5" cy="8" r="1" />
-          <circle cx="11.5" cy="6.5" r="1" />
-          <circle cx="16.5" cy="10.5" r="1" />
-        </svg>
+        <span
+          className={cls}
+          style={{
+            display: 'inline-block',
+            backgroundColor: 'currentColor',
+            WebkitMaskImage: 'url(/icons/pickleball.png)',
+            maskImage: 'url(/icons/pickleball.png)',
+            WebkitMaskRepeat: 'no-repeat',
+            maskRepeat: 'no-repeat',
+            WebkitMaskPosition: 'center',
+            maskPosition: 'center',
+            WebkitMaskSize: 'contain',
+            maskSize: 'contain',
+          }}
+          aria-hidden
+        />
       )
     case 'fitness':
       return <Dumbbell className={cls} aria-hidden />

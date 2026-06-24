@@ -12,4 +12,4 @@
  * → Au lancement réel : passer LAUNCHED à true (un seul endroit suffit :
  *   accueil, middleware et sitemap s'appuient tous sur ce drapeau).
  */
-export const LAUNCHED = false
+export const LAUNCHED = true

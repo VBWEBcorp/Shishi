@@ -13,7 +13,7 @@ function AdminMain({ children }: { children: React.ReactNode }) {
   const { collapsed, isMobile } = useSidebar()
   return (
     <main className={cn(
-      'flex-1 min-h-screen bg-muted/30 transition-all duration-200',
+      'min-w-0 flex-1 min-h-screen bg-muted/30 transition-all duration-200',
       isMobile ? 'ml-0' : collapsed ? 'ml-[60px]' : 'ml-[220px]'
     )}>
       {children}
