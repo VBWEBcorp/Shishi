@@ -21,6 +21,36 @@ export function ComingSoon() {
   const l = useLocale() as Locale
   const [videoReady, setVideoReady] = useState(false)
 
+  // Accès privé par code (aperçu client de l'intégralité du site).
+  const [code, setCode] = useState('')
+  const [unlockError, setUnlockError] = useState(false)
+  const [unlocking, setUnlocking] = useState(false)
+
+  async function handleUnlock(e: React.FormEvent) {
+    e.preventDefault()
+    const value = code.trim()
+    if (!value) return
+    setUnlocking(true)
+    setUnlockError(false)
+    try {
+      const res = await fetch('/api/preview-unlock', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code: value }),
+      })
+      if (res.ok) {
+        // Cookie posé → on recharge l'accueil, qui affiche le site complet.
+        window.location.href = `/${l}`
+      } else {
+        setUnlockError(true)
+      }
+    } catch {
+      setUnlockError(true)
+    } finally {
+      setUnlocking(false)
+    }
+  }
+
   const whatsappHref = `https://wa.me/${siteConfig.whatsapp}?text=${encodeURIComponent(
     t('whatsappPrefill')
   )}`
@@ -170,6 +200,44 @@ export function ComingSoon() {
             </a>
           </div>
         </div>
+
+        {/* Accès privé : saisie du code pour déverrouiller l'intégralité du site */}
+        <form
+          onSubmit={handleUnlock}
+          className="animate-reveal mt-2 flex w-full max-w-sm flex-col items-center gap-2"
+          style={reveal(7)}
+        >
+          <div className="flex w-full items-center gap-2">
+            <input
+              type="text"
+              value={code}
+              onChange={(e) => {
+                setCode(e.target.value)
+                setUnlockError(false)
+              }}
+              placeholder={l === 'fr' ? "Code d'accès" : 'Access code'}
+              aria-label={l === 'fr' ? "Code d'accès" : 'Access code'}
+              autoComplete="off"
+              className="h-11 flex-1 rounded-full border border-white/20 bg-white/10 px-4 text-sm text-white placeholder:text-white/45 backdrop-blur focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/40"
+            />
+            <button
+              type="submit"
+              disabled={unlocking}
+              className="inline-flex h-11 shrink-0 items-center gap-1.5 rounded-full bg-white/15 px-5 text-sm font-semibold text-white ring-1 ring-white/25 backdrop-blur transition-colors hover:bg-white/25 disabled:opacity-60"
+            >
+              {unlocking ? '…' : l === 'fr' ? 'Accéder' : 'Enter'}
+            </button>
+          </div>
+          <p className={`text-[11px] ${unlockError ? 'text-accent' : 'text-white/45'}`}>
+            {unlockError
+              ? l === 'fr'
+                ? 'Code incorrect.'
+                : 'Incorrect code.'
+              : l === 'fr'
+                ? 'Accès privé — aperçu client'
+                : 'Private access — client preview'}
+          </p>
+        </form>
       </div>
 
       {/* Pied discret : adresse + copyright (NAP pour le SEO local) */}

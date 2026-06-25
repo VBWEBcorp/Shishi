@@ -9,17 +9,24 @@ import { FloatingWhatsApp } from '@/components/floating-whatsapp'
 import { MarketingBanner } from '@/components/marketing-banner'
 import { MarketingPopup } from '@/components/marketing-popup'
 import { Navbar } from '@/components/layout/navbar'
-import { LAUNCHED } from '@/lib/launch'
+import { LAUNCHED, PREVIEW_CODE, PREVIEW_COOKIE } from '@/lib/launch'
 
 export function RootWrapper({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
   const [isAdmin, setIsAdmin] = useState(false)
+  // Aperçu déverrouillé (cookie posé après saisie du code) → la home reçoit
+  // l'habillage complet au lieu de la façade plein écran.
+  const [unlocked, setUnlocked] = useState(false)
 
   useEffect(() => {
     // Vérifier si on est en espace admin ET si on est connecté
     const isAdminPath = pathname?.startsWith('/admin')
     const token = localStorage.getItem('authToken')
     setIsAdmin(isAdminPath && !!token)
+    setUnlocked(
+      typeof document !== 'undefined' &&
+        document.cookie.split('; ').some((c) => c === `${PREVIEW_COOKIE}=${PREVIEW_CODE}`)
+    )
   }, [pathname])
 
   // En espace admin connecté: pas de header/footer
@@ -32,7 +39,7 @@ export function RootWrapper({ children }: { children: React.ReactNode }) {
   // l'habillage complet comme toutes les autres pages.
   // (localePrefix 'always' → la home est /en ou /fr)
   const isHome = pathname === '/' || pathname === '/en' || pathname === '/fr'
-  if (isHome && !LAUNCHED && process.env.NODE_ENV !== 'development') {
+  if (isHome && !LAUNCHED && !unlocked && process.env.NODE_ENV !== 'development') {
     return <main className="flex-1">{children}</main>
   }
 

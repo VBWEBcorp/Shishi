@@ -12,4 +12,15 @@
  * → Au lancement réel : passer LAUNCHED à true (un seul endroit suffit :
  *   accueil, middleware et sitemap s'appuient tous sur ce drapeau).
  */
-export const LAUNCHED = true
+export const LAUNCHED = false
+
+/**
+ * Aperçu privé par CODE : tant que le site n'est pas lancé (façade Coming Soon),
+ * un visiteur qui possède le bon code voit l'INTÉGRALITÉ du site. Le code est
+ * stocké dans un cookie (lisible aussi côté client pour l'habillage), posé soit
+ * via le formulaire de la page Coming Soon, soit via un lien `?code=...`.
+ */
+export const PREVIEW_COOKIE = 'shishi_preview'
+export const PREVIEW_CODE = process.env.PREVIEW_CODE || 'Shishi2230'
+/** Durée de validité du cookie d'aperçu (30 jours). */
+export const PREVIEW_MAX_AGE = 60 * 60 * 24 * 30

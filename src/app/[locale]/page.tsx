@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import { cookies } from 'next/headers'
 import { setRequestLocale } from 'next-intl/server'
 
 import { ActivityTiles } from '@/components/sections/activity-tiles'
@@ -14,7 +15,7 @@ import {
   webPageJsonLd,
   webSiteJsonLd,
 } from '@/components/seo/json-ld'
-import { LAUNCHED } from '@/lib/launch'
+import { LAUNCHED, PREVIEW_CODE, PREVIEW_COOKIE } from '@/lib/launch'
 import { siteConfig } from '@/lib/seo'
 
 // Titre & description « à la lettre » de l'audit (Accueil), marque incluse.
@@ -79,11 +80,13 @@ export default async function HomePage({
   const { locale } = await params
   setRequestLocale(locale)
 
-  // Site complet si on est en dev local OU si le site est lancé (LAUNCHED).
-  // Sinon (prod, non lancé) : landing « Coming Soon » (indexation marque).
+  // Site complet si : dev local, OU site lancé (LAUNCHED), OU visiteur muni du
+  // cookie d'aperçu (a saisi le code). Sinon : façade « Coming Soon ».
   // Le JSON-LD (LocalBusiness + SportsActivityLocation + Organization + WebSite
   // + WebPage) est rendu dans les deux cas — exigé par l'audit SEO (§3).
-  const fullSite = process.env.NODE_ENV === 'development' || LAUNCHED
+  const cookieStore = await cookies()
+  const hasPreview = cookieStore.get(PREVIEW_COOKIE)?.value === PREVIEW_CODE
+  const fullSite = process.env.NODE_ENV === 'development' || LAUNCHED || hasPreview
 
   return (
     <>
