@@ -144,21 +144,21 @@ export const servicesPreviewContent = {
 }
 
 export const testimonialsContent = {
-  eyebrow: 'Témoignages',
-  title: 'Ils nous font confiance',
+  eyebrow: 'Avis Google',
+  title: 'Ils adorent Shi Shi Samui',
   description:
-    'Des entreprises de tous horizons qui ont gagné en visibilité et en crédibilité.',
+    'Ce que nos membres et visiteurs pensent du club — sport, détente et bonne humeur à Lamai.',
   items: [
-    { name: 'Marie D.', company: 'Boulangerie Le Fournil', text: "Depuis le nouveau site, je reçois 3 fois plus d'appels. Les clients nous trouvent enfin sur Google.", stars: 5 },
-    { name: 'Thomas L.', company: 'Cabinet Conseil TLR', text: 'Un travail soigné, un site clair et professionnel. Mes prospects comprennent immédiatement ce que je propose.', stars: 5 },
-    { name: 'Camille B.', company: 'Atelier Camille', text: "Le site reflète parfaitement l'univers de ma marque. J'ai gagné en crédibilité auprès de mes clients.", stars: 5 },
-    { name: 'Laurent M.', company: 'LM Rénovation', text: 'En trois mois, mon chiffre a augmenté de 40 %. Le site et le SEO font vraiment la différence.', stars: 5 },
-    { name: 'Nadia K.', company: 'Agence NovaTour', text: 'Un accompagnement au top, des délais respectés et un résultat qui dépasse mes attentes.', stars: 5 },
-    { name: 'Sophie R.', company: 'Studio Pilates Zen', text: "L'équipe a su capter l'ambiance de mon studio. Les réservations ont décollé.", stars: 5 },
-    { name: 'Pierre V.', company: 'Transports Vallée', text: 'Un investissement rentabilisé en quelques semaines. Des contacts qualifiés chaque jour.', stars: 5 },
-    { name: 'Julie A.', company: "Les Jardins d'Alice", text: 'Ils ont transformé notre présence en ligne. Le site est magnifique et nos ventes ont triplé.', stars: 5 },
-    { name: 'Franck G.', company: 'Studio FG', text: 'Design épuré, navigation fluide, exactement ce que je voulais pour présenter mes projets.', stars: 4 },
-    { name: 'Émilie T.', company: 'Clinique Vétérinaire du Parc', text: 'Nos clients trouvent toutes les infos facilement. La prise de rendez-vous a changé notre quotidien.', stars: 5 },
+    { name: 'James W.', company: 'Tennis · Koh Samui', text: 'Best tennis courts on the island — well maintained, easy online booking and a great vibe. My go-to spot in Lamai.', stars: 5 },
+    { name: 'Sophie L.', company: 'Family visit · France', text: 'The kids club is fantastic. Our children loved it while we enjoyed the pool and a healthy lunch. Perfect for families!', stars: 5 },
+    { name: 'Mark T.', company: 'Fitness · Expat', text: 'Clean, modern gym with everything you need. Flexible sessions and a friendly team. Highly recommend for anyone in Lamai.', stars: 5 },
+    { name: 'Lena K.', company: 'Restaurant · Germany', text: 'Fresh smoothies and delicious healthy bowls by the pool. The take away is super handy too. We came back three times!', stars: 5 },
+    { name: 'David R.', company: 'Pickleball · Australia', text: 'Great courts and even better community. Staff are welcoming and the whole club has a premium but relaxed feel.', stars: 5 },
+    { name: 'Marie D.', company: 'Séjour · Belgique', text: 'Un club magnifique, moderne et convivial. Réservation en ligne simple, personnel adorable. On reviendra sans hésiter.', stars: 5 },
+    { name: 'Tom H.', company: 'Digital nomad · UK', text: 'My daily routine: gym, pool, healthy lunch. Fast wifi, calm atmosphere and top facilities. The best club in Samui.', stars: 5 },
+    { name: 'Anna S.', company: 'Pool day · Sweden', text: 'Beautiful pool, comfy loungers and attentive service. A little paradise to spend the whole day. Loved every minute.', stars: 5 },
+    { name: 'Julien P.', company: 'Tennis · France', text: 'Courts impeccables et ambiance au top. Le tarif de lancement est très correct. Hâte de voir les abonnements arriver !', stars: 5 },
+    { name: 'Emma C.', company: 'Family · Netherlands', text: 'Everything in one place: sport, food, pool and a safe kids area. Exactly what we needed on holiday. Thank you Shi Shi!', stars: 5 },
   ],
 }
 

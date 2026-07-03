@@ -1,7 +1,7 @@
 'use client'
 
 import { AnimatePresence, motion } from 'framer-motion'
-import { ArrowRight, Check, Globe, Instagram, MapPin } from 'lucide-react'
+import { ArrowRight, Check, Globe, Instagram, MapPin, UserRound } from 'lucide-react'
 import { useLocale, useTranslations } from 'next-intl'
 import { useEffect, useRef, useState, useTransition } from 'react'
 
@@ -22,9 +22,23 @@ const navItems = [
 
 export function Navbar() {
   const t = useTranslations('Nav')
+  const locale = useLocale() as Locale
+  const fr = locale === 'fr'
   const [open, setOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
+  const [memberLoggedIn, setMemberLoggedIn] = useState(false)
   const pathname = usePathname()
+
+  // Statut de connexion adhérent : « Se connecter » ↔ « Mon espace ».
+  useEffect(() => {
+    let cancelled = false
+    fetch('/api/member/me', { cache: 'no-store' })
+      .then((r) => !cancelled && setMemberLoggedIn(r.ok))
+      .catch(() => {})
+    return () => {
+      cancelled = true
+    }
+  }, [pathname])
 
   const hasDarkHero =
     pathname === '/' ||
@@ -71,8 +85,42 @@ export function Navbar() {
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
           <Logo light={lightText} />
 
-          <div className="flex items-center gap-2 sm:gap-3">
+          <div className="flex items-center gap-1.5 sm:gap-3">
             <LangSwitch light={lightText} />
+
+            {/* Se connecter ↔ Mon espace : bouton rond sur mobile, puce « compte »
+                (icône en cercle + texte) sur desktop — secondaire vs « Réserver ». */}
+            <Link
+              href={memberLoggedIn ? '/member' : '/member/login'}
+              aria-label={memberLoggedIn ? (fr ? 'Mon espace' : 'My account') : (fr ? 'Se connecter' : 'Sign in')}
+              className={cn(
+                'group relative inline-flex h-9 w-9 items-center justify-center gap-2 rounded-full text-[13px] font-semibold ring-1 transition-colors sm:w-auto sm:pl-1.5 sm:pr-3.5',
+                lightText
+                  ? 'text-white ring-white/20 hover:bg-white/10'
+                  : 'text-foreground ring-border hover:bg-muted',
+                open && 'pointer-events-none opacity-0'
+              )}
+            >
+              <span
+                className={cn(
+                  'flex size-4 items-center justify-center rounded-full transition-colors sm:size-6',
+                  lightText
+                    ? 'sm:bg-white/15 sm:group-hover:bg-white/25'
+                    : memberLoggedIn
+                      ? 'sm:bg-accent sm:text-accent-foreground'
+                      : 'sm:bg-accent/10 sm:text-accent'
+                )}
+              >
+                <UserRound className="size-4 shrink-0 sm:size-3.5" aria-hidden />
+              </span>
+              <span className="hidden sm:inline">
+                {memberLoggedIn ? (fr ? 'Mon espace' : 'My account') : (fr ? 'Se connecter' : 'Sign in')}
+              </span>
+              {/* Point d'état « connecté » (mobile, où le texte est masqué) */}
+              {memberLoggedIn && (
+                <span className="absolute -right-0.5 -top-0.5 size-2.5 rounded-full bg-accent ring-2 ring-background sm:hidden" aria-hidden />
+              )}
+            </Link>
 
             <Link
               href="/book-now"
@@ -116,7 +164,7 @@ export function Navbar() {
         </div>
       </header>
 
-      <FullscreenMenu open={open} onClose={() => setOpen(false)} pathname={pathname} />
+      <FullscreenMenu open={open} onClose={() => setOpen(false)} pathname={pathname} memberLoggedIn={memberLoggedIn} />
     </>
   )
 }
@@ -125,13 +173,16 @@ function FullscreenMenu({
   open,
   onClose,
   pathname,
+  memberLoggedIn,
 }: {
   open: boolean
   onClose: () => void
   pathname: string
+  memberLoggedIn: boolean
 }) {
   const t = useTranslations('Nav')
   const locale = useLocale() as Locale
+  const fr = locale === 'fr'
 
   return (
     <AnimatePresence>
@@ -233,6 +284,16 @@ function FullscreenMenu({
                       {t(l.key)}
                     </Link>
                   ))}
+                  <Link
+                    href={memberLoggedIn ? '/member' : '/member/login'}
+                    onClick={onClose}
+                    className="inline-flex items-center gap-1.5 text-sm font-medium text-white/70 transition-colors hover:text-white"
+                  >
+                    <UserRound className="size-4" aria-hidden />
+                    {memberLoggedIn
+                      ? (fr ? 'Mon espace' : 'My account')
+                      : (fr ? 'Se connecter' : 'Sign in')}
+                  </Link>
                 </div>
                 <div className="flex items-center gap-3">
                   <a

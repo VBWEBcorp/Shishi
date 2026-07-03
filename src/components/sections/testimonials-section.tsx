@@ -1,9 +1,11 @@
 'use client'
 
 import { Star } from 'lucide-react'
+import { useLocale } from 'next-intl'
 
 import { SectionTitle } from '@/components/ui/section-title'
 import { useContent } from '@/hooks/use-content'
+import type { Locale } from '@/i18n/routing'
 import { testimonialsContent } from '@/lib/site-content'
 
 const defaults = {
@@ -90,7 +92,19 @@ function MarqueeRow({
 
 export function TestimonialsSection() {
   const { data } = useContent('testimonials', defaults)
+  const locale = useLocale() as Locale
+  const fr = locale === 'fr'
   const testimonials = data.testimonials ?? defaults.testimonials
+
+  // En-tête bilingue (le contenu CMS reste prioritaire s'il est renseigné).
+  const header = {
+    eyebrow: fr ? 'Avis Google' : 'Google reviews',
+    title: fr ? 'Ils adorent Shi Shi Samui' : 'They love Shi Shi Samui',
+    description: fr
+      ? 'Ce que nos membres et visiteurs pensent du club — sport, détente et bonne humeur à Lamai.'
+      : 'What our members and visitors say about the club — sport, relaxation and good vibes in Lamai.',
+  }
+  const ratingLabel = fr ? '5,0 sur Google' : '5.0 on Google'
 
   const mid = Math.ceil(testimonials.length / 2)
   const topRow = testimonials.slice(0, mid)
@@ -112,15 +126,15 @@ export function TestimonialsSection() {
               ))}
             </div>
             <span className="text-xs font-semibold text-foreground">
-              5,0 sur Google
+              {ratingLabel}
             </span>
           </div>
         </div>
         <div className="mt-6">
           <SectionTitle
-            eyebrow={data.eyebrow ?? defaults.eyebrow}
-            title={data.title ?? defaults.title}
-            description={data.description ?? defaults.description}
+            eyebrow={data.eyebrow ?? header.eyebrow}
+            title={data.title ?? header.title}
+            description={data.description ?? header.description}
           />
         </div>
       </div>

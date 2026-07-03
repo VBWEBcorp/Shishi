@@ -22,6 +22,51 @@ export function getActivityPrice(slug: string): number {
 }
 
 /**
+ * Libellé de l'UNITÉ de facturation par activité (« / heure », « / séance »…).
+ * Prioritaire sur le mot par défaut déduit du type de créneau. Permet, par ex.,
+ * d'afficher le fitness « par séance » (et non « par jour ») comme demandé par
+ * le client, sans changer la mécanique d'accès à la journée.
+ */
+const UNIT_LABEL: Record<string, Localized> = {
+  tennis: { en: 'hour', fr: 'heure' },
+  'kids-club': { en: 'hour', fr: 'heure' },
+  fitness: { en: 'session', fr: 'séance' },
+  pool: { en: 'day', fr: 'jour' },
+  pickleball: { en: 'hour', fr: 'heure' },
+}
+
+/** Mot d'unité tarifaire d'une activité dans la locale donnée (null si inconnu). */
+export function getUnitLabel(slug: string, locale: 'en' | 'fr'): string | null {
+  return UNIT_LABEL[slug]?.[locale] ?? null
+}
+
+/**
+ * Activités dont le tarif se multiplie par le NOMBRE D'HEURES choisi par le
+ * client (sélecteur de durée). Ex : Kids Club — l'utilisateur choisit combien
+ * d'heures et le prix se met à jour automatiquement.
+ */
+const SUPPORTS_HOURS = new Set(['kids-club'])
+
+/** L'activité propose-t-elle un choix du nombre d'heures (durée variable) ? */
+export function supportsHours(slug: string): boolean {
+  return SUPPORTS_HOURS.has(slug)
+}
+
+/** Nombre d'heures maximum réservable en une fois (activités à durée variable). */
+export const MAX_BOOKING_HOURS = 8
+
+/**
+ * Offre de lancement affichée en attendant la grille d'abonnements (Phase 1).
+ * Rendu sur la page Tennis et dans le moteur de réservation.
+ */
+export const LAUNCH_OFFER: Record<string, Localized> = {
+  tennis: {
+    en: 'Launch offer: flat rate of 600 THB / hour, while we prepare our upcoming, very attractive membership plans.',
+    fr: "Offre de lancement : tarif unique de 600 THB / heure, en attendant de vous proposer nos offres d'inscription très intéressantes.",
+  },
+}
+
+/**
  * Activités facturées PAR PERSONNE : chaque participant ajoute son tarif au
  * total. Le tennis est une réservation de TERRAIN (prix fixe par session, quel
  * que soit le nombre de joueurs) → il n'est pas dans cette liste.
@@ -33,11 +78,23 @@ export function isPricePerPerson(slug: string): boolean {
   return PRICE_PER_PERSON.has(slug)
 }
 
-/** Montant total d'une réservation selon le nombre de participants. */
-export function getBookingAmount(slug: string, partySize: number): number {
+/**
+ * Montant total d'une réservation.
+ *  · `partySize` : nombre de participants (multiplie le tarif si l'activité est
+ *    facturée par personne).
+ *  · `hours` : nombre d'heures choisi (multiplie le tarif pour les activités à
+ *    durée variable, ex. Kids Club). Ignoré ailleurs.
+ */
+export function getBookingAmount(
+  slug: string,
+  partySize: number,
+  hours = 1
+): number {
   const unit = getActivityPrice(slug)
   const n = Math.max(1, Math.floor(partySize) || 1)
-  return isPricePerPerson(slug) ? unit * n : unit
+  const h = Math.max(1, Math.floor(hours) || 1)
+  const base = isPricePerPerson(slug) ? unit * n : unit
+  return supportsHours(slug) ? base * h : base
 }
 
 /** Vérifie qu'un slug correspond bien à une activité connue. */
@@ -62,7 +119,7 @@ export const PRICE_TIERS: Record<string, PriceTier[]> = {
   'kids-club': [{ label: { en: 'Per hour', fr: 'Par heure' }, amount: 200 }],
   tennis: [{ label: { en: 'Per hour', fr: 'Par heure' }, amount: 600 }],
   fitness: [
-    { label: { en: 'Day pass', fr: 'Pass journée' }, amount: 250 },
+    { label: { en: 'Per session', fr: 'Par séance' }, amount: 250 },
     { label: { en: 'Week', fr: 'Semaine' }, amount: 1000 },
     { label: { en: 'Month', fr: 'Mois' }, amount: 1500 },
   ],

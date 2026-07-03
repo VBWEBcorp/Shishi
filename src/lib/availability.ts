@@ -86,6 +86,28 @@ export function generateSlots(slug: string): string[] {
   return slots
 }
 
+/**
+ * Créneaux « HH:mm » occupés par une réservation qui démarre à `startTime` et
+ * dure `hours` heures, selon la granularité de l'activité. Sert aux activités à
+ * durée variable (Kids Club) : une réservation de 3 h à 10:00 occupe 10:00,
+ * 11:00 et 12:00. Les créneaux qui dépassent la fermeture sont ignorés.
+ */
+export function slotsCovered(slug: string, startTime: string, hours: number): string[] {
+  const cfg = getBookingConfig(slug)
+  if (!cfg) return [startTime]
+  const step = cfg.slotMinutes
+  const n = Math.max(1, Math.floor(hours) || 1)
+  const start = toMinutes(startTime)
+  const end = toMinutes(cfg.close)
+  const times: string[] = []
+  for (let i = 0; i < n; i++) {
+    const t = start + i * step
+    if (t + step > end) break
+    times.push(toHHMM(t))
+  }
+  return times.length ? times : [startTime]
+}
+
 export interface SlotAvailability {
   time: string
   capacity: number

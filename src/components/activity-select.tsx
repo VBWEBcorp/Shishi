@@ -22,6 +22,7 @@ export function ActivitySelect({
   label,
   placeholder,
   id,
+  bookableOnly = false,
 }: {
   value: string
   onChange: (slug: string) => void
@@ -33,9 +34,12 @@ export function ActivitySelect({
   /** Texte affiché quand aucune activité n'est choisie. */
   placeholder?: string
   id?: string
+  /** N'affiche que les activités réservables en ligne (moteur de réservation). */
+  bookableOnly?: boolean
 }) {
   const [open, setOpen] = useState(false)
   const ref = useRef<HTMLDivElement>(null)
+  const options = bookableOnly ? activities.filter((a) => a.bookable) : activities
   const selected = activities.find((a) => a.slug === value) ?? null
 
   // Ferme au clic extérieur / Échap.
@@ -117,7 +121,7 @@ export function ActivitySelect({
           role="listbox"
           className="absolute left-0 top-[calc(100%+0.6rem)] z-50 w-[min(20rem,calc(100vw-2.5rem))] origin-top rounded-3xl border border-border bg-popover p-2 shadow-[0_30px_70px_-24px_oklch(0.16_0.02_55/0.55)] animate-in fade-in-0 zoom-in-95 slide-in-from-top-2 duration-200 ease-out"
         >
-          {activities.map((a) => {
+          {options.map((a) => {
             const active = a.slug === value
             return (
               <li key={a.slug}>

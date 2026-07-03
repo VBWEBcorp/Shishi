@@ -20,6 +20,12 @@ export interface IBooking extends Document {
   participants?: { name: string; email: string; phone?: string }[]
   status: BookingStatus
   stripeSessionId?: string
+  /** Adhérent à l'origine de la réservation (si connecté). */
+  memberId?: string
+  /** Crédits d'abonnement débités pour cette réservation. */
+  creditsUsed?: number
+  /** Taux de remise adhérent appliqué (0 = aucune). */
+  discountRate?: number
   /** Langue dans laquelle la réservation a été faite (emails dans cette langue). */
   locale?: 'en' | 'fr'
   /** Vue par l'admin (pour la cloche de notifications). */
@@ -59,6 +65,9 @@ const BookingSchema = new Schema<IBooking>(
       default: 'pending',
     },
     stripeSessionId: String,
+    memberId: String,
+    creditsUsed: { type: Number, default: 0 },
+    discountRate: { type: Number, default: 0 },
     locale: { type: String, enum: ['en', 'fr'], default: 'en' },
     seen: { type: Boolean, default: false },
     seenAt: Date,

@@ -5,6 +5,7 @@ import {
   computeAvailability,
   getBookingConfig,
   PENDING_HOLD_MS,
+  slotsCovered,
   type SlotAvailability,
 } from '@/lib/availability'
 
@@ -25,12 +26,19 @@ async function countActiveByTime(
     date,
     $or: [{ status: 'paid' }, { status: 'pending', createdAt: { $gte: cutoff } }],
   })
-    .select('time')
+    .select('time duration')
     .lean()
 
+  const cfg = getBookingConfig(activitySlug)
+  const slotMin = cfg?.slotMinutes ?? 60
   const map: Record<string, number> = {}
-  for (const b of bookings as Array<{ time: string }>) {
-    map[b.time] = (map[b.time] || 0) + 1
+  for (const b of bookings as Array<{ time: string; duration?: number }>) {
+    // Une réservation multi-heures (ex. Kids Club) occupe tous les créneaux
+    // qu'elle couvre, pas seulement son heure de départ.
+    const hours = Math.max(1, Math.round((b.duration ?? slotMin) / slotMin))
+    for (const time of slotsCovered(activitySlug, b.time, hours)) {
+      map[time] = (map[time] || 0) + 1
+    }
   }
   return map
 }
@@ -51,7 +59,25 @@ export async function isSlotAvailable(
   date: string,
   time: string
 ): Promise<boolean> {
+  return isRangeAvailable(activitySlug, date, time, 1)
+}
+
+/**
+ * Vérifie qu'une plage de `hours` heures à partir de `time` est disponible
+ * (tous les créneaux couverts ont au moins une place). Pour les réservations
+ * d'une heure, équivaut à `isSlotAvailable`.
+ */
+export async function isRangeAvailable(
+  activitySlug: string,
+  date: string,
+  time: string,
+  hours: number
+): Promise<boolean> {
   const slots = await getAvailability(activitySlug, date)
-  const slot = slots.find((s) => s.time === time)
-  return !!slot && slot.available > 0
+  const covered = slotsCovered(activitySlug, time, hours)
+  // Chaque créneau couvert doit exister dans la grille ET rester disponible.
+  return covered.every((slotTime) => {
+    const slot = slots.find((s) => s.time === slotTime)
+    return !!slot && slot.available > 0
+  })
 }

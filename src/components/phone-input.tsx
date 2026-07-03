@@ -42,11 +42,14 @@ function detectIso2(value: string): string | null {
 export function PhoneInput({
   name = 'phone',
   defaultIso2 = 'TH',
+  initialValue = '',
 }: {
   name?: string
   defaultIso2?: string
+  /** Valeur initiale (ex. téléphone d'un adhérent connecté). */
+  initialValue?: string
 }) {
-  const [value, setValue] = useState('')
+  const [value, setValue] = useState(initialValue)
 
   // Pays affiché : détecté depuis le « + », sinon le pays par défaut (numéro local).
   const iso2 = (value.startsWith('+') ? detectIso2(value) : null) ?? defaultIso2

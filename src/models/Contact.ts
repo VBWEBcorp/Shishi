@@ -1,7 +1,7 @@
 import mongoose, { Schema, Document } from 'mongoose'
 
 /** Origine d'un contact (un contact peut cumuler plusieurs sources). */
-export type ContactSource = 'booking' | 'contact-form' | 'newsletter' | 'manual' | 'import'
+export type ContactSource = 'booking' | 'contact-form' | 'newsletter' | 'manual' | 'import' | 'member'
 
 /**
  * Contact CRM — fiche unique par email, alimentée automatiquement par chaque
@@ -39,7 +39,7 @@ const ContactSchema = new Schema<IContact>(
     country: String,
     source: {
       type: [String],
-      enum: ['booking', 'contact-form', 'newsletter', 'manual', 'import'],
+      enum: ['booking', 'contact-form', 'newsletter', 'manual', 'import', 'member'],
       default: [],
     },
     tags: { type: [String], default: [] },

@@ -1,4 +1,4 @@
-import { ArrowRight, Check, Clock, MapPin, MessageCircle, Tag } from 'lucide-react'
+import { ArrowRight, Check, Clock, MapPin, MessageCircle, ShoppingBag, Sparkles, Tag } from 'lucide-react'
 import { getTranslations } from 'next-intl/server'
 import Image from 'next/image'
 
@@ -8,7 +8,7 @@ import { ServicesShowcase } from '@/components/sections/services-showcase'
 import { Link } from '@/i18n/navigation'
 import type { Activity, Locale } from '@/lib/activities'
 import { BOOK_NOW_PATH, CONTACT_PATH, PRICES_PATH } from '@/lib/activities'
-import { OPENING_HOURS, PRICE_TIERS } from '@/lib/booking-pricing'
+import { LAUNCH_OFFER, OPENING_HOURS, PRICE_TIERS } from '@/lib/booking-pricing'
 import { siteConfig } from '@/lib/seo'
 
 /**
@@ -33,6 +33,14 @@ export async function ServicePage({
   const highlights = service.highlights[l]
   const fmtPrice = (amount: number) =>
     `฿${amount.toLocaleString(l === 'fr' ? 'fr-FR' : 'en-US')}`
+
+  // Activité « bientôt disponible » (ex. pickleball) : aucune réservation, on
+  // affiche une section Coming Soon élégante à la place des CTA de réservation.
+  const comingSoon = !!service.comingSoon
+  const isRestaurant = service.slug === 'restaurant'
+  const launchOffer = LAUNCH_OFFER[service.slug]?.[l]
+  // Libellé demandé par le client : littéralement « Coming Soon ».
+  const comingSoonLabel = 'Coming Soon'
 
   // CTA de réservation : en ligne (Book Now) ou contact (restaurant, babysitting).
   const bookHref = service.bookable
@@ -97,22 +105,34 @@ export async function ServicePage({
             </span>
           </div>
 
-          {/* CTA au-dessus de la ligne de flottaison (audit) */}
-          <div className="mt-7 flex flex-wrap items-center gap-3">
-            <Link
-              href={bookHref}
-              className="group inline-flex h-12 items-center gap-2 rounded-full bg-accent px-6 text-sm font-semibold text-accent-foreground shadow-[0_10px_30px_-8px_oklch(0.63_0.187_47/0.55)] transition-all hover:brightness-105"
-            >
-              {bookLabel}
-              <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" aria-hidden />
-            </Link>
-            <Link
-              href={PRICES_PATH}
-              className="inline-flex h-12 items-center gap-2 rounded-full bg-white/12 px-6 text-sm font-semibold text-white ring-1 ring-white/25 backdrop-blur transition-all hover:bg-white/20"
-            >
-              <Tag className="size-4" aria-hidden /> {t('viewPrices')}
-            </Link>
-          </div>
+          {/* CTA au-dessus de la ligne de flottaison (audit) — masqués si « bientôt » */}
+          {comingSoon ? (
+            <div className="mt-7">
+              <span className="inline-flex items-center gap-2.5 rounded-full bg-accent/15 px-5 py-2.5 text-sm font-semibold uppercase tracking-[0.18em] text-accent ring-1 ring-accent/30 backdrop-blur">
+                <span className="relative flex size-2">
+                  <span className="absolute inline-flex size-full animate-ping rounded-full bg-accent opacity-75" />
+                  <span className="relative inline-flex size-2 rounded-full bg-accent" />
+                </span>
+                {comingSoonLabel}
+              </span>
+            </div>
+          ) : (
+            <div className="mt-7 flex flex-wrap items-center gap-3">
+              <Link
+                href={bookHref}
+                className="group inline-flex h-12 items-center gap-2 rounded-full bg-accent px-6 text-sm font-semibold text-accent-foreground shadow-[0_10px_30px_-8px_oklch(0.63_0.187_47/0.55)] transition-all hover:brightness-105"
+              >
+                {bookLabel}
+                <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" aria-hidden />
+              </Link>
+              <Link
+                href={PRICES_PATH}
+                className="inline-flex h-12 items-center gap-2 rounded-full bg-white/12 px-6 text-sm font-semibold text-white ring-1 ring-white/25 backdrop-blur transition-all hover:bg-white/20"
+              >
+                <Tag className="size-4" aria-hidden /> {t('viewPrices')}
+              </Link>
+            </div>
+          )}
         </div>
       </section>
 
@@ -131,6 +151,39 @@ export async function ServicePage({
             </h2>
             <p className="mt-5 text-lg leading-relaxed text-muted-foreground">{service.description[l]}</p>
 
+            {/* Mise en avant du service Take Away (restaurant) */}
+            {isRestaurant && (
+              <div className="mt-8 overflow-hidden rounded-3xl border border-accent/20 bg-gradient-to-br from-accent/[0.08] to-accent/[0.02] p-6 sm:p-7">
+                <div className="flex flex-wrap items-center gap-4">
+                  <span className="flex size-14 shrink-0 items-center justify-center rounded-2xl bg-accent text-accent-foreground shadow-[0_12px_28px_-10px_oklch(0.63_0.187_47/0.6)]">
+                    <ShoppingBag className="size-7" aria-hidden />
+                  </span>
+                  <div className="min-w-0 flex-1">
+                    <span className="text-xs font-semibold uppercase tracking-[0.2em] text-accent">
+                      Take Away
+                    </span>
+                    <h3 className="mt-1 font-editorial text-xl font-medium text-foreground sm:text-2xl">
+                      {l === 'fr' ? 'Vos plats healthy à emporter' : 'Your healthy meals to go'}
+                    </h3>
+                    <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">
+                      {l === 'fr'
+                        ? 'Commandez smoothies, bowls et assiettes feel-good à emporter. Passez commande et récupérez sur place — rapide et sans attente.'
+                        : 'Order smoothies, bowls and feel-good plates to take away. Place your order and pick it up — quick, no waiting.'}
+                    </p>
+                    <a
+                      href={waLink}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="mt-4 inline-flex h-11 items-center gap-2 rounded-full bg-accent px-5 text-sm font-semibold text-accent-foreground transition-all hover:brightness-105"
+                    >
+                      <ShoppingBag className="size-4" aria-hidden />
+                      {l === 'fr' ? 'Commander à emporter' : 'Order take away'}
+                    </a>
+                  </div>
+                </div>
+              </div>
+            )}
+
             {highlights.length > 0 && (
               <div className="mt-9 grid gap-3 sm:grid-cols-2">
                 {highlights.map((h) => (
@@ -146,42 +199,77 @@ export async function ServicePage({
           </div>
 
           <aside className="lg:sticky lg:top-24 lg:self-start">
-            <div className="rounded-3xl border border-border bg-card p-6 shadow-[0_24px_50px_-30px_oklch(0.16_0.02_55/0.35)]">
-              <span className="text-xs font-semibold uppercase tracking-[0.22em] text-accent">
-                {t('pricing')}
-              </span>
-              {hours && <p className="mt-2 text-sm font-medium text-foreground">{hours}</p>}
-              <ul className="mt-5 space-y-3">
-                {tiers.length > 0 ? (
-                  tiers.map((tier) => (
-                    <PriceRow key={tier.label[l]} label={tier.label[l]} value={fmtPrice(tier.amount)} />
-                  ))
-                ) : (
-                  <>
-                    <p className="text-sm text-muted-foreground">{t('pricingNote')}</p>
-                    <PriceRow label={t('onRequest')} hint={t('onRequestHint')} value="฿—" />
-                  </>
+            {comingSoon ? (
+              /* Carte « Bientôt disponible » — aucune réservation */
+              <div className="rounded-3xl border border-border bg-card p-7 text-center shadow-[0_24px_50px_-30px_oklch(0.16_0.02_55/0.35)]">
+                <span className="mx-auto flex size-14 items-center justify-center rounded-2xl bg-accent/10 text-accent ring-1 ring-accent/15">
+                  <Sparkles className="size-7" aria-hidden />
+                </span>
+                <p className="mt-5 font-editorial text-2xl font-normal text-foreground">{comingSoonLabel}</p>
+                <p className="mx-auto mt-2 max-w-xs text-sm text-muted-foreground">
+                  {l === 'fr'
+                    ? 'Les réservations ouvriront très bientôt. Restez informé — écrivez-nous pour être prévenu du lancement.'
+                    : 'Bookings are opening very soon. Stay in the loop — message us to be notified at launch.'}
+                </p>
+                <a
+                  href={waLink}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="mt-6 flex h-11 w-full items-center justify-center gap-2 rounded-full bg-[#25D366]/10 text-sm font-semibold text-[#1d9e4f] ring-1 ring-[#25D366]/25 transition-colors hover:bg-[#25D366]/15"
+                >
+                  <MessageCircle className="size-4" aria-hidden /> {t('whatsapp')}
+                </a>
+              </div>
+            ) : (
+              <div className="rounded-3xl border border-border bg-card p-6 shadow-[0_24px_50px_-30px_oklch(0.16_0.02_55/0.35)]">
+                <span className="text-xs font-semibold uppercase tracking-[0.22em] text-accent">
+                  {t('pricing')}
+                </span>
+                {hours && <p className="mt-2 text-sm font-medium text-foreground">{hours}</p>}
+                <ul className="mt-5 space-y-3">
+                  {tiers.length > 0 ? (
+                    tiers.map((tier) => (
+                      <PriceRow key={tier.label[l]} label={tier.label[l]} value={fmtPrice(tier.amount)} />
+                    ))
+                  ) : (
+                    <>
+                      <p className="text-sm text-muted-foreground">{t('pricingNote')}</p>
+                      <PriceRow label={t('onRequest')} hint={t('onRequestHint')} value="฿—" />
+                    </>
+                  )}
+                </ul>
+
+                {/* Offre de lancement (tennis) */}
+                {launchOffer && (
+                  <p className="mt-4 rounded-xl bg-secondary/60 px-3.5 py-3 text-xs leading-relaxed text-foreground ring-1 ring-border">
+                    {launchOffer}
+                  </p>
                 )}
-              </ul>
-              <Link
-                href={bookHref}
-                className="group mt-6 flex h-12 w-full items-center justify-center gap-2 rounded-full bg-accent text-sm font-semibold text-accent-foreground shadow-[0_10px_30px_-8px_oklch(0.63_0.187_47/0.5)] transition-all hover:brightness-105"
-              >
-                {bookLabel}
-                <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" aria-hidden />
-              </Link>
-              <a
-                href={waLink}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="mt-3 flex h-11 w-full items-center justify-center gap-2 rounded-full bg-[#25D366]/10 text-sm font-semibold text-[#1d9e4f] ring-1 ring-[#25D366]/25 transition-colors hover:bg-[#25D366]/15"
-              >
-                <MessageCircle className="size-4" aria-hidden /> {t('whatsapp')}
-              </a>
-              <p className="mt-3 text-center text-xs text-muted-foreground">
-                {service.bookable ? t('securePayment') : t('replyFast')}
-              </p>
-            </div>
+
+                <Link
+                  href={bookHref}
+                  className="group mt-6 flex h-12 w-full items-center justify-center gap-2 rounded-full bg-accent text-sm font-semibold text-accent-foreground shadow-[0_10px_30px_-8px_oklch(0.63_0.187_47/0.5)] transition-all hover:brightness-105"
+                >
+                  {isRestaurant ? (l === 'fr' ? 'Commander à emporter' : 'Order take away') : bookLabel}
+                  {isRestaurant ? (
+                    <ShoppingBag className="size-4" aria-hidden />
+                  ) : (
+                    <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" aria-hidden />
+                  )}
+                </Link>
+                <a
+                  href={waLink}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="mt-3 flex h-11 w-full items-center justify-center gap-2 rounded-full bg-[#25D366]/10 text-sm font-semibold text-[#1d9e4f] ring-1 ring-[#25D366]/25 transition-colors hover:bg-[#25D366]/15"
+                >
+                  <MessageCircle className="size-4" aria-hidden /> {t('whatsapp')}
+                </a>
+                <p className="mt-3 text-center text-xs text-muted-foreground">
+                  {service.bookable ? t('securePayment') : t('replyFast')}
+                </p>
+              </div>
+            )}
           </aside>
         </div>
       </section>
@@ -232,13 +320,15 @@ export async function ServicePage({
       <section className="border-t border-border bg-background">
         <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6 lg:px-8 lg:py-16">
           <div className="flex flex-wrap items-center gap-3">
-            <Link
-              href={bookHref}
-              className="group inline-flex h-12 items-center gap-2 rounded-full bg-accent px-6 text-sm font-semibold text-accent-foreground shadow-[0_10px_30px_-8px_oklch(0.63_0.187_47/0.5)] transition-all hover:brightness-105"
-            >
-              {bookLabel}
-              <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" aria-hidden />
-            </Link>
+            {!comingSoon && (
+              <Link
+                href={bookHref}
+                className="group inline-flex h-12 items-center gap-2 rounded-full bg-accent px-6 text-sm font-semibold text-accent-foreground shadow-[0_10px_30px_-8px_oklch(0.63_0.187_47/0.5)] transition-all hover:brightness-105"
+              >
+                {isRestaurant ? (l === 'fr' ? 'Commander à emporter' : 'Order take away') : bookLabel}
+                <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" aria-hidden />
+              </Link>
+            )}
             <Link
               href={PRICES_PATH}
               className="inline-flex h-12 items-center gap-2 rounded-full border border-border px-6 text-sm font-semibold text-foreground transition-colors hover:border-accent/40"

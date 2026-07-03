@@ -1,9 +1,9 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import Image from 'next/image'
 import { AnimatePresence, motion } from 'framer-motion'
-import { CalendarCheck, CalendarSearch, Check, Loader2, Mail, MessageCircle, Plus, Trash2, Users, Wallet } from 'lucide-react'
+import { CalendarCheck, CalendarSearch, Check, Loader2, Mail, MessageCircle, Minus, Plus, Sparkles, Ticket, Trash2, Users, Wallet } from 'lucide-react'
 import { useLocale, useTranslations } from 'next-intl'
 import { useSearchParams } from 'next/navigation'
 
@@ -17,10 +17,37 @@ import { DEFAULT_ISO2 } from '@/lib/country-codes'
 import type { Locale } from '@/i18n/routing'
 import { activities } from '@/lib/activities'
 import { isBookable, isDayPass } from '@/lib/availability'
-import { getActivityPrice, isPricePerPerson } from '@/lib/booking-pricing'
+import {
+  getActivityPrice,
+  getUnitLabel,
+  isPricePerPerson,
+  supportsHours,
+  MAX_BOOKING_HOURS,
+  LAUNCH_OFFER,
+} from '@/lib/booking-pricing'
+import { PUBLIC_ADVANCE_DAYS } from '@/lib/membership-plans'
 import { siteConfig } from '@/lib/seo'
 
-type Status = 'idle' | 'submitting' | 'request-received' | 'error'
+/** Session adhérent minimale (avantages + pré-remplissage de l'identité). */
+interface MemberInfo {
+  name: string
+  email: string
+  phone: string
+  plan: string
+  credits: number
+  creditsValid: boolean
+  discountRate: number
+  advanceDays: number
+}
+
+/** yyyy-mm-dd d'une date locale, sans dérive de fuseau. */
+function dateKey(d: Date): string {
+  const m = String(d.getMonth() + 1).padStart(2, '0')
+  const day = String(d.getDate()).padStart(2, '0')
+  return `${d.getFullYear()}-${m}-${day}`
+}
+
+type Status = 'idle' | 'submitting' | 'request-received' | 'paid' | 'error'
 
 interface Slot {
   time: string
@@ -67,6 +94,46 @@ export function BookingForm({
   const [status, setStatus] = useState<Status>('idle')
   const [errorMsg, setErrorMsg] = useState('')
 
+  // Nombre d'heures (activités à durée variable, ex. Kids Club).
+  const [hours, setHours] = useState(1)
+  // Session adhérent : avantages appliqués automatiquement (crédits + remise).
+  const [member, setMember] = useState<MemberInfo | null>(null)
+
+  // Identité du client (contrôlée) : pré-remplie pour un adhérent connecté.
+  const [custName, setCustName] = useState('')
+  const [custEmail, setCustEmail] = useState('')
+  const [custPhone, setCustPhone] = useState('')
+  // Un adhérent connecté voit un récapitulatif « Vous réservez en tant que… » ;
+  // il peut l'ouvrir pour modifier ses infos avant de réserver.
+  const [editIdentity, setEditIdentity] = useState(false)
+
+  // Récupère la session adhérent (best-effort) : avantages + pré-remplissage.
+  useEffect(() => {
+    let cancelled = false
+    fetch('/api/member/me', { cache: 'no-store' })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => {
+        if (cancelled || !d?.member) return
+        const m = d.member as MemberInfo
+        setMember(m)
+        // Pré-remplit l'identité (sans écraser une saisie déjà commencée).
+        setCustName((v) => v || m.name || '')
+        setCustEmail((v) => v || m.email || '')
+        setCustPhone((v) => v || m.phone || '')
+      })
+      .catch(() => {})
+    return () => {
+      cancelled = true
+    }
+  }, [])
+
+  // Retour de paiement Stripe (?payment=success|cancelled) sur la page.
+  useEffect(() => {
+    if (variant !== 'page') return
+    const p = params.get('payment')
+    if (p === 'success') setStatus('paid')
+  }, [variant, params])
+
   // Réservation pour plusieurs personnes : participants additionnels (hors titulaire).
   const [participants, setParticipants] = useState<Participant[]>([])
   const addParticipant = () =>
@@ -80,14 +147,40 @@ export function BookingForm({
   // Accès à la journée (salle de sport, piscine) : pas d'horaires, un seul choix.
   const dayPass = activitySlug ? isDayPass(activitySlug) : false
 
-  // Prix : tarif unitaire + total selon le nombre de participants.
+  // Prix : tarif unitaire + total selon participants, heures et avantages membre.
   const fr = locale === 'fr'
   const unitPrice = activitySlug ? getActivityPrice(activitySlug) : 0
   const perPerson = activitySlug ? isPricePerPerson(activitySlug) : false
+  const hasHours = activitySlug ? supportsHours(activitySlug) : false
+  const effectiveHours = hasHours ? hours : 1
   const partySize = 1 + participants.length
-  const total = perPerson ? unitPrice * partySize : unitPrice
-  const unitWord = dayPass ? (fr ? 'jour' : 'day') : fr ? 'heure' : 'hour'
+  const baseTotal = perPerson ? unitPrice * partySize : unitPrice
+  const grossTotal = hasHours ? baseTotal * effectiveHours : baseTotal
+  const unitWord =
+    (activitySlug && getUnitLabel(activitySlug, locale)) ||
+    (dayPass ? (fr ? 'jour' : 'day') : fr ? 'heure' : 'hour')
   const fmtPrice = (n: number) => n.toLocaleString(fr ? 'fr-FR' : 'en-GB')
+
+  // Avantages adhérent : crédits (1 crédit = 1 h) puis remise automatique.
+  const isMember = !!member && member.plan !== 'none'
+  const creditsNeeded = effectiveHours
+  const useCredits = isMember && member!.creditsValid && member!.credits >= creditsNeeded
+  const discountRate = isMember ? member!.discountRate : 0
+  const netTotal = useCredits ? 0 : Math.round(grossTotal * (1 - discountRate))
+  const advanceDays = member?.advanceDays ?? PUBLIC_ADVANCE_DAYS
+
+  // Date maximale réservable (fenêtre : 10 j membre, sinon défaut public).
+  const maxKey = useMemo(() => {
+    if (!today) return ''
+    const d = new Date(`${today}T12:00:00`)
+    d.setDate(d.getDate() + advanceDays)
+    return dateKey(d)
+  }, [today, advanceDays])
+
+  // L'activité change → on réinitialise la durée à 1 h.
+  useEffect(() => {
+    setHours(1)
+  }, [activitySlug])
 
   // Synchronise l'activité/date du formulaire quand l'URL change
   // (clic sur un panel « Que souhaitez-vous réserver ? » → ?activity=…).
@@ -145,18 +238,24 @@ export function BookingForm({
       setStatus('error')
       return
     }
+    if (!custName.trim() || !custEmail.trim()) {
+      setErrorMsg(fr ? 'Merci d’indiquer votre nom et votre email.' : 'Please enter your name and email.')
+      setStatus('error')
+      return
+    }
     const form = e.currentTarget
     const fd = new FormData(form)
     const payload = {
       activitySlug,
       date,
       time: selectedTime,
-      name: String(fd.get('name') || ''),
-      email: String(fd.get('email') || ''),
+      name: custName.trim(),
+      email: custEmail.trim(),
       phone: String(fd.get('phone') || ''),
       phoneCountry: String(fd.get('phoneCountry') || ''),
       notes: String(fd.get('notes') || ''),
       newsletterOptIn: fd.get('newsletterOptIn') === 'on',
+      hours: effectiveHours,
       participants: participants
         .map((pp) => ({ name: pp.name.trim(), email: pp.email.trim(), phone: pp.phone.trim() }))
         .filter((pp) => pp.name && pp.email),
@@ -184,9 +283,17 @@ export function BookingForm({
         throw new Error(data.error || 'request-failed')
       }
 
-      // Plus de paiement en ligne : la demande est enregistrée, on confirme par email.
-      setStatus('request-received')
+      // Paiement en ligne Stripe : on redirige vers la page de paiement sécurisée.
+      if (data.url) {
+        window.location.href = data.url as string
+        return
+      }
+
+      // Réservation réglée par crédits (membre) → confirmée ; sinon demande
+      // enregistrée (paiement sur place / confirmation par email).
+      setStatus(data.paid ? 'paid' : 'request-received')
       setParticipants([])
+      setHours(1)
       form.reset()
     } catch (err) {
       setErrorMsg(err instanceof Error ? err.message : 'error')
@@ -216,7 +323,7 @@ export function BookingForm({
           </div>
         </div>
 
-        {status === 'request-received' ? (
+        {status === 'request-received' || status === 'paid' ? (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -266,12 +373,47 @@ export function BookingForm({
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.32 }}
             >
-              <p className="font-display text-xl font-semibold text-foreground">{t('bookedTitle')}</p>
-              <p className="mx-auto mt-1.5 max-w-xs text-sm text-muted-foreground">{t('bookedText')}</p>
+              <p className="font-display text-xl font-semibold text-foreground">
+                {status === 'paid'
+                  ? fr ? 'Réservation confirmée' : 'Booking confirmed'
+                  : t('bookedTitle')}
+              </p>
+              <p className="mx-auto mt-1.5 max-w-xs text-sm text-muted-foreground">
+                {status === 'paid'
+                  ? fr
+                    ? 'Merci ! Votre paiement est validé et votre créneau est confirmé. Un email de confirmation vous a été envoyé.'
+                    : 'Thank you! Your payment is confirmed and your slot is booked. A confirmation email is on its way.'
+                  : t('bookedText')}
+              </p>
             </motion.div>
           </motion.div>
         ) : (
           <form className="mt-6 space-y-5" onSubmit={handleSubmit}>
+            {/* Paiement annulé (retour Stripe) */}
+            {variant === 'page' && params.get('payment') === 'cancelled' && (
+              <div className="rounded-xl bg-amber-500/10 px-4 py-3 text-sm text-amber-800 ring-1 ring-amber-500/20">
+                {fr
+                  ? 'Paiement annulé — votre créneau n’a pas été réservé. Vous pouvez réessayer ci-dessous.'
+                  : 'Payment cancelled — your slot was not booked. You can try again below.'}
+              </div>
+            )}
+
+            {/* Bandeau adhérent connecté : avantages appliqués automatiquement */}
+            {isMember && (
+              <div className="flex flex-wrap items-center gap-2.5 rounded-xl bg-ocean/[0.06] px-4 py-3 ring-1 ring-ocean/15">
+                <Sparkles className="size-4 text-ocean" aria-hidden />
+                <span className="text-sm font-medium text-foreground">
+                  {fr ? 'Avantages adhérent actifs' : 'Member benefits active'}
+                </span>
+                <span className="text-xs text-muted-foreground">
+                  {member!.creditsValid && member!.credits > 0
+                    ? `${member!.credits} ${fr ? 'crédits' : 'credits'} · `
+                    : ''}
+                  {Math.round(member!.discountRate * 100)}% {fr ? 'de remise' : 'off'} · {member!.advanceDays} {fr ? 'j à l’avance' : 'days ahead'}
+                </span>
+              </div>
+            )}
+
             <div className="grid gap-5 sm:grid-cols-2">
               <div className="space-y-2">
                 <Label htmlFor="activitySlug">{t('fActivity')}</Label>
@@ -282,6 +424,7 @@ export function BookingForm({
                   locale={locale}
                   variant="field"
                   placeholder={t('fActivityPlaceholder')}
+                  bookableOnly
                 />
               </div>
               <div className="space-y-2">
@@ -293,6 +436,7 @@ export function BookingForm({
                   locale={locale}
                   variant="field"
                   placeholder={t('fDate')}
+                  maxKey={maxKey}
                 />
               </div>
             </div>
@@ -312,6 +456,47 @@ export function BookingForm({
                     {perPerson ? (fr ? ' · par pers.' : ' · per person') : ''}
                   </span>
                 </span>
+              </div>
+            )}
+
+            {/* Offre de lancement (tennis) — en attendant les abonnements */}
+            {bookable && activitySlug && LAUNCH_OFFER[activitySlug] && (
+              <div className="flex items-start gap-2.5 rounded-xl bg-secondary/60 px-4 py-3 ring-1 ring-border">
+                <Sparkles className="mt-0.5 size-4 shrink-0 text-accent" aria-hidden />
+                <p className="text-sm text-foreground">{LAUNCH_OFFER[activitySlug][locale]}</p>
+              </div>
+            )}
+
+            {/* Nombre d'heures (Kids Club) — le prix se met à jour automatiquement */}
+            {bookable && activitySlug && hasHours && (
+              <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-border bg-background/50 px-4 py-3">
+                <span className="inline-flex items-center gap-2 text-sm font-medium text-foreground">
+                  <CalendarCheck className="size-4 text-accent" aria-hidden />
+                  {fr ? 'Nombre d’heures' : 'Number of hours'}
+                </span>
+                <div className="flex items-center gap-3">
+                  <button
+                    type="button"
+                    aria-label={fr ? 'Moins' : 'Less'}
+                    onClick={() => setHours((h) => Math.max(1, h - 1))}
+                    disabled={hours <= 1}
+                    className="flex size-8 items-center justify-center rounded-full border border-border text-foreground transition-colors hover:bg-muted disabled:opacity-40"
+                  >
+                    <Minus className="size-4" aria-hidden />
+                  </button>
+                  <span className="w-10 text-center font-semibold text-foreground">
+                    {hours} h
+                  </span>
+                  <button
+                    type="button"
+                    aria-label={fr ? 'Plus' : 'More'}
+                    onClick={() => setHours((h) => Math.min(MAX_BOOKING_HOURS, h + 1))}
+                    disabled={hours >= MAX_BOOKING_HOURS}
+                    className="flex size-8 items-center justify-center rounded-full border border-border text-foreground transition-colors hover:bg-muted disabled:opacity-40"
+                  >
+                    <Plus className="size-4" aria-hidden />
+                  </button>
+                </div>
               </div>
             )}
 
@@ -469,14 +654,40 @@ export function BookingForm({
 
             {bookable && (
               <>
+                {/* Vos coordonnées — pré-remplies pour un adhérent connecté */}
+                {isMember && (
+                  <div className="flex items-start gap-2 rounded-lg bg-ocean/[0.06] px-3 py-2 text-xs text-muted-foreground ring-1 ring-ocean/15">
+                    <Sparkles className="mt-0.5 size-3.5 shrink-0 text-ocean" aria-hidden />
+                    {fr
+                      ? 'Vos informations sont pré-remplies depuis votre compte — modifiez-les si besoin.'
+                      : 'Your details are prefilled from your account — edit them if needed.'}
+                  </div>
+                )}
                 <div className="grid gap-5 sm:grid-cols-2">
                   <div className="space-y-2">
                     <Label htmlFor="name">{t('fName')}</Label>
-                    <Input id="name" name="name" required autoComplete="name" className={inputCls} />
+                    <Input
+                      id="name"
+                      name="name"
+                      value={custName}
+                      onChange={(e) => setCustName(e.target.value)}
+                      required
+                      autoComplete="name"
+                      className={inputCls}
+                    />
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="email">{t('fEmail')}</Label>
-                    <Input id="email" name="email" type="email" required autoComplete="email" className={inputCls} />
+                    <Input
+                      id="email"
+                      name="email"
+                      type="email"
+                      value={custEmail}
+                      onChange={(e) => setCustEmail(e.target.value)}
+                      required
+                      autoComplete="email"
+                      className={inputCls}
+                    />
                   </div>
                 </div>
 
@@ -484,7 +695,11 @@ export function BookingForm({
                   <Label>
                     {t('fPhone')} <span className="font-normal text-muted-foreground">({t('optional')})</span>
                   </Label>
-                  <PhoneInput defaultIso2={DEFAULT_ISO2[locale]} />
+                  <PhoneInput
+                    key={custPhone || 'nophone'}
+                    defaultIso2={DEFAULT_ISO2[locale]}
+                    initialValue={custPhone}
+                  />
                 </div>
 
                 {/* Réservation pour plusieurs personnes */}
@@ -575,18 +790,55 @@ export function BookingForm({
                   </span>
                 </label>
 
-                {/* Total indicatif (paiement sur place) */}
+                {/* Total : sous-total, remise / crédits membre, net à payer */}
                 {bookable && activitySlug && (
                   <div className="rounded-xl border border-accent/20 bg-accent/[0.04] px-4 py-3">
+                    {(useCredits || discountRate > 0 || (hasHours && effectiveHours > 1)) && (
+                      <div className="mb-2 space-y-1 border-b border-border/60 pb-2 text-sm">
+                        <div className="flex justify-between text-muted-foreground">
+                          <span>
+                            {fr ? 'Sous-total' : 'Subtotal'}
+                            {hasHours && effectiveHours > 1 ? ` · ${effectiveHours} h` : ''}
+                          </span>
+                          <span>{fmtPrice(grossTotal)} ฿</span>
+                        </div>
+                        {useCredits ? (
+                          <div className="flex justify-between font-medium text-ocean">
+                            <span className="inline-flex items-center gap-1">
+                              <Ticket className="size-3.5" aria-hidden />
+                              {fr ? 'Crédits utilisés' : 'Credits used'}
+                            </span>
+                            <span>
+                              −{creditsNeeded} {fr ? 'crédit' : 'credit'}{creditsNeeded > 1 ? 's' : ''}
+                            </span>
+                          </div>
+                        ) : discountRate > 0 ? (
+                          <div className="flex justify-between font-medium text-ocean">
+                            <span>
+                              {fr ? 'Remise membre' : 'Member discount'} ({Math.round(discountRate * 100)}%)
+                            </span>
+                            <span>−{fmtPrice(grossTotal - netTotal)} ฿</span>
+                          </div>
+                        ) : null}
+                      </div>
+                    )}
                     <div className="flex items-center justify-between gap-3">
                       <span className="text-sm text-muted-foreground">
-                        {fr ? 'Total indicatif' : 'Estimated total'} ·{' '}
+                        {fr ? 'Total' : 'Total'} ·{' '}
                         {partySize} {fr ? (partySize > 1 ? 'personnes' : 'personne') : partySize > 1 ? 'people' : 'person'}
                       </span>
-                      <span className="font-display text-lg font-bold text-foreground">{fmtPrice(total)} ฿</span>
+                      <span className="font-display text-lg font-bold text-foreground">
+                        {useCredits ? (fr ? 'Inclus' : 'Included') : `${fmtPrice(netTotal)} ฿`}
+                      </span>
                     </div>
                     <p className="mt-1 text-[11px] text-muted-foreground">
-                      {fr ? 'Paiement sur place, aucun paiement en ligne.' : 'Payment on site, no online payment.'}
+                      {useCredits
+                        ? fr
+                          ? 'Réglé avec vos crédits adhérent.'
+                          : 'Covered by your member credits.'
+                        : fr
+                          ? 'Paiement en ligne sécurisé à l’étape suivante.'
+                          : 'Secure online payment at the next step.'}
                     </p>
                   </div>
                 )}
@@ -602,6 +854,10 @@ export function BookingForm({
                       {t('fSubmitting')}
                       <Loader2 className="size-4 animate-spin" aria-hidden />
                     </>
+                  ) : useCredits ? (
+                    fr ? 'Confirmer avec mes crédits' : 'Confirm with credits'
+                  ) : netTotal > 0 ? (
+                    fr ? 'Payer et réserver' : 'Pay & book'
                   ) : (
                     t('fSubmit')
                   )}

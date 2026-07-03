@@ -9,6 +9,7 @@ import { FaqSection } from '@/components/sections/faq-section'
 import { PhotoShowcase } from '@/components/sections/photo-showcase'
 import { ShishiHero } from '@/components/sections/shishi-hero'
 import { StorySection, ValuesBand } from '@/components/sections/shishi-home'
+import { TestimonialsSection } from '@/components/sections/testimonials-section'
 import { Reveal } from '@/components/reveal'
 import {
   localBusinessJsonLd,
@@ -102,6 +103,7 @@ export default async function HomePage({
           <Reveal><ExperienceGallery /></Reveal>
           <Reveal><ValuesBand /></Reveal>
           <Reveal><StorySection /></Reveal>
+          <Reveal><TestimonialsSection /></Reveal>
           <FaqSection />
           <Reveal><PhotoShowcase /></Reveal>
         </>

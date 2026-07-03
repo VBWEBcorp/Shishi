@@ -49,6 +49,7 @@ export function DatePopover({
   locale,
   variant = 'bar',
   placeholder,
+  maxKey,
 }: {
   value: string
   today: string
@@ -57,6 +58,8 @@ export function DatePopover({
   /** `bar` = barre de recherche du hero · `field` = champ de formulaire bordé. */
   variant?: 'bar' | 'field'
   placeholder?: string
+  /** Date maximale réservable « yyyy-mm-dd » (fenêtre de réservation). */
+  maxKey?: string
 }) {
   const [open, setOpen] = useState(false)
   const ref = useRef<HTMLDivElement>(null)
@@ -230,18 +233,20 @@ export function DatePopover({
               if (!d) return <span key={`e${i}`} />
               const key = toKey(d)
               const isPast = key < todayKey
+              const isBeyondMax = !!maxKey && key > maxKey
+              const disabled = isPast || isBeyondMax
               const isSelected = key === value
               const isTodayCell = key === todayKey
               return (
                 <button
                   key={key}
                   type="button"
-                  disabled={isPast}
+                  disabled={disabled}
                   onClick={() => pick(d)}
                   className={cn(
                     'flex aspect-square items-center justify-center rounded-xl text-sm font-medium transition-colors',
-                    isPast && 'cursor-default text-muted-foreground/35',
-                    !isPast && !isSelected && 'text-foreground hover:bg-secondary/70',
+                    disabled && 'cursor-default text-muted-foreground/35',
+                    !disabled && !isSelected && 'text-foreground hover:bg-secondary/70',
                     isSelected && 'bg-foreground text-background',
                     !isSelected && isTodayCell && 'ring-1 ring-accent/60'
                   )}

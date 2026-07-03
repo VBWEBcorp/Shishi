@@ -34,6 +34,11 @@ export function RootWrapper({ children }: { children: React.ReactNode }) {
     return children
   }
 
+  // Page de connexion adhérent : design plein écran immersif (pas de chrome).
+  if (pathname?.endsWith('/member/login')) {
+    return <main className="min-h-dvh">{children}</main>
+  }
+
   // Tant que le site n'est pas lancé : l'accueil = « Coming Soon » plein écran,
   // sans navbar/footer/bannières. Une fois lancé (LAUNCHED), l'accueil reçoit
   // l'habillage complet comme toutes les autres pages.
