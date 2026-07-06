@@ -3,10 +3,26 @@ import { connectDB } from '@/lib/db'
 import { GalleryImage } from '@/models/Gallery'
 import { verifyAuth } from '@/lib/auth'
 
-// GET all gallery images (public - only active)
-export async function GET() {
+// GET gallery images.
+//  · Public (défaut) : seulement les médias actifs, réponse mise en cache.
+//  · Admin (`?all=1` + token) : TOUS les médias (y compris désactivés), sans
+//    cache — indispensable pour que l'admin puisse réactiver/supprimer un média
+//    qu'il vient de masquer.
+export async function GET(request: NextRequest) {
   try {
     await connectDB()
+
+    const wantAll = new URL(request.url).searchParams.get('all') === '1'
+    if (wantAll) {
+      const { authenticated, user } = await verifyAuth(request)
+      if (authenticated && user?.role === 'admin') {
+        const images = await GalleryImage.find()
+          .sort({ order: 1, createdAt: -1 })
+          .lean()
+        return NextResponse.json(images, { headers: { 'Cache-Control': 'no-store' } })
+      }
+    }
+
     const images = await GalleryImage.find({ active: true })
       .sort({ order: 1 })
       .lean()

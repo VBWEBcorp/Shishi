@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import { Suspense } from 'react'
 import { setRequestLocale } from 'next-intl/server'
 
 import { MemberAuth } from './member-auth'
@@ -15,5 +16,9 @@ export default async function MemberLoginPage({
 }) {
   const { locale } = await params
   setRequestLocale(locale)
-  return <MemberAuth />
+  return (
+    <Suspense fallback={null}>
+      <MemberAuth />
+    </Suspense>
+  )
 }

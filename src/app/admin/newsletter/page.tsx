@@ -196,6 +196,8 @@ export default function AdminNewsletterPage() {
         const cap = data.capped ? ` · ${data.capped} au-delà de la limite du jour` : ''
         setResult({ ok: true, text: `${data.sent} email(s) envoyé(s)${extra}${cap}.` })
       }
+    } catch {
+      setResult({ ok: false, text: 'Erreur réseau — envoi impossible. Réessayez.' })
     } finally {
       setSending(false)
     }

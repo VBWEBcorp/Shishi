@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import Image from 'next/image'
 import { AnimatePresence, motion } from 'framer-motion'
-import { CalendarCheck, CalendarSearch, Check, Loader2, Mail, MessageCircle, Minus, Plus, Sparkles, Ticket, Trash2, Users, Wallet } from 'lucide-react'
+import { ArrowRight, CalendarCheck, CalendarSearch, Check, Loader2, Mail, MessageCircle, Minus, Plus, Sparkles, Ticket, Trash2, Users, Wallet } from 'lucide-react'
 import { useLocale, useTranslations } from 'next-intl'
 import { useSearchParams } from 'next/navigation'
 
@@ -14,6 +14,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { PhoneInput } from '@/components/phone-input'
 import { DEFAULT_ISO2 } from '@/lib/country-codes'
+import { Link, usePathname } from '@/i18n/navigation'
 import type { Locale } from '@/i18n/routing'
 import { activities } from '@/lib/activities'
 import { isBookable, isDayPass } from '@/lib/availability'
@@ -28,15 +29,13 @@ import {
 import { PUBLIC_ADVANCE_DAYS } from '@/lib/membership-plans'
 import { siteConfig } from '@/lib/seo'
 
-/** Session adhérent minimale (avantages + pré-remplissage de l'identité). */
+/** Session adhérent minimale (crédits + pré-remplissage de l'identité). */
 interface MemberInfo {
   name: string
   email: string
   phone: string
-  plan: string
-  credits: number
-  creditsValid: boolean
-  discountRate: number
+  /** Crédits PAR ACTIVITÉ (1 crédit = 1 h / 1 accès de l'activité). */
+  activityCredits: { activity: string; credits: number; monthly: number; renewAt: string | null }[]
   advanceDays: number
 }
 
@@ -68,16 +67,28 @@ export function BookingForm({
   initialActivity,
   initialDate,
   variant = 'page',
+  bare = false,
+  onActivityChange,
 }: {
   /** Pré-remplissage direct (utilisé par le popup d'accueil). Prioritaire sur l'URL. */
   initialActivity?: string
   initialDate?: string
   /** `dialog` = rendu dans le popup (pas de scroll auto, pas de bandeaux d'URL). */
   variant?: 'page' | 'dialog'
+  /** Notifié à chaque changement d'activité (ex. fond réactif du widget). */
+  onActivityChange?: (slug: string) => void
+  /**
+   * Style « épuré » (sans carte/bordure propre, padding réduit) — pour intégrer
+   * le formulaire dans un conteneur qui fournit déjà la carte (widget de la page
+   * /book-now). Découplé du `variant` : on garde ainsi les comportements « page »
+   * (pré-remplissage + scroll via l'URL) avec le rendu du popup.
+   */
+  bare?: boolean
 } = {}) {
   const t = useTranslations('Booking')
   const locale = useLocale() as Locale
   const params = useSearchParams()
+  const pathname = usePathname()
 
   // Pré-remplissage : props (popup) prioritaires, sinon l'URL (page /book-now).
   const presetActivity = initialActivity ?? params.get('activity') ?? ''
@@ -98,9 +109,13 @@ export function BookingForm({
   const [hours, setHours] = useState(1)
   // Session adhérent : avantages appliqués automatiquement (crédits + remise).
   const [member, setMember] = useState<MemberInfo | null>(null)
+  // Session vérifiée (évite le flash du bandeau « connectez-vous » avant la réponse).
+  const [memberChecked, setMemberChecked] = useState(false)
 
   // Identité du client (contrôlée) : pré-remplie pour un adhérent connecté.
-  const [custName, setCustName] = useState('')
+  // Prénom + nom séparés (recombinés en `name` complet à l'envoi).
+  const [custFirstName, setCustFirstName] = useState('')
+  const [custLastName, setCustLastName] = useState('')
   const [custEmail, setCustEmail] = useState('')
   const [custPhone, setCustPhone] = useState('')
   // Un adhérent connecté voit un récapitulatif « Vous réservez en tant que… » ;
@@ -117,22 +132,27 @@ export function BookingForm({
         const m = d.member as MemberInfo
         setMember(m)
         // Pré-remplit l'identité (sans écraser une saisie déjà commencée).
-        setCustName((v) => v || m.name || '')
+        // Le compte ne stocke qu'un nom complet : 1er mot = prénom, reste = nom.
+        const [mFirst = '', ...mRest] = (m.name || '').trim().split(/\s+/)
+        setCustFirstName((v) => v || mFirst)
+        setCustLastName((v) => v || mRest.join(' '))
         setCustEmail((v) => v || m.email || '')
         setCustPhone((v) => v || m.phone || '')
       })
       .catch(() => {})
+      .finally(() => {
+        if (!cancelled) setMemberChecked(true)
+      })
     return () => {
       cancelled = true
     }
   }, [])
 
-  // Retour de paiement Stripe (?payment=success|cancelled) sur la page.
+  // Remonte l'activité courante au parent (fond réactif du widget) — au montage
+  // (activité pré-remplie via l'URL/props) puis à chaque changement.
   useEffect(() => {
-    if (variant !== 'page') return
-    const p = params.get('payment')
-    if (p === 'success') setStatus('paid')
-  }, [variant, params])
+    onActivityChange?.(activitySlug)
+  }, [activitySlug, onActivityChange])
 
   // Réservation pour plusieurs personnes : participants additionnels (hors titulaire).
   const [participants, setParticipants] = useState<Participant[]>([])
@@ -144,8 +164,17 @@ export function BookingForm({
     setParticipants((list) => list.map((x, idx) => (idx === i ? { ...x, [field]: value } : x)))
 
   const bookable = activitySlug ? isBookable(activitySlug) : true
+  // Activité « bientôt disponible » (ex. pickleball, travaux en cours) : on
+  // affiche un état Coming Soon, SANS orientation WhatsApp/contact — pour ne pas
+  // laisser croire qu'on peut la réserver en écrivant directement.
+  const comingSoon = activitySlug
+    ? !!activities.find((a) => a.slug === activitySlug)?.comingSoon
+    : false
   // Accès à la journée (salle de sport, piscine) : pas d'horaires, un seul choix.
   const dayPass = activitySlug ? isDayPass(activitySlug) : false
+  // Fitness : même mécanique qu'un pass journée, mais facturé « à la séance »
+  // (demande client : « par séance, et non par journée »). La piscine reste « journée ».
+  const sessionPass = dayPass && !!activitySlug && getUnitLabel(activitySlug, 'en') === 'session'
 
   // Prix : tarif unitaire + total selon participants, heures et avantages membre.
   const fr = locale === 'fr'
@@ -161,13 +190,17 @@ export function BookingForm({
     (dayPass ? (fr ? 'jour' : 'day') : fr ? 'heure' : 'hour')
   const fmtPrice = (n: number) => n.toLocaleString(fr ? 'fr-FR' : 'en-GB')
 
-  // Avantages adhérent : crédits (1 crédit = 1 h) puis remise automatique.
-  const isMember = !!member && member.plan !== 'none'
+  // Crédits adhérent : miroir du serveur. Le portefeuille de l'activité
+  // choisie couvre la durée → réservation déduite automatiquement (gratuite).
   const creditsNeeded = effectiveHours
-  const useCredits = isMember && member!.creditsValid && member!.credits >= creditsNeeded
-  const discountRate = isMember ? member!.discountRate : 0
-  const netTotal = useCredits ? 0 : Math.round(grossTotal * (1 - discountRate))
+  const activityWallet = member?.activityCredits?.find((w) => w.activity === activitySlug)
+  const walletCredits = activityWallet?.credits ?? 0
+  const useCredits = !!member && walletCredits >= creditsNeeded
+  const netTotal = useCredits ? 0 : grossTotal
   const advanceDays = member?.advanceDays ?? PUBLIC_ADVANCE_DAYS
+  const activityName = activitySlug
+    ? activities.find((a) => a.slug === activitySlug)?.name[locale] ?? activitySlug
+    : ''
 
   // Date maximale réservable (fenêtre : 10 j membre, sinon défaut public).
   const maxKey = useMemo(() => {
@@ -238,18 +271,23 @@ export function BookingForm({
       setStatus('error')
       return
     }
-    if (!custName.trim() || !custEmail.trim()) {
-      setErrorMsg(fr ? 'Merci d’indiquer votre nom et votre email.' : 'Please enter your name and email.')
+    if (!custFirstName.trim() || !custLastName.trim() || !custEmail.trim()) {
+      setErrorMsg(
+        fr
+          ? 'Merci d’indiquer votre prénom, votre nom et votre email.'
+          : 'Please enter your first name, last name and email.'
+      )
       setStatus('error')
       return
     }
+    const fullName = `${custFirstName.trim()} ${custLastName.trim()}`.trim()
     const form = e.currentTarget
     const fd = new FormData(form)
     const payload = {
       activitySlug,
       date,
       time: selectedTime,
-      name: custName.trim(),
+      name: fullName,
       email: custEmail.trim(),
       phone: String(fd.get('phone') || ''),
       phoneCountry: String(fd.get('phoneCountry') || ''),
@@ -283,12 +321,6 @@ export function BookingForm({
         throw new Error(data.error || 'request-failed')
       }
 
-      // Paiement en ligne Stripe : on redirige vers la page de paiement sécurisée.
-      if (data.url) {
-        window.location.href = data.url as string
-        return
-      }
-
       // Réservation réglée par crédits (membre) → confirmée ; sinon demande
       // enregistrée (paiement sur place / confirmation par email).
       setStatus(data.paid ? 'paid' : 'request-received')
@@ -308,7 +340,7 @@ export function BookingForm({
     <div id="booking-form" className={variant === 'page' ? 'scroll-mt-24' : ''}>
       <div
         className={
-          variant === 'dialog'
+          variant === 'dialog' || bare
             ? 'p-6 sm:p-7'
             : 'rounded-2xl border border-border bg-card p-6 sm:p-8'
         }
@@ -381,38 +413,55 @@ export function BookingForm({
               <p className="mx-auto mt-1.5 max-w-xs text-sm text-muted-foreground">
                 {status === 'paid'
                   ? fr
-                    ? 'Merci ! Votre paiement est validé et votre créneau est confirmé. Un email de confirmation vous a été envoyé.'
-                    : 'Thank you! Your payment is confirmed and your slot is booked. A confirmation email is on its way.'
+                    ? 'Merci ! Votre réservation est confirmée (réglée avec vos crédits). Un email de confirmation vous a été envoyé.'
+                    : 'Thank you! Your booking is confirmed (paid with your credits). A confirmation email is on its way.'
                   : t('bookedText')}
               </p>
             </motion.div>
           </motion.div>
         ) : (
           <form className="mt-6 space-y-5" onSubmit={handleSubmit}>
-            {/* Paiement annulé (retour Stripe) */}
-            {variant === 'page' && params.get('payment') === 'cancelled' && (
-              <div className="rounded-xl bg-amber-500/10 px-4 py-3 text-sm text-amber-800 ring-1 ring-amber-500/20">
-                {fr
-                  ? 'Paiement annulé — votre créneau n’a pas été réservé. Vous pouvez réessayer ci-dessous.'
-                  : 'Payment cancelled — your slot was not booked. You can try again below.'}
-              </div>
-            )}
-
-            {/* Bandeau adhérent connecté : avantages appliqués automatiquement */}
-            {isMember && (
-              <div className="flex flex-wrap items-center gap-2.5 rounded-xl bg-ocean/[0.06] px-4 py-3 ring-1 ring-ocean/15">
-                <Sparkles className="size-4 text-ocean" aria-hidden />
+            {/* Bandeau crédits : état limpide pour l'activité choisie */}
+            {member ? (
+              activitySlug && walletCredits > 0 ? (
+                <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1 rounded-xl bg-ocean/[0.06] px-4 py-3 ring-1 ring-ocean/15">
+                  <Ticket className="size-4 shrink-0 text-ocean" aria-hidden />
+                  <span className="text-sm font-medium text-foreground">
+                    {walletCredits} {fr ? 'crédits' : 'credits'} {activityName}
+                  </span>
+                  <span className="text-xs text-muted-foreground">
+                    {useCredits
+                      ? fr
+                        ? `Cette réservation en utilisera ${creditsNeeded} — rien à payer.`
+                        : `This booking will use ${creditsNeeded} — nothing to pay.`
+                      : fr
+                        ? `Il en faut ${creditsNeeded} pour couvrir cette réservation.`
+                        : `${creditsNeeded} needed to cover this booking.`}
+                  </span>
+                </div>
+              ) : null
+            ) : memberChecked ? (
+              /* Invité : les crédits ne sont déduits que si l'adhérent est connecté.
+                 On l'invite à se connecter, avec retour sur cette page après login. */
+              <Link
+                href={{ pathname: '/member/login', query: { redirect: pathname } }}
+                className="flex flex-wrap items-center gap-x-2.5 gap-y-1 rounded-xl bg-secondary/60 px-4 py-3 ring-1 ring-border transition-colors hover:bg-secondary"
+              >
+                <Ticket className="size-4 shrink-0 text-accent" aria-hidden />
                 <span className="text-sm font-medium text-foreground">
-                  {fr ? 'Avantages adhérent actifs' : 'Member benefits active'}
+                  {fr ? 'Vous avez des crédits ?' : 'Have credits?'}
                 </span>
                 <span className="text-xs text-muted-foreground">
-                  {member!.creditsValid && member!.credits > 0
-                    ? `${member!.credits} ${fr ? 'crédits' : 'credits'} · `
-                    : ''}
-                  {Math.round(member!.discountRate * 100)}% {fr ? 'de remise' : 'off'} · {member!.advanceDays} {fr ? 'j à l’avance' : 'days ahead'}
+                  {fr
+                    ? 'Connectez-vous : ils seront déduits automatiquement.'
+                    : 'Sign in: they’ll be deducted automatically.'}
                 </span>
-              </div>
-            )}
+                <span className="ml-auto inline-flex items-center gap-1 whitespace-nowrap text-xs font-semibold text-accent">
+                  {fr ? 'Se connecter' : 'Sign in'}
+                  <ArrowRight className="size-3.5" aria-hidden />
+                </span>
+              </Link>
+            ) : null}
 
             <div className="grid gap-5 sm:grid-cols-2">
               <div className="space-y-2">
@@ -500,9 +549,26 @@ export function BookingForm({
               </div>
             )}
 
-            {/* Activité non réservable en ligne (pickleball en travaux, restaurant…) :
-                pas de créneaux — on oriente vers WhatsApp ou la page Contact. */}
-            {activitySlug && !bookable && (
+            {/* Activité « bientôt disponible » (pickleball en travaux) : état
+                Coming Soon, aucune réservation ni orientation WhatsApp — pour ne
+                pas laisser croire qu'on peut la réserver en contactant le club. */}
+            {activitySlug && comingSoon && (
+              <div className="rounded-2xl bg-secondary/50 px-5 py-6 text-center ring-1 ring-border">
+                <span className="mx-auto inline-flex items-center gap-2 rounded-full bg-accent/15 px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.18em] text-accent ring-1 ring-accent/25">
+                  <span className="relative flex size-2">
+                    <span className="absolute inline-flex size-full animate-ping rounded-full bg-accent opacity-75" />
+                    <span className="relative inline-flex size-2 rounded-full bg-accent" />
+                  </span>
+                  Coming Soon
+                </span>
+                <p className="mt-3 text-sm font-semibold text-foreground">{t('comingSoonTitle')}</p>
+                <p className="mx-auto mt-1.5 max-w-sm text-sm text-muted-foreground">{t('comingSoonText')}</p>
+              </div>
+            )}
+
+            {/* Activité non réservable en ligne (restaurant…) : pas de créneaux —
+                on oriente vers WhatsApp ou la page Contact. */}
+            {activitySlug && !bookable && !comingSoon && (
               <div className="rounded-2xl bg-secondary/50 px-5 py-6 text-center ring-1 ring-border">
                 <p className="text-sm font-semibold text-foreground">{t('notBookableTitle')}</p>
                 <p className="mx-auto mt-1.5 max-w-sm text-sm text-muted-foreground">{t('notBookableText')}</p>
@@ -528,7 +594,7 @@ export function BookingForm({
             {/* Créneaux temps réel */}
             {bookable && activitySlug && date && (
               <div className="space-y-2.5">
-                <Label>{dayPass ? t('fDayAccess') : t('fSlot')}</Label>
+                <Label>{dayPass ? (sessionPass ? t('fSession') : t('fDayAccess')) : t('fSlot')}</Label>
                 <AnimatePresence mode="wait" initial={false}>
                   {loadingSlots ? (
                     <motion.p
@@ -594,7 +660,7 @@ export function BookingForm({
                                 <CalendarCheck className="size-4" aria-hidden />
                               </span>
                               <span>
-                                <span className="block text-sm font-semibold text-foreground">{t('dayAccessTitle')}</span>
+                                <span className="block text-sm font-semibold text-foreground">{sessionPass ? t('sessionTitle') : t('dayAccessTitle')}</span>
                                 <span className="block text-xs text-muted-foreground">
                                   {day.available} {t('placesLeft')}
                                 </span>
@@ -655,7 +721,7 @@ export function BookingForm({
             {bookable && (
               <>
                 {/* Vos coordonnées — pré-remplies pour un adhérent connecté */}
-                {isMember && (
+                {member && (
                   <div className="flex items-start gap-2 rounded-lg bg-ocean/[0.06] px-3 py-2 text-xs text-muted-foreground ring-1 ring-ocean/15">
                     <Sparkles className="mt-0.5 size-3.5 shrink-0 text-ocean" aria-hidden />
                     {fr
@@ -665,18 +731,30 @@ export function BookingForm({
                 )}
                 <div className="grid gap-5 sm:grid-cols-2">
                   <div className="space-y-2">
-                    <Label htmlFor="name">{t('fName')}</Label>
+                    <Label htmlFor="firstName">{t('fFirstName')}</Label>
                     <Input
-                      id="name"
-                      name="name"
-                      value={custName}
-                      onChange={(e) => setCustName(e.target.value)}
+                      id="firstName"
+                      name="firstName"
+                      value={custFirstName}
+                      onChange={(e) => setCustFirstName(e.target.value)}
                       required
-                      autoComplete="name"
+                      autoComplete="given-name"
                       className={inputCls}
                     />
                   </div>
                   <div className="space-y-2">
+                    <Label htmlFor="lastName">{t('fLastName')}</Label>
+                    <Input
+                      id="lastName"
+                      name="lastName"
+                      value={custLastName}
+                      onChange={(e) => setCustLastName(e.target.value)}
+                      required
+                      autoComplete="family-name"
+                      className={inputCls}
+                    />
+                  </div>
+                  <div className="space-y-2 sm:col-span-2">
                     <Label htmlFor="email">{t('fEmail')}</Label>
                     <Input
                       id="email"
@@ -790,10 +868,10 @@ export function BookingForm({
                   </span>
                 </label>
 
-                {/* Total : sous-total, remise / crédits membre, net à payer */}
+                {/* Récap : sous-total, crédits utilisés, montant à régler sur place (aucun paiement en ligne) */}
                 {bookable && activitySlug && (
                   <div className="rounded-xl border border-accent/20 bg-accent/[0.04] px-4 py-3">
-                    {(useCredits || discountRate > 0 || (hasHours && effectiveHours > 1)) && (
+                    {(useCredits || (hasHours && effectiveHours > 1)) && (
                       <div className="mb-2 space-y-1 border-b border-border/60 pb-2 text-sm">
                         <div className="flex justify-between text-muted-foreground">
                           <span>
@@ -802,29 +880,25 @@ export function BookingForm({
                           </span>
                           <span>{fmtPrice(grossTotal)} ฿</span>
                         </div>
-                        {useCredits ? (
+                        {useCredits && (
                           <div className="flex justify-between font-medium text-ocean">
                             <span className="inline-flex items-center gap-1">
                               <Ticket className="size-3.5" aria-hidden />
-                              {fr ? 'Crédits utilisés' : 'Credits used'}
+                              {fr ? `Crédits ${activityName}` : `${activityName} credits`}
                             </span>
                             <span>
                               −{creditsNeeded} {fr ? 'crédit' : 'credit'}{creditsNeeded > 1 ? 's' : ''}
                             </span>
                           </div>
-                        ) : discountRate > 0 ? (
-                          <div className="flex justify-between font-medium text-ocean">
-                            <span>
-                              {fr ? 'Remise membre' : 'Member discount'} ({Math.round(discountRate * 100)}%)
-                            </span>
-                            <span>−{fmtPrice(grossTotal - netTotal)} ฿</span>
-                          </div>
-                        ) : null}
+                        )}
                       </div>
                     )}
                     <div className="flex items-center justify-between gap-3">
                       <span className="text-sm text-muted-foreground">
-                        {fr ? 'Total' : 'Total'} ·{' '}
+                        {useCredits
+                          ? fr ? 'Total' : 'Total'
+                          : fr ? 'À régler sur place' : 'Payable on-site'}
+                        {' · '}
                         {partySize} {fr ? (partySize > 1 ? 'personnes' : 'personne') : partySize > 1 ? 'people' : 'person'}
                       </span>
                       <span className="font-display text-lg font-bold text-foreground">
@@ -834,11 +908,11 @@ export function BookingForm({
                     <p className="mt-1 text-[11px] text-muted-foreground">
                       {useCredits
                         ? fr
-                          ? 'Réglé avec vos crédits adhérent.'
-                          : 'Covered by your member credits.'
+                          ? `Réglé avec vos crédits ${activityName}. Rien à payer.`
+                          : `Covered by your ${activityName} credits. Nothing to pay.`
                         : fr
-                          ? 'Paiement en ligne sécurisé à l’étape suivante.'
-                          : 'Secure online payment at the next step.'}
+                          ? 'Vous réservez, sans payer en ligne. Le règlement se fait sur place. Nous confirmons par email.'
+                          : 'You reserve now, no online payment. You pay on-site. We’ll confirm by email.'}
                     </p>
                   </div>
                 )}
@@ -856,8 +930,6 @@ export function BookingForm({
                     </>
                   ) : useCredits ? (
                     fr ? 'Confirmer avec mes crédits' : 'Confirm with credits'
-                  ) : netTotal > 0 ? (
-                    fr ? 'Payer et réserver' : 'Pay & book'
                   ) : (
                     t('fSubmit')
                   )}

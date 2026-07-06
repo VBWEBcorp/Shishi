@@ -1,4 +1,6 @@
-import mongoose, { Schema, Document } from 'mongoose'
+import { Schema, Document } from 'mongoose'
+
+import { registerModel } from '@/lib/register-model'
 
 export type BookingStatus = 'pending' | 'paid' | 'cancelled' | 'failed'
 
@@ -22,9 +24,9 @@ export interface IBooking extends Document {
   stripeSessionId?: string
   /** Adhérent à l'origine de la réservation (si connecté). */
   memberId?: string
-  /** Crédits d'abonnement débités pour cette réservation. */
+  /** Crédits (par activité) débités pour cette réservation. */
   creditsUsed?: number
-  /** Taux de remise adhérent appliqué (0 = aucune). */
+  /** Taux de remise adhérent appliqué (0 = aucune) — historique, plus attribué. */
   discountRate?: number
   /** Langue dans laquelle la réservation a été faite (emails dans cette langue). */
   locale?: 'en' | 'fr'
@@ -76,5 +78,4 @@ const BookingSchema = new Schema<IBooking>(
   { timestamps: true }
 )
 
-export const Booking =
-  mongoose.models.Booking || mongoose.model<IBooking>('Booking', BookingSchema)
+export const Booking = registerModel<IBooking>('Booking', BookingSchema)

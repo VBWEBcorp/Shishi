@@ -244,6 +244,11 @@ function FullscreenMenu({
                             Signature
                           </span>
                         )}
+                        {a.comingSoon && (
+                          <span className="rounded-full bg-accent/15 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-accent ring-1 ring-accent/25">
+                            Coming Soon
+                          </span>
+                        )}
                         <span className="ml-auto hidden truncate text-sm text-white/45 md:block">
                           {a.tagline[locale]}
                         </span>

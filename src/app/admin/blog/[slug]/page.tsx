@@ -67,7 +67,10 @@ export default function BlogPostEditor({ params }: { params: Promise<{ slug: str
     if (isNew) return
     const fetchPost = async () => {
       try {
-        const response = await fetch(`/api/blog/posts/${slug}`)
+        const token = localStorage.getItem('authToken')
+        const response = await fetch(`/api/blog/posts/${slug}`, {
+          headers: token ? { Authorization: `Bearer ${token}` } : {},
+        })
         if (response.ok) {
           const data = await response.json()
           setPost(data)
@@ -104,10 +107,12 @@ export default function BlogPostEditor({ params }: { params: Promise<{ slug: str
     setSaving(true)
     try {
       const token = localStorage.getItem('authToken')
-      const slug = post.slug || generateSlug(post.title)
+      const newSlug = post.slug || generateSlug(post.title)
       const tags = tagsInput.split(',').map((t) => t.trim()).filter(Boolean)
-      const body = { ...post, slug, tags }
+      const body = { ...post, slug: newSlug, tags }
 
+      // Le PUT cible le slug D'ORIGINE (param de route) ; le nouveau slug voyage
+      // dans le body. Sinon, renommer le slug pointe vers une URL inexistante → 404.
       const url = isNew ? '/api/blog/posts' : `/api/blog/posts/${slug}`
       const method = isNew ? 'POST' : 'PUT'
 
@@ -126,6 +131,12 @@ export default function BlogPostEditor({ params }: { params: Promise<{ slug: str
           router.push(`/admin/blog/${saved.slug}`)
         } else {
           setPost(saved)
+          setTagsInput(saved.tags?.join(', ') || '')
+          // Slug renommé : on aligne la route sur le nouveau slug pour que la
+          // prochaine sauvegarde cible le bon document.
+          if (saved.slug && saved.slug !== slug) {
+            router.replace(`/admin/blog/${saved.slug}`)
+          }
         }
       } else {
         const err = await response.json()

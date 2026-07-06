@@ -60,16 +60,20 @@ export default function AdminGalleryPage() {
   useEffect(() => {
     const fetchData = async () => {
       try {
+        const token = localStorage.getItem('authToken')
+        const authHeader: HeadersInit = token ? { Authorization: `Bearer ${token}` } : {}
         const [settingsRes, imagesRes] = await Promise.all([
           fetch('/api/gallery/settings'),
-          fetch('/api/gallery/images'),
+          // `?all=1` : l'admin voit AUSSI les médias désactivés (sinon impossible
+          // de les réactiver/supprimer). no-store pour toujours refléter la base.
+          fetch('/api/gallery/images?all=1', { headers: authHeader, cache: 'no-store' }),
         ])
 
         const settingsData = await settingsRes.json()
         const imagesData = await imagesRes.json()
 
         setSettings(settingsData)
-        setImages(imagesData)
+        setImages(Array.isArray(imagesData) ? imagesData : [])
       } catch (error) {
         console.error('Failed to load gallery:', error)
       } finally {

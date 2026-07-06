@@ -29,7 +29,7 @@ export async function GET(request: NextRequest) {
         .lean(),
     ])
 
-    const items = (recent as Array<Record<string, unknown>>).map((b) => ({
+    const items = recent.map((b) => ({
       _id: String(b._id),
       name: b.name ?? '',
       activityName: b.activityName ?? '',

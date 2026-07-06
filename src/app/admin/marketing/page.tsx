@@ -96,7 +96,10 @@ export default function AdminMarketingPage() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await fetch('/api/marketing')
+        // no-store : l'API /api/marketing est mise en cache pour le site public ;
+        // sans ça, l'éditeur pourrait recharger une version périmée juste après
+        // une sauvegarde et laisser croire qu'elle n'a pas été prise en compte.
+        const res = await fetch('/api/marketing', { cache: 'no-store' })
         const data = await res.json()
         setSettings({
           ...defaultSettings,
@@ -125,12 +128,21 @@ export default function AdminMarketingPage() {
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
         body: JSON.stringify(settings),
       })
+      if (res.status === 401) {
+        localStorage.removeItem('authToken')
+        router.push('/admin/login')
+        return
+      }
       if (res.ok) {
         setSaved(true)
         setTimeout(() => setSaved(false), 2500)
+      } else {
+        const data = await res.json().catch(() => ({}))
+        alert(data.error || 'Échec de la sauvegarde')
       }
     } catch (error) {
       console.error('Save error:', error)
+      alert('Erreur réseau lors de la sauvegarde')
     } finally {
       setSaving(false)
     }

@@ -1,4 +1,6 @@
-import mongoose, { Schema, Document } from 'mongoose'
+import { Schema, Document } from 'mongoose'
+
+import { registerModel } from '@/lib/register-model'
 
 export interface IMarketingPopup extends Document {
   enabled: boolean
@@ -73,5 +75,4 @@ const MarketingPopupSchema = new Schema<IMarketingPopup>(
   }
 )
 
-export const MarketingPopup = mongoose.models.MarketingPopup ||
-  mongoose.model<IMarketingPopup>('MarketingPopup', MarketingPopupSchema)
+export const MarketingPopup = registerModel<IMarketingPopup>('MarketingPopup', MarketingPopupSchema)

@@ -1,13 +1,12 @@
 'use client'
 
 import { AnimatePresence, motion } from 'framer-motion'
-import { MapPin, X } from 'lucide-react'
-import { useTranslations } from 'next-intl'
-import Image from 'next/image'
+import { X } from 'lucide-react'
 import { Suspense, useEffect, useState } from 'react'
 import { createPortal } from 'react-dom'
 
 import { BookingForm } from '@/app/[locale]/book-now/booking-form'
+import { BookingVisualPanel, activityBackground } from '@/components/booking-visual-panel'
 
 /**
  * Popup de réservation — réutilise le formulaire de /book-now (créneaux + coordonnées),
@@ -28,12 +27,14 @@ export function BookingDialog({
   activity?: string
   date?: string
 }) {
-  const t = useTranslations('Booking')
-
   // Rendu via portal sur <body> : la popup est déclarée dans le hero (qui a
   // `isolate`), donc sans portal son z-index resterait piégé sous la navbar.
   const [mounted, setMounted] = useState(false)
   useEffect(() => setMounted(true), [])
+
+  // Fond réactif : activité courante (init depuis la prop, resync à l'ouverture).
+  const [activeSlug, setActiveSlug] = useState(activity || '')
+  useEffect(() => setActiveSlug(activity || ''), [activity])
 
   // Verrouille le scroll de la page tant que le popup est ouvert.
   useEffect(() => {
@@ -92,45 +93,18 @@ export function BookingDialog({
             </button>
 
             <div className="grid lg:grid-cols-[0.82fr_1fr]">
-              {/* Panneau visuel — DA home (sombre, photo, accent orange). Desktop only. */}
-              <div className="relative hidden flex-col justify-between overflow-hidden bg-foreground p-8 text-white lg:flex">
-                <Image
-                  src="/photos/pool.jpg"
-                  alt=""
-                  fill
-                  sizes="40vw"
-                  className="object-cover opacity-70"
-                />
-                <div
-                  className="absolute inset-0 bg-gradient-to-b from-[oklch(0.16_0_0/0.35)] via-[oklch(0.16_0_0/0.55)] to-[oklch(0.13_0_0/0.92)]"
-                  aria-hidden
-                />
-
-                <div className="relative">
-                  <span className="inline-flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.28em] text-accent">
-                    <span className="size-1.5 rotate-45 bg-accent" aria-hidden />
-                    {t('eyebrow')}
-                  </span>
-                </div>
-
-                <div className="relative">
-                  <h2 className="font-editorial text-[2rem] font-normal leading-[1.08] tracking-[-0.01em] text-white">
-                    {t('title')}
-                  </h2>
-                  <p className="mt-3 max-w-xs text-sm leading-relaxed text-white/75">
-                    {t('subtitle')}
-                  </p>
-                  <p className="mt-6 inline-flex items-center gap-1.5 text-sm text-white/60">
-                    <MapPin className="size-4" aria-hidden />
-                    Lamai · Koh Samui
-                  </p>
-                </div>
-              </div>
+              {/* Panneau visuel — fond réactif selon l'activité choisie. Desktop only. */}
+              <BookingVisualPanel image={activityBackground(activeSlug)} />
 
               {/* Formulaire */}
               <div className="max-h-[85vh] overflow-y-auto overflow-x-hidden">
                 <Suspense fallback={null}>
-                  <BookingForm initialActivity={activity} initialDate={date} variant="dialog" />
+                  <BookingForm
+                    initialActivity={activity}
+                    initialDate={date}
+                    variant="dialog"
+                    onActivityChange={setActiveSlug}
+                  />
                 </Suspense>
               </div>
             </div>

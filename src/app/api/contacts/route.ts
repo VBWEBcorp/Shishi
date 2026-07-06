@@ -37,7 +37,7 @@ export async function GET(request: NextRequest) {
     const [contacts, total, optin, unsub] = await Promise.all([
       Contact.find(query).sort({ updatedAt: -1 }).limit(1000).lean(),
       Contact.countDocuments({}),
-      Contact.countDocuments({ newsletterOptIn: true, unsubscribedAt: { $in: [null, undefined] } }),
+      Contact.countDocuments({ newsletterOptIn: true, unsubscribedAt: { $in: [null] } }),
       Contact.countDocuments({ unsubscribedAt: { $ne: null } }),
     ])
 

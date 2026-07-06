@@ -23,7 +23,7 @@ export function FieldEditor({ label, value, onChange, type = 'text', placeholder
       </Label>
       {type === 'textarea' ? (
         <textarea
-          value={value}
+          value={value ?? ''}
           onChange={(e) => onChange(e.target.value)}
           placeholder={placeholder}
           rows={3}
@@ -31,7 +31,7 @@ export function FieldEditor({ label, value, onChange, type = 'text', placeholder
         />
       ) : (
         <Input
-          value={value}
+          value={value ?? ''}
           onChange={(e) => onChange(e.target.value)}
           placeholder={placeholder}
           type={type === 'url' ? 'url' : 'text'}
@@ -194,7 +194,7 @@ export function ImageField({ label, value, onChange }: ImageFieldProps) {
                   Cliquez ou glissez une image ici
                 </span>
                 <span className="text-xs text-muted-foreground/60">
-                  JPG, PNG, WebP, GIF - max 5 Mo
+                  JPG, PNG, WebP, GIF - max 10 Mo
                 </span>
               </>
             )}

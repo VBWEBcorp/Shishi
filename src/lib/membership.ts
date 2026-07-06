@@ -1,34 +1,46 @@
 import 'server-only'
 import { connectDB } from '@/lib/db'
-import User from '@/models/User'
-import { getPlan, PUBLIC_ADVANCE_DAYS } from '@/lib/membership-plans'
+import User, { type IActivityCredit } from '@/models/User'
+import { MEMBER_ADVANCE_DAYS, PUBLIC_ADVANCE_DAYS } from '@/lib/membership-plans'
 
 /**
- * Système d'abonnement à CRÉDITS mensuels (Phase 2) — logique SERVEUR.
+ * Système de CRÉDITS PAR ACTIVITÉ — logique SERVEUR.
  *
- *  · Chaque abonnement octroie un nombre de crédits valables 1 mois.
- *  · Les crédits non utilisés sont perdus au renouvellement (remise à zéro).
- *  · 1 crédit = 1 heure de réservation.
- *  · L'adhérent bénéficie d'une remise automatique (10 % à 30 %) sur les
- *    paiements et d'une réservation jusqu'à 10 jours à l'avance.
- *
- * Les données PURES des formules vivent dans `membership-plans.ts` (partagées
- * avec le client). ⚠️ Grille provisoire — à remplacer par la grille officielle.
+ *  · Chaque crédit est PROPRE à une activité (ex. crédits tennis) :
+ *    1 crédit = 1 h (ou 1 accès) de cette activité, non transférable.
+ *  · L'admin attribue les crédits lors du passage au club (paiement sur
+ *    place) : en ponctuel (valables 1 mois, perdus à l'expiration) ou en
+ *    recharge AUTOMATIQUE mensuelle (le solde repart à N chaque mois).
+ *  · À la réservation, si le portefeuille de l'activité couvre la durée, la
+ *    réservation est gratuite et les crédits sont débités. Sinon : plein
+ *    tarif, paiement sur place.
+ *  · Un adhérent connecté peut réserver jusqu'à 10 jours à l'avance
+ *    (3 jours pour le public).
  */
 
-export {
-  MEMBER_PLANS,
-  PAID_PLANS,
-  getPlan,
-  PUBLIC_ADVANCE_DAYS,
-  MEMBER_ADVANCE_DAYS,
-  type MembershipPlanConfig,
-} from '@/lib/membership-plans'
+export { MEMBER_ADVANCE_DAYS, PUBLIC_ADVANCE_DAYS } from '@/lib/membership-plans'
 
-/** Les crédits sont-ils encore valides (période non expirée) ? */
-export function creditsValid(renewAt?: Date | null): boolean {
-  if (!renewAt) return true
-  return new Date(renewAt).getTime() > Date.now()
+/** Durée d'une période de crédits (mois glissant). */
+export const CREDIT_PERIOD_MS = 30 * 24 * 60 * 60 * 1000
+
+/**
+ * État COURANT d'un portefeuille d'activité, rollover appliqué (pur, sans
+ * écriture). Période expirée : `monthly` > 0 → le solde repart à `monthly`
+ * sur la période suivante ; sinon les crédits sont perdus.
+ */
+export function effectiveWallet(
+  w: IActivityCredit,
+  now = Date.now()
+): { credits: number; renewAt: Date | null } {
+  const renewAt = w.renewAt ? new Date(w.renewAt) : null
+  // Période encore valide (ou crédits sans échéance) → solde tel quel.
+  if (!renewAt || renewAt.getTime() > now) return { credits: Math.max(0, w.credits || 0), renewAt }
+  // Expirée sans automatique → plus rien.
+  if (!(w.monthly > 0)) return { credits: 0, renewAt }
+  // Automatique : avance de périodes de 30 j jusqu'à retomber dans le futur.
+  const next = new Date(renewAt)
+  while (next.getTime() <= now) next.setTime(next.getTime() + CREDIT_PERIOD_MS)
+  return { credits: w.monthly, renewAt: next }
 }
 
 export interface MemberRef {
@@ -37,12 +49,10 @@ export interface MemberRef {
 }
 
 export interface MemberBenefits {
-  /** Montant restant à payer après remise / crédits. */
+  /** Montant restant à payer (0 si couvert par les crédits). */
   amountDue: number
   /** Crédits qui seront débités pour cette réservation. */
   creditsUsed: number
-  /** Taux de remise appliqué (0 si aucun). */
-  discountRate: number
   /** Fenêtre de réservation à l'avance autorisée (jours). */
   advanceBookingDays: number
   /** Débite réellement les crédits de l'adhérent (à appeler après création). */
@@ -52,16 +62,15 @@ export interface MemberBenefits {
 const NO_BENEFITS = (baseAmount: number): MemberBenefits => ({
   amountDue: baseAmount,
   creditsUsed: 0,
-  discountRate: 0,
   advanceBookingDays: PUBLIC_ADVANCE_DAYS,
   commitCredits: async () => {},
 })
 
 /**
  * Calcule les avantages appliqués à une réservation pour un adhérent connecté.
- * Priorité aux crédits : si l'adhérent a assez de crédits valides pour couvrir
- * la durée, la réservation est gratuite (crédits débités) ; sinon on applique
- * la remise de son abonnement au montant à payer.
+ * Si le portefeuille de l'activité réservée couvre la durée (1 crédit = 1 h),
+ * la réservation est gratuite et les crédits sont débités ; sinon plein tarif
+ * (paiement sur place). Tout adhérent connecté réserve 10 j à l'avance.
  */
 export async function resolveMemberBenefits(opts: {
   member: MemberRef | null
@@ -70,38 +79,45 @@ export async function resolveMemberBenefits(opts: {
   partySize: number
   baseAmount: number
 }): Promise<MemberBenefits> {
-  const { member, hours, baseAmount } = opts
+  const { member, activitySlug, hours, baseAmount } = opts
   if (!member?.id) return NO_BENEFITS(baseAmount)
 
   await connectDB()
-  const user = await User.findById(member.id).select('plan credits renewAt')
-  if (!user || user.plan === 'none') return NO_BENEFITS(baseAmount)
+  const user = await User.findById(member.id).select('activityCredits')
+  if (!user) return NO_BENEFITS(baseAmount)
 
-  const plan = getPlan(user.plan)
-  const valid = creditsValid(user.renewAt)
-  const available = valid ? Math.max(0, user.credits || 0) : 0
   const creditsNeeded = Math.max(1, Math.floor(hours) || 1)
+  const wallet = (user.activityCredits || []).find((w) => w.activity === activitySlug)
 
-  // Assez de crédits → réservation couverte par les crédits.
-  if (available >= creditsNeeded) {
-    return {
-      amountDue: 0,
-      creditsUsed: creditsNeeded,
-      discountRate: plan.discountRate,
-      advanceBookingDays: plan.advanceDays,
-      commitCredits: async () => {
-        await User.findByIdAndUpdate(member.id, { $inc: { credits: -creditsNeeded } })
-      },
+  if (wallet) {
+    const eff = effectiveWallet(wallet)
+    if (eff.credits >= creditsNeeded) {
+      return {
+        amountDue: 0,
+        creditsUsed: creditsNeeded,
+        advanceBookingDays: MEMBER_ADVANCE_DAYS,
+        commitCredits: async () => {
+          // Persiste l'état APRÈS rollover puis débit (positionnel sur l'activité).
+          await User.updateOne(
+            { _id: member.id, 'activityCredits.activity': activitySlug },
+            {
+              $set: {
+                'activityCredits.$.credits': eff.credits - creditsNeeded,
+                'activityCredits.$.renewAt': eff.renewAt ?? undefined,
+              },
+            }
+          )
+        },
+      }
     }
   }
 
-  // Sinon : remise membre sur le montant à payer.
-  const amountDue = Math.round(baseAmount * (1 - plan.discountRate))
+  // Pas (assez) de crédits pour cette activité : plein tarif, mais fenêtre
+  // de réservation membre conservée.
   return {
-    amountDue,
+    amountDue: baseAmount,
     creditsUsed: 0,
-    discountRate: plan.discountRate,
-    advanceBookingDays: plan.advanceDays,
+    advanceBookingDays: MEMBER_ADVANCE_DAYS,
     commitCredits: async () => {},
   }
 }

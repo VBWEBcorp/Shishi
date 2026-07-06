@@ -133,7 +133,7 @@ export default function AdminBlogPage() {
       const response = await fetch(`/api/blog/posts/${post.slug}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-        body: JSON.stringify({ ...post, published: !post.published }),
+        body: JSON.stringify({ published: !post.published }),
       })
       if (response.ok) {
         setPosts(posts.map((p) => p.slug === post.slug ? { ...p, published: !p.published } : p))

@@ -67,6 +67,15 @@ export function ActivityTiles() {
                   className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.06]"
                   priority={i < 3}
                 />
+                {a.comingSoon && (
+                  <span className="absolute left-3 top-3 z-10 inline-flex items-center gap-1.5 rounded-full bg-foreground/75 px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.14em] text-white backdrop-blur-sm sm:left-4 sm:top-4">
+                    <span className="relative flex size-1.5">
+                      <span className="absolute inline-flex size-full animate-ping rounded-full bg-accent opacity-80" />
+                      <span className="relative inline-flex size-1.5 rounded-full bg-accent" />
+                    </span>
+                    Coming Soon
+                  </span>
+                )}
                 <span className="absolute right-3 top-3 grid size-9 place-items-center rounded-full bg-white/90 text-foreground shadow-sm backdrop-blur-sm transition-all duration-300 group-hover:bg-accent group-hover:text-white sm:right-4 sm:top-4 sm:size-11">
                   <ArrowUpRight className="size-4 transition-transform duration-300 group-hover:rotate-45 sm:size-5" aria-hidden />
                 </span>
@@ -75,15 +84,23 @@ export function ActivityTiles() {
               {/* Texte en dessous */}
               <div className="mt-3 px-0.5 sm:mt-4 sm:px-1">
                 <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
-                  {a.featured && (
+                  {a.comingSoon ? (
                     <span className="rounded-full bg-accent/10 px-2 py-0.5 text-[9px] font-bold uppercase tracking-[0.1em] text-accent sm:px-2.5 sm:text-[10px] sm:tracking-[0.12em]">
-                      {t('signature')}
+                      Coming Soon
                     </span>
-                  )}
-                  {info && (
-                    <span className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground sm:text-xs">
-                      {info}
-                    </span>
+                  ) : (
+                    <>
+                      {a.featured && (
+                        <span className="rounded-full bg-accent/10 px-2 py-0.5 text-[9px] font-bold uppercase tracking-[0.1em] text-accent sm:px-2.5 sm:text-[10px] sm:tracking-[0.12em]">
+                          {t('signature')}
+                        </span>
+                      )}
+                      {info && (
+                        <span className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground sm:text-xs">
+                          {info}
+                        </span>
+                      )}
+                    </>
                   )}
                 </div>
 

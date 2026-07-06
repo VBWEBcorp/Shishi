@@ -2,6 +2,7 @@
 
 import { motion } from 'framer-motion'
 import {
+  BadgePercent,
   BarChart3,
   CalendarDays,
   CalendarRange,
@@ -9,6 +10,7 @@ import {
   ChevronLeft,
   ChevronRight,
   Clock,
+  CreditCard,
   Inbox,
   LayoutGrid,
   Mail,
@@ -16,6 +18,7 @@ import {
   RefreshCw,
   Search,
   Table2,
+  Ticket,
   TrendingUp,
   Trash2,
   User,
@@ -55,6 +58,14 @@ interface Booking {
   partySize?: number
   participants?: { name: string; email: string; phone?: string }[]
   status: 'pending' | 'paid' | 'cancelled' | 'failed'
+  /** Adhérent à l'origine de la réservation (compte membre) — sinon client de passage. */
+  memberId?: string
+  /** Crédits (par activité) débités pour cette réservation. */
+  creditsUsed?: number
+  /** Remise adhérent appliquée (0.10 = 10 %). */
+  discountRate?: number
+  /** Langue de la réservation. */
+  locale?: 'en' | 'fr'
   createdAt: string
 }
 
@@ -119,6 +130,44 @@ function activityIconName(slug: string): string {
 /** Horaire affiché : « Accès journée » pour les pass journée, sinon heure + durée. */
 function scheduleLabel(b: Booking): string {
   return isDayPass(b.activitySlug) ? 'Accès journée' : `${b.time} · ${b.duration} min`
+}
+
+/** Montant à encaisser : « Crédits » si couvert par les crédits du membre, sinon prix en ฿. */
+function priceLabel(b: Booking): string {
+  const amount = b.amount ?? 0
+  if (amount <= 0 && (b.creditsUsed ?? 0) > 0) return 'Crédits'
+  return `฿${amount.toLocaleString('fr-FR')}`
+}
+
+/** A-t-on une info « membre » à afficher (compte, crédits ou remise) ? */
+function hasMemberInfo(b: Booking): boolean {
+  return Boolean(b.memberId) || (b.creditsUsed ?? 0) > 0 || (b.discountRate ?? 0) > 0
+}
+
+/** Badges membre / crédits débités / remise adhérent — pour distinguer des clients de passage. */
+function MemberInfo({ b }: { b: Booking }) {
+  const credits = b.creditsUsed ?? 0
+  const discount = b.discountRate ?? 0
+  if (!hasMemberInfo(b)) return null
+  return (
+    <div className="mt-2 flex flex-wrap items-center gap-1.5">
+      {b.memberId && (
+        <span className="inline-flex items-center gap-1 rounded-full bg-ocean/10 px-2 py-0.5 text-[11px] font-semibold text-ocean ring-1 ring-inset ring-ocean/25">
+          <CreditCard className="size-3" aria-hidden /> Membre
+        </span>
+      )}
+      {credits > 0 && (
+        <span className="inline-flex items-center gap-1 rounded-full bg-accent/10 px-2 py-0.5 text-[11px] font-semibold text-accent ring-1 ring-inset ring-accent/20">
+          <Ticket className="size-3" aria-hidden /> {credits} crédit{credits > 1 ? 's' : ''}
+        </span>
+      )}
+      {discount > 0 && (
+        <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 px-2 py-0.5 text-[11px] font-semibold text-emerald-700 ring-1 ring-inset ring-emerald-500/25 dark:text-emerald-300">
+          <BadgePercent className="size-3" aria-hidden /> −{Math.round(discount * 100)}%
+        </span>
+      )}
+    </div>
+  )
 }
 
 /** yyyy-mm-dd en heure locale (sans dérive de fuseau). */
@@ -328,6 +377,7 @@ export default function AdminBookingsPage() {
   const stats = useMemo(() => {
     const data = allBookings ?? []
     let paid = 0, pending = 0, cancelled = 0, failed = 0, revenue = 0
+    let memberCount = 0, creditsUsed = 0
     const actMap = new Map<string, { slug: string; name: string; count: number; revenue: number }>()
     const weekday = [0, 0, 0, 0, 0, 0, 0] // lundi → dimanche
     const hourMap = new Map<number, number>()
@@ -337,6 +387,9 @@ export default function AdminBookingsPage() {
       else if (b.status === 'pending') pending++
       else if (b.status === 'cancelled') cancelled++
       else if (b.status === 'failed') failed++
+
+      if (b.memberId) memberCount++
+      creditsUsed += b.creditsUsed || 0
 
       const a = actMap.get(b.activitySlug) ?? { slug: b.activitySlug, name: b.activityName, count: 0, revenue: 0 }
       a.count++
@@ -354,6 +407,7 @@ export default function AdminBookingsPage() {
     return {
       total: data.length,
       paid, pending, cancelled, failed, revenue,
+      memberCount, creditsUsed,
       avg: paid ? Math.round(revenue / paid) : 0,
       confirmRate: data.length ? Math.round((paid / data.length) * 100) : 0,
       activities,
@@ -390,7 +444,7 @@ export default function AdminBookingsPage() {
               <Users className="size-3.5" aria-hidden /> {b.partySize} pers.
             </span>
           )}
-          <span className="ml-auto font-semibold text-foreground">฿{b.amount.toLocaleString('fr-FR')}</span>
+          <span className="ml-auto font-semibold text-foreground">{priceLabel(b)}</span>
         </div>
 
         <div className="mt-3 border-t border-border/60 pt-3 text-sm">
@@ -407,6 +461,7 @@ export default function AdminBookingsPage() {
               </a>
             )}
           </div>
+          <MemberInfo b={b} />
           {b.notes && (
             <p className="mt-2 rounded-lg bg-muted px-3 py-2 text-sm text-muted-foreground">{b.notes}</p>
           )}
@@ -633,7 +688,11 @@ export default function AdminBookingsPage() {
             <>
               {/* KPIs */}
               <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-                <StatCard label="Total réservations" value={stats.total} />
+                <StatCard
+                  label="Total réservations"
+                  value={stats.total}
+                  sub={stats.memberCount > 0 ? `${stats.memberCount} via un compte membre` : 'Clients de passage'}
+                />
                 <StatCard label="Confirmées" value={stats.paid} sub={`${stats.confirmRate}% du total`} tone="emerald" />
                 <StatCard label="En attente" value={stats.pending} tone="orange" />
                 <StatCard
@@ -723,7 +782,7 @@ export default function AdminBookingsPage() {
                 </div>
               </div>
 
-              {/* Répartition par statut */}
+              {/* Répartition par statut + dimension membre/crédits */}
               <div className="rounded-2xl border border-border bg-card p-4 sm:p-5">
                 <h3 className="mb-3 font-display text-sm font-semibold text-foreground">Répartition par statut</h3>
                 <div className="flex flex-wrap gap-x-6 gap-y-2 text-sm">
@@ -734,6 +793,18 @@ export default function AdminBookingsPage() {
                       <span className="font-semibold text-foreground">{stats[s]}</span>
                     </span>
                   ))}
+                </div>
+                <div className="mt-4 flex flex-wrap gap-x-6 gap-y-2 border-t border-border/60 pt-3 text-sm">
+                  <span className="inline-flex items-center gap-2">
+                    <CreditCard className="size-3.5 text-ocean" aria-hidden />
+                    <span className="text-muted-foreground">Réservations membres</span>
+                    <span className="font-semibold text-foreground">{stats.memberCount}</span>
+                  </span>
+                  <span className="inline-flex items-center gap-2">
+                    <Ticket className="size-3.5 text-accent" aria-hidden />
+                    <span className="text-muted-foreground">Crédits débités</span>
+                    <span className="font-semibold text-foreground">{stats.creditsUsed}</span>
+                  </span>
                 </div>
               </div>
             </>
@@ -917,6 +988,7 @@ export default function AdminBookingsPage() {
                         “{b.notes}”
                       </p>
                     )}
+                    <MemberInfo b={b} />
                   </td>
                   <td className="px-5 py-3.5">
                     <span className="inline-flex items-center gap-2 font-medium text-foreground">
@@ -938,7 +1010,7 @@ export default function AdminBookingsPage() {
                     <StatusBadge status={b.status} />
                   </td>
                   <td className="px-5 py-3.5 text-right font-semibold text-foreground">
-                    ฿{b.amount.toLocaleString('fr-FR')}
+                    {priceLabel(b)}
                   </td>
                   <td className="px-5 py-3.5 text-xs text-muted-foreground">{fmtReceived(b.createdAt)}</td>
                   <td className="px-5 py-3.5">

@@ -131,8 +131,8 @@ export function TestimonialsSection() {
           </div>
         </div>
         <div className="mt-6">
+          {/* Eyebrow « Avis Google » retiré : redondant avec le bandeau « 5.0 on Google » ci-dessus. */}
           <SectionTitle
-            eyebrow={data.eyebrow ?? header.eyebrow}
             title={data.title ?? header.title}
             description={data.description ?? header.description}
           />

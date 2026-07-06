@@ -3,12 +3,12 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { useLocale } from 'next-intl'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import Image from 'next/image'
 import {
   ArrowLeft,
   ArrowRight,
-  BadgePercent,
+  CalendarCheck,
   CalendarClock,
   Loader2,
   Lock,
@@ -28,10 +28,18 @@ type Mode = 'login' | 'register'
 
 const ease = [0.22, 1, 0.36, 1] as const
 
+/** N'autorise qu'un chemin interne (anti open-redirect), puis le préfixe de langue. */
+function safeRedirect(raw: string | null, locale: string): string {
+  const fallback = `/${locale}/member`
+  if (!raw || raw[0] !== '/' || raw[1] === '/' || raw[1] === '\\') return fallback
+  return raw === '/' ? `/${locale}` : `/${locale}${raw}`
+}
+
 export function MemberAuth() {
   const locale = useLocale() as Locale
   const fr = locale === 'fr'
   const router = useRouter()
+  const searchParams = useSearchParams()
 
   const [mode, setMode] = useState<Mode>('login')
   const [name, setName] = useState('')
@@ -69,7 +77,7 @@ export function MemberAuth() {
         setError(errorLabel(data.error))
         return
       }
-      router.push(`/${locale}/member`)
+      router.push(safeRedirect(searchParams.get('redirect'), locale))
       router.refresh()
     } catch {
       setError(fr ? 'Erreur de connexion.' : 'Connection error.')
@@ -79,9 +87,9 @@ export function MemberAuth() {
   }
 
   const benefits = [
-    { icon: Ticket, label: fr ? 'Crédits mensuels' : 'Monthly credits' },
+    { icon: Ticket, label: fr ? "Crédits d'activités" : 'Activity credits' },
     { icon: CalendarClock, label: fr ? "10 jours à l'avance" : '10 days ahead' },
-    { icon: BadgePercent, label: fr ? "Jusqu'à 30 % de remise" : 'Up to 30% off' },
+    { icon: CalendarCheck, label: fr ? 'Déduits à la réservation' : 'Deducted at booking' },
   ]
 
   return (
@@ -141,8 +149,8 @@ export function MemberAuth() {
           </h1>
           <p className="mx-auto mt-3 max-w-sm text-sm text-white/75 sm:text-base">
             {fr
-              ? 'Crédits mensuels, réservation anticipée et remises membres — votre expérience Shi Shi.'
-              : 'Monthly credits, early booking and member discounts — your Shi Shi experience.'}
+              ? 'Vos crédits d’activités, la réservation anticipée et votre historique — votre expérience Shi Shi.'
+              : 'Your activity credits, early booking and your history — your Shi Shi experience.'}
           </p>
 
           {/* Avantages en ligne (chips) */}

@@ -1,4 +1,6 @@
-import mongoose, { Schema, Document } from 'mongoose'
+import { Schema, Document } from 'mongoose'
+
+import { registerModel } from '@/lib/register-model'
 
 export interface IGalleryImage extends Document {
   title: string
@@ -77,8 +79,6 @@ const GallerySettingsSchema = new Schema<IGallerySettings>(
   }
 )
 
-export const GalleryImage = mongoose.models.GalleryImage ||
-  mongoose.model<IGalleryImage>('GalleryImage', GalleryImageSchema)
+export const GalleryImage = registerModel<IGalleryImage>('GalleryImage', GalleryImageSchema)
 
-export const GallerySettings = mongoose.models.GallerySettings ||
-  mongoose.model<IGallerySettings>('GallerySettings', GallerySettingsSchema)
+export const GallerySettings = registerModel<IGallerySettings>('GallerySettings', GallerySettingsSchema)

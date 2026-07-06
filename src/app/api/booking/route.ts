@@ -12,10 +12,8 @@ import { getBookingConfig, isBookable, isDayPass } from '@/lib/availability'
 import { isRangeAvailable } from '@/lib/availability-query'
 import { notifyNewBooking } from '@/lib/booking-emails'
 import { langFromPhoneCountry } from '@/lib/country-codes'
-import { stripe, stripeEnabled, stripeCurrency, toStripeAmount } from '@/lib/stripe'
 import { resolveMemberBenefits } from '@/lib/membership'
 import { getMemberFromRequest } from '@/lib/member-auth'
-import { siteConfig } from '@/lib/seo'
 
 export async function POST(request: NextRequest) {
   try {
@@ -85,9 +83,10 @@ export async function POST(request: NextRequest) {
     const baseAmount = getBookingAmount(activitySlug, partySize, hours)
     const activityName = activity.name[locale]
 
-    // ── Avantages adhérent (Phase 2) ──────────────────────────────────────
-    // Si un membre connecté réserve : remise automatique selon l'abonnement et
-    // éventuelle déduction de crédits. Un client occasionnel garde `baseAmount`.
+    // ── Crédits adhérent ─────────────────────────────────────────────────
+    // Si un membre connecté réserve et que ses crédits pour CETTE activité
+    // couvrent la durée, la réservation est gratuite (crédits débités).
+    // Sinon : plein tarif, paiement sur place.
     const member = await getMemberFromRequest(request)
     const benefits = await resolveMemberBenefits({
       member,
@@ -119,7 +118,7 @@ export async function POST(request: NextRequest) {
       phone,
       notes,
       amount,
-      currency: stripeCurrency,
+      currency: 'thb',
       partySize,
       participants,
       status: fullyCoveredByCredits ? 'paid' : 'pending',
@@ -127,7 +126,6 @@ export async function POST(request: NextRequest) {
       seen: false,
       memberId: member?.id,
       creditsUsed: benefits.creditsUsed,
-      discountRate: benefits.discountRate,
     })
 
     // Débit des crédits membre (best-effort — après création de la réservation).
@@ -165,47 +163,9 @@ export async function POST(request: NextRequest) {
       console.error('[booking] contact upsert failed:', e)
     }
 
-    // ── Paiement en ligne Stripe ──────────────────────────────────────────
-    // Si Stripe est configuré et qu'il reste un montant à payer, on ouvre une
-    // session Checkout et on renvoie l'URL de paiement. La confirmation « payé »
-    // est traitée par le webhook Stripe (email de confirmation, statut).
-    const baseUrl = request.nextUrl.origin || siteConfig.url
-    if (stripeEnabled && stripe && amount > 0) {
-      try {
-        const session = await stripe.checkout.sessions.create({
-          mode: 'payment',
-          line_items: [
-            {
-              quantity: 1,
-              price_data: {
-                currency: stripeCurrency,
-                unit_amount: toStripeAmount(amount),
-                product_data: {
-                  name: `${activityName} — ${date} ${time}`,
-                  description:
-                    partySize > 1
-                      ? `${partySize} ${locale === 'fr' ? 'personnes' : 'people'}`
-                      : undefined,
-                },
-              },
-            },
-          ],
-          customer_email: email,
-          metadata: { bookingId: String(booking._id) },
-          success_url: `${baseUrl}/${locale}/book-now?payment=success`,
-          cancel_url: `${baseUrl}/${locale}/book-now?payment=cancelled&activity=${activitySlug}`,
-        })
-        booking.stripeSessionId = session.id
-        await booking.save()
-        return NextResponse.json({ ok: true, url: session.url, bookingId: String(booking._id) })
-      } catch (e) {
-        console.error('[booking] stripe session failed:', e)
-        // Repli : on n'échoue pas la réservation, on bascule sur la demande email.
-      }
-    }
-
-    // Pas de Stripe (ou montant nul / couvert par crédits) : demande enregistrée,
-    // confirmation par email. Best-effort, ne casse jamais la réservation.
+    // Paiement SUR PLACE (le jour J) : aucune transaction en ligne. La
+    // réservation est enregistrée comme demande et confirmée par email.
+    // Best-effort — ne casse jamais la réservation si l'email échoue.
     try {
       await notifyNewBooking({
         name,

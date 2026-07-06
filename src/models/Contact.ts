@@ -1,4 +1,6 @@
-import mongoose, { Schema, Document } from 'mongoose'
+import { Schema, Document } from 'mongoose'
+
+import { registerModel } from '@/lib/register-model'
 
 /** Origine d'un contact (un contact peut cumuler plusieurs sources). */
 export type ContactSource = 'booking' | 'contact-form' | 'newsletter' | 'manual' | 'import' | 'member'
@@ -55,5 +57,4 @@ const ContactSchema = new Schema<IContact>(
   { timestamps: true }
 )
 
-export const Contact =
-  mongoose.models.Contact || mongoose.model<IContact>('Contact', ContactSchema)
+export const Contact = registerModel<IContact>('Contact', ContactSchema)

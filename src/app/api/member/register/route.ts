@@ -5,7 +5,7 @@ import { upsertContact } from '@/lib/contacts'
 import { signMemberToken, setMemberCookie } from '@/lib/member-auth'
 import { memberSummary } from '@/lib/member-summary'
 
-/** Inscription adhérent : crée un compte (sans abonnement) et ouvre la session. */
+/** Inscription adhérent : crée un compte (sans crédits) et ouvre la session. */
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
@@ -33,8 +33,6 @@ export async function POST(request: NextRequest) {
       name,
       phone,
       role: 'user',
-      plan: 'none',
-      credits: 0,
     })
 
     // CRM : le nouvel adhérent devient un contact (best-effort).

@@ -100,10 +100,11 @@ export default async function HomePage({
         <>
           <ShishiHero />
           <Reveal><ActivityTiles /></Reveal>
+          {/* Avis Google remontés (cahier des charges : preuve sociale visible rapidement). */}
+          <Reveal><TestimonialsSection /></Reveal>
           <Reveal><ExperienceGallery /></Reveal>
           <Reveal><ValuesBand /></Reveal>
           <Reveal><StorySection /></Reveal>
-          <Reveal><TestimonialsSection /></Reveal>
           <FaqSection />
           <Reveal><PhotoShowcase /></Reveal>
         </>

@@ -6,24 +6,20 @@ import { useLocale } from 'next-intl'
 import { useRouter } from 'next/navigation'
 import {
   ArrowRight,
-  BadgePercent,
   CalendarCheck,
   CalendarClock,
-  Check,
   CreditCard,
   LayoutGrid,
   Loader2,
   LogOut,
-  RefreshCw,
-  Sparkles,
+  MapPin,
+  Repeat,
   Ticket,
 } from 'lucide-react'
 
 import { Link } from '@/i18n/navigation'
 import type { Locale } from '@/i18n/routing'
-import { Button } from '@/components/ui/button'
 import { getActivity } from '@/lib/activities'
-import { PAID_PLANS, getPlan, type MembershipPlan } from '@/lib/membership-plans'
 import type { MemberSummary } from '@/lib/member-summary'
 
 interface BookingRow {
@@ -40,7 +36,7 @@ interface BookingRow {
   partySize: number
 }
 
-type TabId = 'overview' | 'membership' | 'bookings'
+type TabId = 'overview' | 'bookings'
 
 const ease = [0.22, 1, 0.36, 1] as const
 
@@ -52,7 +48,6 @@ export function MemberDashboard() {
   const [member, setMember] = useState<MemberSummary | null>(null)
   const [bookings, setBookings] = useState<BookingRow[]>([])
   const [loading, setLoading] = useState(true)
-  const [subscribing, setSubscribing] = useState<MembershipPlan | null>(null)
   const [tab, setTab] = useState<TabId>('overview')
 
   async function load() {
@@ -81,21 +76,6 @@ export function MemberDashboard() {
     router.refresh()
   }
 
-  async function subscribe(plan: MembershipPlan) {
-    setSubscribing(plan)
-    try {
-      const res = await fetch('/api/member/subscribe', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ plan }),
-      })
-      const data = await res.json()
-      if (res.ok) setMember(data.member)
-    } finally {
-      setSubscribing(null)
-    }
-  }
-
   const fmtDate = (iso: string | null) =>
     iso
       ? new Date(iso).toLocaleDateString(fr ? 'fr-FR' : 'en-GB', { day: 'numeric', month: 'long', year: 'numeric' })
@@ -117,8 +97,8 @@ export function MemberDashboard() {
   }
   if (!member) return null
 
-  const plan = getPlan(member.plan as MembershipPlan)
-  const isMember = member.plan !== 'none'
+  const wallets = member.activityCredits
+  const totalCredits = wallets.reduce((s, w) => s + w.credits, 0)
 
   const tabs: {
     id: TabId
@@ -127,8 +107,7 @@ export function MemberDashboard() {
     icon: React.ComponentType<{ className?: string }>
     badge?: number
   }[] = [
-    { id: 'overview', label: fr ? "Vue d'ensemble" : 'Overview', short: fr ? 'Aperçu' : 'Overview', icon: LayoutGrid },
-    { id: 'membership', label: fr ? 'Abonnement' : 'Membership', short: fr ? 'Abonnement' : 'Membership', icon: Sparkles },
+    { id: 'overview', label: fr ? 'Mes crédits' : 'My credits', short: fr ? 'Crédits' : 'Credits', icon: LayoutGrid },
     { id: 'bookings', label: fr ? 'Réservations' : 'Bookings', short: fr ? 'Résas' : 'Bookings', icon: CalendarCheck, badge: bookings.length || undefined },
   ]
 
@@ -151,9 +130,9 @@ export function MemberDashboard() {
           <p className="mt-1 text-sm text-muted-foreground">{member.email}</p>
         </div>
         <div className="flex items-center gap-3">
-          {isMember && (
+          {totalCredits > 0 && (
             <span className="hidden items-center gap-1.5 rounded-full bg-accent/10 px-3 py-1.5 text-xs font-semibold text-accent ring-1 ring-accent/20 sm:inline-flex">
-              <Ticket className="size-3.5" aria-hidden /> {member.credits} {fr ? 'crédits' : 'credits'}
+              <Ticket className="size-3.5" aria-hidden /> {totalCredits} {fr ? 'crédits' : 'credits'}
             </span>
           )}
           <button
@@ -204,7 +183,7 @@ export function MemberDashboard() {
       {/* Contenu des onglets */}
       <div className="mt-8">
         <AnimatePresence mode="wait">
-          {/* ───────── VUE D'ENSEMBLE ───────── */}
+          {/* ───────── MES CRÉDITS ───────── */}
           {tab === 'overview' && (
             <motion.div
               key="overview"
@@ -213,59 +192,88 @@ export function MemberDashboard() {
               exit={{ opacity: 0, y: -8 }}
               transition={{ duration: 0.3, ease }}
             >
-              {isMember ? (
-                <div className="overflow-hidden rounded-3xl border border-accent/20 bg-gradient-to-br from-accent/[0.08] via-card to-card">
-                  <div className="grid gap-6 p-6 sm:p-8 md:grid-cols-[1.1fr_1fr] md:items-center">
+              {wallets.length > 0 ? (
+                <div className="overflow-hidden rounded-3xl border border-accent/20 bg-gradient-to-br from-accent/[0.08] via-card to-card p-6 sm:p-8">
+                  <div className="flex flex-wrap items-center justify-between gap-3">
                     <div>
-                      <span className="inline-flex items-center gap-1.5 rounded-full bg-accent/10 px-3 py-1 text-xs font-semibold text-accent ring-1 ring-accent/20">
-                        <Sparkles className="size-3.5" aria-hidden /> {fr ? 'Membre' : 'Member'} {plan.name[locale]}
-                      </span>
-                      <div className="mt-4 flex items-end gap-3">
-                        <span className="font-editorial text-6xl font-normal leading-none text-foreground">{member.credits}</span>
-                        <span className="mb-1 text-sm text-muted-foreground">
-                          {fr ? 'crédits disponibles' : 'credits available'}
-                        </span>
-                      </div>
-                      <p className="mt-2 text-sm text-muted-foreground">
+                      <h2 className="font-editorial text-2xl font-normal text-foreground">
+                        {fr ? 'Vos crédits' : 'Your credits'}
+                      </h2>
+                      <p className="mt-1 text-sm text-muted-foreground">
                         <Ticket className="mr-1 inline size-3.5 text-accent" aria-hidden />
-                        {fr ? '1 crédit = 1 heure de réservation' : '1 credit = 1 hour of booking'}
+                        {fr
+                          ? '1 crédit = 1 heure (ou 1 accès) de l’activité. Réservez en ligne : c’est déduit automatiquement.'
+                          : '1 credit = 1 hour (or 1 entry) of the activity. Book online: it’s deducted automatically.'}
                       </p>
-                      {!member.creditsValid && (
-                        <p className="mt-2 text-xs font-medium text-red-600">
-                          {fr ? 'Vos crédits ont expiré — pensez à renouveler.' : 'Your credits have expired — please renew.'}
-                        </p>
-                      )}
                     </div>
-                    <div className="grid grid-cols-3 gap-3 rounded-2xl border border-border bg-background/60 p-4">
-                      <MiniStat icon={BadgePercent} value={`${Math.round(plan.discountRate * 100)}%`} label={fr ? 'de remise' : 'discount'} />
-                      <MiniStat icon={CalendarClock} value={`${plan.advanceDays} ${fr ? 'j' : 'd'}`} label={fr ? "à l'avance" : 'ahead'} />
-                      <MiniStat icon={RefreshCw} value={fmtDate(member.renewAt).split(' ').slice(0, 2).join(' ')} label={fr ? 'renouvellement' : 'renewal'} small />
-                    </div>
+                    <span className="inline-flex items-center gap-1.5 rounded-full bg-ocean/10 px-3 py-1.5 text-xs font-semibold text-ocean ring-1 ring-ocean/20">
+                      <CalendarClock className="size-3.5" aria-hidden />
+                      {fr
+                        ? `Réservation jusqu'à ${member.advanceDays} jours à l'avance`
+                        : `Book up to ${member.advanceDays} days ahead`}
+                    </span>
                   </div>
+
+                  <ul className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                    {wallets.map((w) => {
+                      const activity = getActivity(w.activity)
+                      const label = activity ? activity.name[locale] : w.activity
+                      return (
+                        <li key={w.activity} className="rounded-2xl border border-border bg-background/70 p-5">
+                          <div className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                            {label}
+                          </div>
+                          <div className="mt-2 flex items-end gap-2">
+                            <span className="font-editorial text-5xl font-normal leading-none text-foreground">
+                              {w.credits}
+                            </span>
+                            <span className="mb-1 text-xs text-muted-foreground">
+                              {fr ? 'crédits' : 'credits'}
+                            </span>
+                          </div>
+                          <div className="mt-3 flex flex-wrap items-center gap-1.5 text-[11px] text-muted-foreground">
+                            {w.monthly > 0 ? (
+                              <span className="inline-flex items-center gap-1 rounded-full bg-accent/10 px-2 py-0.5 font-semibold text-accent">
+                                <Repeat className="size-2.5" aria-hidden />
+                                {fr ? `${w.monthly} offerts chaque mois` : `${w.monthly} refilled monthly`}
+                              </span>
+                            ) : null}
+                            {w.renewAt && (
+                              <span>
+                                {w.monthly > 0
+                                  ? `${fr ? 'recharge le' : 'refill on'} ${fmtDate(w.renewAt)}`
+                                  : `${fr ? 'valables jusqu’au' : 'valid until'} ${fmtDate(w.renewAt)}`}
+                              </span>
+                            )}
+                          </div>
+                        </li>
+                      )
+                    })}
+                  </ul>
                 </div>
               ) : (
                 <div className="overflow-hidden rounded-3xl border border-accent/20 bg-gradient-to-br from-accent/[0.08] to-card p-6 sm:p-8">
                   <div className="flex flex-wrap items-center justify-between gap-5">
                     <div className="max-w-xl">
                       <span className="inline-flex items-center gap-1.5 rounded-full bg-accent/10 px-3 py-1 text-xs font-semibold text-accent ring-1 ring-accent/20">
-                        <Sparkles className="size-3.5" aria-hidden /> {fr ? 'Devenez membre' : 'Become a member'}
+                        <Ticket className="size-3.5" aria-hidden /> {fr ? 'Pas encore de crédits' : 'No credits yet'}
                       </span>
                       <h2 className="mt-3 font-editorial text-2xl font-normal text-foreground sm:text-3xl">
-                        {fr ? 'Débloquez vos avantages membres' : 'Unlock your member benefits'}
+                        {fr ? 'Chargez des crédits au club' : 'Top up your credits at the club'}
                       </h2>
                       <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
                         {fr
-                          ? 'Choisissez une formule pour recevoir vos crédits mensuels, profiter de remises automatiques et réserver jusqu’à 10 jours à l’avance.'
-                          : 'Choose a plan to get monthly credits, automatic discounts and book up to 10 days ahead.'}
+                          ? 'Passez nous voir : l’équipe charge vos crédits sur place (tennis, fitness, kids club, piscine…). Vous pouvez aussi réserver sans crédits et régler sur place.'
+                          : 'Come see us: the team tops up your credits on site (tennis, fitness, kids club, pool…). You can also book without credits and pay on site.'}
                       </p>
                     </div>
-                    <button
-                      onClick={() => setTab('membership')}
+                    <Link
+                      href="/contact-location"
                       className="inline-flex h-11 items-center gap-2 rounded-full bg-accent px-6 text-sm font-semibold text-accent-foreground shadow-[0_10px_30px_-8px_oklch(0.63_0.187_47/0.5)] transition-all hover:brightness-105"
                     >
-                      {fr ? 'Voir les formules' : 'See the plans'}
-                      <ArrowRight className="size-4" aria-hidden />
-                    </button>
+                      <MapPin className="size-4" aria-hidden />
+                      {fr ? 'Nous trouver' : 'Find us'}
+                    </Link>
                   </div>
                 </div>
               )}
@@ -277,9 +285,27 @@ export function MemberDashboard() {
                 </h2>
                 <div className="mt-5 grid gap-4 sm:grid-cols-3">
                   {[
-                    { icon: Ticket, title: fr ? 'Des crédits chaque mois' : 'Monthly credits', text: fr ? 'Votre abonnement vous donne des crédits (1 crédit = 1 h).' : 'Your plan gives you credits (1 credit = 1 hour).' },
-                    { icon: CalendarCheck, title: fr ? 'Réservez, c’est déduit' : 'Book, it’s deducted', text: fr ? 'Les crédits et la remise s’appliquent automatiquement.' : 'Credits and your discount apply automatically.' },
-                    { icon: RefreshCw, title: fr ? 'Renouvellement mensuel' : 'Monthly renewal', text: fr ? 'Les crédits non utilisés sont perdus à la date de renouvellement.' : 'Unused credits are lost on the renewal date.' },
+                    {
+                      icon: MapPin,
+                      title: fr ? 'Passez au club' : 'Visit the club',
+                      text: fr
+                        ? 'L’équipe charge vos crédits sur place (paiement au club) : en ponctuel, valables 1 mois, ou en recharge automatique mensuelle.'
+                        : 'The team tops up your credits on site (payment at the club): one-off, valid 1 month, or refilled automatically every month.',
+                    },
+                    {
+                      icon: Ticket,
+                      title: fr ? 'Un crédit par activité' : 'Credits per activity',
+                      text: fr
+                        ? '1 crédit = 1 h (ou 1 accès) de l’activité concernée : vos crédits tennis servent au tennis, vos crédits piscine à la piscine.'
+                        : '1 credit = 1 hour (or 1 entry) of that activity: tennis credits are for tennis, pool credits for the pool.',
+                    },
+                    {
+                      icon: CalendarCheck,
+                      title: fr ? 'Réservez, c’est déduit' : 'Book, it’s deducted',
+                      text: fr
+                        ? 'Connecté, vos crédits sont déduits automatiquement à la réservation — et vous réservez jusqu’à 10 jours à l’avance.'
+                        : 'Signed in, credits are deducted automatically when you book — and you can book up to 10 days ahead.',
+                    },
                   ].map((s, i) => (
                     <div key={s.title} className="relative rounded-2xl border border-border bg-card p-5">
                       <span className="absolute right-4 top-4 font-editorial text-2xl font-normal text-foreground/10">{i + 1}</span>
@@ -298,8 +324,8 @@ export function MemberDashboard() {
                 <CalendarCheck className="size-5 text-accent" aria-hidden />
                 <p className="flex-1 text-sm text-foreground">
                   {fr
-                    ? 'Prêt à jouer ? Vos crédits et remises sont appliqués automatiquement à la réservation.'
-                    : 'Ready to play? Your credits and discounts apply automatically at checkout.'}
+                    ? 'Prêt à jouer ? Vos crédits sont déduits automatiquement à la réservation.'
+                    : 'Ready to play? Your credits are deducted automatically at booking.'}
                 </p>
                 <Link
                   href="/book-now"
@@ -309,95 +335,6 @@ export function MemberDashboard() {
                   <ArrowRight className="size-4" aria-hidden />
                 </Link>
               </div>
-            </motion.div>
-          )}
-
-          {/* ───────── ABONNEMENT ───────── */}
-          {tab === 'membership' && (
-            <motion.div
-              key="membership"
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -8 }}
-              transition={{ duration: 0.3, ease }}
-            >
-              <h2 className="font-editorial text-2xl font-normal text-foreground">
-                {isMember ? (fr ? 'Gérer mon abonnement' : 'Manage my membership') : (fr ? 'Choisissez votre formule' : 'Choose your plan')}
-              </h2>
-              <p className="mt-1 text-sm text-muted-foreground">
-                {fr
-                  ? 'Crédits mensuels, remise automatique et réservation anticipée. Changez de formule à tout moment.'
-                  : 'Monthly credits, automatic discount and advance booking. Switch plans anytime.'}
-              </p>
-              <div className="mt-6 grid gap-4 md:grid-cols-3">
-                {PAID_PLANS.map((p) => {
-                  const current = member.plan === p.id
-                  const recommended = p.id === 'silver'
-                  return (
-                    <div
-                      key={p.id}
-                      className={`relative flex flex-col rounded-3xl border p-6 transition-colors ${
-                        current ? 'border-accent bg-accent/[0.04] ring-1 ring-accent/30' : recommended ? 'border-ocean/30 bg-card' : 'border-border bg-card'
-                      }`}
-                    >
-                      {recommended && !current && (
-                        <span className="absolute -top-2.5 left-6 rounded-full bg-ocean px-2.5 py-0.5 text-[11px] font-semibold text-white">
-                          {fr ? 'Populaire' : 'Popular'}
-                        </span>
-                      )}
-                      <div className="flex items-center justify-between">
-                        <span className="font-editorial text-xl font-medium text-foreground">{p.name[locale]}</span>
-                        {current && (
-                          <span className="rounded-full bg-accent px-2.5 py-0.5 text-[11px] font-semibold text-accent-foreground">
-                            {fr ? 'Actuel' : 'Current'}
-                          </span>
-                        )}
-                      </div>
-                      <p className="mt-3 font-editorial text-3xl font-normal text-foreground">
-                        {p.priceTHB.toLocaleString(fr ? 'fr-FR' : 'en-GB')} ฿
-                        <span className="text-sm font-normal text-muted-foreground">{fr ? ' / mois' : ' / mo'}</span>
-                      </p>
-                      <ul className="mt-5 flex-1 space-y-2.5">
-                        {p.perks.map((perk) => (
-                          <li key={perk[locale]} className="flex items-start gap-2 text-sm text-foreground">
-                            <Check className="mt-0.5 size-4 shrink-0 text-accent" aria-hidden />
-                            {perk[locale]}
-                          </li>
-                        ))}
-                      </ul>
-                      <Button
-                        onClick={() => subscribe(p.id)}
-                        disabled={current || subscribing !== null}
-                        className={`mt-6 h-11 w-full rounded-full ${
-                          current ? 'bg-muted text-muted-foreground' : 'bg-accent text-accent-foreground hover:brightness-105'
-                        }`}
-                      >
-                        {subscribing === p.id ? (
-                          <Loader2 className="size-4 animate-spin" aria-hidden />
-                        ) : current ? (
-                          fr ? 'Formule active' : 'Active plan'
-                        ) : isMember ? (
-                          fr ? 'Passer à cette formule' : 'Switch to this plan'
-                        ) : fr ? 'Choisir' : 'Choose'}
-                      </Button>
-                    </div>
-                  )
-                })}
-              </div>
-              {isMember && (
-                <button
-                  onClick={() => subscribe('none')}
-                  disabled={subscribing !== null}
-                  className="mt-4 text-xs font-medium text-muted-foreground underline-offset-2 hover:underline"
-                >
-                  {fr ? 'Résilier mon abonnement' : 'Cancel my membership'}
-                </button>
-              )}
-              <p className="mt-3 text-[11px] text-muted-foreground">
-                {fr
-                  ? '⚠️ Grille tarifaire provisoire — remplacée par la grille officielle au lancement.'
-                  : '⚠️ Provisional pricing — replaced by the official grid at launch.'}
-              </p>
             </motion.div>
           )}
 
@@ -481,26 +418,6 @@ export function MemberDashboard() {
           )}
         </AnimatePresence>
       </div>
-    </div>
-  )
-}
-
-function MiniStat({
-  icon: Icon,
-  value,
-  label,
-  small,
-}: {
-  icon: React.ComponentType<{ className?: string }>
-  value: string
-  label: string
-  small?: boolean
-}) {
-  return (
-    <div className="flex flex-col items-center text-center">
-      <Icon className="size-4 text-accent" aria-hidden />
-      <span className={`mt-1.5 font-semibold text-foreground ${small ? 'text-xs' : 'text-sm'}`}>{value}</span>
-      <span className="text-[11px] leading-tight text-muted-foreground">{label}</span>
     </div>
   )
 }

@@ -1,10 +1,25 @@
-import mongoose, { Schema, Document } from 'mongoose'
+import { Schema, Document } from 'mongoose'
 import bcrypt from 'bcryptjs'
 
-import type { MembershipPlan } from '@/lib/membership-plans'
+import { registerModel } from '@/lib/register-model'
 
-/** Formule d'abonnement de l'adhérent ('none' = compte sans abonnement actif). */
-export type { MembershipPlan }
+/**
+ * Portefeuille de crédits PROPRE À UNE ACTIVITÉ (ex. crédits tennis).
+ * 1 crédit = 1 h (ou 1 accès) de l'activité concernée, non transférable.
+ *
+ *  · `credits`  : solde restant pour la période en cours.
+ *  · `monthly`  : rechargement AUTOMATIQUE mensuel (0 = pas d'automatique —
+ *                 crédits ponctuels valables 1 mois, perdus à l'expiration).
+ *  · `renewAt`  : fin de la période en cours. Passée cette date : si `monthly`
+ *                 > 0 le solde repart à `monthly` (période suivante), sinon
+ *                 les crédits sont expirés.
+ */
+export interface IActivityCredit {
+  activity: string
+  credits: number
+  monthly: number
+  renewAt?: Date
+}
 
 export interface IUser extends Document {
   email: string
@@ -12,13 +27,13 @@ export interface IUser extends Document {
   name?: string
   phone?: string
   role: 'user' | 'admin'
-  /** Abonnement en cours (crédits mensuels + remise + réservation anticipée). */
-  plan: MembershipPlan
-  /** Crédits restants pour la période en cours (perdus au renouvellement). */
-  credits: number
-  /** Date de renouvellement de l'abonnement (remise à zéro des crédits). */
-  renewAt?: Date
-  /** Date d'adhésion (première souscription). */
+  /**
+   * Crédits par activité (tennis, fitness…) — SEUL système d'avantages.
+   * Attribués par l'admin lors du passage au club (paiement sur place),
+   * en ponctuel (valables 1 mois) ou en recharge automatique mensuelle.
+   */
+  activityCredits: IActivityCredit[]
+  /** Date d'adhésion (premiers crédits reçus). */
   memberSince?: Date
   createdAt: Date
   updatedAt: Date
@@ -53,16 +68,19 @@ const UserSchema = new Schema<IUser>(
       enum: ['user', 'admin'],
       default: 'user',
     },
-    plan: {
-      type: String,
-      enum: ['none', 'bronze', 'silver', 'gold'],
-      default: 'none',
+    // Portefeuilles de crédits par activité (voir IActivityCredit).
+    activityCredits: {
+      type: [
+        {
+          _id: false,
+          activity: { type: String, required: true },
+          credits: { type: Number, default: 0 },
+          monthly: { type: Number, default: 0 },
+          renewAt: Date,
+        },
+      ],
+      default: [],
     },
-    credits: {
-      type: Number,
-      default: 0,
-    },
-    renewAt: Date,
     memberSince: Date,
   },
   {
@@ -84,4 +102,4 @@ UserSchema.methods.comparePassword = async function (password: string) {
   return await bcrypt.compare(password, this.password)
 }
 
-export default mongoose.models.User || mongoose.model<IUser>('User', UserSchema)
+export default registerModel<IUser>('User', UserSchema)

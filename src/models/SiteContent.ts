@@ -1,4 +1,6 @@
-import mongoose, { Schema, Document } from 'mongoose'
+import { Schema, Document } from 'mongoose'
+
+import { registerModel } from '@/lib/register-model'
 
 export interface ISiteContent extends Document {
   pageId: string
@@ -24,5 +26,4 @@ const SiteContentSchema = new Schema<ISiteContent>(
   }
 )
 
-export default mongoose.models.SiteContent ||
-  mongoose.model<ISiteContent>('SiteContent', SiteContentSchema)
+export default registerModel<ISiteContent>('SiteContent', SiteContentSchema)

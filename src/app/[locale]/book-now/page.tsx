@@ -3,7 +3,6 @@ import type { Metadata } from 'next'
 import { useLocale, useTranslations } from 'next-intl'
 import { getTranslations, setRequestLocale } from 'next-intl/server'
 import Image from 'next/image'
-import { Suspense } from 'react'
 
 import { ActivityIcon } from '@/components/activity-icon'
 import { HeroCurve } from '@/components/hero-curve'
@@ -16,7 +15,7 @@ import { Link } from '@/i18n/navigation'
 import { activities, resolveLink } from '@/lib/activities'
 import type { Locale } from '@/lib/activities'
 import { siteConfig } from '@/lib/seo'
-import { BookingForm } from './booking-form'
+import { BookingWidget } from './booking-widget'
 
 // Mots-clés audit « Book Now / Reservation ».
 const BOOK_KEYWORDS = [
@@ -71,10 +70,13 @@ const BOOK_RELATED = [
 
 export default async function BookNowPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ locale: string }>
+  searchParams: Promise<{ activity?: string }>
 }) {
   const { locale } = await params
+  const { activity } = await searchParams
   setRequestLocale(locale)
   const t = await getTranslations({ locale, namespace: 'Booking' })
 
@@ -96,12 +98,12 @@ export default async function BookNowPage({
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <BookingContent />
+      <BookingContent initialActivity={typeof activity === 'string' ? activity : undefined} />
     </>
   )
 }
 
-function BookingContent() {
+function BookingContent({ initialActivity }: { initialActivity?: string }) {
   const t = useTranslations('Booking')
   const locale = useLocale() as Locale
 
@@ -222,38 +224,23 @@ function BookingContent() {
         </div>
       </section>
 
-      {/* 4 · FORMULAIRE + panneau visuel — crème */}
-      <section id="reserver" className="mx-auto max-w-6xl scroll-mt-20 px-4 py-16 sm:px-6 lg:px-8 lg:py-20">
-        <div className="grid gap-6 lg:grid-cols-[1.6fr_1fr]">
-          <Suspense fallback={null}>
-            <BookingForm />
-          </Suspense>
+      {/* 4 · WIDGET DE RÉSERVATION — même design que le popup, intégré dans la page */}
+      <section id="reserver" className="mx-auto max-w-5xl scroll-mt-20 px-4 py-16 sm:px-6 lg:px-8 lg:py-20">
+        {/* Widget à 2 panneaux — le fond change selon l'activité choisie */}
+        <BookingWidget initialActivity={initialActivity} />
 
-          <aside className="flex flex-col gap-6">
-            {/* Photo d'ambiance */}
-            <div className="relative hidden min-h-44 overflow-hidden rounded-2xl ring-1 ring-border lg:block">
-              <Image src="/photos/lounge.jpg" alt="Shi Shi Samui sports club in Lamai" fill sizes="24rem" className="object-cover" />
-              <div className="absolute inset-0 bg-gradient-to-t from-[oklch(0.14_0_0/0.85)] to-transparent" aria-hidden />
-              <div className="absolute inset-x-0 bottom-0 p-5">
-                <p className="font-editorial text-xl font-medium text-white">Shi Shi Samui</p>
-                <p className="mt-0.5 text-sm text-white/80">Lamai · Koh Samui</p>
-              </div>
-            </div>
-
-            {/* WhatsApp QR */}
-            <div className="flex flex-col items-center rounded-2xl border border-border bg-card p-7 text-center">
-              <span className="text-xs font-semibold uppercase tracking-[0.22em] text-accent">{t('scanToChat')}</span>
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={`https://api.qrserver.com/v1/create-qr-code/?size=180x180&margin=0&data=${encodeURIComponent(waLink)}`}
-                alt="WhatsApp QR code for Shi Shi Samui"
-                width={180}
-                height={180}
-                className="mt-4 rounded-xl"
-              />
-              <p className="mt-4 text-sm text-muted-foreground">{t('scanText')}</p>
-            </div>
-          </aside>
+        {/* WhatsApp QR — placé un peu plus bas, sous le widget */}
+        <div className="mx-auto mt-14 flex max-w-sm flex-col items-center rounded-2xl border border-border bg-card p-7 text-center">
+          <span className="text-xs font-semibold uppercase tracking-[0.22em] text-accent">{t('scanToChat')}</span>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={`https://api.qrserver.com/v1/create-qr-code/?size=180x180&margin=0&data=${encodeURIComponent(waLink)}`}
+            alt="WhatsApp QR code for Shi Shi Samui"
+            width={180}
+            height={180}
+            className="mt-4 rounded-xl"
+          />
+          <p className="mt-4 text-sm text-muted-foreground">{t('scanText')}</p>
         </div>
       </section>
     </div>

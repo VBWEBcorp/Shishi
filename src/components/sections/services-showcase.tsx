@@ -120,12 +120,19 @@ export function ServicesShowcase({
                       <ActivityIcon name={s.icon} className="size-6" />
                     </span>
                     <span className="min-w-0 flex-1">
-                      <span
-                        className={`block font-editorial text-lg font-medium transition-colors ${
-                          isActive ? 'text-accent' : 'text-foreground'
-                        }`}
-                      >
-                        {s.name[locale]}
+                      <span className="flex items-center gap-2">
+                        <span
+                          className={`font-editorial text-lg font-medium transition-colors ${
+                            isActive ? 'text-accent' : 'text-foreground'
+                          }`}
+                        >
+                          {s.name[locale]}
+                        </span>
+                        {s.comingSoon && (
+                          <span className="shrink-0 rounded-full bg-accent/10 px-2 py-0.5 text-[9px] font-bold uppercase tracking-[0.1em] text-accent">
+                            Coming Soon
+                          </span>
+                        )}
                       </span>
                       <span className="mt-0.5 block truncate text-sm leading-relaxed text-muted-foreground">
                         {s.tagline[locale]}

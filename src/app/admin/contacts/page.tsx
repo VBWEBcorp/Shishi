@@ -10,6 +10,7 @@ import {
   Plus,
   RefreshCw,
   Search,
+  Star,
   Trash2,
   UserPlus,
   Users,
@@ -71,6 +72,23 @@ function matchesFilter(c: Contact, f: Filter): boolean {
   if (f === 'optin') return c.newsletterOptIn && !c.unsubscribedAt
   if (f === 'unsub') return !!c.unsubscribedAt
   return true
+}
+
+/** Un contact abonné (et non désinscrit) à la newsletter est considéré « adhérent ». */
+function isMember(c: Contact): boolean {
+  return c.newsletterOptIn && !c.unsubscribedAt
+}
+
+/** Mini sticker « adhérent » posé à côté du nom des abonnés newsletter. */
+function MemberSticker() {
+  return (
+    <span
+      title="Adhérent — abonné à la newsletter"
+      className="inline-flex shrink-0 items-center gap-1 rounded-full border border-amber-500/30 bg-amber-500/15 px-1.5 py-0.5 text-[10px] font-semibold leading-none text-amber-700 dark:text-amber-300"
+    >
+      <Star className="size-2.5 fill-current" /> Adhérent
+    </span>
+  )
 }
 
 /** Pastille de statut newsletter (réutilisée table + cartes). */
@@ -430,7 +448,10 @@ export default function AdminContactsPage() {
                         className="cursor-pointer border-b border-border/60 transition-colors last:border-0 hover:bg-muted/40"
                       >
                         <td className="px-4 py-3">
-                          <div className="font-medium text-foreground">{c.name || '—'}</div>
+                          <div className="flex items-center gap-2">
+                            <span className="font-medium text-foreground">{c.name || '—'}</span>
+                            {isMember(c) && <MemberSticker />}
+                          </div>
                           <div className="text-xs text-muted-foreground">{c.email}</div>
                         </td>
                         <td className="px-4 py-3 whitespace-nowrap text-muted-foreground">
@@ -496,7 +517,10 @@ export default function AdminContactsPage() {
                 >
                   <div className="flex items-start justify-between gap-3">
                     <div className="min-w-0">
-                      <div className="truncate font-medium text-foreground">{c.name || '—'}</div>
+                      <div className="flex items-center gap-2">
+                        <span className="truncate font-medium text-foreground">{c.name || '—'}</span>
+                        {isMember(c) && <MemberSticker />}
+                      </div>
                       <div className="truncate text-xs text-muted-foreground">{c.email}</div>
                     </div>
                     <NlBadge contact={c} />
@@ -579,7 +603,7 @@ function ContactDrawer({
   onSave: (tags: string[], notes: string) => void
   onDelete: () => void
 }) {
-  const [tags, setTags] = useState(contact.tags.join(', '))
+  const [tags, setTags] = useState((contact.tags ?? []).join(', '))
   const [notes, setNotes] = useState(contact.notes ?? '')
   const country = contact.country ? COUNTRY_BY_ISO2[contact.country] : undefined
 
@@ -596,7 +620,10 @@ function ContactDrawer({
 
         <div className="space-y-5 p-5">
           <div>
-            <div className="text-lg font-semibold text-foreground">{contact.name || 'Sans nom'}</div>
+            <div className="flex items-center gap-2">
+              <span className="text-lg font-semibold text-foreground">{contact.name || 'Sans nom'}</span>
+              {isMember(contact) && <MemberSticker />}
+            </div>
             <a href={`mailto:${contact.email}`} className="inline-flex items-center gap-1.5 text-sm text-accent hover:underline">
               <Mail className="size-3.5" /> {contact.email}
             </a>

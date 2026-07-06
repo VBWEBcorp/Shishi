@@ -43,13 +43,20 @@ export async function PUT(request: NextRequest, { params }: { params: Params }) 
       return NextResponse.json({ error: 'Invalid ID' }, { status: 400 })
     }
 
-    const { title, description, imageUrl, category, order, active } = await request.json()
+    const body = await request.json()
+    // On ne met à jour QUE les champs réellement fournis (édition partielle sûre :
+    // un simple toggle `active` ne doit pas effacer le reste). `type`/`videoUrl`
+    // inclus pour permettre l'édition des vidéos.
+    const ALLOWED = ['title', 'description', 'type', 'imageUrl', 'videoUrl', 'category', 'order', 'active'] as const
+    const update: Record<string, unknown> = {}
+    for (const key of ALLOWED) {
+      if (body[key] !== undefined) update[key] = body[key]
+    }
 
-    const image = await GalleryImage.findByIdAndUpdate(
-      id,
-      { title, description, imageUrl, category, order, active },
-      { new: true, runValidators: true }
-    )
+    const image = await GalleryImage.findByIdAndUpdate(id, update, {
+      new: true,
+      runValidators: true,
+    })
 
     if (!image) {
       return NextResponse.json({ error: 'Image not found' }, { status: 404 })

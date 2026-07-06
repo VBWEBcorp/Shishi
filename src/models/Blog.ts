@@ -1,4 +1,6 @@
-import mongoose, { Schema, Document } from 'mongoose'
+import { Schema, Document } from 'mongoose'
+
+import { registerModel } from '@/lib/register-model'
 
 export interface IBlogPost extends Document {
   title: string
@@ -57,8 +59,6 @@ const BlogSettingsSchema = new Schema<IBlogSettings>(
   { timestamps: true }
 )
 
-export const BlogPost = mongoose.models.BlogPost ||
-  mongoose.model<IBlogPost>('BlogPost', BlogPostSchema)
+export const BlogPost = registerModel<IBlogPost>('BlogPost', BlogPostSchema)
 
-export const BlogSettings = mongoose.models.BlogSettings ||
-  mongoose.model<IBlogSettings>('BlogSettings', BlogSettingsSchema)
+export const BlogSettings = registerModel<IBlogSettings>('BlogSettings', BlogSettingsSchema)
