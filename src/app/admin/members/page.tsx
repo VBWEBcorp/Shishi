@@ -4,6 +4,7 @@ import {
   CalendarClock,
   Check,
   ChevronDown,
+  CreditCard,
   Loader2,
   Plus,
   RefreshCw,
@@ -35,6 +36,13 @@ interface ActivityCredit {
   renewAt: string | null
 }
 
+/** Abonnement du catalogue actuellement appliqué au membre. */
+interface MemberSubscription {
+  name: string
+  priceTHB: number
+  startedAt: string | null
+}
+
 interface Member {
   id: string
   email: string
@@ -42,9 +50,19 @@ interface Member {
   phone: string
   /** Crédits par activité (tennis, fitness…) — seul système d'avantages. */
   activityCredits: ActivityCredit[]
+  /** Abonnement du catalogue appliqué (null si aucun). */
+  subscription: MemberSubscription | null
   memberSince: string | null
   createdAt: string
   bookingsCount: number
+}
+
+/** Option d'abonnement (catalogue) proposable à l'application. */
+interface PlanOption {
+  id: string
+  name: string
+  priceTHB: number
+  active: boolean
 }
 
 type Filter = 'all' | 'credits' | 'auto' | 'nocredits'
@@ -72,6 +90,7 @@ function fmtDate(s?: string | null): string {
 export default function MembersPage() {
   const [members, setMembers] = useState<Member[]>([])
   const [counts, setCounts] = useState({ all: 0, credits: 0, auto: 0, nocredits: 0 })
+  const [plans, setPlans] = useState<PlanOption[]>([])
   const [filter, setFilter] = useState<Filter>('all')
   const [q, setQ] = useState('')
   const [loading, setLoading] = useState(true)
@@ -80,6 +99,14 @@ export default function MembersPage() {
   // Ligne dépliée : éditeur des crédits par activité du membre.
   const [expandedId, setExpandedId] = useState<string | null>(null)
   const debounce = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  // Catalogue d'abonnements proposables (pour l'application en 1 clic).
+  useEffect(() => {
+    fetch('/api/subscription-plans', { headers: authHeaders() })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => d && setPlans((d.plans as PlanOption[]).filter((p) => p.active)))
+      .catch(() => {})
+  }, [])
 
   const load = useCallback(async () => {
     setLoading(true)
@@ -110,14 +137,14 @@ export default function MembersPage() {
     }
   }, [load, q])
 
-  /** Crédite un membre : { activity, add | credits | monthly }. */
-  async function patchCredits(id: string, payload: Record<string, unknown>) {
+  /** PATCH générique d'un membre (crédits, application/résiliation d'abonnement). */
+  async function patchMember(id: string, body: Record<string, unknown>) {
     setSavingId(id)
     try {
       const res = await fetch(`/api/members/${id}`, {
         method: 'PATCH',
         headers: authHeaders(true),
-        body: JSON.stringify({ activityCredits: payload }),
+        body: JSON.stringify(body),
       })
       if (res.ok) await load()
       else {
@@ -239,6 +266,11 @@ export default function MembersPage() {
                           <div className="font-medium text-foreground">{m.name || '—'}</div>
                           <div className="text-xs text-muted-foreground">{m.email}</div>
                           {m.phone && <div className="text-xs text-muted-foreground">{m.phone}</div>}
+                          {m.subscription && (
+                            <span className="mt-1 inline-flex items-center gap-1 rounded-full bg-ocean/10 px-2 py-0.5 text-[11px] font-semibold text-ocean">
+                              <CreditCard className="size-3" /> {m.subscription.name}
+                            </span>
+                          )}
                         </td>
                         <td className="px-4 py-3">
                           {m.activityCredits.length === 0 ? (
@@ -285,8 +317,13 @@ export default function MembersPage() {
                           <td colSpan={5} className="px-4 py-4">
                             <ActivityCreditsPanel
                               member={m}
+                              plans={plans}
                               saving={savingId === m.id}
-                              onPatch={(activity, payload) => patchCredits(m.id, { activity, ...payload })}
+                              onCredit={(activity, payload) =>
+                                patchMember(m.id, { activityCredits: { activity, ...payload } })
+                              }
+                              onApplyPlan={(planId) => patchMember(m.id, { subscriptionPlanId: planId })}
+                              onCancelPlan={() => patchMember(m.id, { action: 'cancel-subscription' })}
                             />
                           </td>
                         </tr>
@@ -304,25 +341,97 @@ export default function MembersPage() {
 }
 
 /**
- * Éditeur des crédits d'un membre, une carte par activité.
- * Deux gestes distincts : ajout ponctuel (valable 1 mois) et recharge
- * automatique mensuelle.
+ * Éditeur d'un membre : abonnement (catalogue) en haut, puis crédits par
+ * activité (ajout ponctuel + recharge auto).
  */
 function ActivityCreditsPanel({
   member,
+  plans,
   saving,
-  onPatch,
+  onCredit,
+  onApplyPlan,
+  onCancelPlan,
 }: {
   member: Member
+  plans: PlanOption[]
   saving: boolean
-  onPatch: (activity: string, payload: Record<string, number>) => void
+  onCredit: (activity: string, payload: Record<string, number>) => void
+  onApplyPlan: (planId: string) => void
+  onCancelPlan: () => void
 }) {
+  const [planId, setPlanId] = useState('')
+
   return (
     <div className="space-y-3">
-      <div className="flex items-center justify-between gap-3">
-        <p className="text-sm font-semibold text-foreground">
-          Crédits de {member.name || member.email}
-        </p>
+      {/* Abonnement : appliquer en 1 clic → met en place la recharge auto */}
+      <div className="rounded-xl border border-border bg-card p-3.5">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div className="min-w-0">
+            <p className="flex items-center gap-1.5 text-sm font-semibold text-foreground">
+              <CreditCard className="size-4 text-accent" /> Abonnement
+            </p>
+            {member.subscription ? (
+              <p className="mt-0.5 text-xs text-muted-foreground">
+                Actuel : <span className="font-semibold text-ocean">{member.subscription.name}</span>
+                {member.subscription.priceTHB > 0
+                  ? ` · ${member.subscription.priceTHB.toLocaleString('fr-FR')} ฿/mois`
+                  : ''}
+                {member.subscription.startedAt ? ` · depuis le ${fmtDate(member.subscription.startedAt)}` : ''}
+              </p>
+            ) : (
+              <p className="mt-0.5 text-xs text-muted-foreground">
+                Aucun. En appliquer un met en place la recharge auto correspondante.
+              </p>
+            )}
+          </div>
+          {member.subscription && (
+            <button
+              onClick={onCancelPlan}
+              disabled={saving}
+              className="inline-flex h-9 shrink-0 items-center gap-1.5 rounded-lg border border-border px-3 text-xs font-semibold text-muted-foreground transition-colors hover:bg-muted disabled:opacity-40"
+            >
+              Résilier
+            </button>
+          )}
+        </div>
+
+        {plans.length > 0 ? (
+          <div className="mt-3 flex flex-wrap items-center gap-2">
+            <select
+              value={planId}
+              onChange={(e) => setPlanId(e.target.value)}
+              className="h-9 min-w-[160px] flex-1 rounded-md border border-input bg-background px-2 text-sm focus:border-accent focus:outline-none"
+            >
+              <option value="">Choisir un abonnement…</option>
+              {plans.map((p) => (
+                <option key={p.id} value={p.id}>
+                  {p.name}
+                  {p.priceTHB > 0 ? ` — ${p.priceTHB.toLocaleString('fr-FR')} ฿/mois` : ''}
+                </option>
+              ))}
+            </select>
+            <button
+              onClick={() => planId && onApplyPlan(planId)}
+              disabled={saving || !planId}
+              className="inline-flex h-9 items-center gap-1.5 rounded-lg bg-accent px-3 text-xs font-semibold text-accent-foreground transition-all hover:brightness-105 disabled:opacity-40"
+            >
+              <Check className="size-3.5" /> Appliquer
+            </button>
+          </div>
+        ) : (
+          <p className="mt-3 text-xs text-muted-foreground">
+            Aucun abonnement au catalogue.{' '}
+            <a href="/admin/subscriptions" className="font-medium text-accent hover:underline">
+              Créez-en un
+            </a>
+            .
+          </p>
+        )}
+      </div>
+
+      {/* Crédits par activité */}
+      <div className="flex items-center justify-between gap-3 pt-1">
+        <p className="text-sm font-semibold text-foreground">Crédits par activité</p>
         {saving && <Loader2 className="size-4 animate-spin text-muted-foreground" />}
       </div>
       <div className="grid gap-2.5 lg:grid-cols-2">
@@ -332,8 +441,8 @@ function ActivityCreditsPanel({
             label={a.label}
             wallet={member.activityCredits.find((w) => w.activity === a.slug)}
             saving={saving}
-            onAdd={(n) => onPatch(a.slug, { add: n })}
-            onMonthly={(n) => onPatch(a.slug, { monthly: n })}
+            onAdd={(n) => onCredit(a.slug, { add: n })}
+            onMonthly={(n) => onCredit(a.slug, { monthly: n })}
           />
         ))}
       </div>

@@ -1,7 +1,7 @@
 'use client'
 
 import { AnimatePresence, motion } from 'framer-motion'
-import { ArrowRight, Check, Globe, Instagram, MapPin, UserRound } from 'lucide-react'
+import { ArrowRight, Check, Globe, Instagram, Lock, MapPin, UserRound } from 'lucide-react'
 import { useLocale, useTranslations } from 'next-intl'
 import { useEffect, useRef, useState, useTransition } from 'react'
 
@@ -29,7 +29,7 @@ export function Navbar() {
   const [memberLoggedIn, setMemberLoggedIn] = useState(false)
   const pathname = usePathname()
 
-  // Statut de connexion adhérent : « Se connecter » ↔ « Mon espace ».
+  // Statut de connexion adhérent : « Se connecter » ↔ « Espace adhérent ».
   useEffect(() => {
     let cancelled = false
     fetch('/api/member/me', { cache: 'no-store' })
@@ -88,11 +88,11 @@ export function Navbar() {
           <div className="flex items-center gap-1.5 sm:gap-3">
             <LangSwitch light={lightText} />
 
-            {/* Se connecter ↔ Mon espace : bouton rond sur mobile, puce « compte »
+            {/* Se connecter ↔ Espace adhérent : bouton rond sur mobile, puce « compte »
                 (icône en cercle + texte) sur desktop — secondaire vs « Réserver ». */}
             <Link
               href={memberLoggedIn ? '/member' : '/member/login'}
-              aria-label={memberLoggedIn ? (fr ? 'Mon espace' : 'My account') : (fr ? 'Se connecter' : 'Sign in')}
+              aria-label={memberLoggedIn ? (fr ? 'Espace adhérent' : 'Member area') : (fr ? 'Se connecter' : 'Sign in')}
               className={cn(
                 'group relative inline-flex h-9 w-9 items-center justify-center gap-2 rounded-full text-[13px] font-semibold ring-1 transition-colors sm:w-auto sm:pl-1.5 sm:pr-3.5',
                 lightText
@@ -114,7 +114,7 @@ export function Navbar() {
                 <UserRound className="size-4 shrink-0 sm:size-3.5" aria-hidden />
               </span>
               <span className="hidden sm:inline">
-                {memberLoggedIn ? (fr ? 'Mon espace' : 'My account') : (fr ? 'Se connecter' : 'Sign in')}
+                {memberLoggedIn ? (fr ? 'Espace adhérent' : 'Member area') : (fr ? 'Se connecter' : 'Sign in')}
               </span>
               {/* Point d'état « connecté » (mobile, où le texte est masqué) */}
               {memberLoggedIn && (
@@ -245,7 +245,8 @@ function FullscreenMenu({
                           </span>
                         )}
                         {a.comingSoon && (
-                          <span className="rounded-full bg-accent/15 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-accent ring-1 ring-accent/25">
+                          <span className="inline-flex items-center gap-1 rounded-full bg-accent/15 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-accent ring-1 ring-accent/25">
+                            <Lock className="size-2.5" aria-hidden />
                             Coming Soon
                           </span>
                         )}
@@ -296,7 +297,7 @@ function FullscreenMenu({
                   >
                     <UserRound className="size-4" aria-hidden />
                     {memberLoggedIn
-                      ? (fr ? 'Mon espace' : 'My account')
+                      ? (fr ? 'Espace adhérent' : 'Member area')
                       : (fr ? 'Se connecter' : 'Sign in')}
                   </Link>
                 </div>

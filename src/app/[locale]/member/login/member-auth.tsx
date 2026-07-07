@@ -42,7 +42,8 @@ export function MemberAuth() {
   const searchParams = useSearchParams()
 
   const [mode, setMode] = useState<Mode>('login')
-  const [name, setName] = useState('')
+  const [firstName, setFirstName] = useState('')
+  const [lastName, setLastName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
@@ -66,7 +67,10 @@ export function MemberAuth() {
     setLoading(true)
     try {
       const endpoint = mode === 'login' ? '/api/member/login' : '/api/member/register'
-      const payload = mode === 'login' ? { email, password } : { name, email, password }
+      const payload =
+        mode === 'login'
+          ? { email, password }
+          : { name: `${firstName.trim()} ${lastName.trim()}`.trim(), email, password }
       const res = await fetch(endpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -196,16 +200,28 @@ export function MemberAuth() {
 
           <form onSubmit={handleSubmit} className="space-y-4">
             {mode === 'register' && (
-              <Field label={fr ? 'Nom complet' : 'Full name'} icon={UserIcon}>
-                <Input
-                  id="name"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  autoComplete="name"
-                  placeholder={fr ? 'Votre nom' : 'Your name'}
-                  className={inputCls}
-                />
-              </Field>
+              <div className="grid grid-cols-2 gap-3">
+                <Field label={fr ? 'Prénom' : 'First name'} icon={UserIcon}>
+                  <Input
+                    id="firstName"
+                    value={firstName}
+                    onChange={(e) => setFirstName(e.target.value)}
+                    autoComplete="given-name"
+                    placeholder={fr ? 'Prénom' : 'First name'}
+                    className={inputCls}
+                  />
+                </Field>
+                <Field label={fr ? 'Nom' : 'Last name'} icon={UserIcon}>
+                  <Input
+                    id="lastName"
+                    value={lastName}
+                    onChange={(e) => setLastName(e.target.value)}
+                    autoComplete="family-name"
+                    placeholder={fr ? 'Nom' : 'Last name'}
+                    className={inputCls}
+                  />
+                </Field>
+              </div>
             )}
 
             <Field label="Email" icon={Mail}>

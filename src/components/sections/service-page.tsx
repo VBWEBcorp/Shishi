@@ -1,4 +1,4 @@
-import { ArrowRight, Check, Clock, MapPin, MessageCircle, ShoppingBag, Sparkles, Tag } from 'lucide-react'
+import { ArrowRight, Check, Clock, Lock, MapPin, MessageCircle, ShoppingBag, Sparkles, Tag } from 'lucide-react'
 import { getTranslations } from 'next-intl/server'
 import Image from 'next/image'
 
@@ -109,10 +109,7 @@ export async function ServicePage({
           {comingSoon ? (
             <div className="mt-7">
               <span className="inline-flex items-center gap-2.5 rounded-full bg-accent/15 px-5 py-2.5 text-sm font-semibold uppercase tracking-[0.18em] text-accent ring-1 ring-accent/30 backdrop-blur">
-                <span className="relative flex size-2">
-                  <span className="absolute inline-flex size-full animate-ping rounded-full bg-accent opacity-75" />
-                  <span className="relative inline-flex size-2 rounded-full bg-accent" />
-                </span>
+                <Lock className="size-4" aria-hidden />
                 {comingSoonLabel}
               </span>
             </div>
@@ -200,25 +197,20 @@ export async function ServicePage({
 
           <aside className="lg:sticky lg:top-24 lg:self-start">
             {comingSoon ? (
-              /* Carte « Bientôt disponible » — aucune réservation */
+              /* Carte verrouillée « Coming Soon » — aucune réservation ni contact */
               <div className="rounded-3xl border border-border bg-card p-7 text-center shadow-[0_24px_50px_-30px_oklch(0.16_0.02_55/0.35)]">
-                <span className="mx-auto flex size-14 items-center justify-center rounded-2xl bg-accent/10 text-accent ring-1 ring-accent/15">
-                  <Sparkles className="size-7" aria-hidden />
+                <span className="mx-auto flex size-14 items-center justify-center rounded-2xl bg-muted text-muted-foreground ring-1 ring-border">
+                  <Lock className="size-7" aria-hidden />
                 </span>
                 <p className="mt-5 font-editorial text-2xl font-normal text-foreground">{comingSoonLabel}</p>
                 <p className="mx-auto mt-2 max-w-xs text-sm text-muted-foreground">
                   {l === 'fr'
-                    ? 'Les réservations ouvriront très bientôt. Restez informé — écrivez-nous pour être prévenu du lancement.'
-                    : 'Bookings are opening very soon. Stay in the loop — message us to be notified at launch.'}
+                    ? 'Cette activité n’est pas encore ouverte à la réservation. Elle arrive très bientôt.'
+                    : 'This activity isn’t open for booking yet. Coming very soon.'}
                 </p>
-                <a
-                  href={waLink}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="mt-6 flex h-11 w-full items-center justify-center gap-2 rounded-full bg-[#25D366]/10 text-sm font-semibold text-[#1d9e4f] ring-1 ring-[#25D366]/25 transition-colors hover:bg-[#25D366]/15"
-                >
-                  <MessageCircle className="size-4" aria-hidden /> {t('whatsapp')}
-                </a>
+                <span className="mt-6 flex h-11 w-full cursor-not-allowed items-center justify-center gap-2 rounded-full bg-muted text-sm font-semibold text-muted-foreground ring-1 ring-border">
+                  <Lock className="size-4" aria-hidden /> {l === 'fr' ? 'Réservation verrouillée' : 'Booking locked'}
+                </span>
               </div>
             ) : (
               <div className="rounded-3xl border border-border bg-card p-6 shadow-[0_24px_50px_-30px_oklch(0.16_0.02_55/0.35)]">

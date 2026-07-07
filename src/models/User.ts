@@ -21,6 +21,18 @@ export interface IActivityCredit {
   renewAt?: Date
 }
 
+/**
+ * Abonnement en cours d'un membre (issu du catalogue admin).
+ * Purement descriptif : les crédits réels vivent dans `activityCredits`
+ * (recharge auto mise en place lors de l'application). `undefined` = aucun.
+ */
+export interface IMemberSubscription {
+  planId?: string
+  name: string
+  priceTHB: number
+  startedAt: Date
+}
+
 export interface IUser extends Document {
   email: string
   password: string
@@ -33,6 +45,8 @@ export interface IUser extends Document {
    * en ponctuel (valables 1 mois) ou en recharge automatique mensuelle.
    */
   activityCredits: IActivityCredit[]
+  /** Abonnement en cours (issu du catalogue admin), sinon undefined. */
+  subscription?: IMemberSubscription
   /** Date d'adhésion (premiers crédits reçus). */
   memberSince?: Date
   createdAt: Date
@@ -80,6 +94,17 @@ const UserSchema = new Schema<IUser>(
         },
       ],
       default: [],
+    },
+    // Abonnement en cours (catalogue admin). Descriptif — voir IMemberSubscription.
+    subscription: {
+      type: {
+        _id: false,
+        planId: String,
+        name: { type: String, required: true },
+        priceTHB: { type: Number, default: 0 },
+        startedAt: { type: Date, default: Date.now },
+      },
+      default: undefined,
     },
     memberSince: Date,
   },

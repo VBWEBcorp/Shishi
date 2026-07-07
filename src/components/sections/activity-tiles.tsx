@@ -1,4 +1,4 @@
-import { ArrowRight, ArrowUpRight, LayoutGrid } from 'lucide-react'
+import { ArrowRight, ArrowUpRight, LayoutGrid, Lock } from 'lucide-react'
 import { useLocale, useTranslations } from 'next-intl'
 import Image from 'next/image'
 
@@ -69,10 +69,7 @@ export function ActivityTiles() {
                 />
                 {a.comingSoon && (
                   <span className="absolute left-3 top-3 z-10 inline-flex items-center gap-1.5 rounded-full bg-foreground/75 px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.14em] text-white backdrop-blur-sm sm:left-4 sm:top-4">
-                    <span className="relative flex size-1.5">
-                      <span className="absolute inline-flex size-full animate-ping rounded-full bg-accent opacity-80" />
-                      <span className="relative inline-flex size-1.5 rounded-full bg-accent" />
-                    </span>
+                    <Lock className="size-2.5" aria-hidden />
                     Coming Soon
                   </span>
                 )}
@@ -85,7 +82,8 @@ export function ActivityTiles() {
               <div className="mt-3 px-0.5 sm:mt-4 sm:px-1">
                 <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
                   {a.comingSoon ? (
-                    <span className="rounded-full bg-accent/10 px-2 py-0.5 text-[9px] font-bold uppercase tracking-[0.1em] text-accent sm:px-2.5 sm:text-[10px] sm:tracking-[0.12em]">
+                    <span className="inline-flex items-center gap-1 rounded-full bg-accent/10 px-2 py-0.5 text-[9px] font-bold uppercase tracking-[0.1em] text-accent sm:px-2.5 sm:text-[10px] sm:tracking-[0.12em]">
+                      <Lock className="size-2.5" aria-hidden />
                       Coming Soon
                     </span>
                   ) : (

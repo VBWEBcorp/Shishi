@@ -1,7 +1,7 @@
 'use client'
 
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
-import { ArrowRight, LayoutGrid, type LucideIcon } from 'lucide-react'
+import { ArrowRight, LayoutGrid, Lock, type LucideIcon } from 'lucide-react'
 import Image from 'next/image'
 import { useState } from 'react'
 
@@ -129,7 +129,8 @@ export function ServicesShowcase({
                           {s.name[locale]}
                         </span>
                         {s.comingSoon && (
-                          <span className="shrink-0 rounded-full bg-accent/10 px-2 py-0.5 text-[9px] font-bold uppercase tracking-[0.1em] text-accent">
+                          <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-accent/10 px-2 py-0.5 text-[9px] font-bold uppercase tracking-[0.1em] text-accent">
+                            <Lock className="size-2.5" aria-hidden />
                             Coming Soon
                           </span>
                         )}

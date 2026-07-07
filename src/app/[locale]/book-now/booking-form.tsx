@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import Image from 'next/image'
 import { AnimatePresence, motion } from 'framer-motion'
-import { ArrowRight, CalendarCheck, CalendarSearch, Check, Loader2, Mail, MessageCircle, Minus, Plus, Sparkles, Ticket, Trash2, Users, Wallet } from 'lucide-react'
+import { ArrowRight, CalendarCheck, CalendarSearch, Check, Loader2, Lock, Mail, MessageCircle, Minus, Plus, Sparkles, Ticket, Trash2, Users, Wallet } from 'lucide-react'
 import { useLocale, useTranslations } from 'next-intl'
 import { useSearchParams } from 'next/navigation'
 
@@ -555,10 +555,7 @@ export function BookingForm({
             {activitySlug && comingSoon && (
               <div className="rounded-2xl bg-secondary/50 px-5 py-6 text-center ring-1 ring-border">
                 <span className="mx-auto inline-flex items-center gap-2 rounded-full bg-accent/15 px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.18em] text-accent ring-1 ring-accent/25">
-                  <span className="relative flex size-2">
-                    <span className="absolute inline-flex size-full animate-ping rounded-full bg-accent opacity-75" />
-                    <span className="relative inline-flex size-2 rounded-full bg-accent" />
-                  </span>
+                  <Lock className="size-3.5" aria-hidden />
                   Coming Soon
                 </span>
                 <p className="mt-3 text-sm font-semibold text-foreground">{t('comingSoonTitle')}</p>

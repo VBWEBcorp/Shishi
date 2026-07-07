@@ -8,6 +8,7 @@ import {
   LayoutDashboard,
   CalendarCheck,
   CreditCard,
+  Ticket,
   Images,
   LogOut,
   Home,
@@ -33,6 +34,7 @@ const navItems = [
   { href: '/admin/dashboard', label: 'Tableau de bord', icon: LayoutDashboard },
   { href: '/admin/bookings', label: 'Réservations', icon: CalendarCheck },
   { href: '/admin/members', label: 'Membres', icon: CreditCard },
+  { href: '/admin/subscriptions', label: 'Abonnements', icon: Ticket },
   { href: '/admin/contacts', label: 'CRM', icon: Users },
   { href: '/admin/newsletter', label: 'Newsletter', icon: Send },
 ]

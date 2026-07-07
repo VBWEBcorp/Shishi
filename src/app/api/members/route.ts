@@ -40,7 +40,7 @@ export async function GET(request: NextRequest) {
     }
 
     const users = await User.find(query)
-      .select('email name phone activityCredits memberSince createdAt')
+      .select('email name phone activityCredits subscription memberSince createdAt')
       .sort({ updatedAt: -1 })
       .limit(1000)
       .lean()
@@ -58,6 +58,9 @@ export async function GET(request: NextRequest) {
       name: u.name || '',
       phone: u.phone || '',
       activityCredits: activityCreditsSummary({ activityCredits: u.activityCredits || [] }),
+      subscription: u.subscription
+        ? { name: u.subscription.name, priceTHB: u.subscription.priceTHB || 0, startedAt: u.subscription.startedAt || null }
+        : null,
       memberSince: u.memberSince || null,
       createdAt: u.createdAt,
       bookingsCount: countMap.get(String(u._id)) || 0,
