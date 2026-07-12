@@ -55,15 +55,21 @@ export interface MemberBenefits {
   creditsUsed: number
   /** Fenêtre de réservation à l'avance autorisée (jours). */
   advanceBookingDays: number
-  /** Débite réellement les crédits de l'adhérent (à appeler après création). */
-  commitCredits: (bookingId: string) => Promise<void>
+  /**
+   * Débite les crédits de l'adhérent de façon ATOMIQUE et conditionnelle.
+   * À appeler AVANT de figer la réservation. Renvoie `true` si le débit a bien
+   * eu lieu, `false` si le solde ne couvrait plus (crédits consommés entre-temps
+   * par une réservation simultanée) → la réservation doit alors basculer en
+   * plein tarif. Empêche la double-dépense.
+   */
+  commitCredits: () => Promise<boolean>
 }
 
 const NO_BENEFITS = (baseAmount: number): MemberBenefits => ({
   amountDue: baseAmount,
   creditsUsed: 0,
   advanceBookingDays: PUBLIC_ADVANCE_DAYS,
-  commitCredits: async () => {},
+  commitCredits: async () => false,
 })
 
 /**
@@ -92,21 +98,51 @@ export async function resolveMemberBenefits(opts: {
   if (wallet) {
     const eff = effectiveWallet(wallet)
     if (eff.credits >= creditsNeeded) {
+      // La période a-t-elle été avancée par le rollover ? (période expirée +
+      // recharge auto). Si oui, il faut matérialiser le nouveau solde en base.
+      const storedRenewAt = wallet.renewAt ? new Date(wallet.renewAt) : null
+      const rolledRenewAt = eff.renewAt
+      const rolled =
+        !!rolledRenewAt && (!storedRenewAt || storedRenewAt.getTime() !== rolledRenewAt.getTime())
+      const rolledCredits = eff.credits // = `monthly` en cas de rollover
+
       return {
         amountDue: 0,
         creditsUsed: creditsNeeded,
         advanceBookingDays: MEMBER_ADVANCE_DAYS,
         commitCredits: async () => {
-          // Persiste l'état APRÈS rollover puis débit (positionnel sur l'activité).
-          await User.updateOne(
-            { _id: member.id, 'activityCredits.activity': activitySlug },
-            {
-              $set: {
-                'activityCredits.$.credits': eff.credits - creditsNeeded,
-                'activityCredits.$.renewAt': eff.renewAt ?? undefined,
+          // 1) Matérialise le rollover mensuel si la période était expirée.
+          //    Conditionnel (`renewAt` encore ancien) et idempotent : une seule
+          //    des réservations concurrentes réinitialise le solde à `monthly`.
+          if (rolled && rolledRenewAt) {
+            await User.updateOne(
+              {
+                _id: member.id,
+                activityCredits: {
+                  $elemMatch: { activity: activitySlug, monthly: { $gt: 0 }, renewAt: { $lt: rolledRenewAt } },
+                },
               },
-            }
+              {
+                $set: {
+                  'activityCredits.$.credits': rolledCredits,
+                  'activityCredits.$.renewAt': rolledRenewAt,
+                },
+              }
+            )
+          }
+
+          // 2) Débit ATOMIQUE et conditionnel : ne débite QUE si le solde courant
+          //    couvre le besoin. MongoDB sérialise les écritures d'un même
+          //    document → deux réservations simultanées ne peuvent pas dépenser
+          //    plus que le solde disponible (anti double-dépense).
+          const res = await User.updateOne(
+            {
+              _id: member.id,
+              activityCredits: { $elemMatch: { activity: activitySlug, credits: { $gte: creditsNeeded } } },
+            },
+            { $inc: { 'activityCredits.$.credits': -creditsNeeded } }
           )
+          return (res.modifiedCount ?? 0) === 1
         },
       }
     }
@@ -118,6 +154,6 @@ export async function resolveMemberBenefits(opts: {
     amountDue: baseAmount,
     creditsUsed: 0,
     advanceBookingDays: MEMBER_ADVANCE_DAYS,
-    commitCredits: async () => {},
+    commitCredits: async () => false,
   }
 }

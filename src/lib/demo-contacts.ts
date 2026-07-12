@@ -124,6 +124,8 @@ export function getDemoContacts(): DemoContact[] {
     const source: string[] = bookings > 0 ? ['booking'] : ['newsletter']
     // Quelques contacts cumulent plusieurs sources (réalisme).
     if (optIn && bookings > 0 && i % 4 === 0) source.push('newsletter')
+    // Les habitués « vip » ont un compte espace adhérent (source « member »).
+    if (tags.includes('vip')) source.push('member')
     // Désinscription : ~3 semaines après la dernière résa.
     const unsubscribedAt = unsub ? `${lastBooking}T10:00:00.000Z` : null
     return {

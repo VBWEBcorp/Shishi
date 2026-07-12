@@ -243,7 +243,7 @@ export default function PrivacyPage() {
                 <li><strong>Chiffrement en transit :</strong> toutes les communications sont protégées par HTTPS (TLS)</li>
                 <li><strong>Chiffrement au repos :</strong> les données stockées sont chiffrées par l&apos;hébergeur et la base de données</li>
                 <li><strong>Hachage des mots de passe :</strong> aucun mot de passe n&apos;est stocké en clair</li>
-                <li><strong>Accès restreint :</strong> seuls les membres autorisés accèdent au back-office, via une authentification sécurisée</li>
+                <li><strong>Accès restreint :</strong> seules les personnes autorisées accèdent au back-office, via une authentification sécurisée</li>
                 <li><strong>Mises à jour régulières</strong> des dépendances pour corriger les vulnérabilités connues</li>
               </ul>
             </section>

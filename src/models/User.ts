@@ -127,4 +127,7 @@ UserSchema.methods.comparePassword = async function (password: string) {
   return await bcrypt.compare(password, this.password)
 }
 
+// Liste admin des membres, triée par activité récente (rôle ≠ admin) → index de tri.
+UserSchema.index({ updatedAt: -1 })
+
 export default registerModel<IUser>('User', UserSchema)

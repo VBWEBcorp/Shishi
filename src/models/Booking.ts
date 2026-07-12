@@ -78,4 +78,15 @@ const BookingSchema = new Schema<IBooking>(
   { timestamps: true }
 )
 
+// ── Index de performance (requêtes chaudes) ────────────────────────────────
+//  · { activitySlug, date }   → disponibilité (page réservation + validation
+//    serveur à chaque réservation) : LE chemin le plus fréquent.
+//  · { status, createdAt }    → liste admin filtrée par statut + triée.
+//  · { createdAt }            → vue admin « toutes » (tri par défaut) + cloche.
+//  · { memberId }             → agrégat « nb résas / membre » + historique.
+BookingSchema.index({ activitySlug: 1, date: 1 })
+BookingSchema.index({ status: 1, createdAt: -1 })
+BookingSchema.index({ createdAt: -1 })
+BookingSchema.index({ memberId: 1 })
+
 export const Booking = registerModel<IBooking>('Booking', BookingSchema)

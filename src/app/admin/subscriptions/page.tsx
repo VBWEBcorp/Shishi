@@ -102,8 +102,8 @@ export default function SubscriptionsPage() {
             <CreditCard className="size-6 text-accent" /> Abonnements
           </h1>
           <p className="mt-1 max-w-2xl text-sm text-muted-foreground">
-            Votre catalogue d'abonnements. Créez-les ici, puis appliquez-les à un membre en 1 clic depuis
-            la page <span className="font-medium text-foreground">Membres</span> : les crédits mensuels
+            Votre catalogue d'abonnements. Créez-les ici, puis appliquez-les à un adhérent en 1 clic depuis
+            la page <span className="font-medium text-foreground">Adhérents</span> : les crédits mensuels
             par activité se mettent en place automatiquement.
           </p>
         </div>
@@ -210,7 +210,7 @@ export default function SubscriptionsPage() {
                     disabled={busyId === p.id}
                     className="size-4 rounded border-input accent-accent"
                   />
-                  Proposable (visible pour l'application aux membres)
+                  Proposable (visible pour l'application aux adhérents)
                 </label>
               </div>
               )

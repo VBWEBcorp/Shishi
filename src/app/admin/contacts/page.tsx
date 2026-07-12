@@ -42,10 +42,11 @@ interface Contact {
   updatedAt: string
 }
 
-type Filter = 'all' | 'optin' | 'unsub'
+type Filter = 'all' | 'members' | 'optin' | 'unsub'
 
 const FILTERS: { key: Filter; label: string }[] = [
   { key: 'all', label: 'Tous les clients' },
+  { key: 'members', label: 'Adhérents' },
   { key: 'optin', label: 'Abonnés newsletter' },
   { key: 'unsub', label: 'Désinscrits' },
 ]
@@ -56,6 +57,7 @@ const SOURCE_LABEL: Record<string, string> = {
   newsletter: 'Newsletter',
   manual: 'Ajout manuel',
   import: 'Import',
+  member: 'Espace adhérent',
 }
 
 function authHeaders(): HeadersInit {
@@ -69,21 +71,25 @@ function fmtDate(s?: string | null): string {
 }
 
 function matchesFilter(c: Contact, f: Filter): boolean {
+  if (f === 'members') return (c.source || []).includes('member')
   if (f === 'optin') return c.newsletterOptIn && !c.unsubscribedAt
   if (f === 'unsub') return !!c.unsubscribedAt
   return true
 }
 
-/** Un contact abonné (et non désinscrit) à la newsletter est considéré « adhérent ». */
+/**
+ * Adhérent = contact rattaché à un compte de l'espace adhérent (source « member »).
+ * Les clients qui réservent SANS compte (« de passage ») n'ont pas ce tag.
+ */
 function isMember(c: Contact): boolean {
-  return c.newsletterOptIn && !c.unsubscribedAt
+  return (c.source || []).includes('member')
 }
 
-/** Mini sticker « adhérent » posé à côté du nom des abonnés newsletter. */
+/** Mini sticker « adhérent » posé à côté du nom des titulaires d'un compte. */
 function MemberSticker() {
   return (
     <span
-      title="Adhérent — abonné à la newsletter"
+      title="Adhérent — titulaire d'un compte espace adhérent"
       className="inline-flex shrink-0 items-center gap-1 rounded-full border border-amber-500/30 bg-amber-500/15 px-1.5 py-0.5 text-[10px] font-semibold leading-none text-amber-700 dark:text-amber-300"
     >
       <Star className="size-2.5 fill-current" /> Adhérent
@@ -159,6 +165,7 @@ export default function AdminContactsPage() {
   const counts = useMemo(
     () => ({
       all: all.length,
+      members: all.filter((c) => matchesFilter(c, 'members')).length,
       optin: all.filter((c) => matchesFilter(c, 'optin')).length,
       unsub: all.filter((c) => matchesFilter(c, 'unsub')).length,
     }),
@@ -326,8 +333,8 @@ export default function AdminContactsPage() {
         <div>
           <h1 className="font-display text-2xl text-foreground">CRM</h1>
           <p className="mt-1 max-w-2xl text-sm text-muted-foreground">
-            Tous vos clients. Chaque réservation crée une fiche ; la case newsletter
-            ne fait que marquer le consentement — personne n’est jamais masqué.
+            Tous vos clients. L’étoile <span className="font-medium text-amber-600 dark:text-amber-400">Adhérent</span> marque
+            les titulaires d’un compte espace adhérent ; les clients de passage n’ont aucun tag.
           </p>
         </div>
         <div className="flex items-center gap-2">

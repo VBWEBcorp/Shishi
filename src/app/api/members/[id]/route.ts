@@ -73,7 +73,7 @@ export async function PATCH(request: NextRequest, { params }: { params: Params }
 
     const target = await User.findById(id)
     if (!target) {
-      return NextResponse.json({ error: 'Membre introuvable' }, { status: 404 })
+      return NextResponse.json({ error: 'Adhérent introuvable' }, { status: 404 })
     }
 
     // 1) Appliquer un abonnement du catalogue (1 clic).

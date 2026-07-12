@@ -25,7 +25,7 @@ const ITEMS: Item[] = [
     },
   },
   {
-    q: { en: 'Do I need to be a member?', fr: 'Faut-il être membre ?' },
+    q: { en: 'Do I need to be a member?', fr: 'Faut-il être adhérent ?' },
     a: {
       en: 'No. Shi Shi is open to everyone: book a single session or a day pass without any membership. Memberships simply offer better rates for regulars.',
       fr: 'Non. Shi Shi est ouvert à tous : réservez une session ou un pass journée sans abonnement. Les abonnements offrent simplement de meilleurs tarifs aux habitués.',
@@ -56,7 +56,7 @@ const ITEMS: Item[] = [
     q: { en: 'Is the restaurant open to everyone?', fr: 'Le restaurant est-il ouvert à tous ?' },
     a: {
       en: 'Yes. The healthy restaurant and pool bar welcome members and visitors alike, all day long — no booking needed to come and eat.',
-      fr: 'Oui. Le restaurant healthy et le pool bar accueillent membres et visiteurs, toute la journée — aucune réservation nécessaire pour venir manger.',
+      fr: 'Oui. Le restaurant healthy et le pool bar accueillent adhérents et visiteurs, toute la journée — aucune réservation nécessaire pour venir manger.',
     },
   },
   {

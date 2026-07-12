@@ -162,7 +162,7 @@ export default function MembersPage() {
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
           <h1 className="flex items-center gap-2.5 text-2xl font-bold tracking-tight text-foreground">
-            <Ticket className="size-6 text-accent" /> Membres &amp; crédits
+            <Ticket className="size-6 text-accent" /> Adhérents &amp; crédits
           </h1>
           <p className="mt-1 max-w-2xl text-sm text-muted-foreground">
             Le client paie sur place, vous le créditez ici. Chaque crédit est propre à une activité
@@ -230,10 +230,10 @@ export default function MembersPage() {
           <table className="w-full min-w-[680px] text-sm">
             <thead>
               <tr className="border-b border-border bg-muted/40 text-left text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                <th className="px-4 py-3">Membre</th>
+                <th className="px-4 py-3">Adhérent</th>
                 <th className="px-4 py-3">Crédits par activité</th>
                 <th className="px-4 py-3">Réservations</th>
-                <th className="px-4 py-3">Membre depuis</th>
+                <th className="px-4 py-3">Adhérent depuis</th>
                 <th className="px-4 py-3 text-right">Gérer</th>
               </tr>
             </thead>
@@ -247,7 +247,7 @@ export default function MembersPage() {
               ) : members.length === 0 ? (
                 <tr>
                   <td colSpan={5} className="px-4 py-12 text-center text-muted-foreground">
-                    Aucun membre pour ce filtre.
+                    Aucun adhérent pour ce filtre.
                   </td>
                 </tr>
               ) : (

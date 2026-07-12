@@ -147,7 +147,7 @@ export const testimonialsContent = {
   eyebrow: 'Avis Google',
   title: 'Ils adorent Shi Shi Samui',
   description:
-    'Ce que nos membres et visiteurs pensent du club — sport, détente et bonne humeur à Lamai.',
+    'Ce que nos adhérents et visiteurs pensent du club — sport, détente et bonne humeur à Lamai.',
   items: [
     { name: 'James W.', company: 'Tennis · Koh Samui', text: 'Best tennis courts on the island — well maintained, easy online booking and a great vibe. My go-to spot in Lamai.', stars: 5 },
     { name: 'Sophie L.', company: 'Family visit · France', text: 'The kids club is fantastic. Our children loved it while we enjoyed the pool and a healthy lunch. Perfect for families!', stars: 5 },

@@ -57,4 +57,7 @@ const ContactSchema = new Schema<IContact>(
   { timestamps: true }
 )
 
+// Liste CRM triée par activité récente (tri par défaut du panel) → index dédié.
+ContactSchema.index({ updatedAt: -1 })
+
 export const Contact = registerModel<IContact>('Contact', ContactSchema)

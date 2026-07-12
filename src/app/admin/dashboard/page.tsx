@@ -150,7 +150,7 @@ export default function AdminDashboardPage() {
               <CreditCard className="size-6" />
             </div>
             <div className="min-w-0 flex-1">
-              <p className="font-display text-lg font-semibold text-white">Membres &amp; crédits</p>
+              <p className="font-display text-lg font-semibold text-white">Adhérents &amp; crédits</p>
               <p className="text-sm text-white/65">Créditer les adhérents par activité (jour J)</p>
             </div>
             <ArrowRight className="size-5 text-white/55 transition-all group-hover:translate-x-0.5 group-hover:text-white" />

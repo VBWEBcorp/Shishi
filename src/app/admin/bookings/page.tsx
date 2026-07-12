@@ -153,7 +153,7 @@ function MemberInfo({ b }: { b: Booking }) {
     <div className="mt-2 flex flex-wrap items-center gap-1.5">
       {b.memberId && (
         <span className="inline-flex items-center gap-1 rounded-full bg-ocean/10 px-2 py-0.5 text-[11px] font-semibold text-ocean ring-1 ring-inset ring-ocean/25">
-          <CreditCard className="size-3" aria-hidden /> Membre
+          <CreditCard className="size-3" aria-hidden /> Adhérent
         </span>
       )}
       {credits > 0 && (
@@ -691,7 +691,7 @@ export default function AdminBookingsPage() {
                 <StatCard
                   label="Total réservations"
                   value={stats.total}
-                  sub={stats.memberCount > 0 ? `${stats.memberCount} via un compte membre` : 'Clients de passage'}
+                  sub={stats.memberCount > 0 ? `${stats.memberCount} via un compte adhérent` : 'Clients de passage'}
                 />
                 <StatCard label="Confirmées" value={stats.paid} sub={`${stats.confirmRate}% du total`} tone="emerald" />
                 <StatCard label="En attente" value={stats.pending} tone="orange" />
@@ -797,7 +797,7 @@ export default function AdminBookingsPage() {
                 <div className="mt-4 flex flex-wrap gap-x-6 gap-y-2 border-t border-border/60 pt-3 text-sm">
                   <span className="inline-flex items-center gap-2">
                     <CreditCard className="size-3.5 text-ocean" aria-hidden />
-                    <span className="text-muted-foreground">Réservations membres</span>
+                    <span className="text-muted-foreground">Réservations adhérents</span>
                     <span className="font-semibold text-foreground">{stats.memberCount}</span>
                   </span>
                   <span className="inline-flex items-center gap-2">

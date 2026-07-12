@@ -95,7 +95,6 @@ export async function POST(request: NextRequest) {
       partySize,
       baseAmount,
     })
-    const amount = benefits.amountDue
     const advanceDays = benefits.advanceBookingDays
 
     // Fenêtre de réservation à l'avance : 10 jours pour les membres, sinon le
@@ -105,8 +104,29 @@ export async function POST(request: NextRequest) {
     }
 
     await connectDB()
+
+    // ── Débit ATOMIQUE des crédits AVANT de figer la réservation ──────────
+    // C'est le débit conditionnel qui décide si la réservation est gratuite.
+    // Si les crédits ont été consommés entre-temps (réservations simultanées),
+    // le débit échoue et on bascule en plein tarif (paiement sur place) : jamais
+    // de réservation gratuite sans crédit réellement débité (anti double-dépense).
+    let amount = baseAmount
+    let creditsUsed = 0
+    if (member && benefits.creditsUsed > 0) {
+      let debited = false
+      try {
+        debited = await benefits.commitCredits()
+      } catch (e) {
+        console.error('[booking] credit debit failed:', e)
+      }
+      if (debited) {
+        amount = 0
+        creditsUsed = benefits.creditsUsed
+      }
+    }
+
     // Paiement 100 % couvert par les crédits → réservation confirmée directement.
-    const fullyCoveredByCredits = benefits.creditsUsed > 0 && amount === 0
+    const fullyCoveredByCredits = creditsUsed > 0 && amount === 0
     const booking = await Booking.create({
       activitySlug,
       activityName,
@@ -125,17 +145,8 @@ export async function POST(request: NextRequest) {
       locale,
       seen: false,
       memberId: member?.id,
-      creditsUsed: benefits.creditsUsed,
+      creditsUsed,
     })
-
-    // Débit des crédits membre (best-effort — après création de la réservation).
-    if (member && benefits.creditsUsed > 0) {
-      try {
-        await benefits.commitCredits(String(booking._id))
-      } catch (e) {
-        console.error('[booking] credit debit failed:', e)
-      }
-    }
 
     // CRM : chaque réservation alimente la fiche contact (best-effort — ne doit
     // jamais faire échouer la réservation si l'upsert plante).
@@ -188,7 +199,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       ok: true,
       bookingId: String(booking._id),
-      creditsUsed: benefits.creditsUsed,
+      creditsUsed,
       paid: fullyCoveredByCredits,
     })
   } catch (error) {

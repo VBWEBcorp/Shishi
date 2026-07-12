@@ -101,7 +101,7 @@ export function TestimonialsSection() {
     eyebrow: fr ? 'Avis Google' : 'Google reviews',
     title: fr ? 'Ils adorent Shi Shi Samui' : 'They love Shi Shi Samui',
     description: fr
-      ? 'Ce que nos membres et visiteurs pensent du club — sport, détente et bonne humeur à Lamai.'
+      ? 'Ce que nos adhérents et visiteurs pensent du club — sport, détente et bonne humeur à Lamai.'
       : 'What our members and visitors say about the club — sport, relaxation and good vibes in Lamai.',
   }
   const ratingLabel = fr ? '5,0 sur Google' : '5.0 on Google'

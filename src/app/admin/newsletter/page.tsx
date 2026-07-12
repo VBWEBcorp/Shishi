@@ -1,6 +1,6 @@
 'use client'
 
-import { CheckCheck, Eye, Globe, Mail, Search, Send, X } from 'lucide-react'
+import { CheckCheck, Eye, Globe, Mail, Search, Send, Star, X } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 
@@ -17,9 +17,15 @@ interface Contact {
   name?: string
   phone?: string
   country?: string
+  source?: string[]
   newsletterOptIn: boolean
   unsubscribedAt?: string | null
   createdAt: string
+}
+
+/** Adhérent = contact rattaché à un compte de l'espace adhérent (source « member »). */
+function isMember(c: Contact): boolean {
+  return (c.source || []).includes('member')
 }
 
 type Period = 'all' | '2m' | '6m' | '12m'
@@ -55,6 +61,7 @@ export default function AdminNewsletterPage() {
 
   // Filtres
   const [subsOnly, setSubsOnly] = useState(true)
+  const [membersOnly, setMembersOnly] = useState(false)
   const [country, setCountry] = useState('all')
   const [period, setPeriod] = useState<Period>('all')
   const [search, setSearch] = useState('')
@@ -117,12 +124,13 @@ export default function AdminNewsletterPage() {
     const cut = period === 'all' ? null : cutoff(period === '2m' ? 2 : period === '6m' ? 6 : 12)
     return base.filter((c) => {
       if (subsOnly && !c.newsletterOptIn) return false
+      if (membersOnly && !isMember(c)) return false
       if (country !== 'all' && c.country !== country) return false
       if (cut && new Date(c.createdAt) < cut) return false
       if (q && !((c.name || '').toLowerCase().includes(q) || c.email.toLowerCase().includes(q))) return false
       return true
     })
-  }, [base, subsOnly, country, period, search])
+  }, [base, subsOnly, membersOnly, country, period, search])
 
   const selectedFiltered = useMemo(() => filtered.filter((c) => selected.has(c.email)), [filtered, selected])
   const allFilteredSelected = filtered.length > 0 && selectedFiltered.length === filtered.length
@@ -210,7 +218,7 @@ export default function AdminNewsletterPage() {
         <div>
           <h1 className="font-display text-2xl text-foreground">Newsletter</h1>
           <p className="mt-1 max-w-2xl text-sm text-muted-foreground">
-            Ciblez vos contacts (par pays, par date) et envoyez un message personnalisé.
+            Ciblez vos contacts (adhérents, pays, date) et envoyez un message personnalisé.
             Les désinscrits sont automatiquement exclus.
           </p>
         </div>
@@ -229,6 +237,16 @@ export default function AdminNewsletterPage() {
                 className="size-4 rounded border-input accent-accent"
               />
               Abonnés uniquement
+            </label>
+
+            <label className="inline-flex cursor-pointer items-center gap-2 text-sm">
+              <input
+                type="checkbox"
+                checked={membersOnly}
+                onChange={(e) => setMembersOnly(e.target.checked)}
+                className="size-4 rounded border-input accent-accent"
+              />
+              Adhérents uniquement
             </label>
 
             <div className="relative">
@@ -315,6 +333,14 @@ export default function AdminNewsletterPage() {
                         <div className="truncate text-sm font-medium text-foreground">{c.name || c.email}</div>
                         <div className="truncate text-xs text-muted-foreground">{c.email}</div>
                       </div>
+                      {isMember(c) && (
+                        <span
+                          title="Adhérent — titulaire d'un compte espace adhérent"
+                          className="hidden shrink-0 items-center gap-1 rounded-full border border-amber-500/30 bg-amber-500/15 px-1.5 py-0.5 text-[10px] font-semibold text-amber-700 sm:inline-flex dark:text-amber-300"
+                        >
+                          <Star className="size-2.5 fill-current" /> Adhérent
+                        </span>
+                      )}
                       {c.newsletterOptIn ? (
                         <span className="hidden shrink-0 rounded-full bg-emerald-500/15 px-2 py-0.5 text-[10px] font-semibold text-emerald-700 sm:inline dark:text-emerald-300">
                           Abonné
