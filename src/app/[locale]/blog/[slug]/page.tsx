@@ -5,7 +5,7 @@ import { connectDB } from '@/lib/db'
 import { BlogPost } from '@/models/Blog'
 import { visiblePostFilter } from '@/lib/blog-filters'
 import { getBuiltinArticle, builtinStaticParams, type BlogLocale } from '@/lib/blog-articles'
-import { siteConfig } from '@/lib/seo'
+import { siteConfig, jsonLdScript } from '@/lib/seo'
 import BlogPostContent from './blog-post-content'
 
 type Params = Promise<{ locale: string; slug: string }>
@@ -163,7 +163,7 @@ export default async function BlogPostPage({ params }: { params: Params }) {
 
     return (
       <>
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdScript(jsonLd) }} />
         <BlogPostContent slug={slug} initialPost={initialPost} locale={l} />
       </>
     )
@@ -207,7 +207,7 @@ export default async function BlogPostPage({ params }: { params: Params }) {
 
     return (
       <>
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdScript(jsonLd) }} />
         <BlogPostContent slug={slug} initialPost={initialPost} locale={l} />
       </>
     )

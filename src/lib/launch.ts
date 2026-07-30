@@ -12,7 +12,7 @@
  * → Au lancement réel : passer LAUNCHED à true (un seul endroit suffit :
  *   accueil, middleware et sitemap s'appuient tous sur ce drapeau).
  */
-export const LAUNCHED = false
+export const LAUNCHED = true
 
 /**
  * Aperçu privé par CODE : tant que le site n'est pas lancé (façade Coming Soon),
@@ -24,3 +24,12 @@ export const PREVIEW_COOKIE = 'shishi_preview'
 export const PREVIEW_CODE = process.env.PREVIEW_CODE || 'Shishi2230'
 /** Durée de validité du cookie d'aperçu (30 jours). */
 export const PREVIEW_MAX_AGE = 60 * 60 * 24 * 30
+
+/**
+ * Mise en avant PUBLIQUE de l'espace adhérent (bouton « Se connecter / Espace
+ * adhérent » dans la navigation). Désactivé tant qu'on ne promeut pas les
+ * abonnements sur le site : les routes /member restent fonctionnelles (accès
+ * par lien direct), mais ne sont plus affichées dans le menu. Repasser à `true`
+ * le jour du lancement des abonnements.
+ */
+export const SHOW_MEMBER_AREA = false

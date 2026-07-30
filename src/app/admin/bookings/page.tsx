@@ -5,6 +5,7 @@ import {
   BadgePercent,
   BarChart3,
   CalendarDays,
+  CalendarPlus,
   CalendarRange,
   Check,
   ChevronLeft,
@@ -32,6 +33,7 @@ import { ActivityIcon } from '@/components/activity-icon'
 import { activities } from '@/lib/activities'
 import { isBookable, isDayPass } from '@/lib/availability'
 import { cn } from '@/lib/utils'
+import { NewBookingModal } from './new-booking-modal'
 
 // Activités concernées par le module de réservation : ouvertes (réservables) ou
 // « Bientôt » (prévues mais pas encore lancées, ex. pickleball). Le restaurant,
@@ -58,6 +60,8 @@ interface Booking {
   partySize?: number
   participants?: { name: string; email: string; phone?: string }[]
   status: 'pending' | 'paid' | 'cancelled' | 'failed'
+  /** Créneau bloqué manuellement (indispo interne, pas un vrai client). */
+  blocked?: boolean
   /** Adhérent à l'origine de la réservation (compte membre) — sinon client de passage. */
   memberId?: string
   /** Crédits (par activité) débités pour cette réservation. */
@@ -233,6 +237,7 @@ export default function AdminBookingsPage() {
   const [busyId, setBusyId] = useState<string | null>(null)
 
   const [view, setView] = useState<View>('calendar')
+  const [showNew, setShowNew] = useState(false)
   // Données pour l'onglet Statistiques : toutes les réservations, indépendamment du filtre de statut.
   const [allBookings, setAllBookings] = useState<Booking[] | null>(null)
   const [statsLoading, setStatsLoading] = useState(false)
@@ -375,7 +380,8 @@ export default function AdminBookingsPage() {
 
   // Agrégats pour l'onglet Statistiques (calculés sur toutes les réservations).
   const stats = useMemo(() => {
-    const data = allBookings ?? []
+    // Les créneaux bloqués (indispo interne) ne sont pas des clients → exclus des stats.
+    const data = (allBookings ?? []).filter((b) => !b.blocked)
     let paid = 0, pending = 0, cancelled = 0, failed = 0, revenue = 0
     let memberCount = 0, creditsUsed = 0
     const actMap = new Map<string, { slug: string; name: string; count: number; revenue: number }>()
@@ -452,9 +458,11 @@ export default function AdminBookingsPage() {
             <User className="size-3.5" aria-hidden /> {b.name}
           </span>
           <div className="mt-1 flex flex-col gap-0.5 text-muted-foreground">
-            <a href={`mailto:${b.email}`} className="inline-flex items-center gap-1.5 hover:text-accent">
-              <Mail className="size-3.5" aria-hidden /> {b.email}
-            </a>
+            {b.email && (
+              <a href={`mailto:${b.email}`} className="inline-flex items-center gap-1.5 hover:text-accent">
+                <Mail className="size-3.5" aria-hidden /> {b.email}
+              </a>
+            )}
             {b.phone && (
               <a href={`tel:${b.phone}`} className="inline-flex items-center gap-1.5 hover:text-accent">
                 <Phone className="size-3.5" aria-hidden /> {b.phone}
@@ -529,14 +537,33 @@ export default function AdminBookingsPage() {
             Suivez et traitez les demandes reçues sur le site.
           </p>
         </div>
-        <button
-          onClick={() => load(filter)}
-          className="inline-flex items-center gap-2 rounded-xl border border-border bg-card px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-muted"
-        >
-          <RefreshCw className={`size-4 ${loading ? 'animate-spin' : ''}`} aria-hidden />
-          Rafraîchir
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setShowNew(true)}
+            className="inline-flex items-center gap-2 rounded-xl bg-accent px-4 py-2 text-sm font-semibold text-accent-foreground transition-all hover:brightness-105"
+          >
+            <CalendarPlus className="size-4" aria-hidden />
+            Nouvelle réservation
+          </button>
+          <button
+            onClick={() => load(filter)}
+            className="inline-flex items-center gap-2 rounded-xl border border-border bg-card px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-muted"
+          >
+            <RefreshCw className={`size-4 ${loading ? 'animate-spin' : ''}`} aria-hidden />
+            Rafraîchir
+          </button>
+        </div>
       </div>
+
+      {showNew && (
+        <NewBookingModal
+          onClose={() => setShowNew(false)}
+          onCreated={() => {
+            load(filter)
+            setAllBookings(null) // invalide le cache stats
+          }}
+        />
+      )}
 
       {/* Activités du module de réservation : ouvertes vs « Bientôt » */}
       <div className="rounded-2xl border border-border bg-card p-4 sm:p-5">
@@ -974,9 +1001,11 @@ export default function AdminBookingsPage() {
                   <td className="px-5 py-3.5">
                     <div className="font-medium text-foreground">{b.name}</div>
                     <div className="mt-0.5 flex flex-col gap-0.5 text-xs text-muted-foreground">
-                      <a href={`mailto:${b.email}`} className="inline-flex items-center gap-1.5 hover:text-accent">
-                        <Mail className="size-3" aria-hidden /> {b.email}
-                      </a>
+                      {b.email && (
+                        <a href={`mailto:${b.email}`} className="inline-flex items-center gap-1.5 hover:text-accent">
+                          <Mail className="size-3" aria-hidden /> {b.email}
+                        </a>
+                      )}
                       {b.phone && (
                         <a href={`tel:${b.phone}`} className="inline-flex items-center gap-1.5 hover:text-accent">
                           <Phone className="size-3" aria-hidden /> {b.phone}

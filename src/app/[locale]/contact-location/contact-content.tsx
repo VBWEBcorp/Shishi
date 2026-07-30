@@ -30,13 +30,6 @@ import { images as siteImages } from '@/lib/site-content'
 
 type FormStatus = 'idle' | 'sending' | 'success' | 'error'
 
-const FORMSPREE_RAW = process.env.NEXT_PUBLIC_FORMSPREE_ENDPOINT || ''
-const FORMSPREE_ENDPOINT = FORMSPREE_RAW.startsWith('http')
-  ? FORMSPREE_RAW
-  : FORMSPREE_RAW
-    ? `https://formspree.io/f/${FORMSPREE_RAW}`
-    : ''
-
 export function ContactContent() {
   const t = useTranslations('Contact')
   const l = useLocale() as Locale
@@ -64,18 +57,19 @@ export function ContactContent() {
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
     if (status === 'sending') return
-    if (!FORMSPREE_ENDPOINT) {
-      setStatus('error')
-      return
-    }
     const form = e.currentTarget
     const fd = new FormData(form)
+    const payload = {
+      name: String(fd.get('name') || ''),
+      email: String(fd.get('email') || ''),
+      message: String(fd.get('message') || ''),
+    }
     setStatus('sending')
     try {
-      const res = await fetch(FORMSPREE_ENDPOINT, {
+      const res = await fetch('/api/contact', {
         method: 'POST',
-        headers: { Accept: 'application/json' },
-        body: fd,
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        body: JSON.stringify(payload),
       })
       if (!res.ok) throw new Error('request-failed')
       setStatus('success')
@@ -259,6 +253,7 @@ export function ContactContent() {
                       id="message"
                       name="message"
                       rows={4}
+                      required
                       className="w-full rounded-xl border border-input bg-background/70 px-3.5 py-3 text-sm text-foreground placeholder:text-muted-foreground focus-visible:border-ring focus-visible:outline-none"
                     />
                   </div>

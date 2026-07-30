@@ -55,6 +55,20 @@ export function buildTitle(page?: string) {
   return `${page} - ${siteConfig.name}`
 }
 
+/**
+ * Sérialise un objet JSON-LD pour injection dans une balise <script>. `JSON.stringify`
+ * n'échappe pas la séquence `</script>` ni `<`/`>` : un champ contrôlé par l'admin
+ * (titre d'article, tags…) contenant `</script><img onerror=…>` pourrait sinon
+ * fermer la balise et injecter du HTML exécutable (XSS). On échappe donc `<`, `>`
+ * et `&` en séquences unicode, neutres pour le JSON mais sûres dans le HTML.
+ */
+export function jsonLdScript(data: unknown): string {
+  return JSON.stringify(data)
+    .replace(/</g, '\\u003c')
+    .replace(/>/g, '\\u003e')
+    .replace(/&/g, '\\u0026')
+}
+
 // Routes publiques indexables (structure SEO « à la lettre » de l'audit).
 // Utilisé par le sitemap au lancement (cf. sitemap.ts, drapeau LAUNCHED).
 export const routes = [

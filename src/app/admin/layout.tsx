@@ -34,23 +34,54 @@ export default function AdminLayout({
   const isPublicPage = publicPaths.includes(pathname)
 
   useEffect(() => {
+    let cancelled = false
     const token = localStorage.getItem('authToken')
 
+    // Valide RÉELLEMENT la session côté serveur (signature JWT + rôle admin) au
+    // lieu de se fier à la seule présence d'une chaîne dans localStorage. Gère
+    // aussi les tokens expirés/invalides : sans ça, l'UI admin s'affichait puis
+    // toutes les API renvoyaient 401, laissant une interface cassée.
+    const checkAdmin = (t: string) =>
+      fetch('/api/auth/verify', { headers: { Authorization: `Bearer ${t}` } })
+        .then((res) => (res.ok ? res.json() : null))
+        .then((data) => data?.user?.role === 'admin')
+        .catch(() => false)
+
     if (isPublicPage) {
-      if (token) {
-        router.push('/admin/dashboard')
-      }
+      // Pages login/register : on les affiche immédiatement, et on ne redirige
+      // vers le dashboard que si une session admin VALIDE existe déjà.
       setLoading(false)
-      return
+      if (token) {
+        checkAdmin(token).then((ok) => {
+          if (!cancelled && ok) router.push('/admin/dashboard')
+        })
+      }
+      return () => {
+        cancelled = true
+      }
     }
 
     if (!token) {
       router.push('/admin/login')
-      return
+      return () => {
+        cancelled = true
+      }
     }
 
-    setAuthenticated(true)
-    setLoading(false)
+    checkAdmin(token).then((ok) => {
+      if (cancelled) return
+      if (ok) {
+        setAuthenticated(true)
+        setLoading(false)
+      } else {
+        localStorage.removeItem('authToken')
+        router.push('/admin/login')
+      }
+    })
+
+    return () => {
+      cancelled = true
+    }
   }, [router, isPublicPage])
 
   if (loading) return null

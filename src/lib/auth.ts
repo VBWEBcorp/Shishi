@@ -1,7 +1,21 @@
 import jwt from 'jsonwebtoken'
 import { NextRequest } from 'next/server'
 
-const JWT_SECRET = process.env.JWT_SECRET || 'dev-secret-key'
+/**
+ * Secret de signature des jetons ADMIN. Il DOIT être fourni via la variable
+ * d'environnement `JWT_SECRET`. En production, l'absence de secret est une
+ * erreur bloquante (fail-closed) — on ne retombe JAMAIS sur une valeur codée en
+ * dur, qui permettrait à quiconque de forger un jeton admin. En dev/test, un
+ * secret de repli est toléré pour ne pas bloquer le travail local.
+ */
+function getJwtSecret(): string {
+  const secret = process.env.JWT_SECRET
+  if (secret) return secret
+  if (process.env.NODE_ENV === 'production') {
+    throw new Error('JWT_SECRET manquant : la variable d\'environnement est obligatoire en production.')
+  }
+  return 'dev-secret-key'
+}
 
 export interface JWTPayload {
   userId: string
@@ -10,12 +24,12 @@ export interface JWTPayload {
 }
 
 export function generateToken(payload: Omit<JWTPayload, 'iat' | 'exp'>) {
-  return jwt.sign(payload, JWT_SECRET, { expiresIn: '7d' })
+  return jwt.sign(payload, getJwtSecret(), { expiresIn: '7d', algorithm: 'HS256' })
 }
 
 export function verifyToken(token: string): JWTPayload | null {
   try {
-    return jwt.verify(token, JWT_SECRET) as JWTPayload
+    return jwt.verify(token, getJwtSecret(), { algorithms: ['HS256'] }) as JWTPayload
   } catch {
     return null
   }

@@ -48,6 +48,25 @@ export interface MemberRef {
   email?: string
 }
 
+/**
+ * Recrédite un portefeuille d'activité. Sert de COMPENSATION lorsqu'une
+ * réservation échoue APRÈS le débit des crédits (cf. /api/booking) : sans cela,
+ * les crédits seraient perdus sans réservation en contrepartie. Best-effort et
+ * idempotent au niveau appelant (appelé une seule fois par échec de création).
+ */
+export async function refundCredits(
+  memberId: string,
+  activitySlug: string,
+  credits: number
+): Promise<void> {
+  if (!memberId || !activitySlug || !(credits > 0)) return
+  await connectDB()
+  await User.updateOne(
+    { _id: memberId, 'activityCredits.activity': activitySlug },
+    { $inc: { 'activityCredits.$.credits': credits } }
+  )
+}
+
 export interface MemberBenefits {
   /** Montant restant à payer (0 si couvert par les crédits). */
   amountDue: number

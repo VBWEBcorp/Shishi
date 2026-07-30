@@ -11,6 +11,7 @@ import { Link, usePathname, useRouter } from '@/i18n/navigation'
 import type { Locale } from '@/i18n/routing'
 import { routing } from '@/i18n/routing'
 import { activities, serviceConfigs } from '@/lib/activities'
+import { SHOW_MEMBER_AREA } from '@/lib/launch'
 import { siteConfig } from '@/lib/seo'
 import { cn } from '@/lib/utils'
 
@@ -30,7 +31,9 @@ export function Navbar() {
   const pathname = usePathname()
 
   // Statut de connexion adhérent : « Se connecter » ↔ « Espace adhérent ».
+  // Ignoré tant que l'espace adhérent n'est pas affiché publiquement.
   useEffect(() => {
+    if (!SHOW_MEMBER_AREA) return
     let cancelled = false
     fetch('/api/member/me', { cache: 'no-store' })
       .then((r) => !cancelled && setMemberLoggedIn(r.ok))
@@ -45,7 +48,9 @@ export function Navbar() {
     serviceConfigs.some((s) => pathname === s.path) ||
     pathname?.startsWith('/book-now') ||
     pathname?.startsWith('/contact-location') ||
-    pathname?.startsWith('/a-propos')
+    pathname?.startsWith('/a-propos') ||
+    pathname?.startsWith('/services') ||
+    pathname?.startsWith('/blog')
   const lightText = open || (!!hasDarkHero && !scrolled)
 
   useEffect(() => {
@@ -89,38 +94,41 @@ export function Navbar() {
             <LangSwitch light={lightText} />
 
             {/* Se connecter ↔ Espace adhérent : bouton rond sur mobile, puce « compte »
-                (icône en cercle + texte) sur desktop — secondaire vs « Réserver ». */}
-            <Link
-              href={memberLoggedIn ? '/member' : '/member/login'}
-              aria-label={memberLoggedIn ? (fr ? 'Espace adhérent' : 'Member area') : (fr ? 'Se connecter' : 'Sign in')}
-              className={cn(
-                'group relative inline-flex h-9 w-9 items-center justify-center gap-2 rounded-full text-[13px] font-semibold ring-1 transition-colors sm:w-auto sm:pl-1.5 sm:pr-3.5',
-                lightText
-                  ? 'text-white ring-white/20 hover:bg-white/10'
-                  : 'text-foreground ring-border hover:bg-muted',
-                open && 'pointer-events-none opacity-0'
-              )}
-            >
-              <span
+                (icône en cercle + texte) sur desktop — secondaire vs « Réserver ».
+                Masqué tant que les abonnements ne sont pas promus (SHOW_MEMBER_AREA). */}
+            {SHOW_MEMBER_AREA && (
+              <Link
+                href={memberLoggedIn ? '/member' : '/member/login'}
+                aria-label={memberLoggedIn ? (fr ? 'Espace adhérent' : 'Member area') : (fr ? 'Se connecter' : 'Sign in')}
                 className={cn(
-                  'flex size-4 items-center justify-center rounded-full transition-colors sm:size-6',
+                  'group relative inline-flex h-9 w-9 items-center justify-center gap-2 rounded-full text-[13px] font-semibold ring-1 transition-colors sm:w-auto sm:pl-1.5 sm:pr-3.5',
                   lightText
-                    ? 'sm:bg-white/15 sm:group-hover:bg-white/25'
-                    : memberLoggedIn
-                      ? 'sm:bg-accent sm:text-accent-foreground'
-                      : 'sm:bg-accent/10 sm:text-accent'
+                    ? 'text-white ring-white/20 hover:bg-white/10'
+                    : 'text-foreground ring-border hover:bg-muted',
+                  open && 'pointer-events-none opacity-0'
                 )}
               >
-                <UserRound className="size-4 shrink-0 sm:size-3.5" aria-hidden />
-              </span>
-              <span className="hidden sm:inline">
-                {memberLoggedIn ? (fr ? 'Espace adhérent' : 'Member area') : (fr ? 'Se connecter' : 'Sign in')}
-              </span>
-              {/* Point d'état « connecté » (mobile, où le texte est masqué) */}
-              {memberLoggedIn && (
-                <span className="absolute -right-0.5 -top-0.5 size-2.5 rounded-full bg-accent ring-2 ring-background sm:hidden" aria-hidden />
-              )}
-            </Link>
+                <span
+                  className={cn(
+                    'flex size-4 items-center justify-center rounded-full transition-colors sm:size-6',
+                    lightText
+                      ? 'sm:bg-white/15 sm:group-hover:bg-white/25'
+                      : memberLoggedIn
+                        ? 'sm:bg-accent sm:text-accent-foreground'
+                        : 'sm:bg-accent/10 sm:text-accent'
+                  )}
+                >
+                  <UserRound className="size-4 shrink-0 sm:size-3.5" aria-hidden />
+                </span>
+                <span className="hidden sm:inline">
+                  {memberLoggedIn ? (fr ? 'Espace adhérent' : 'Member area') : (fr ? 'Se connecter' : 'Sign in')}
+                </span>
+                {/* Point d'état « connecté » (mobile, où le texte est masqué) */}
+                {memberLoggedIn && (
+                  <span className="absolute -right-0.5 -top-0.5 size-2.5 rounded-full bg-accent ring-2 ring-background sm:hidden" aria-hidden />
+                )}
+              </Link>
+            )}
 
             <Link
               href="/book-now"
@@ -290,16 +298,18 @@ function FullscreenMenu({
                       {t(l.key)}
                     </Link>
                   ))}
-                  <Link
-                    href={memberLoggedIn ? '/member' : '/member/login'}
-                    onClick={onClose}
-                    className="inline-flex items-center gap-1.5 text-sm font-medium text-white/70 transition-colors hover:text-white"
-                  >
-                    <UserRound className="size-4" aria-hidden />
-                    {memberLoggedIn
-                      ? (fr ? 'Espace adhérent' : 'Member area')
-                      : (fr ? 'Se connecter' : 'Sign in')}
-                  </Link>
+                  {SHOW_MEMBER_AREA && (
+                    <Link
+                      href={memberLoggedIn ? '/member' : '/member/login'}
+                      onClick={onClose}
+                      className="inline-flex items-center gap-1.5 text-sm font-medium text-white/70 transition-colors hover:text-white"
+                    >
+                      <UserRound className="size-4" aria-hidden />
+                      {memberLoggedIn
+                        ? (fr ? 'Espace adhérent' : 'Member area')
+                        : (fr ? 'Se connecter' : 'Sign in')}
+                    </Link>
+                  )}
                 </div>
                 <div className="flex items-center gap-3">
                   <a

@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { X, ArrowRight } from 'lucide-react'
+import { safeUrl } from '@/lib/utils'
 
 interface PopupData {
   enabled: boolean
@@ -154,7 +155,7 @@ export function MarketingPopup() {
                   className="mt-6"
                 >
                   <a
-                    href={popup.buttonLink || '#'}
+                    href={safeUrl(popup.buttonLink)}
                     onClick={handleClose}
                     className="group inline-flex items-center gap-2 px-7 py-3 rounded-xl text-sm font-bold text-white transition-all duration-200 hover:shadow-lg hover:scale-[1.02] active:scale-[0.98]"
                     style={{

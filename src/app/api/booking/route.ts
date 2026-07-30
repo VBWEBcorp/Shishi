@@ -10,9 +10,10 @@ import {
 } from '@/lib/booking-pricing'
 import { getBookingConfig, isBookable, isDayPass } from '@/lib/availability'
 import { isRangeAvailable } from '@/lib/availability-query'
+import { isValidBookingDate, isBookingDateTimeInPast } from '@/lib/booking-validation'
 import { notifyNewBooking } from '@/lib/booking-emails'
 import { langFromPhoneCountry } from '@/lib/country-codes'
-import { resolveMemberBenefits } from '@/lib/membership'
+import { resolveMemberBenefits, refundCredits } from '@/lib/membership'
 import { getMemberFromRequest } from '@/lib/member-auth'
 
 export async function POST(request: NextRequest) {
@@ -59,6 +60,14 @@ export async function POST(request: NextRequest) {
     }
     if (!isBookable(activitySlug)) {
       return NextResponse.json({ error: 'not-bookable' }, { status: 400 })
+    }
+    // Date au format strict AAAA-MM-JJ et non déjà écoulée (heure de Bangkok).
+    // Empêche les réservations dans le passé et les dates malformées.
+    if (!isValidBookingDate(date)) {
+      return NextResponse.json({ error: 'invalid-date' }, { status: 400 })
+    }
+    if (isBookingDateTimeInPast(date, time)) {
+      return NextResponse.json({ error: 'date-in-past' }, { status: 400 })
     }
 
     // Nombre d'heures (activités à durée variable, ex. Kids Club). Borné [1..MAX].
@@ -127,26 +136,40 @@ export async function POST(request: NextRequest) {
 
     // Paiement 100 % couvert par les crédits → réservation confirmée directement.
     const fullyCoveredByCredits = creditsUsed > 0 && amount === 0
-    const booking = await Booking.create({
-      activitySlug,
-      activityName,
-      date,
-      time,
-      duration,
-      name,
-      email,
-      phone,
-      notes,
-      amount,
-      currency: 'thb',
-      partySize,
-      participants,
-      status: fullyCoveredByCredits ? 'paid' : 'pending',
-      locale,
-      seen: false,
-      memberId: member?.id,
-      creditsUsed,
-    })
+    let booking
+    try {
+      booking = await Booking.create({
+        activitySlug,
+        activityName,
+        date,
+        time,
+        duration,
+        name,
+        email,
+        phone,
+        notes,
+        amount,
+        currency: 'thb',
+        partySize,
+        participants,
+        status: fullyCoveredByCredits ? 'paid' : 'pending',
+        locale,
+        seen: false,
+        memberId: member?.id,
+        creditsUsed,
+      })
+    } catch (createErr) {
+      // La création a échoué APRÈS un éventuel débit de crédits : on recrédite
+      // pour ne jamais débiter un adhérent sans réservation en contrepartie.
+      if (creditsUsed > 0 && member) {
+        try {
+          await refundCredits(member.id, activitySlug, creditsUsed)
+        } catch (refundErr) {
+          console.error('[booking] credit refund failed:', refundErr)
+        }
+      }
+      throw createErr
+    }
 
     // CRM : chaque réservation alimente la fiche contact (best-effort — ne doit
     // jamais faire échouer la réservation si l'upsert plante).

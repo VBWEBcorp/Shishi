@@ -33,8 +33,12 @@ export interface IBooking extends Document {
   /** Vue par l'admin (pour la cloche de notifications). */
   seen?: boolean
   seenAt?: Date
-  /** Rappel « 1 h avant » envoyé (anti-doublon du cron). */
+  /** Rappel « 30 min avant » envoyé (anti-doublon du cron). */
   reminderSentAt?: Date
+  /** Créneau bloqué manuellement par l'admin (indispo interne, pas un client). */
+  blocked?: boolean
+  /** Réservation saisie manuellement depuis l'espace admin (vs site public). */
+  createdByAdmin?: boolean
   createdAt: Date
   updatedAt: Date
 }
@@ -47,7 +51,10 @@ const BookingSchema = new Schema<IBooking>(
     time: { type: String, required: true },
     duration: { type: Number, default: 60 },
     name: { type: String, required: true },
-    email: { type: String, required: true },
+    // Non requis au niveau schéma : un créneau bloqué par l'admin n'a pas de
+    // client. La route publique /api/booking valide, elle, la présence + le
+    // format de l'email avant toute création (aucune régression côté site).
+    email: { type: String, default: '' },
     phone: String,
     notes: String,
     amount: { type: Number, required: true },
@@ -74,6 +81,8 @@ const BookingSchema = new Schema<IBooking>(
     seen: { type: Boolean, default: false },
     seenAt: Date,
     reminderSentAt: Date,
+    blocked: { type: Boolean, default: false },
+    createdByAdmin: { type: Boolean, default: false },
   },
   { timestamps: true }
 )

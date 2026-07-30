@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { safeUrl } from '@/lib/utils'
 
 interface BannerData {
   enabled: boolean
@@ -77,7 +78,7 @@ export function MarketingBanner() {
 
   if (banner.link) {
     return (
-      <a href={banner.link} className="block transition-opacity hover:opacity-90">
+      <a href={safeUrl(banner.link)} className="block transition-opacity hover:opacity-90">
         {marquee}
       </a>
     )

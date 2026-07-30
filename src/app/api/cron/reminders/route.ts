@@ -8,8 +8,9 @@ import { Booking } from '@/models/Booking'
 
 export const dynamic = 'force-dynamic'
 
-/** Fenêtre d'envoi : on rappelle dès que la session est à ≤ 1 h (et future). */
-const REMINDER_WINDOW_MS = 1 * 60 * 60 * 1000
+/** Fenêtre d'envoi : on rappelle dès que la session est à ≤ 30 min (et future).
+ *  Le cron Netlify tourne toutes les 15 min → le rappel part ~30 à 15 min avant. */
+const REMINDER_WINDOW_MS = 30 * 60 * 1000
 
 /** Bangkok = UTC+7 fixe (pas de DST). */
 const BKK_OFFSET = '+07:00'
@@ -38,7 +39,7 @@ function bangkokDateStrings(now: Date): { yesterday: string; today: string; tomo
 }
 
 /**
- * Tâche planifiée : envoie un rappel email (~1 h avant) aux clients dont la
+ * Tâche planifiée : envoie un rappel email (~30 min avant) aux clients dont la
  * session approche. Protégée par CRON_SECRET. À-envoi-unique grâce à un
  * « verrou » atomique sur `reminderSentAt` (résiste à deux exécutions
  * simultanées du cron).

@@ -203,7 +203,7 @@ function participantsBlock(participants?: { name: string; email: string; phone?:
 }
 
 /* ─────────────── Confirmation client (langue du client) ─────────────── */
-async function sendBookingConfirmation(b: BookingEmailData) {
+export async function sendBookingConfirmation(b: BookingEmailData) {
   const lang = asLang(b.locale)
   const dateStr = fmtDate(b.date, lang)
   const first = esc(firstName(b.name, lang))
@@ -211,26 +211,26 @@ async function sendBookingConfirmation(b: BookingEmailData) {
   const t =
     lang === 'fr'
       ? {
-          subject: `Votre réservation ${b.activityName} du ${dateStr}`,
-          preheader: 'Nous avons bien reçu votre demande. Voici le récapitulatif.',
-          pill: '✓ Demande reçue',
-          title: 'Votre demande est bien reçue',
+          subject: `Votre réservation ${b.activityName} du ${dateStr} est confirmée`,
+          preheader: 'Votre réservation est confirmée. Récapitulatif et infos pratiques à l’intérieur.',
+          pill: '✓ Réservation confirmée',
+          title: 'Votre réservation est confirmée',
           hi: `Bonjour ${first},`,
-          intro: 'Nous avons bien reçu votre demande de réservation. Voici le récapitulatif :',
+          intro: 'Bonne nouvelle, votre réservation est confirmée. Voici le récapitulatif :',
           outro:
-            'Nous revenons vers vous très vite pour confirmer. À très bientôt chez Shi Shi Samui ! 🌴',
+            'Le règlement se fait directement sur place, le jour même. On vous attend, à très bientôt chez Shi Shi Samui ! 🌴',
           contact: 'Nous contacter',
           rDuration: 'Durée',
           rPeople: 'Personnes',
         }
       : {
-          subject: `Your ${b.activityName} booking on ${dateStr}`,
-          preheader: "We've received your request. Here is your booking summary.",
-          pill: '✓ Request received',
-          title: "We've received your request",
+          subject: `Your ${b.activityName} booking on ${dateStr} is confirmed`,
+          preheader: 'Your booking is confirmed. Summary and practical info inside.',
+          pill: '✓ Booking confirmed',
+          title: 'Your booking is confirmed',
           hi: `Hi ${first},`,
-          intro: "We've received your booking request. Here are the details:",
-          outro: "We'll get back to you shortly to confirm. See you soon at Shi Shi Samui! 🌴",
+          intro: 'Good news — your booking is confirmed. Here are the details:',
+          outro: 'Payment is made directly on site, on the day. See you soon at Shi Shi Samui! 🌴',
           contact: 'Contact us',
           rDuration: 'Duration',
           rPeople: 'People',
@@ -310,7 +310,7 @@ export async function notifyNewBooking(b: BookingEmailData) {
   return { client, admin }
 }
 
-/* ─────────────── Rappel « 1 h avant » (langue du client) ─────────────── */
+/* ─────────────── Rappel « 30 min avant » (langue du client) ─────────────── */
 export async function sendBookingReminder(b: BookingEmailData) {
   const lang = asLang(b.locale)
   const dateStr = fmtDate(b.date, lang)
@@ -319,23 +319,23 @@ export async function sendBookingReminder(b: BookingEmailData) {
   const t =
     lang === 'fr'
       ? {
-          subject: `Rappel : votre session ${b.activityName} est dans 1h`,
-          preheader: 'Votre session commence dans 1h. Adresse et détails à l’intérieur.',
-          pill: '⏰ Dans 1 heure',
-          title: 'Votre session est dans 1h',
+          subject: `Rappel : votre session ${b.activityName} est dans 30 min`,
+          preheader: 'Votre session commence dans 30 min. Adresse et détails à l’intérieur.',
+          pill: '⏰ Dans 30 min',
+          title: 'Votre session est dans 30 min',
           hi: `Bonjour ${first},`,
-          intro: 'Petit rappel : votre session est prévue dans 1h. Voici les détails :',
+          intro: 'Petit rappel : votre session est prévue dans 30 min. Voici les détails :',
           outro: 'On vous attend, à tout à l’heure ! 🌴',
           addr: 'Adresse du lieu',
           directions: 'Voir l’itinéraire',
         }
       : {
-          subject: `Reminder: your ${b.activityName} session is in 1 hour`,
-          preheader: 'Your session starts in 1 hour. Address and details inside.',
-          pill: '⏰ In 1 hour',
-          title: 'Your session is in 1 hour',
+          subject: `Reminder: your ${b.activityName} session is in 30 minutes`,
+          preheader: 'Your session starts in 30 minutes. Address and details inside.',
+          pill: '⏰ In 30 min',
+          title: 'Your session is in 30 minutes',
           hi: `Hi ${first},`,
-          intro: 'A quick reminder: your session is in 1 hour. Here are the details:',
+          intro: 'A quick reminder: your session is in 30 minutes. Here are the details:',
           outro: 'See you very soon! 🌴',
           addr: 'Venue address',
           directions: 'Get directions',

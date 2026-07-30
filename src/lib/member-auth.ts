@@ -7,7 +7,19 @@ import type { NextRequest, NextResponse } from 'next/server'
  * Session ADHÉRENT (distincte de l'admin). Un JWT signé stocké dans un cookie
  * httpOnly : illisible par le JS client, envoyé automatiquement à chaque requête.
  */
-const JWT_SECRET = process.env.JWT_SECRET || 'dev-secret-key'
+/**
+ * Secret de signature des sessions ADHÉRENT. Même règle que pour l'admin : il
+ * DOIT venir de `JWT_SECRET`. En production, on échoue si le secret est absent
+ * plutôt que de retomber sur une valeur publique codée en dur (jeton forgeable).
+ */
+function getJwtSecret(): string {
+  const secret = process.env.JWT_SECRET
+  if (secret) return secret
+  if (process.env.NODE_ENV === 'production') {
+    throw new Error('JWT_SECRET manquant : la variable d\'environnement est obligatoire en production.')
+  }
+  return 'dev-secret-key'
+}
 export const MEMBER_COOKIE = 'shishi_member'
 const MAX_AGE = 60 * 60 * 24 * 30 // 30 jours
 
@@ -17,13 +29,13 @@ export interface MemberSession {
 }
 
 export function signMemberToken(session: MemberSession): string {
-  return jwt.sign({ ...session, kind: 'member' }, JWT_SECRET, { expiresIn: '30d' })
+  return jwt.sign({ ...session, kind: 'member' }, getJwtSecret(), { expiresIn: '30d', algorithm: 'HS256' })
 }
 
 function verify(token: string | undefined | null): MemberSession | null {
   if (!token) return null
   try {
-    const payload = jwt.verify(token, JWT_SECRET) as jwt.JwtPayload
+    const payload = jwt.verify(token, getJwtSecret(), { algorithms: ['HS256'] }) as jwt.JwtPayload
     if (payload.kind !== 'member' || !payload.id) return null
     return { id: String(payload.id), email: String(payload.email || '') }
   } catch {
