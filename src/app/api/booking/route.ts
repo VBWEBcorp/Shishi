@@ -141,7 +141,9 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Paiement 100 % couvert par les crédits → réservation confirmée directement.
+    // Toute réservation est CONFIRMÉE directement (pas d'étape de validation
+    // manuelle) : cohérent avec le mail « réservation confirmée ». Le champ
+    // `paid` de la réponse indique juste si c'est couvert par les crédits.
     const fullyCoveredByCredits = creditsUsed > 0 && amount === 0
     let booking
     try {
@@ -159,7 +161,7 @@ export async function POST(request: NextRequest) {
         currency: 'thb',
         partySize,
         participants,
-        status: fullyCoveredByCredits ? 'paid' : 'pending',
+        status: 'paid', // confirmée directement (plus d'étape « en attente »)
         locale,
         seen: false,
         memberId: member?.id,
