@@ -6,6 +6,17 @@ import path from 'path'
 import { r2Enabled, uploadToR2 } from '@/lib/r2'
 import { optimizeImage } from '@/lib/optimize-image'
 
+/**
+ * Diagnostic public (booléen non sensible) : indique si le stockage d'images
+ * cloud (Cloudflare R2) est bien configuré sur CE serveur. Permet de vérifier
+ * depuis l'extérieur que les variables R2 sont prises en compte en production
+ * (ex: `curl https://…/api/upload`). Sur Netlify, `r2Enabled=false` signifie que
+ * les 4 variables R2 ne sont pas encore lues par le serveur.
+ */
+export async function GET() {
+  return NextResponse.json({ storage: r2Enabled ? 'cloudflare-r2' : 'none', r2Enabled })
+}
+
 export async function POST(request: NextRequest) {
   try {
     const { authenticated, user } = await verifyAuth(request)
@@ -70,13 +81,21 @@ export async function POST(request: NextRequest) {
       // Upload vers Cloudflare R2
       url = await uploadToR2(finalBuffer, filename, contentType)
     } else {
-      // Fallback: stockage local
-      const uploadsDir = path.join(process.cwd(), 'public', 'uploads')
-      if (!existsSync(uploadsDir)) {
-        await mkdir(uploadsDir, { recursive: true })
+      // Fallback: stockage local (développement uniquement). Sur un hébergeur
+      // serverless (Netlify) le système de fichiers est en lecture seule : l'écriture
+      // échoue. On renvoie alors un message clair plutôt qu'un 500 opaque, pour
+      // signaler que les variables Cloudflare R2 ne sont pas configurées côté serveur.
+      try {
+        const uploadsDir = path.join(process.cwd(), 'public', 'uploads')
+        if (!existsSync(uploadsDir)) {
+          await mkdir(uploadsDir, { recursive: true })
+        }
+        await writeFile(path.join(uploadsDir, filename), finalBuffer)
+        url = `/uploads/${filename}`
+      } catch (fsErr) {
+        console.error('Upload local fallback failed (R2 non configuré ?):', fsErr)
+        return NextResponse.json({ error: 'storage-not-configured' }, { status: 503 })
       }
-      await writeFile(path.join(uploadsDir, filename), finalBuffer)
-      url = `/uploads/${filename}`
     }
 
     // Taille avant/après
