@@ -27,6 +27,7 @@ import {
   LAUNCH_OFFER,
 } from '@/lib/booking-pricing'
 import { PUBLIC_ADVANCE_DAYS } from '@/lib/membership-plans'
+import { ONLINE_BOOKING_ENABLED } from '@/lib/launch'
 import { siteConfig } from '@/lib/seo'
 
 /** Session adhérent minimale (crédits + pré-remplissage de l'identité). */
@@ -107,6 +108,7 @@ export function BookingForm({
 
   // Nombre d'heures (activités à durée variable, ex. Kids Club).
   const [hours, setHours] = useState(1)
+  const [showWaPrompt, setShowWaPrompt] = useState(false)
   // Session adhérent : avantages appliqués automatiquement (crédits + remise).
   const [member, setMember] = useState<MemberInfo | null>(null)
   // Session vérifiée (évite le flash du bandeau « connectez-vous » avant la réponse).
@@ -202,6 +204,13 @@ export function BookingForm({
     ? activities.find((a) => a.slug === activitySlug)?.name[locale] ?? activitySlug
     : ''
 
+  // Lien WhatsApp pré-rempli avec la demande en cours (réservation en ligne
+  // désactivée → on invite à finaliser sur WhatsApp, cf. ONLINE_BOOKING_ENABLED).
+  const waBookingMessage = fr
+    ? `Bonjour Shi Shi Samui ! Je souhaite réserver${activityName ? ` : ${activityName}` : ' une session'}${date ? ` le ${date}` : ''}${selectedTime ? ` à ${selectedTime}` : ''}${hasHours && effectiveHours > 1 ? ` (${effectiveHours}h)` : ''}${partySize > 1 ? `, ${partySize} personnes` : ''}.`
+    : `Hi Shi Shi Samui! I'd like to book${activityName ? `: ${activityName}` : ' a session'}${date ? ` on ${date}` : ''}${selectedTime ? ` at ${selectedTime}` : ''}${hasHours && effectiveHours > 1 ? ` (${effectiveHours}h)` : ''}${partySize > 1 ? `, ${partySize} people` : ''}.`
+  const waPrefillLink = `https://wa.me/${siteConfig.whatsapp}?text=${encodeURIComponent(waBookingMessage)}`
+
   // Date maximale réservable (fenêtre : 10 j membre, sinon défaut public).
   const maxKey = useMemo(() => {
     if (!today) return ''
@@ -214,6 +223,16 @@ export function BookingForm({
   useEffect(() => {
     setHours(1)
   }, [activitySlug])
+
+  // Ferme le popup « réservation → WhatsApp » sur Échap.
+  useEffect(() => {
+    if (!showWaPrompt) return
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setShowWaPrompt(false)
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [showWaPrompt])
 
   // Synchronise l'activité/date du formulaire quand l'URL change
   // (clic sur un panel « Que souhaitez-vous réserver ? » → ?activity=…).
@@ -265,6 +284,12 @@ export function BookingForm({
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
+    // Réservation en ligne désactivée → on ouvre le popup WhatsApp au lieu de
+    // créer la réservation (couvre aussi une soumission via la touche Entrée).
+    if (!ONLINE_BOOKING_ENABLED) {
+      setShowWaPrompt(true)
+      return
+    }
     if (status === 'submitting') return
     if (!selectedTime) {
       setErrorMsg(t('selectSlot'))
@@ -915,9 +940,10 @@ export function BookingForm({
                 )}
 
                 <Button
-                  type="submit"
+                  type={ONLINE_BOOKING_ENABLED ? 'submit' : 'button'}
+                  onClick={ONLINE_BOOKING_ENABLED ? undefined : () => setShowWaPrompt(true)}
                   size="lg"
-                  disabled={status === 'submitting' || !selectedTime}
+                  disabled={ONLINE_BOOKING_ENABLED && (status === 'submitting' || !selectedTime)}
                   className="w-full group bg-accent text-accent-foreground hover:bg-accent shadow-[0_10px_30px_-8px_oklch(0.63_0.187_47/0.5)]"
                 >
                   {status === 'submitting' ? (
@@ -940,6 +966,48 @@ export function BookingForm({
               </p>
             )}
           </form>
+        )}
+
+        {/* Réservation en ligne désactivée : popup « bientôt disponible → WhatsApp ». */}
+        {showWaPrompt && (
+          <div
+            className="fixed inset-0 z-[60] flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm"
+            onClick={() => setShowWaPrompt(false)}
+          >
+            <div
+              className="w-full max-w-sm rounded-2xl border border-border bg-card p-6 text-center shadow-xl"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="mx-auto flex size-12 items-center justify-center rounded-full bg-[#25D366]/15 text-[#25D366]">
+                <MessageCircle className="size-6" aria-hidden />
+              </div>
+              <h3 className="mt-4 font-display text-lg font-bold text-foreground">
+                {fr ? 'Réservation en ligne bientôt disponible' : 'Online booking coming soon'}
+              </h3>
+              <p className="mt-2 text-sm text-muted-foreground">
+                {fr
+                  ? 'Pour réserver dès maintenant, contactez-nous directement sur WhatsApp — on vous répond rapidement !'
+                  : 'To book right now, contact us directly on WhatsApp — we’ll reply quickly!'}
+              </p>
+              <a
+                href={waPrefillLink}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => setShowWaPrompt(false)}
+                className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-[#25D366] px-5 py-3 text-sm font-semibold text-white transition-transform hover:scale-[1.02]"
+              >
+                <MessageCircle className="size-4" aria-hidden />
+                {fr ? 'Contacter sur WhatsApp' : 'Contact us on WhatsApp'}
+              </a>
+              <button
+                type="button"
+                onClick={() => setShowWaPrompt(false)}
+                className="mt-3 text-xs font-medium text-muted-foreground hover:text-foreground"
+              >
+                {fr ? 'Fermer' : 'Close'}
+              </button>
+            </div>
+          </div>
         )}
       </div>
     </div>

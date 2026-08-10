@@ -46,15 +46,19 @@ export async function GET(request: NextRequest) {
 }
 
 /**
- * Création MANUELLE d'une réservation par l'admin (client de passage / résa par
- * téléphone) ou BLOCAGE d'un créneau (indispo interne). Admin uniquement.
+ * Création MANUELLE d'une réservation par l'admin (résa reçue par téléphone /
+ * bouche-à-oreille) ou BLOCAGE d'un créneau (indispo interne). Admin uniquement.
  *
- * · mode « booking » : nom + email requis, tarif recalculé côté serveur, statut
+ * · mode « booking » : parité avec le tunnel public (activité, date, créneau,
+ *   durée, personnes + participants, coordonnées, notes, opt-in newsletter).
+ *   TOLÉRANT aux infos manquantes : seuls activité + date + créneau sont requis ;
+ *   nom/email/téléphone facultatifs (nom → « Client » par défaut). Dates passées
+ *   acceptées (enregistrement a posteriori). Tarif recalculé serveur, statut
  *   « confirmée » (paid), fiche CRM alimentée, email de confirmation optionnel.
  * · mode « block »   : occupe le créneau sans client (exclu des stats/CRM).
  *
- * Comme le tunnel public, la disponibilité est validée côté serveur (anti
- * double-réservation) et le prix n'est jamais fourni par le client.
+ * La disponibilité est validée serveur (anti double-réservation) pour les
+ * créneaux À VENIR ; le prix n'est jamais fourni par le client.
  */
 export async function POST(request: NextRequest) {
   try {
@@ -73,6 +77,9 @@ export async function POST(request: NextRequest) {
     const phone = String(body.phone || '').trim()
     const notes = String(body.notes || '').trim()
     const sendEmail = body.sendEmail === true
+    const newsletterOptIn = body.newsletterOptIn === true
+    // Langue du client (confirmation + rappel dans cette langue). Défaut : français.
+    const locale: 'fr' | 'en' = body.locale === 'en' ? 'en' : 'fr'
 
     const activity = getActivityBySlug(activitySlug)
     if (!activity) {
@@ -81,28 +88,41 @@ export async function POST(request: NextRequest) {
     if (!isBookable(activitySlug)) {
       return NextResponse.json({ error: 'not-bookable' }, { status: 400 })
     }
-    if (!date || !time) {
+    if (!date || !time || !/^\d{2}:\d{2}$/.test(time)) {
       return NextResponse.json({ error: 'missing-fields' }, { status: 400 })
     }
     if (!isValidBookingDate(date)) {
       return NextResponse.json({ error: 'invalid-date' }, { status: 400 })
     }
-    if (isBookingDateTimeInPast(date, time)) {
-      return NextResponse.json({ error: 'date-in-past' }, { status: 400 })
+    // L'admin peut enregistrer une réservation PASSÉE (résa déjà reçue par
+    // téléphone / bouche-à-oreille). On ne vérifiera donc la disponibilité que
+    // pour les créneaux À VENIR (anti double-réservation), pas pour le passé.
+    const isFuture = !isBookingDateTimeInPast(date, time)
+
+    // Tolérance aux infos manquantes : nom et email sont FACULTATIFS (l'admin
+    // saisit ce qu'il a). Si un email est tout de même fourni, il doit être valide.
+    if (mode === 'booking' && email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      return NextResponse.json({ error: 'invalid-email' }, { status: 400 })
     }
 
-    // Champs spécifiques au mode « réservation client ».
-    if (mode === 'booking') {
-      if (!name) {
-        return NextResponse.json({ error: 'missing-name' }, { status: 400 })
-      }
-      if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-        return NextResponse.json({ error: 'invalid-email' }, { status: 400 })
-      }
-    }
+    // Participants additionnels (parité avec le tunnel public) — tous les champs
+    // sont facultatifs ; on garde ceux qui portent au moins un nom ou un email.
+    const participants = (Array.isArray(body.participants) ? body.participants : [])
+      .map((pp: unknown) => {
+        const o = (pp ?? {}) as Record<string, unknown>
+        return {
+          name: String(o.name || '').trim(),
+          email: String(o.email || '').trim(),
+          phone: String(o.phone || '').trim(),
+        }
+      })
+      .filter((pp: { name: string; email: string }) => pp.name || pp.email)
+      .slice(0, 19)
 
-    // Personnes (activités facturées par personne). Borné [1..20].
-    const partySize = Math.min(20, Math.max(1, Math.floor(Number(body.partySize) || 1)))
+    // Nombre de personnes : au moins le compteur saisi, et au moins 1 + le nombre
+    // de participants réellement listés. Borné [1..20].
+    const partyCount = Math.min(20, Math.max(1, Math.floor(Number(body.partySize) || 1)))
+    const partySize = Math.min(20, Math.max(partyCount, 1 + participants.length))
 
     // Nombre d'heures (activités à durée variable). Borné [1..MAX].
     const rawHours = Number(body.hours) || 1
@@ -110,10 +130,13 @@ export async function POST(request: NextRequest) {
       ? Math.min(MAX_BOOKING_HOURS, Math.max(1, Math.floor(rawHours)))
       : 1
 
-    // Disponibilité validée serveur (anti double-réservation), comme le public.
-    const available = await isRangeAvailable(activitySlug, date, time, hours)
-    if (!available) {
-      return NextResponse.json({ error: 'slot-unavailable' }, { status: 409 })
+    // Disponibilité validée serveur (anti double-réservation) — uniquement pour
+    // les créneaux à venir. Une saisie a posteriori (date passée) n'est pas bornée.
+    if (isFuture) {
+      const available = await isRangeAvailable(activitySlug, date, time, hours)
+      if (!available) {
+        return NextResponse.json({ error: 'slot-unavailable' }, { status: 409 })
+      }
     }
 
     const slotMin = getBookingConfig(activitySlug)?.slotMinutes ?? 60
@@ -131,32 +154,56 @@ export async function POST(request: NextRequest) {
       date,
       time,
       duration,
-      name: isBlock ? 'Créneau bloqué' : name,
+      // Nom facultatif : « Client » par défaut si l'admin ne l'a pas (trou assumé).
+      name: isBlock ? 'Créneau bloqué' : name || 'Client',
       email: isBlock ? '' : email,
       phone: isBlock ? '' : phone,
       notes,
       amount,
       currency: 'thb',
       partySize: isBlock ? 1 : partySize,
+      participants: isBlock ? [] : participants,
       status: 'paid', // saisie admin = créneau confirmé/occupé
-      locale: 'fr',
+      locale,
       seen: true, // créé par l'admin → déjà « vu »
       seenAt: new Date(),
       blocked: isBlock,
       createdByAdmin: true,
     })
 
-    // Réservation client : CRM + email de confirmation optionnel (best-effort).
+    // Réservation client : CRM (client + participants) + email de confirmation
+    // optionnel (best-effort — ne fait jamais échouer la réservation).
     if (!isBlock) {
       try {
-        await upsertContact({ email, name, phone, source: 'manual' })
+        if (email) {
+          await upsertContact({
+            email,
+            name: name || undefined,
+            phone,
+            source: 'manual',
+            optIn: newsletterOptIn,
+            optInSource: 'admin-booking',
+            bumpBooking: true,
+          })
+        }
+        for (const pp of participants) {
+          if (pp.email) {
+            await upsertContact({
+              email: pp.email,
+              name: pp.name || undefined,
+              phone: pp.phone,
+              source: 'manual',
+              bumpBooking: true,
+            })
+          }
+        }
       } catch (e) {
         console.error('[bookings] contact upsert failed:', e)
       }
-      if (sendEmail) {
+      if (sendEmail && email) {
         try {
           await sendBookingConfirmation({
-            name,
+            name: name || 'Client',
             email,
             activityName,
             date,
@@ -164,9 +211,10 @@ export async function POST(request: NextRequest) {
             duration,
             phone,
             notes,
-            locale: 'fr',
+            locale,
             dayPass: isDayPass(activitySlug),
             partySize,
+            participants,
           })
         } catch (e) {
           console.error('[bookings] confirmation email failed:', e)

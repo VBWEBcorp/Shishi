@@ -33,3 +33,13 @@ export const PREVIEW_MAX_AGE = 60 * 60 * 24 * 30
  * le jour du lancement des abonnements.
  */
 export const SHOW_MEMBER_AREA = false
+
+/**
+ * Réservation EN LIGNE. Désactivée temporairement : le formulaire reste visible
+ * (activité, date, créneau, tarif) mais toute tentative de réservation ouvre un
+ * popup invitant à contacter le club sur WhatsApp, le temps de finaliser le
+ * module. Côté serveur, l'API de réservation refuse aussi les demandes (aucune
+ * réservation ne passe, même via une page laissée en cache). Repasser à `true`
+ * réactive la réservation en ligne instantanément (front + serveur).
+ */
+export const ONLINE_BOOKING_ENABLED = false

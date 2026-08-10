@@ -15,9 +15,16 @@ import { notifyNewBooking } from '@/lib/booking-emails'
 import { langFromPhoneCountry } from '@/lib/country-codes'
 import { resolveMemberBenefits, refundCredits } from '@/lib/membership'
 import { getMemberFromRequest } from '@/lib/member-auth'
+import { ONLINE_BOOKING_ENABLED } from '@/lib/launch'
 
 export async function POST(request: NextRequest) {
   try {
+    // Réservation en ligne désactivée : on refuse toute création (protège même
+    // contre une page laissée en cache qui tenterait encore de réserver).
+    if (!ONLINE_BOOKING_ENABLED) {
+      return NextResponse.json({ error: 'booking-disabled' }, { status: 403 })
+    }
+
     const body = await request.json()
     const activitySlug = String(body.activitySlug || '').trim()
     const date = String(body.date || '').trim()

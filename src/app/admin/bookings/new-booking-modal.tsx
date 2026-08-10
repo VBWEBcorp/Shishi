@@ -1,12 +1,12 @@
 'use client'
 
-import { Ban, CalendarPlus, Loader2, X } from 'lucide-react'
+import { Ban, CalendarPlus, Loader2, Plus, X } from 'lucide-react'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 
 import { ActivityIcon } from '@/components/activity-icon'
 import { activities } from '@/lib/activities'
-import { isBookable, isDayPass } from '@/lib/availability'
-import { supportsHours, MAX_BOOKING_HOURS } from '@/lib/booking-pricing'
+import { isBookable } from '@/lib/availability'
+import { isPricePerPerson, supportsHours, MAX_BOOKING_HOURS } from '@/lib/booking-pricing'
 import { cn } from '@/lib/utils'
 
 type Mode = 'booking' | 'block'
@@ -62,12 +62,15 @@ export function NewBookingModal({
   const [phone, setPhone] = useState('')
   const [notes, setNotes] = useState('')
   const [sendEmail, setSendEmail] = useState(false)
+  const [newsletterOptIn, setNewsletterOptIn] = useState(false)
+  const [locale, setLocale] = useState<'fr' | 'en'>('fr')
+  const [participants, setParticipants] = useState<{ name: string; email: string; phone: string }[]>([])
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
   const activity = useMemo(() => BOOKABLE.find((a) => a.slug === activitySlug), [activitySlug])
   const withHours = supportsHours(activitySlug)
-  const perPerson = !isDayPass(activitySlug) // activités facturées par personne autorisent > 1
+  const perPerson = isPricePerPerson(activitySlug) // fitness / pool / kids-club : facturé par personne
 
   // Charge les créneaux disponibles pour l'activité + la date choisies.
   const loadSlots = useCallback(async () => {
@@ -107,9 +110,9 @@ export function NewBookingModal({
       setError(ERROR_LABELS['missing-fields'])
       return
     }
-    if (mode === 'booking') {
-      if (!name.trim()) return setError(ERROR_LABELS['missing-name'])
-      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) return setError(ERROR_LABELS['invalid-email'])
+    // Tolérance : nom/email facultatifs. Si un email est saisi, il doit être valide.
+    if (mode === 'booking' && email.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
+      return setError(ERROR_LABELS['invalid-email'])
     }
     setSubmitting(true)
     try {
@@ -127,7 +130,13 @@ export function NewBookingModal({
           email: email.trim(),
           phone: phone.trim(),
           notes: notes.trim(),
+          locale,
           sendEmail: mode === 'booking' && sendEmail,
+          newsletterOptIn: mode === 'booking' && newsletterOptIn,
+          participants:
+            mode === 'booking'
+              ? participants.map((p) => ({ name: p.name.trim(), email: p.email.trim(), phone: p.phone.trim() }))
+              : [],
         }),
       })
       if (res.status === 401) {
@@ -228,7 +237,6 @@ export function NewBookingModal({
                 id="nb-date"
                 type="date"
                 value={date}
-                min={todayYmd()}
                 onChange={(e) => setDate(e.target.value)}
                 className={inputCls}
               />
@@ -289,23 +297,88 @@ export function NewBookingModal({
             </div>
           )}
 
-          {/* Coordonnées client (mode réservation uniquement) */}
+          {/* Coordonnées client (mode réservation uniquement) — tout est facultatif */}
           {mode === 'booking' && (
             <div className="space-y-3 rounded-xl border border-border/70 bg-muted/20 p-3">
+              <p className="text-[11px] text-muted-foreground">
+                Coordonnées facultatives : saisissez ce que vous avez, le reste peut rester vide.
+              </p>
               <div className="grid gap-3 sm:grid-cols-2">
                 <div className="space-y-1.5">
-                  <label className={labelCls} htmlFor="nb-name">Nom du client</label>
+                  <label className={labelCls} htmlFor="nb-name">Nom du client (optionnel)</label>
                   <input id="nb-name" value={name} onChange={(e) => setName(e.target.value)} className={inputCls} placeholder="Jean Dupont" />
                 </div>
                 <div className="space-y-1.5">
-                  <label className={labelCls} htmlFor="nb-email">Email</label>
+                  <label className={labelCls} htmlFor="nb-email">Email (optionnel)</label>
                   <input id="nb-email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} className={inputCls} placeholder="jean@email.com" />
                 </div>
               </div>
-              <div className="space-y-1.5">
-                <label className={labelCls} htmlFor="nb-phone">Téléphone (optionnel)</label>
-                <input id="nb-phone" value={phone} onChange={(e) => setPhone(e.target.value)} className={inputCls} placeholder="+33 6 12 34 56 78" />
+              <div className="grid gap-3 sm:grid-cols-2">
+                <div className="space-y-1.5">
+                  <label className={labelCls} htmlFor="nb-phone">Téléphone (optionnel)</label>
+                  <input id="nb-phone" value={phone} onChange={(e) => setPhone(e.target.value)} className={inputCls} placeholder="+33 6 12 34 56 78" />
+                </div>
+                <div className="space-y-1.5">
+                  <label className={labelCls} htmlFor="nb-locale">Langue du client</label>
+                  <select
+                    id="nb-locale"
+                    value={locale}
+                    onChange={(e) => setLocale(e.target.value as 'fr' | 'en')}
+                    className={inputCls}
+                  >
+                    <option value="fr">Français</option>
+                    <option value="en">English</option>
+                  </select>
+                </div>
               </div>
+
+              {/* Participants supplémentaires (facultatif) — parité avec le tunnel public */}
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className={labelCls}>Autres participants (facultatif)</span>
+                  <button
+                    type="button"
+                    onClick={() => setParticipants((p) => [...p, { name: '', email: '', phone: '' }])}
+                    className="inline-flex items-center gap-1 rounded-lg border border-border bg-background px-2.5 py-1 text-xs font-medium text-foreground transition-colors hover:bg-muted"
+                  >
+                    <Plus className="size-3.5" aria-hidden /> Ajouter
+                  </button>
+                </div>
+                {participants.map((p, i) => (
+                  <div key={i} className="flex items-center gap-2">
+                    <input
+                      value={p.name}
+                      onChange={(e) => setParticipants((arr) => arr.map((x, j) => (j === i ? { ...x, name: e.target.value } : x)))}
+                      className={inputCls}
+                      placeholder="Nom"
+                    />
+                    <input
+                      value={p.email}
+                      onChange={(e) => setParticipants((arr) => arr.map((x, j) => (j === i ? { ...x, email: e.target.value } : x)))}
+                      className={inputCls}
+                      placeholder="Email (optionnel)"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setParticipants((arr) => arr.filter((_, j) => j !== i))}
+                      aria-label="Retirer ce participant"
+                      className="flex size-9 shrink-0 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-muted hover:text-red-600"
+                    >
+                      <X className="size-4" aria-hidden />
+                    </button>
+                  </div>
+                ))}
+              </div>
+
+              <label className="flex items-center gap-2 text-sm text-foreground">
+                <input
+                  type="checkbox"
+                  checked={newsletterOptIn}
+                  onChange={(e) => setNewsletterOptIn(e.target.checked)}
+                  className="size-4 rounded border-border text-accent focus-visible:ring-accent"
+                />
+                Le client accepte de recevoir la newsletter
+              </label>
               <label className="flex items-center gap-2 text-sm text-foreground">
                 <input
                   type="checkbox"
