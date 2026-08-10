@@ -1,4 +1,4 @@
-import { S3Client, PutObjectCommand, DeleteObjectCommand } from '@aws-sdk/client-s3'
+import { S3Client, PutObjectCommand, DeleteObjectCommand, GetObjectCommand } from '@aws-sdk/client-s3'
 
 const ACCOUNT_ID = process.env.R2_ACCOUNT_ID!
 const ACCESS_KEY_ID = process.env.R2_ACCESS_KEY_ID!
@@ -37,7 +37,20 @@ export async function uploadToR2(
     })
   )
 
-  return `${PUBLIC_URL}/${filename}`
+  // Si une URL publique R2 est fournie, on la sert directement (CDN Cloudflare).
+  // Sinon, on passe par le proxy interne `/api/media/…` : aucune config d'accès
+  // public nécessaire, l'image est servie par le site lui-même.
+  return PUBLIC_URL ? `${PUBLIC_URL}/${filename}` : `/api/media/${filename}`
+}
+
+/** Récupère un objet R2 (pour le proxy interne /api/media/[filename]). */
+export async function getFromR2(filename: string) {
+  if (!r2Client) return null
+  try {
+    return await r2Client.send(new GetObjectCommand({ Bucket: BUCKET_NAME, Key: filename }))
+  } catch {
+    return null
+  }
 }
 
 export async function deleteFromR2(filename: string): Promise<void> {

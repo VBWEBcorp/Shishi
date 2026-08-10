@@ -35,6 +35,10 @@ export async function POST(request: NextRequest) {
 
     const base = siteConfig.url.replace(/\/$/, '')
 
+    // Une image uploadée peut avoir une URL relative (/api/media/…) : on la rend
+    // absolue pour qu'elle s'affiche dans les emails.
+    const absImageUrl = imageUrl && imageUrl.startsWith('/') ? `${base}${imageUrl}` : imageUrl
+
     // ── Envoi de test : un seul email vers l'adresse choisie (ou, à défaut,
     // l'adresse de l'entreprise). Permet de tester la délivrabilité sur une
     // boîte qui reçoit (ex. contact@vbweb.fr). ──
@@ -45,7 +49,7 @@ export async function POST(request: NextRequest) {
       const html = renderNewsletter({
         body: message,
         lang,
-        imageUrl,
+        imageUrl: absImageUrl,
         buttonText,
         buttonLink,
         name: 'Test',
@@ -79,7 +83,7 @@ export async function POST(request: NextRequest) {
       html: renderNewsletter({
         body: message,
         lang,
-        imageUrl,
+        imageUrl: absImageUrl,
         buttonText,
         buttonLink,
         name: c.name,
