@@ -72,10 +72,19 @@ export function ImageField({ label, value, onChange }: ImageFieldProps) {
   const [uploading, setUploading] = useState(false)
   const [dragOver, setDragOver] = useState(false)
   const [uploadInfo, setUploadInfo] = useState<string | null>(null)
+  const [error, setError] = useState<string | null>(null)
   const inputRef = useRef<HTMLInputElement>(null)
+
+  // Bascule vers l'onglet « Lien » avec un message clair quand l'upload échoue
+  // (typiquement : stockage d'images non configuré → écriture impossible en prod).
+  const failToLink = () => {
+    setMode('link')
+    setError('Upload d’image indisponible pour le moment. Collez plutôt l’URL d’une image ci-dessous (onglet « Lien »).')
+  }
 
   const handleUpload = async (file: File) => {
     setUploading(true)
+    setError(null)
     try {
       const token = localStorage.getItem('authToken')
       const formData = new FormData()
@@ -88,16 +97,15 @@ export function ImageField({ label, value, onChange }: ImageFieldProps) {
       })
 
       if (!response.ok) {
-        const data = await response.json()
-        alert(data.error || 'Erreur upload')
+        failToLink()
         return
       }
 
       const data = await response.json()
       onChange(data.url)
       setUploadInfo(`${data.originalSize} → ${data.optimizedSize} (${data.storage})`)
-    } catch (error) {
-      alert('Erreur lors de l\'upload')
+    } catch {
+      failToLink()
     } finally {
       setUploading(false)
     }
@@ -153,10 +161,16 @@ export function ImageField({ label, value, onChange }: ImageFieldProps) {
         </div>
       </div>
 
+      {error && (
+        <p className="rounded-lg bg-amber-500/10 px-3 py-2 text-xs font-medium text-amber-700 dark:text-amber-400">
+          {error}
+        </p>
+      )}
+
       {mode === 'link' ? (
         <Input
           value={value}
-          onChange={(e) => onChange(e.target.value)}
+          onChange={(e) => { setError(null); onChange(e.target.value) }}
           placeholder="https://..."
           type="url"
         />

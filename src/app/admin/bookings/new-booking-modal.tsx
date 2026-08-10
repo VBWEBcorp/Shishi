@@ -45,13 +45,16 @@ const ERROR_LABELS: Record<string, string> = {
 export function NewBookingModal({
   onClose,
   onCreated,
+  initialDate,
 }: {
   onClose: () => void
   onCreated: () => void
+  /** Date pré-remplie (ex. jour cliqué dans le calendrier). Défaut : aujourd'hui. */
+  initialDate?: string
 }) {
   const [mode, setMode] = useState<Mode>('booking')
   const [activitySlug, setActivitySlug] = useState(BOOKABLE[0]?.slug ?? '')
-  const [date, setDate] = useState(todayYmd())
+  const [date, setDate] = useState(initialDate || todayYmd())
   const [time, setTime] = useState('')
   const [slots, setSlots] = useState<Slot[]>([])
   const [slotsLoading, setSlotsLoading] = useState(false)

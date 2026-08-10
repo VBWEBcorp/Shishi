@@ -557,6 +557,7 @@ export default function AdminBookingsPage() {
 
       {showNew && (
         <NewBookingModal
+          initialDate={selectedDay}
           onClose={() => setShowNew(false)}
           onCreated={() => {
             load(filter)
@@ -947,13 +948,22 @@ export default function AdminBookingsPage() {
 
           {/* Détail du jour sélectionné */}
           <div>
-            <h3 className="mb-3 flex items-center gap-2 font-display text-sm font-semibold capitalize text-foreground">
-              <CalendarDays className="size-4 text-accent" aria-hidden />
-              {selectedLabel}
-              <span className="rounded-full bg-muted px-2 py-0.5 text-xs font-medium text-muted-foreground">
-                {selectedBookings.length}
-              </span>
-            </h3>
+            <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+              <h3 className="flex items-center gap-2 font-display text-sm font-semibold capitalize text-foreground">
+                <CalendarDays className="size-4 text-accent" aria-hidden />
+                {selectedLabel}
+                <span className="rounded-full bg-muted px-2 py-0.5 text-xs font-medium text-muted-foreground">
+                  {selectedBookings.length}
+                </span>
+              </h3>
+              <button
+                onClick={() => setShowNew(true)}
+                className="inline-flex items-center gap-1.5 rounded-lg bg-accent px-3 py-1.5 text-xs font-semibold text-accent-foreground transition-all hover:brightness-105"
+              >
+                <CalendarPlus className="size-3.5" aria-hidden />
+                Ajouter une réservation ce jour
+              </button>
+            </div>
             {selectedBookings.length === 0 ? (
               <div className="rounded-2xl border border-dashed border-border bg-card py-10 text-center text-sm text-muted-foreground">
                 Aucune réservation ce jour-là.
