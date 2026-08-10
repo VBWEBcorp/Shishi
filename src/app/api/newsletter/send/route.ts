@@ -10,6 +10,16 @@ import { siteConfig } from '@/lib/seo'
 /** Limite par envoi (plan Resend gratuit ≈ 100/jour, batch ≤ 100). */
 const MAX_PER_SEND = 100
 
+/**
+ * Diagnostic public (booléens non sensibles) : indique si l'envoi d'email est
+ * bien configuré sur CE serveur (clé Resend présente au runtime). Permet de
+ * vérifier depuis l'extérieur que RESEND_API_KEY est pris en compte en prod
+ * (ex: `curl https://…/api/newsletter/send`). Ne révèle jamais la clé.
+ */
+export async function GET() {
+  return NextResponse.json({ emailEnabled, from: emailConfig.from })
+}
+
 export async function POST(request: NextRequest) {
   try {
     const { authenticated, user } = await verifyAuth(request)
