@@ -14,7 +14,10 @@ import { optimizeImage } from '@/lib/optimize-image'
  * les 4 variables R2 ne sont pas encore lues par le serveur.
  */
 export async function GET() {
-  return NextResponse.json({ storage: r2Enabled ? 'cloudflare-r2' : 'none', r2Enabled })
+  // `commit` = SHA du build en cours (Netlify expose COMMIT_REF au build). Permet
+  // de confirmer de l'extérieur QUEL commit est réellement déployé.
+  const commit = (process.env.COMMIT_REF || 'dev').slice(0, 7)
+  return NextResponse.json({ storage: r2Enabled ? 'cloudflare-r2' : 'none', r2Enabled, commit })
 }
 
 export async function POST(request: NextRequest) {
