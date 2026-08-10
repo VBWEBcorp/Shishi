@@ -61,7 +61,7 @@ export function NewBookingModal({
   const [email, setEmail] = useState('')
   const [phone, setPhone] = useState('')
   const [notes, setNotes] = useState('')
-  const [sendEmail, setSendEmail] = useState(false)
+  const [sendEmail, setSendEmail] = useState(true)
   const [newsletterOptIn, setNewsletterOptIn] = useState(false)
   const [locale, setLocale] = useState<'fr' | 'en'>('fr')
   const [participants, setParticipants] = useState<{ name: string; email: string; phone: string }[]>([])
@@ -379,14 +379,19 @@ export function NewBookingModal({
                 />
                 Le client accepte de recevoir la newsletter
               </label>
-              <label className="flex items-center gap-2 text-sm text-foreground">
+              <label className="flex items-start gap-2 text-sm text-foreground">
                 <input
                   type="checkbox"
                   checked={sendEmail}
                   onChange={(e) => setSendEmail(e.target.checked)}
-                  className="size-4 rounded border-border text-accent focus-visible:ring-accent"
+                  className="mt-0.5 size-4 shrink-0 rounded border-border text-accent focus-visible:ring-accent"
                 />
-                Envoyer l’email de confirmation au client
+                <span>
+                  Envoyer la confirmation par email au client
+                  <span className="block text-[11px] text-muted-foreground">
+                    Même email que pour une réservation en ligne (si un email est renseigné). À décocher pour une résa déjà passée.
+                  </span>
+                </span>
               </label>
             </div>
           )}
