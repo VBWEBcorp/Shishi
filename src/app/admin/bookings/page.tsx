@@ -909,6 +909,11 @@ export default function AdminBookingsPage() {
                   <button
                     key={key}
                     onClick={() => setSelectedDay(key)}
+                    onDoubleClick={() => {
+                      setSelectedDay(key)
+                      setShowNew(true)
+                    }}
+                    title="Double-clic : ajouter une réservation ce jour"
                     className={cn(
                       'flex min-h-[78px] min-w-0 flex-col rounded-xl border p-1.5 text-left transition-colors sm:min-h-[104px]',
                       isSelected
