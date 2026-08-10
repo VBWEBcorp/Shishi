@@ -27,7 +27,7 @@ import {
   LAUNCH_OFFER,
 } from '@/lib/booking-pricing'
 import { PUBLIC_ADVANCE_DAYS } from '@/lib/membership-plans'
-import { ONLINE_BOOKING_ENABLED } from '@/lib/launch'
+import { BOOKING_COMING_SOON, ONLINE_BOOKING_ENABLED } from '@/lib/launch'
 import { siteConfig } from '@/lib/seo'
 
 /** Session adhérent minimale (crédits + pré-remplissage de l'identité). */
@@ -380,7 +380,27 @@ export function BookingForm({
           </div>
         </div>
 
-        {status === 'request-received' || status === 'paid' ? (
+        {BOOKING_COMING_SOON ? (
+          /* Réservation en ligne en cours de finalisation : on affiche un état
+             « en développement · bientôt disponible » AU LIEU du formulaire, pour
+             ne pas laisser le visiteur tout remplir avant de découvrir qu'il ne
+             peut pas encore réserver. RÉVERSIBLE : repasser BOOKING_COMING_SOON à
+             false restaure exactement le formulaire + la popup WhatsApp d'avant. */
+          <div className="mt-6 flex flex-col items-center gap-3 rounded-2xl bg-secondary/50 px-6 py-12 text-center ring-1 ring-border">
+            <span className="text-4xl" aria-hidden>🚧</span>
+            <span className="inline-flex items-center gap-2 rounded-full bg-accent/15 px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.18em] text-accent ring-1 ring-accent/25">
+              {fr ? 'Bientôt disponible' : 'Coming soon'}
+            </span>
+            <p className="font-display text-xl font-semibold text-foreground">
+              {fr ? 'Fonctionnalité en développement 🙂' : 'Feature in development 🙂'}
+            </p>
+            <p className="mx-auto max-w-xs text-sm text-muted-foreground">
+              {fr
+                ? 'La réservation en ligne arrive très bientôt. Merci de votre patience !'
+                : 'Online booking is coming very soon. Thanks for your patience!'}
+            </p>
+          </div>
+        ) : status === 'request-received' || status === 'paid' ? (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}

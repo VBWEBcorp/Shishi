@@ -43,3 +43,18 @@ export const SHOW_MEMBER_AREA = false
  * réactive la réservation en ligne instantanément (front + serveur).
  */
 export const ONLINE_BOOKING_ENABLED = false
+
+/**
+ * Affichage « Fonctionnalité en développement · bientôt disponible 🙂 » À LA PLACE
+ * du formulaire de réservation. Évite au visiteur de tout remplir (activité, date,
+ * créneau, coordonnées) pour découvrir seulement à la fin qu'il ne peut pas encore
+ * réserver.
+ *
+ *  · true  → le formulaire est masqué et remplacé par un message « bientôt dispo ».
+ *  · false → COMPORTEMENT PRÉCÉDENT EXACT restauré : formulaire complet + popup
+ *            WhatsApp au moment de réserver (tant que ONLINE_BOOKING_ENABLED=false).
+ *
+ * → Le jour où on rouvre la réservation : mettre ce drapeau à `false` ET
+ *   ONLINE_BOOKING_ENABLED à `true`.
+ */
+export const BOOKING_COMING_SOON = true
