@@ -9,6 +9,11 @@ import { BlogPost, BlogSettings } from '@/models/Blog'
 import { GallerySettings } from '@/models/Gallery'
 import { routes, siteConfig } from '@/lib/seo'
 
+// Rendu a la demande : revalidatePath("/sitemap.xml") ne purge pas le cache des
+// routes de metadonnees, un article depose ou retire par PHARE n y apparaitrait
+// qu au prochain build.
+export const dynamic = "force-dynamic"
+
 const baseUrl = siteConfig.url
 
 // LAUNCHED (cf. src/lib/launch.ts) :
@@ -97,10 +102,16 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     // La page index /blog et les articles intégrés sont déjà ajoutés plus haut.
     const blogSettings = await BlogSettings.findOne()
     if (blogSettings?.enabled) {
-      const posts = await BlogPost.find(visiblePostFilter()).select('slug updatedAt publishedAt')
+      const posts = await BlogPost.find(visiblePostFilter()).select('slug locale updatedAt publishedAt')
       for (const post of posts) {
+        // localePrefix: 'always' -> l'URL porte toujours la langue. Un article
+        // PHARE n'existe que dans la sienne, un article historique dans les deux.
+        const locales = (post as unknown as { locale?: string }).locale
+          ? [(post as unknown as { locale: string }).locale]
+          : ['en', 'fr']
+        for (const lg of locales)
         pages.push({
-          url: `${baseUrl}/blog/${post.slug}`,
+          url: `${baseUrl}/${lg}/blog/${post.slug}`,
           lastModified: new Date(post.updatedAt || post.publishedAt),
           changeFrequency: 'weekly',
           priority: 0.7,

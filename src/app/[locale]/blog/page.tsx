@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 
 import { connectDB } from '@/lib/db'
 import { BlogSettings, BlogPost } from '@/models/Blog'
-import { visiblePostFilter } from '@/lib/blog-filters'
+import { visiblePostFilter, localeFilter } from '@/lib/blog-filters'
 import { getBuiltinArticles, type BlogLocale } from '@/lib/blog-articles'
 import { siteConfig, jsonLdScript } from '@/lib/seo'
 import BlogPageContent from './blog-page-content'
@@ -77,7 +77,7 @@ export default async function BlogPage({ params }: { params: Params }) {
     await connectDB()
     const [settingsDoc, postsDocs] = await Promise.all([
       BlogSettings.findOne().lean(),
-      BlogPost.find(visiblePostFilter())
+      BlogPost.find({ ...visiblePostFilter(), ...localeFilter(l) })
         .sort({ publishedAt: -1, createdAt: -1 })
         .select('title slug excerpt coverImage category tags author publishedAt')
         .limit(50)

@@ -3,7 +3,7 @@ import { notFound } from 'next/navigation'
 
 import { connectDB } from '@/lib/db'
 import { BlogPost } from '@/models/Blog'
-import { visiblePostFilter } from '@/lib/blog-filters'
+import { visiblePostFilter, localeFilter } from '@/lib/blog-filters'
 import { getBuiltinArticle, builtinStaticParams, type BlogLocale } from '@/lib/blog-articles'
 import { siteConfig, jsonLdScript } from '@/lib/seo'
 import BlogPostContent from './blog-post-content'
@@ -20,9 +20,11 @@ export async function generateStaticParams() {
   const params: { locale: string; slug: string }[] = builtinStaticParams()
   try {
     await connectDB()
-    const posts = await BlogPost.find(visiblePostFilter()).select('slug').lean()
+    const posts = await BlogPost.find(visiblePostFilter()).select('slug locale').lean()
     for (const p of posts as any[]) {
-      params.push({ locale: 'fr', slug: p.slug }, { locale: 'en', slug: p.slug })
+      // Article PHARE : une seule langue. Article historique : les deux.
+      if (p.locale) params.push({ locale: p.locale, slug: p.slug })
+      else params.push({ locale: 'fr', slug: p.slug }, { locale: 'en', slug: p.slug })
     }
   } catch {
     // articles intégrés uniquement
@@ -74,7 +76,7 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
   // 2) Article en base.
   try {
     await connectDB()
-    const post = (await BlogPost.findOne({ slug, ...visiblePostFilter() }).lean()) as any
+    const post = (await BlogPost.findOne({ slug, ...visiblePostFilter(), ...localeFilter(l) }).lean()) as any
     if (!post) return {}
     const title = post.metaTitle || post.title
     const description = (post.metaDescription || post.excerpt || '').substring(0, 160)
@@ -172,7 +174,7 @@ export default async function BlogPostPage({ params }: { params: Params }) {
   // ── 2) Article en base ──
   try {
     await connectDB()
-    const post = (await BlogPost.findOne({ slug, ...visiblePostFilter() }).lean()) as any
+    const post = (await BlogPost.findOne({ slug, ...visiblePostFilter(), ...localeFilter(l) }).lean()) as any
     if (!post) notFound()
 
     const initialPost = {
