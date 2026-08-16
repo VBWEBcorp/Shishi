@@ -1,4 +1,5 @@
 import { activities, type Localized } from '@/lib/activities'
+import { getBookingConfig, MAX_BOOKING_MINUTES } from '@/lib/availability'
 
 /**
  * Tarifs de réservation "drop-in" par activité, en unité lisible de la devise
@@ -53,7 +54,7 @@ export function supportsHours(slug: string): boolean {
 }
 
 /** Nombre d'heures maximum réservable en une fois (activités à durée variable). */
-export const MAX_BOOKING_HOURS = 8
+export const MAX_BOOKING_HOURS = MAX_BOOKING_MINUTES / 60
 
 /**
  * Offre de lancement affichée en attendant la grille d'abonnements (Phase 1).
@@ -95,6 +96,36 @@ export function getBookingAmount(
   const h = Math.max(1, Math.floor(hours) || 1)
   const base = isPricePerPerson(slug) ? unit * n : unit
   return supportsHours(slug) ? base * h : base
+}
+
+/**
+ * Montant total d'une réservation à DURÉE LIBRE (saisie de l'espace admin).
+ * Les activités facturées à l'heure (tennis, Kids Club) sont proratisées à la
+ * demi-heure près : 1 h 30 de tennis = 600 × 1,5 = 900 ฿. Les pass journée
+ * restent au forfait, la durée n'entrant pas en compte.
+ *
+ * Pour une durée d'exactement un créneau, le montant est identique à celui de
+ * `getBookingAmount` : le tunnel public n'est donc pas impacté.
+ */
+export function getBookingAmountForMinutes(
+  slug: string,
+  partySize: number,
+  durationMinutes: number
+): number {
+  const unit = getActivityPrice(slug)
+  const n = Math.max(1, Math.floor(partySize) || 1)
+  const base = isPricePerPerson(slug) ? unit * n : unit
+
+  const cfg = getBookingConfig(slug)
+  // Pass journée (ou activité inconnue) : tarif forfaitaire.
+  if (!cfg || cfg.unit === 'day') return base
+
+  const slotMin = cfg.slotMinutes || 60
+  const minutes = Math.min(
+    MAX_BOOKING_MINUTES,
+    Math.max(0, Math.round(Number(durationMinutes))) || slotMin
+  )
+  return Math.round(base * (minutes / slotMin))
 }
 
 /** Vérifie qu'un slug correspond bien à une activité connue. */

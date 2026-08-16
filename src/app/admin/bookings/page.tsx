@@ -27,13 +27,14 @@ import {
   X,
 } from 'lucide-react'
 import { useRouter } from 'next/navigation'
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 import { ActivityIcon } from '@/components/activity-icon'
 import { activities } from '@/lib/activities'
-import { isBookable, isDayPass } from '@/lib/availability'
+import { formatDuration, isBookable, isDayPass, toHHMM, toMinutes } from '@/lib/availability'
 import { cn } from '@/lib/utils'
 import { NewBookingModal } from './new-booking-modal'
+import { WeekAgenda } from './week-agenda'
 
 // Activités concernées par le module de réservation : ouvertes (réservables) ou
 // « Bientôt » (prévues mais pas encore lancées, ex. pickleball). Le restaurant,
@@ -74,7 +75,7 @@ interface Booking {
 }
 
 type Counts = Record<string, number>
-type View = 'calendar' | 'table' | 'cards' | 'stats'
+type View = 'calendar' | 'table' | 'stats'
 
 const ease = [0.22, 1, 0.36, 1] as const
 
@@ -86,10 +87,11 @@ const FILTERS = [
   { key: 'cancelled', label: 'Annulées' },
 ] as const
 
+// La vue « Cartes » a été retirée : elle affichait la même liste que le détail
+// du jour, en doublon du calendrier.
 const VIEWS: { key: View; label: string; Icon: typeof CalendarRange }[] = [
   { key: 'calendar', label: 'Calendrier', Icon: CalendarRange },
   { key: 'table', label: 'Tableau', Icon: Table2 },
-  { key: 'cards', label: 'Cartes', Icon: LayoutGrid },
 ]
 
 const STATUS_STYLES: Record<Booking['status'], string> = {
@@ -122,6 +124,9 @@ const STATUS_LABEL: Record<Booking['status'], string> = {
 
 const WEEKDAYS = ['lun', 'mar', 'mer', 'jeu', 'ven', 'sam', 'dim']
 
+/** Mémorise le mode d'affichage du calendrier d'une visite à l'autre. */
+const CALENDAR_MODE_KEY = 'admin-calendar-mode'
+
 function authHeaders(): HeadersInit {
   const token = typeof window !== 'undefined' ? localStorage.getItem('authToken') : null
   return token ? { Authorization: `Bearer ${token}` } : {}
@@ -131,9 +136,37 @@ function activityIconName(slug: string): string {
   return activities.find((a) => a.slug === slug)?.icon ?? 'pool'
 }
 
-/** Horaire affiché : « Accès journée » pour les pass journée, sinon heure + durée. */
+/**
+ * Horaire affiché : « Accès journée » pour les pass journée, sinon la PLAGE
+ * réelle (07:30 → 09:00 · 1 h 30) — lisible tel quel dans l'emploi du temps,
+ * y compris pour les séances saisies à la demi-heure depuis l'admin.
+ */
 function scheduleLabel(b: Booking): string {
-  return isDayPass(b.activitySlug) ? 'Accès journée' : `${b.time} · ${b.duration} min`
+  if (isDayPass(b.activitySlug)) return 'Accès journée'
+  if (!/^\d{2}:\d{2}$/.test(b.time ?? '')) return b.time
+  const duration = Math.max(0, Math.round(Number(b.duration) || 0))
+  if (!duration) return b.time
+  return `${b.time} → ${toHHMM(toMinutes(b.time) + duration)} · ${formatDuration(duration)}`
+}
+
+/**
+ * Nom affiché dans une case du calendrier. `firstNameOnly` sert au téléphone,
+ * où la case ne fait qu'une poignée de caractères de large.
+ */
+function shortName(b: Booking, firstNameOnly = false): string {
+  if (b.blocked) return 'Bloqué'
+  const full = (b.name || '').trim()
+  if (!full) return 'Client'
+  return firstNameOnly ? full.split(/\s+/)[0] : full
+}
+
+/** Version compacte pour les cases du calendrier : « 07:30–09:00 ». */
+function timeRangeLabel(b: Booking): string {
+  if (isDayPass(b.activitySlug)) return 'journée'
+  if (!/^\d{2}:\d{2}$/.test(b.time ?? '')) return b.time
+  const duration = Math.max(0, Math.round(Number(b.duration) || 0))
+  if (!duration) return b.time
+  return `${b.time}–${toHHMM(toMinutes(b.time) + duration)}`
 }
 
 /** Montant à encaisser : « Crédits » si couvert par les crédits du membre, sinon prix en ฿. */
@@ -183,6 +216,15 @@ function ymd(d: Date): string {
 function fromKey(key: string): Date {
   const [y, m, d] = key.split('-').map(Number)
   return new Date(y, (m || 1) - 1, d || 1)
+}
+function addDays(d: Date, n: number): Date {
+  const out = new Date(d.getFullYear(), d.getMonth(), d.getDate())
+  out.setDate(out.getDate() + n)
+  return out
+}
+/** Lundi de la semaine contenant `d`. */
+function startOfWeek(d: Date): Date {
+  return addDays(d, -((d.getDay() + 6) % 7))
 }
 function monthCells(month: Date): (Date | null)[] {
   const first = new Date(month.getFullYear(), month.getMonth(), 1)
@@ -246,6 +288,10 @@ export default function AdminBookingsPage() {
     return new Date(d.getFullYear(), d.getMonth(), 1)
   })
   const [selectedDay, setSelectedDay] = useState<string>(() => ymd(new Date()))
+  // Deux façons de lire le planning : la semaine heure par heure (timeline) ou
+  // le mois en cartes. On démarre sur les cartes — c'est la valeur sûre, et la
+  // seule qui tienne sans défilement horizontal sur mobile/tablette.
+  const [calendarMode, setCalendarMode] = useState<'week' | 'month'>('month')
 
   const load = useCallback(
     async (status: string) => {
@@ -371,6 +417,62 @@ export default function AdminBookingsPage() {
   const cells = useMemo(() => monthCells(month), [month])
   const todayKey = ymd(new Date())
   const monthLabel = new Intl.DateTimeFormat('fr-FR', { month: 'long', year: 'numeric' }).format(month)
+
+  // Semaine affichée : ancrée sur le jour sélectionné (lundi → dimanche).
+  const weekDays = useMemo(() => {
+    const monday = startOfWeek(fromKey(selectedDay))
+    return Array.from({ length: 7 }, (_, i) => addDays(monday, i))
+  }, [selectedDay])
+  const weekLabel = useMemo(() => {
+    const [from, to] = [weekDays[0], weekDays[6]]
+    const sameMonth = from.getMonth() === to.getMonth()
+    const fmt = (d: Date, withMonth: boolean) =>
+      new Intl.DateTimeFormat('fr-FR', withMonth ? { day: 'numeric', month: 'long' } : { day: 'numeric' }).format(d)
+    return `${fmt(from, !sameMonth)} – ${fmt(to, true)} ${to.getFullYear()}`
+  }, [weekDays])
+
+  const dayDetailRef = useRef<HTMLDivElement>(null)
+
+  /**
+   * Sélection d'un jour. Sur téléphone, la case ne peut afficher que l'heure et
+   * le prénom : on amène donc le détail du jour — coordonnées et durée
+   * complètes — directement sous les yeux.
+   */
+  const selectDay = useCallback((key: string) => {
+    setSelectedDay(key)
+    if (typeof window === 'undefined' || window.matchMedia('(min-width: 640px)').matches) return
+    requestAnimationFrame(() =>
+      dayDetailRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    )
+  }, [])
+
+  /** Recentre le calendrier (et le mois affiché) sur une date donnée. */
+  const goToDay = useCallback((d: Date) => {
+    setSelectedDay(ymd(d))
+    setMonth(new Date(d.getFullYear(), d.getMonth(), 1))
+  }, [])
+
+  // Restaure le mode d'affichage choisi la dernière fois. Sans préférence
+  // enregistrée, on ouvre sur la timeline uniquement en grand écran : sur un
+  // téléphone ou une tablette, la vue en cartes donne une meilleure vision
+  // d'ensemble et évite de défiler latéralement.
+  useEffect(() => {
+    const saved = localStorage.getItem(CALENDAR_MODE_KEY)
+    if (saved === 'week' || saved === 'month') {
+      setCalendarMode(saved)
+      return
+    }
+    if (window.matchMedia('(min-width: 1024px)').matches) setCalendarMode('week')
+  }, [])
+
+  const pickCalendarMode = useCallback((m: 'week' | 'month') => {
+    setCalendarMode(m)
+    try {
+      localStorage.setItem(CALENDAR_MODE_KEY, m)
+    } catch {
+      /* stockage indisponible (navigation privée) : le choix vaut pour la session */
+    }
+  }, [])
   const selectedLabel = new Intl.DateTimeFormat('fr-FR', {
     weekday: 'long',
     day: 'numeric',
@@ -847,30 +949,59 @@ export default function AdminBookingsPage() {
         /* ============ VUE CALENDRIER ============ */
         <div className="space-y-4">
           <div className="rounded-2xl border border-border bg-card p-3 sm:p-4">
-            {/* Navigation mois */}
-            <div className="flex items-center justify-between gap-2 px-1 pb-3">
-              <h2 className="font-display text-lg font-semibold capitalize text-foreground">{monthLabel}</h2>
+            {/* Navigation : semaine ou mois */}
+            <div className="flex flex-wrap items-center justify-between gap-2 px-1 pb-3">
+              <h2 className="font-display text-lg font-semibold capitalize text-foreground">
+                {calendarMode === 'week' ? weekLabel : monthLabel}
+              </h2>
               <div className="flex items-center gap-1.5">
+                {/* Calendrier complet (heures) ou cartes seulement */}
+                <div className="mr-1 inline-flex rounded-lg border border-border bg-muted/40 p-0.5">
+                  {([
+                    { key: 'week', short: 'Heures', label: 'Calendrier avec les heures', Icon: Clock },
+                    { key: 'month', short: 'Cartes', label: 'Cartes seulement', Icon: LayoutGrid },
+                  ] as const).map((m) => (
+                    <button
+                      key={m.key}
+                      onClick={() => pickCalendarMode(m.key)}
+                      title={m.label}
+                      className={cn(
+                        'inline-flex items-center gap-1.5 rounded-md px-2.5 py-1 text-xs font-semibold transition-colors',
+                        calendarMode === m.key
+                          ? 'bg-accent text-accent-foreground'
+                          : 'text-muted-foreground hover:text-foreground'
+                      )}
+                    >
+                      <m.Icon className="size-3.5" aria-hidden />
+                      <span className="lg:hidden">{m.short}</span>
+                      <span className="hidden lg:inline">{m.label}</span>
+                    </button>
+                  ))}
+                </div>
                 <button
-                  onClick={() => {
-                    const d = new Date()
-                    setMonth(new Date(d.getFullYear(), d.getMonth(), 1))
-                    setSelectedDay(ymd(d))
-                  }}
+                  onClick={() => goToDay(new Date())}
                   className="rounded-lg border border-border px-3 py-1.5 text-xs font-medium text-foreground transition-colors hover:bg-muted"
                 >
                   Aujourd&apos;hui
                 </button>
                 <button
-                  onClick={() => setMonth((m) => new Date(m.getFullYear(), m.getMonth() - 1, 1))}
-                  aria-label="Mois précédent"
+                  onClick={() =>
+                    calendarMode === 'week'
+                      ? goToDay(addDays(fromKey(selectedDay), -7))
+                      : setMonth((m) => new Date(m.getFullYear(), m.getMonth() - 1, 1))
+                  }
+                  aria-label={calendarMode === 'week' ? 'Semaine précédente' : 'Mois précédent'}
                   className="flex size-8 items-center justify-center rounded-lg border border-border text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
                 >
                   <ChevronLeft className="size-4" aria-hidden />
                 </button>
                 <button
-                  onClick={() => setMonth((m) => new Date(m.getFullYear(), m.getMonth() + 1, 1))}
-                  aria-label="Mois suivant"
+                  onClick={() =>
+                    calendarMode === 'week'
+                      ? goToDay(addDays(fromKey(selectedDay), 7))
+                      : setMonth((m) => new Date(m.getFullYear(), m.getMonth() + 1, 1))
+                  }
+                  aria-label={calendarMode === 'week' ? 'Semaine suivante' : 'Mois suivant'}
                   className="flex size-8 items-center justify-center rounded-lg border border-border text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
                 >
                   <ChevronRight className="size-4" aria-hidden />
@@ -886,8 +1017,30 @@ export default function AdminBookingsPage() {
               <span className="inline-flex items-center gap-1.5">
                 <span className="size-2.5 rounded-full bg-orange-500" aria-hidden /> En attente
               </span>
+              <span className="inline-flex items-center gap-1.5">
+                <span className="size-2.5 rounded-full bg-zinc-400" aria-hidden /> Bloqué / annulé
+              </span>
+              <span className="ml-auto hidden lg:inline">
+                {calendarMode === 'week'
+                  ? 'Clic sur une zone libre : ajouter une réservation ce jour-là.'
+                  : 'Double-clic sur un jour : ajouter une réservation.'}
+              </span>
             </div>
 
+            {calendarMode === 'week' ? (
+              <WeekAgenda
+                days={weekDays}
+                byDay={byDay}
+                selectedDay={selectedDay}
+                todayKey={todayKey}
+                onSelectDay={selectDay}
+                onCreate={(key) => {
+                  setSelectedDay(key)
+                  setShowNew(true)
+                }}
+              />
+            ) : (
+              <>
             {/* En-têtes jours */}
             <div className="grid grid-cols-7 gap-1 pb-1 text-center sm:gap-2">
               {WEEKDAYS.map((w) => (
@@ -900,7 +1053,7 @@ export default function AdminBookingsPage() {
             {/* Grille du mois */}
             <div className="grid grid-cols-7 gap-1 sm:gap-2">
               {cells.map((d, i) => {
-                if (!d) return <div key={`e${i}`} className="min-h-[78px] sm:min-h-[104px]" />
+                if (!d) return <div key={`e${i}`} className="min-h-[96px] sm:min-h-[104px]" />
                 const key = ymd(d)
                 const dayB = byDay.get(key) ?? []
                 const isToday = key === todayKey
@@ -908,14 +1061,14 @@ export default function AdminBookingsPage() {
                 return (
                   <button
                     key={key}
-                    onClick={() => setSelectedDay(key)}
+                    onClick={() => selectDay(key)}
                     onDoubleClick={() => {
                       setSelectedDay(key)
                       setShowNew(true)
                     }}
                     title="Double-clic : ajouter une réservation ce jour"
                     className={cn(
-                      'flex min-h-[78px] min-w-0 flex-col rounded-xl border p-1.5 text-left transition-colors sm:min-h-[104px]',
+                      'flex min-h-[96px] min-w-0 flex-col rounded-xl border p-1.5 text-left transition-colors sm:min-h-[104px]',
                       isSelected
                         ? 'border-accent bg-accent/5 ring-1 ring-accent/40'
                         : 'border-border/60 hover:border-accent/40 hover:bg-muted/40'
@@ -930,17 +1083,42 @@ export default function AdminBookingsPage() {
                       {d.getDate()}
                     </span>
                     <div className="mt-1 min-w-0 flex-1 space-y-1 overflow-hidden">
-                      {dayB.slice(0, 3).map((b) => (
+                      {dayB.slice(0, 3).map((b, ci) => (
                         <span
                           key={b._id}
-                          className={cn('block truncate rounded px-1 py-0.5 text-[10px] font-medium', STATUS_CHIP[b.status])}
+                          title={`${scheduleLabel(b)} · ${b.activityName}${b.blocked ? '' : ` · ${b.name}`}`}
+                          className={cn(
+                            'rounded px-1 py-0.5 text-[10px] font-medium',
+                            // Au téléphone les pastilles font deux lignes : on
+                            // n'en montre que deux, la 3e passe dans le « +N ».
+                            ci === 2 ? 'hidden sm:block' : 'block',
+                            b.blocked ? 'bg-zinc-400/20 text-zinc-600 dark:text-zinc-300' : STATUS_CHIP[b.status]
+                          )}
                         >
-                          <span className="font-semibold">{b.time}</span>{' '}
-                          <span className="hidden sm:inline">{b.activityName}</span>
+                          {/* Téléphone : deux lignes, l'heure puis le prénom —
+                              une case de cette largeur ne tient pas les deux
+                              sur la même ligne. À partir de `sm`, tout tient. */}
+                          <span className="block truncate font-semibold tabular-nums sm:hidden">
+                            {b.time}
+                          </span>
+                          <span className="block truncate text-[9px] font-normal opacity-80 sm:hidden">
+                            {shortName(b, true)}
+                          </span>
+
+                          <span className="hidden truncate sm:block">
+                            <span className="font-semibold tabular-nums">{timeRangeLabel(b)}</span>{' '}
+                            {shortName(b)}
+                            <span className="hidden xl:inline"> · {b.activityName}</span>
+                          </span>
                         </span>
                       ))}
+                      {dayB.length > 2 && (
+                        <span className="block px-1 text-[10px] font-medium text-muted-foreground sm:hidden">
+                          +{dayB.length - 2}
+                        </span>
+                      )}
                       {dayB.length > 3 && (
-                        <span className="block px-1 text-[10px] font-medium text-muted-foreground">
+                        <span className="hidden px-1 text-[10px] font-medium text-muted-foreground sm:block">
                           +{dayB.length - 3}
                         </span>
                       )}
@@ -949,10 +1127,12 @@ export default function AdminBookingsPage() {
                 )
               })}
             </div>
+              </>
+            )}
           </div>
 
           {/* Détail du jour sélectionné */}
-          <div>
+          <div ref={dayDetailRef} className="scroll-mt-4">
             <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
               <h3 className="flex items-center gap-2 font-display text-sm font-semibold capitalize text-foreground">
                 <CalendarDays className="size-4 text-accent" aria-hidden />
@@ -1094,10 +1274,7 @@ export default function AdminBookingsPage() {
             </tbody>
           </table>
         </div>
-      ) : (
-        /* ============ VUE CARTES ============ */
-        <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">{filtered.map((b) => bookingCard(b))}</div>
-      )}
+      ) : null}
     </div>
   )
 }

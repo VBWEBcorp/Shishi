@@ -8,7 +8,7 @@ import {
   supportsHours,
   MAX_BOOKING_HOURS,
 } from '@/lib/booking-pricing'
-import { getBookingConfig, isBookable, isDayPass } from '@/lib/availability'
+import { bookingInterval, getBookingConfig, isBookable, isDayPass } from '@/lib/availability'
 import { isRangeAvailable } from '@/lib/availability-query'
 import { isValidBookingDate, isBookingDateTimeInPast } from '@/lib/booking-validation'
 import { notifyNewBooking } from '@/lib/booking-emails'
@@ -83,17 +83,25 @@ export async function POST(request: NextRequest) {
       ? Math.min(MAX_BOOKING_HOURS, Math.max(1, Math.floor(rawHours)))
       : 1
 
-    // Validation serveur : toute la plage demandée doit être disponible
-    // (anti double-réservation, ne fait jamais confiance au client).
-    const available = await isRangeAvailable(activitySlug, date, time, hours)
-    if (!available) {
-      return NextResponse.json({ error: 'slot-unavailable' }, { status: 409 })
-    }
-
     // Durée = nb d'heures × granularité pour les activités à durée variable,
     // sinon la durée standard du créneau (jamais envoyée par le client).
     const slotMin = getBookingConfig(activitySlug)?.slotMinutes ?? 60
-    const duration = supportsHours(activitySlug) ? hours * slotMin : slotMin
+    const duration = hours * slotMin
+
+    // Garde-fou de la GRILLE PUBLIQUE : heure pleine, durée en créneaux entiers,
+    // le tout dans les horaires d'ouverture. Les demi-heures et les durées
+    // libres restent l'apanage de l'espace admin — un appel direct à l'API ne
+    // peut donc pas réserver 07:30 ni 1 h 30 depuis le site.
+    if (!bookingInterval(activitySlug, time, duration, 'public')) {
+      return NextResponse.json({ error: 'slot-unavailable' }, { status: 409 })
+    }
+
+    // Validation serveur : toute la plage demandée doit être disponible
+    // (anti double-réservation, ne fait jamais confiance au client).
+    const available = await isRangeAvailable(activitySlug, date, time, duration, 'public')
+    if (!available) {
+      return NextResponse.json({ error: 'slot-unavailable' }, { status: 409 })
+    }
 
     // Le prix est TOUJOURS calculé côté serveur (jamais envoyé par le client).
     const baseAmount = getBookingAmount(activitySlug, partySize, hours)

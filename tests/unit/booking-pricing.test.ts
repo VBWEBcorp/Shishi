@@ -5,6 +5,7 @@ import {
   supportsHours,
   isPricePerPerson,
   getBookingAmount,
+  getBookingAmountForMinutes,
   getActivityBySlug,
   PRICE_TIERS,
   MAX_BOOKING_HOURS,
@@ -98,6 +99,43 @@ describe('getBookingAmount', () => {
     expect(getBookingAmount('fitness', 2.9)).toBe(500)
     expect(getBookingAmount('kids-club', 1, 0)).toBe(200)
     expect(getBookingAmount('kids-club', 1, -3)).toBe(200)
+  })
+})
+
+describe('getBookingAmountForMinutes — saisie admin à durée libre', () => {
+  it('facture le tennis au prorata de la demi-heure', () => {
+    expect(getBookingAmountForMinutes('tennis', 1, 60)).toBe(600)
+    expect(getBookingAmountForMinutes('tennis', 1, 90)).toBe(900)
+    expect(getBookingAmountForMinutes('tennis', 1, 30)).toBe(300)
+  })
+
+  it('reste un prix de terrain : le nombre de joueurs ne change rien', () => {
+    expect(getBookingAmountForMinutes('tennis', 4, 90)).toBe(900)
+  })
+
+  it('kids-club : prorata de durée ET multiplication par participant', () => {
+    expect(getBookingAmountForMinutes('kids-club', 2, 90)).toBe(600)
+  })
+
+  it('pass journée : forfait, la durée n’entre pas en compte', () => {
+    expect(getBookingAmountForMinutes('pool', 5, 720)).toBe(500)
+    expect(getBookingAmountForMinutes('fitness', 3, 60)).toBe(750)
+  })
+
+  it('donne le même montant que getBookingAmount sur un créneau plein', () => {
+    expect(getBookingAmountForMinutes('tennis', 1, 60)).toBe(getBookingAmount('tennis', 1, 1))
+    expect(getBookingAmountForMinutes('kids-club', 2, 180)).toBe(getBookingAmount('kids-club', 2, 3))
+    expect(getBookingAmountForMinutes('pool', 5, 720)).toBe(getBookingAmount('pool', 5))
+  })
+
+  it('borne les durées aberrantes', () => {
+    expect(getBookingAmountForMinutes('tennis', 1, 0)).toBe(600) // repli sur un créneau
+    expect(getBookingAmountForMinutes('tennis', 1, -90)).toBe(600)
+    expect(getBookingAmountForMinutes('tennis', 1, 10_000)).toBe(600 * MAX_BOOKING_HOURS)
+  })
+
+  it('slug inconnu : tarif par défaut forfaitaire', () => {
+    expect(getBookingAmountForMinutes('inconnu', 3, 90)).toBe(500)
   })
 })
 

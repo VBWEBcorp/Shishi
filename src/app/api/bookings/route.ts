@@ -3,8 +3,15 @@ import { NextRequest, NextResponse } from 'next/server'
 import { verifyAuth } from '@/lib/auth'
 import { connectDB } from '@/lib/db'
 import { Booking } from '@/models/Booking'
-import { getActivityBySlug, getBookingAmount, supportsHours, MAX_BOOKING_HOURS } from '@/lib/booking-pricing'
-import { getBookingConfig, isBookable, isDayPass } from '@/lib/availability'
+import { getActivityBySlug, getBookingAmountForMinutes } from '@/lib/booking-pricing'
+import {
+  ADMIN_STEP_MINUTES,
+  bookingInterval,
+  getBookingConfig,
+  isBookable,
+  isDayPass,
+  MAX_BOOKING_MINUTES,
+} from '@/lib/availability'
 import { isRangeAvailable } from '@/lib/availability-query'
 import { isValidBookingDate, isBookingDateTimeInPast } from '@/lib/booking-validation'
 import { sendBookingConfirmation } from '@/lib/booking-emails'
@@ -50,7 +57,9 @@ export async function GET(request: NextRequest) {
  * bouche-à-oreille) ou BLOCAGE d'un créneau (indispo interne). Admin uniquement.
  *
  * · mode « booking » : parité avec le tunnel public (activité, date, créneau,
- *   durée, personnes + participants, coordonnées, notes, opt-in newsletter).
+ *   durée, personnes + participants, coordonnées, notes, opt-in newsletter),
+ *   avec en plus la SAISIE À LA DEMI-HEURE (début et durée libres, ex. 07:30 →
+ *   09:00) que le site, lui, ne propose pas aux clients.
  *   TOLÉRANT aux infos manquantes : seuls activité + date + créneau sont requis ;
  *   nom/email/téléphone facultatifs (nom → « Client » par défaut). Dates passées
  *   acceptées (enregistrement a posteriori). Tarif recalculé serveur, statut
@@ -124,29 +133,50 @@ export async function POST(request: NextRequest) {
     const partyCount = Math.min(20, Math.max(1, Math.floor(Number(body.partySize) || 1)))
     const partySize = Math.min(20, Math.max(partyCount, 1 + participants.length))
 
-    // Nombre d'heures (activités à durée variable). Borné [1..MAX].
-    const rawHours = Number(body.hours) || 1
-    const hours = supportsHours(activitySlug)
-      ? Math.min(MAX_BOOKING_HOURS, Math.max(1, Math.floor(rawHours)))
-      : 1
+    // Durée saisie par l'admin, en MINUTES, au pas de la demi-heure. C'est ce
+    // qui permet d'enregistrer une séance de 07:30 à 09:00 (90 min) impossible
+    // à réserver depuis le site. `hours` reste accepté (compat ascendante).
+    const slotMin = getBookingConfig(activitySlug)?.slotMinutes ?? 60
+    const rawMinutes = Number(body.durationMinutes)
+    const rawHours = Number(body.hours)
+    const requested =
+      Number.isFinite(rawMinutes) && rawMinutes > 0
+        ? rawMinutes
+        : Number.isFinite(rawHours) && rawHours > 0
+          ? rawHours * 60
+          : slotMin
+    // Pass journée : durée imposée (l'accès couvre la journée entière).
+    const duration = isDayPass(activitySlug)
+      ? slotMin
+      : Math.min(
+          MAX_BOOKING_MINUTES,
+          Math.max(
+            ADMIN_STEP_MINUTES,
+            Math.round(requested / ADMIN_STEP_MINUTES) * ADMIN_STEP_MINUTES
+          )
+        )
+
+    // La plage doit tomber sur la grille interne (demi-heures) et tenir dans
+    // l'amplitude de saisie — y compris pour un enregistrement a posteriori.
+    if (!bookingInterval(activitySlug, time, duration, 'admin')) {
+      return NextResponse.json({ error: 'invalid-slot' }, { status: 400 })
+    }
 
     // Disponibilité validée serveur (anti double-réservation) — uniquement pour
     // les créneaux à venir. Une saisie a posteriori (date passée) n'est pas bornée.
     if (isFuture) {
-      const available = await isRangeAvailable(activitySlug, date, time, hours)
+      const available = await isRangeAvailable(activitySlug, date, time, duration, 'admin')
       if (!available) {
         return NextResponse.json({ error: 'slot-unavailable' }, { status: 409 })
       }
     }
 
-    const slotMin = getBookingConfig(activitySlug)?.slotMinutes ?? 60
-    const duration = supportsHours(activitySlug) ? hours * slotMin : slotMin
     const activityName = activity.name.fr
 
     await connectDB()
 
     const isBlock = mode === 'block'
-    const amount = isBlock ? 0 : getBookingAmount(activitySlug, partySize, hours)
+    const amount = isBlock ? 0 : getBookingAmountForMinutes(activitySlug, partySize, duration)
 
     const booking = await Booking.create({
       activitySlug,

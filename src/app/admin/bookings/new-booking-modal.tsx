@@ -5,12 +5,20 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 
 import { ActivityIcon } from '@/components/activity-icon'
 import { activities } from '@/lib/activities'
-import { isBookable } from '@/lib/availability'
-import { isPricePerPerson, supportsHours, MAX_BOOKING_HOURS } from '@/lib/booking-pricing'
+import {
+  ADMIN_STEP_MINUTES,
+  formatDuration,
+  isBookable,
+  isDayPass,
+  MAX_BOOKING_MINUTES,
+} from '@/lib/availability'
+import { isPricePerPerson } from '@/lib/booking-pricing'
 import { cn } from '@/lib/utils'
 
 type Mode = 'booking' | 'block'
-type Slot = { time: string; available: number }
+type Slot = { time: string; endTime: string; capacity: number; available: number }
+/** Fin possible pour la plage en cours de saisie. */
+type EndOption = { end: string; minutes: number }
 
 const BOOKABLE = activities.filter((a) => isBookable(a.slug))
 
@@ -27,20 +35,40 @@ function todayYmd(): string {
   return `${d.getFullYear()}-${m}-${day}`
 }
 
+/** « 2026-08-20 » → « jeu. 20 août ». */
+function frDate(ymd: string): string {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(ymd)) return ymd
+  const [y, m, d] = ymd.split('-').map(Number)
+  return new Date(y, m - 1, d).toLocaleDateString('fr-FR', {
+    weekday: 'short',
+    day: 'numeric',
+    month: 'long',
+  })
+}
+
 const ERROR_LABELS: Record<string, string> = {
   'slot-unavailable': 'Ce créneau n’est plus disponible. Choisissez-en un autre.',
   'invalid-email': 'Email invalide.',
   'missing-name': 'Le nom du client est requis.',
   'missing-fields': 'Activité, date et créneau sont requis.',
+  'invalid-slot': 'Cette plage horaire n’est pas valide (début ou durée).',
   'date-in-past': 'Ce créneau est déjà passé.',
   'invalid-date': 'Date invalide.',
   'not-bookable': 'Cette activité n’est pas réservable.',
 }
 
+/** Durée pré-sélectionnée quand la plage le permet : une heure. */
+const DEFAULT_DURATION_MINUTES = 60
+
 /**
  * Modale de création MANUELLE d'une réservation (client de passage / par
  * téléphone) ou de BLOCAGE d'un créneau, depuis l'espace admin. Reprend la
  * charte de l'admin (cartes arrondies, accent orange) — aucun nouveau style.
+ *
+ * Grille de saisie à la DEMI-HEURE (`scope=admin`) : le club enregistre ce qui
+ * se passe réellement (ex. une élève de 07:30 à 09:00), là où le site public
+ * reste sur des créneaux d'1 h pleine. La plage saisie ici rend automatiquement
+ * indisponibles, côté site, TOUS les créneaux qu'elle chevauche.
  */
 export function NewBookingModal({
   onClose,
@@ -57,8 +85,9 @@ export function NewBookingModal({
   const [date, setDate] = useState(initialDate || todayYmd())
   const [time, setTime] = useState('')
   const [slots, setSlots] = useState<Slot[]>([])
+  const [stepMinutes, setStepMinutes] = useState(ADMIN_STEP_MINUTES)
   const [slotsLoading, setSlotsLoading] = useState(false)
-  const [hours, setHours] = useState(1)
+  const [durationMinutes, setDurationMinutes] = useState(DEFAULT_DURATION_MINUTES)
   const [partySize, setPartySize] = useState(1)
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
@@ -72,23 +101,27 @@ export function NewBookingModal({
   const [error, setError] = useState<string | null>(null)
 
   const activity = useMemo(() => BOOKABLE.find((a) => a.slug === activitySlug), [activitySlug])
-  const withHours = supportsHours(activitySlug)
+  const dayPass = isDayPass(activitySlug) // fitness / pool : accès à la journée, horaire imposé
   const perPerson = isPricePerPerson(activitySlug) // fitness / pool / kids-club : facturé par personne
 
-  // Charge les créneaux disponibles pour l'activité + la date choisies.
+  // Charge la grille INTERNE (demi-heures) pour l'activité + la date choisies.
+  // On conserve aussi les créneaux complets : ils restent visibles (grisés) pour
+  // que l'admin comprenne pourquoi une heure manque, et servent de borne aux
+  // fins de plage proposées.
   const loadSlots = useCallback(async () => {
     if (!activitySlug || !date) return
     setSlotsLoading(true)
     try {
       const res = await fetch(
-        `/api/availability?activity=${encodeURIComponent(activitySlug)}&date=${encodeURIComponent(date)}`,
+        `/api/availability?activity=${encodeURIComponent(activitySlug)}&date=${encodeURIComponent(date)}&scope=admin`,
         { cache: 'no-store' }
       )
       const data = await res.json()
-      const avail: Slot[] = (data?.slots ?? []).filter((s: Slot) => s.available > 0)
-      setSlots(avail)
-      // Réinitialise le créneau s'il n'est plus proposé.
-      setTime((prev) => (avail.some((s) => s.time === prev) ? prev : ''))
+      const all: Slot[] = Array.isArray(data?.slots) ? data.slots : []
+      setSlots(all)
+      setStepMinutes(Number(data?.stepMinutes) || ADMIN_STEP_MINUTES)
+      // Réinitialise le créneau s'il n'est plus libre.
+      setTime((prev) => (all.some((s) => s.time === prev && s.available > 0) ? prev : ''))
     } catch {
       setSlots([])
     } finally {
@@ -99,6 +132,56 @@ export function NewBookingModal({
   useEffect(() => {
     loadSlots()
   }, [loadSlots])
+
+  /**
+   * Fins de plage possibles à partir du créneau choisi : on avance de demi-heure
+   * en demi-heure tant que la place reste libre, et on s'arrête au premier
+   * créneau complet (ou à la fin de l'amplitude / la durée maximale).
+   */
+  const endOptions = useMemo<EndOption[]>(() => {
+    if (dayPass) return []
+    const startIndex = slots.findIndex((s) => s.time === time)
+    if (startIndex < 0) return []
+    const out: EndOption[] = []
+    let minutes = 0
+    for (let i = startIndex; i < slots.length; i++) {
+      const slot = slots[i]
+      if (slot.available <= 0) break
+      // La plage doit rester d'un seul tenant : un trou dans la grille l'arrête.
+      if (out.length && slot.time !== out[out.length - 1].end) break
+      minutes += stepMinutes
+      if (minutes > MAX_BOOKING_MINUTES) break
+      out.push({ end: slot.endTime, minutes })
+    }
+    return out
+  }, [slots, time, stepMinutes, dayPass])
+
+  // Recale la durée sur ce qui est réellement proposé (défaut : 1 h si possible).
+  useEffect(() => {
+    if (!endOptions.length) return
+    setDurationMinutes((prev) => {
+      if (endOptions.some((o) => o.minutes === prev)) return prev
+      const preferred = endOptions.find((o) => o.minutes === DEFAULT_DURATION_MINUTES)
+      return preferred?.minutes ?? endOptions[endOptions.length - 1].minutes
+    })
+  }, [endOptions])
+
+  /** Heure de fin retenue pour la plage en cours. */
+  const selectedEnd = endOptions.find((o) => o.minutes === durationMinutes)?.end ?? ''
+
+  /**
+   * Récapitulatif affiché près du bouton de validation : ce qui va réellement
+   * être créé, sans avoir à remonter en haut du formulaire.
+   */
+  const recap = !time
+    ? 'Choisissez une activité, une date et une heure de début.'
+    : [
+        activity?.name.fr,
+        frDate(date),
+        dayPass ? 'accès journée' : `${time} → ${selectedEnd} · ${formatDuration(durationMinutes)}`,
+      ]
+        .filter(Boolean)
+        .join(' · ')
 
   // Ferme sur Échap.
   useEffect(() => {
@@ -127,7 +210,7 @@ export function NewBookingModal({
           activitySlug,
           date,
           time,
-          hours: withHours ? hours : 1,
+          durationMinutes: dayPass ? undefined : durationMinutes,
           partySize: perPerson ? partySize : 1,
           name: name.trim(),
           email: email.trim(),
@@ -167,15 +250,21 @@ export function NewBookingModal({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-black/50 p-4 backdrop-blur-sm sm:items-center"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-3 backdrop-blur-sm sm:p-6"
       onClick={onClose}
     >
+      {/*
+        Colonne à hauteur bornée : en-tête et actions restent fixes, seul le
+        contenu défile. Sans ce plafond, une modale plus haute que l'écran se
+        retrouvait rognée en haut ET en bas (centrage vertical + débordement).
+        Sur grand écran, deux colonnes : « quand » à gauche, « qui » à droite.
+      */}
       <div
-        className="my-8 w-full max-w-lg rounded-2xl border border-border bg-card shadow-xl"
+        className="flex max-h-[calc(100dvh-1.5rem)] w-full max-w-lg flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-xl sm:max-h-[calc(100dvh-3rem)] sm:max-w-2xl lg:max-w-4xl"
         onClick={(e) => e.stopPropagation()}
       >
         {/* En-tête */}
-        <div className="flex items-center justify-between gap-3 border-b border-border px-5 py-4">
+        <div className="flex shrink-0 items-center justify-between gap-3 border-b border-border px-5 py-4">
           <h2 className="flex items-center gap-2 font-display text-base font-semibold text-foreground">
             <CalendarPlus className="size-5 text-accent" aria-hidden />
             Nouvelle réservation
@@ -189,8 +278,8 @@ export function NewBookingModal({
           </button>
         </div>
 
-        <div className="space-y-4 p-5">
-          {/* Choix du mode */}
+        {/* Choix du mode — hors zone défilante : toujours sous les yeux */}
+        <div className="shrink-0 border-b border-border px-5 py-3">
           <div className="inline-flex w-full rounded-xl border border-border bg-muted/40 p-1">
             {([
               { key: 'booking', label: 'Réservation client', Icon: CalendarPlus },
@@ -209,7 +298,11 @@ export function NewBookingModal({
               </button>
             ))}
           </div>
+        </div>
 
+        <div className="grid flex-1 gap-x-6 gap-y-4 overflow-y-auto p-5 lg:grid-cols-2 lg:items-start">
+          {/* ── Colonne « quand » ─────────────────────────────────────────── */}
+          <div className="space-y-4">
           {/* Activité */}
           <div className="space-y-1.5">
             <label className={labelCls}>Activité</label>
@@ -245,7 +338,9 @@ export function NewBookingModal({
               />
             </div>
             <div className="space-y-1.5">
-              <label className={labelCls} htmlFor="nb-time">Créneau</label>
+              <label className={labelCls} htmlFor="nb-time">
+                {dayPass ? 'Créneau' : 'Début'}
+              </label>
               <select
                 id="nb-time"
                 value={time}
@@ -254,36 +349,58 @@ export function NewBookingModal({
                 disabled={slotsLoading}
               >
                 <option value="">
-                  {slotsLoading ? 'Chargement…' : slots.length === 0 ? 'Aucun créneau libre' : 'Choisir…'}
+                  {slotsLoading
+                    ? 'Chargement…'
+                    : !slots.some((s) => s.available > 0)
+                      ? 'Aucun créneau libre'
+                      : 'Choisir…'}
                 </option>
-                {slots.map((s) => (
-                  <option key={s.time} value={s.time}>
-                    {s.time} · {s.available} place{s.available > 1 ? 's' : ''}
-                  </option>
-                ))}
+                {slots.map((s) => {
+                  const taken = s.capacity - s.available
+                  return (
+                    <option key={s.time} value={s.time} disabled={s.available <= 0}>
+                      {s.time}
+                      {s.available <= 0
+                        ? ' · complet'
+                        : taken > 0
+                          ? ` · ${taken} déjà réservé${taken > 1 ? 's' : ''}`
+                          : ''}
+                    </option>
+                  )
+                })}
               </select>
             </div>
           </div>
 
-          {/* Durée (activités à durée variable) + personnes */}
-          {(withHours || perPerson) && mode === 'booking' && (
+          {/* Fin de la plage — saisie à la demi-heure (interne uniquement) */}
+          {!dayPass && (
             <div className="grid gap-3 sm:grid-cols-2">
-              {withHours && (
-                <div className="space-y-1.5">
-                  <label className={labelCls} htmlFor="nb-hours">Durée (heures)</label>
-                  <select
-                    id="nb-hours"
-                    value={hours}
-                    onChange={(e) => setHours(Number(e.target.value))}
-                    className={inputCls}
-                  >
-                    {Array.from({ length: MAX_BOOKING_HOURS }, (_, i) => i + 1).map((h) => (
-                      <option key={h} value={h}>{h} h</option>
-                    ))}
-                  </select>
-                </div>
-              )}
-              {perPerson && (
+              <div className="space-y-1.5">
+                <label className={labelCls} htmlFor="nb-end">Fin</label>
+                <select
+                  id="nb-end"
+                  value={durationMinutes}
+                  onChange={(e) => setDurationMinutes(Number(e.target.value))}
+                  className={inputCls}
+                  disabled={!time || endOptions.length === 0}
+                >
+                  {endOptions.length === 0 ? (
+                    <option value={durationMinutes}>—</option>
+                  ) : (
+                    endOptions.map((o) => (
+                      <option key={o.minutes} value={o.minutes}>
+                        {o.end} · {formatDuration(o.minutes)}
+                      </option>
+                    ))
+                  )}
+                </select>
+                <p className="text-[11px] text-muted-foreground">
+                  {time && endOptions.length > 0
+                    ? `Séance de ${time} à ${selectedEnd || '—'}. Les créneaux du site qui chevauchent cette plage passent automatiquement en indisponible.`
+                    : 'Choisissez un début : les demi-heures sont réservées à l’espace admin, les clients ne voient que des créneaux d’1 h.'}
+                </p>
+              </div>
+              {perPerson && mode === 'booking' && (
                 <div className="space-y-1.5">
                   <label className={labelCls} htmlFor="nb-party">Personnes</label>
                   <input
@@ -300,6 +417,27 @@ export function NewBookingModal({
             </div>
           )}
 
+          {/* Personnes — pass journée (le nombre pilote le tarif) */}
+          {dayPass && perPerson && mode === 'booking' && (
+            <div className="grid gap-3 sm:grid-cols-2">
+              <div className="space-y-1.5">
+                <label className={labelCls} htmlFor="nb-party-day">Personnes</label>
+                <input
+                  id="nb-party-day"
+                  type="number"
+                  min={1}
+                  max={20}
+                  value={partySize}
+                  onChange={(e) => setPartySize(Math.max(1, Math.min(20, Number(e.target.value) || 1)))}
+                  className={inputCls}
+                />
+              </div>
+            </div>
+          )}
+          </div>
+
+          {/* ── Colonne « qui » ───────────────────────────────────────────── */}
+          <div className="space-y-4">
           {/* Coordonnées client (mode réservation uniquement) — tout est facultatif */}
           {mode === 'booking' && (
             <div className="space-y-3 rounded-xl border border-border/70 bg-muted/20 p-3">
@@ -413,36 +551,41 @@ export function NewBookingModal({
               placeholder={mode === 'block' ? 'Ex. maintenance du terrain' : 'Informations complémentaires…'}
             />
           </div>
+          </div>
+        </div>
 
+        {/* Pied : récapitulatif + actions (toujours visible, hors défilement) */}
+        <div className="shrink-0 border-t border-border px-5 py-4">
           {error && (
-            <p className="rounded-xl bg-red-500/10 px-3 py-2 text-sm font-medium text-red-600 dark:text-red-400">
+            <p className="mb-3 rounded-xl bg-red-500/10 px-3 py-2 text-sm font-medium text-red-600 dark:text-red-400">
               {error}
             </p>
           )}
-        </div>
-
-        {/* Pied : actions */}
-        <div className="flex items-center justify-end gap-2 border-t border-border px-5 py-4">
-          <button
-            onClick={onClose}
-            className="rounded-xl border border-border bg-card px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-muted"
-          >
-            Annuler
-          </button>
-          <button
-            onClick={submit}
-            disabled={submitting || !time}
-            className="inline-flex items-center gap-2 rounded-xl bg-accent px-4 py-2 text-sm font-semibold text-accent-foreground transition-all hover:brightness-105 disabled:opacity-40"
-          >
-            {submitting ? (
-              <Loader2 className="size-4 animate-spin" aria-hidden />
-            ) : mode === 'block' ? (
-              <Ban className="size-4" aria-hidden />
-            ) : (
-              <CalendarPlus className="size-4" aria-hidden />
-            )}
-            {mode === 'block' ? 'Bloquer le créneau' : 'Créer la réservation'}
-          </button>
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <p className="min-w-0 flex-1 truncate text-xs text-muted-foreground">{recap}</p>
+            <div className="flex shrink-0 items-center gap-2">
+              <button
+                onClick={onClose}
+                className="rounded-xl border border-border bg-card px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-muted"
+              >
+                Annuler
+              </button>
+              <button
+                onClick={submit}
+                disabled={submitting || !time}
+                className="inline-flex items-center gap-2 rounded-xl bg-accent px-4 py-2 text-sm font-semibold text-accent-foreground transition-all hover:brightness-105 disabled:opacity-40"
+              >
+                {submitting ? (
+                  <Loader2 className="size-4 animate-spin" aria-hidden />
+                ) : mode === 'block' ? (
+                  <Ban className="size-4" aria-hidden />
+                ) : (
+                  <CalendarPlus className="size-4" aria-hidden />
+                )}
+                {mode === 'block' ? 'Bloquer le créneau' : 'Créer la réservation'}
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </div>

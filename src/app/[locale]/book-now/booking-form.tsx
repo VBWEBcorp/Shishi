@@ -183,7 +183,21 @@ export function BookingForm({
   const unitPrice = activitySlug ? getActivityPrice(activitySlug) : 0
   const perPerson = activitySlug ? isPricePerPerson(activitySlug) : false
   const hasHours = activitySlug ? supportsHours(activitySlug) : false
-  const effectiveHours = hasHours ? hours : 1
+  /**
+   * Nombre d'heures réellement réservable depuis le créneau choisi : on avance
+   * tant que les créneaux suivants existent (donc avant la fermeture) et restent
+   * libres. Sans ce plafond, le formulaire proposerait des durées que le serveur
+   * refuse — il valide désormais la plage ENTIÈRE, fermeture comprise.
+   */
+  const maxHours = useMemo(() => {
+    if (!hasHours) return 1
+    const startIndex = slots.findIndex((s) => s.time === selectedTime)
+    if (startIndex < 0) return MAX_BOOKING_HOURS
+    let n = 0
+    while (n < MAX_BOOKING_HOURS && slots[startIndex + n]?.available > 0) n++
+    return Math.max(1, n)
+  }, [hasHours, slots, selectedTime])
+  const effectiveHours = hasHours ? Math.min(hours, maxHours) : 1
   const partySize = 1 + participants.length
   const baseTotal = perPerson ? unitPrice * partySize : unitPrice
   const grossTotal = hasHours ? baseTotal * effectiveHours : baseTotal
@@ -572,20 +586,20 @@ export function BookingForm({
                   <button
                     type="button"
                     aria-label={fr ? 'Moins' : 'Less'}
-                    onClick={() => setHours((h) => Math.max(1, h - 1))}
-                    disabled={hours <= 1}
+                    onClick={() => setHours(Math.max(1, effectiveHours - 1))}
+                    disabled={effectiveHours <= 1}
                     className="flex size-8 items-center justify-center rounded-full border border-border text-foreground transition-colors hover:bg-muted disabled:opacity-40"
                   >
                     <Minus className="size-4" aria-hidden />
                   </button>
                   <span className="w-10 text-center font-semibold text-foreground">
-                    {hours} h
+                    {effectiveHours} h
                   </span>
                   <button
                     type="button"
                     aria-label={fr ? 'Plus' : 'More'}
-                    onClick={() => setHours((h) => Math.min(MAX_BOOKING_HOURS, h + 1))}
-                    disabled={hours >= MAX_BOOKING_HOURS}
+                    onClick={() => setHours((h) => Math.min(maxHours, h + 1))}
+                    disabled={effectiveHours >= maxHours}
                     className="flex size-8 items-center justify-center rounded-full border border-border text-foreground transition-colors hover:bg-muted disabled:opacity-40"
                   >
                     <Plus className="size-4" aria-hidden />
