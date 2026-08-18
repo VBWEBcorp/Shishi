@@ -24,67 +24,67 @@
 export const images = {
   // Hero homepage — 3 images qui défilent en carousel (photos du complexe)
   heroCarousel: [
-    '/photos/tennis-aerial.jpg',
-    '/photos/pool.jpg',
+    '/photos/tennis-court-portrait.webp',
+    '/photos/pool-panorama-portrait.webp',
     '/photos/restaurant.jpg',
   ],
 
   // Section "Notre histoire" sur la home
-  story: '/photos/lounge.jpg',
+  story: '/photos/pool-grand-angle-portrait.webp',
 
   // Page À propos — image principale du hero
-  aboutHero: '/photos/tennis-aerial.jpg',
+  aboutHero: '/photos/tennis-court-portrait.webp',
 
   // Page Services — image de fond du hero
-  servicesHero: '/photos/fitness.jpg',
+  servicesHero: '/photos/fitness-portrait.webp',
 
   // Page Contact — image de fond du hero
-  contactHero: '/photos/pool-bar.jpg',
+  contactHero: '/photos/pool-sala-portrait.webp',
 
   // Page À propos — galerie 4 images
   aboutGallery: [
-    '/photos/pool.jpg',
+    '/photos/pool-panorama-portrait.webp',
     '/photos/restaurant.jpg',
-    '/photos/fitness.jpg',
-    '/photos/kids-club.jpg',
+    '/photos/fitness-portrait.webp',
+    '/photos/pool-courts-portrait.webp',
   ],
 
   // Page Services — 8 images illustrant chaque prestation
   services: [
-    '/photos/pool.jpg',
+    '/photos/pool-panorama-portrait.webp',
     '/photos/restaurant.jpg',
-    '/photos/fitness.jpg',
-    '/photos/kids-welcome.jpg',
-    '/photos/tennis-aerial.jpg',
-    '/photos/lounge.jpg',
-    '/photos/kids-outdoor.jpg',
-    '/photos/pool-2.jpg',
+    '/photos/fitness-portrait.webp',
+    '/photos/kids-aire-jeu-portrait.webp',
+    '/photos/tennis-court-portrait.webp',
+    '/photos/pool-grand-angle-portrait.webp',
+    '/photos/equipe-kids-bulles-portrait.webp',
+    '/photos/pool-transats-portrait.webp',
   ],
 
   // Section CTA — 2 colonnes d'images animées en marquee vertical
   ctaScrollColumns: {
     col1: [
-      '/photos/pool.jpg',
+      '/photos/pool-panorama-portrait.webp',
       '/photos/restaurant.jpg',
-      '/photos/fitness.jpg',
-      '/photos/kids-outdoor.jpg',
+      '/photos/fitness-portrait.webp',
+      '/photos/equipe-kids-bulles-portrait.webp',
     ],
     col2: [
-      '/photos/tennis-aerial.jpg',
-      '/photos/lounge.jpg',
-      '/photos/pool-2.jpg',
-      '/photos/kids-trampoline.jpg',
+      '/photos/tennis-court-portrait.webp',
+      '/photos/pool-grand-angle-portrait.webp',
+      '/photos/pool-transats-portrait.webp',
+      '/photos/pool-parasols-portrait.webp',
     ],
   },
 
   // GalleryCarousel sur la home
   homeGallery: [
-    '/photos/pool.jpg',
+    '/photos/pool-panorama-portrait.webp',
     '/photos/restaurant.jpg',
-    '/photos/fitness.jpg',
-    '/photos/kids-welcome.jpg',
-    '/photos/tennis-aerial.jpg',
-    '/photos/lounge.jpg',
+    '/photos/fitness-portrait.webp',
+    '/photos/kids-aire-jeu-portrait.webp',
+    '/photos/tennis-court-portrait.webp',
+    '/photos/pool-grand-angle-portrait.webp',
   ],
 }
 
@@ -279,7 +279,7 @@ export const servicesContent = {
       title: 'Tennis',
       description: 'Jouez sur un court de qualité au sud de Koh Samui : simple, double, coaching et location de raquette.',
       points: ['600 ฿ / heure', 'Ouvert 7h – 22h', 'Réservation en ligne'],
-      image: '/photos/tennis-aerial.jpg',
+      image: '/photos/tennis-court-portrait.webp',
     },
     {
       iconName: 'Medal',
@@ -293,7 +293,7 @@ export const servicesContent = {
       title: 'Salle de sport',
       description: 'Un espace fitness entièrement équipé (force, cardio, functional training) avec l\'énergie d\'un social club.',
       points: ['250 ฿ / jour', '1000 ฿ / semaine · 1500 ฿ / mois', 'Ouvert 8h – 20h'],
-      image: '/photos/fitness.jpg',
+      image: '/photos/fitness-portrait.webp',
     },
     {
       iconName: 'UtensilsCrossed',
@@ -307,14 +307,14 @@ export const servicesContent = {
       title: 'Kids Club',
       description: 'Un espace sûr et ludique pour les enfants, avec activités encadrées et babysitting, pour que toute la famille profite.',
       points: ['200 ฿ / heure', 'Ouvert 8h – 16h', 'Babysitting sur demande'],
-      image: '/photos/kids-welcome.jpg',
+      image: '/photos/kids-aire-jeu-portrait.webp',
     },
     {
       iconName: 'Waves',
       title: 'Piscine',
       description: 'Détendez-vous au bord de la piscine entre deux sessions ou passez la journée à lézarder, le restaurant à deux pas.',
       points: ['100 ฿ / accès journée', 'Transats & ombre', 'Cœur du resort'],
-      image: '/photos/pool.jpg',
+      image: '/photos/pool-panorama-portrait.webp',
     },
   ],
 }

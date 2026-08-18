@@ -10,7 +10,7 @@ const defaults = {
     title: 'Le social club resort du sud de Koh Samui',
     description:
       'À Lamai, Shi Shi Samui réunit le sport, le bien-être et la convivialité dans un même lieu de vie. Un club premium pensé pour les résidents, expatriés et voyageurs en quête d\'un quotidien actif sous les tropiques.',
-    image: '/photos/pool.jpg',
+    image: '/photos/pool-panorama-portrait.webp',
   },
   story: {
     title: 'Un lieu de vie, pas seulement un club',
@@ -26,7 +26,7 @@ const defaults = {
     { title: 'Bien-être', description: 'Piscine, cuisine healthy et cadre tropical : prendre soin de soi en profitant de l\'instant.' },
     { title: 'Convivialité', description: 'Un lieu pensé pour les rencontres, la famille et la communauté locale de Lamai.' },
   ],
-  gallery: ['/photos/pool.jpg', '/photos/restaurant.jpg', '/photos/fitness.jpg', '/photos/kids-club.jpg'],
+  gallery: ['/photos/pool-panorama-portrait.webp', '/photos/restaurant.jpg', '/photos/fitness-portrait.webp', '/photos/pool-courts-portrait.webp'],
 }
 
 const defaultsEn = {
@@ -35,7 +35,7 @@ const defaultsEn = {
     title: 'The social club resort of South Koh Samui',
     description:
       'In Lamai, Shi Shi Samui brings sport, wellness and good company together in one place to live. A premium club designed for residents, expats and travellers after an active tropical lifestyle.',
-    image: '/photos/pool.jpg',
+    image: '/photos/pool-panorama-portrait.webp',
   },
   story: {
     title: 'A place to live, not just a club',
@@ -53,7 +53,7 @@ const defaultsEn = {
     { title: 'Wellness', description: 'Pool, healthy food and a tropical setting: taking care of yourself while enjoying the moment.' },
     { title: 'Good company', description: 'A place made for meeting people, family time and the local Lamai community.' },
   ],
-  gallery: ['/photos/pool.jpg', '/photos/restaurant.jpg', '/photos/fitness.jpg', '/photos/kids-club.jpg'],
+  gallery: ['/photos/pool-panorama-portrait.webp', '/photos/restaurant.jpg', '/photos/fitness-portrait.webp', '/photos/pool-courts-portrait.webp'],
 }
 
 export default function AdminAboutPage() {

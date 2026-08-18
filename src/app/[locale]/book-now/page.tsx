@@ -50,7 +50,7 @@ export async function generateMetadata({
       url: `${siteConfig.url}/book-now`,
       siteName: siteConfig.name,
       type: 'website',
-      images: [{ url: '/photos/tennis-aerial.jpg', alt: 'Booking tennis and pickleball at Shi Shi Samui' }],
+      images: [{ url: '/photos/tennis-court-portrait.webp', alt: 'Booking tennis and pickleball at Shi Shi Samui' }],
     },
   }
 }
@@ -84,7 +84,7 @@ export default async function BookNowPage({
     '@context': 'https://schema.org',
     '@graph': [
       webPageJsonLd(t('h1'), t('seoDescription'), '/book-now'),
-      serviceJsonLd(t('h1'), t('seoDescription'), '/book-now', '/photos/tennis-aerial.jpg'),
+      serviceJsonLd(t('h1'), t('seoDescription'), '/book-now', '/photos/tennis-court-portrait.webp'),
       breadcrumbJsonLd([
         { name: locale === 'fr' ? 'Accueil' : 'Home', path: '/' },
         { name: t('breadcrumb'), path: '/book-now' },
@@ -121,7 +121,7 @@ function BookingContent({ initialActivity }: { initialActivity?: string }) {
     <div>
       {/* 1 · HERO — vidéo de fond (photo = poster/repli instantané), sombre */}
       <section className="relative isolate overflow-hidden pt-14">
-        <Image src="/photos/tennis-aerial.jpg" alt="Booking tennis and pickleball at Shi Shi Samui" fill priority sizes="100vw" className="object-cover" />
+        <Image src="/photos/tennis-court-portrait.webp" alt="Booking tennis and pickleball at Shi Shi Samui" fill priority sizes="100vw" className="object-cover" />
         {/* Vidéo cinématique. Remplacer /videos/hero-pool.mp4 par la vidéo définitive du client. */}
         <video
           autoPlay
@@ -129,7 +129,7 @@ function BookingContent({ initialActivity }: { initialActivity?: string }) {
           loop
           playsInline
           preload="auto"
-          poster="/photos/tennis-aerial.jpg"
+          poster="/photos/tennis-court-portrait.webp"
           aria-hidden
           className="absolute inset-0 size-full object-cover motion-reduce:hidden"
         >

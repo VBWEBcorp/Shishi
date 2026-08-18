@@ -8,7 +8,7 @@ const defaults = {
     eyebrow: 'Contact',
     title: 'Une question ? Écrivez-nous',
     description: 'Remplissez le formulaire ou contactez-nous directement par WhatsApp. Pour réserver une activité, passez par la page Réservation.',
-    image: '/photos/pool-bar.jpg',
+    image: '/photos/pool-sala-portrait.webp',
   },
   info: {
     phone: '+33 6 51 69 27 02',
@@ -25,7 +25,7 @@ const defaultsEn = {
     title: 'A question? Get in touch',
     description:
       'Fill in the form or reach us directly on WhatsApp. To book an activity, use the Booking page.',
-    image: '/photos/pool-bar.jpg',
+    image: '/photos/pool-sala-portrait.webp',
   },
   info: {
     phone: '+33 6 51 69 27 02',

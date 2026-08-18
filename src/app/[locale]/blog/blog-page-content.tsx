@@ -228,7 +228,7 @@ export default function BlogPageContent({ initialSettings, initialPosts, locale 
         <section className="mx-auto max-w-6xl px-4 pb-20 sm:px-6 lg:px-8 lg:pb-28">
           <div className="relative overflow-hidden rounded-[2rem]">
             <Image
-              src="/photos/pool.jpg"
+              src="/photos/pool-panorama-portrait.webp"
               alt=""
               fill
               sizes="(min-width:1152px) 1152px, 100vw"

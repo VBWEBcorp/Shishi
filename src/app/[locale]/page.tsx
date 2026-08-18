@@ -54,13 +54,13 @@ export const metadata: Metadata = {
     url: siteConfig.url,
     siteName: siteConfig.name,
     type: 'website',
-    images: [{ url: '/photos/pool.jpg', width: 1200, height: 800, alt: siteConfig.name }],
+    images: [{ url: '/photos/pool-panorama-portrait.webp', width: 1200, height: 800, alt: siteConfig.name }],
   },
   twitter: {
     card: 'summary_large_image',
     title,
     description,
-    images: ['/photos/pool.jpg'],
+    images: ['/photos/pool-panorama-portrait.webp'],
   },
 }
 

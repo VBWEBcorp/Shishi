@@ -77,7 +77,7 @@ export default function AdminDashboardPage() {
       {/* Background image + voile neutre (même DA que le hero du site) */}
       <div className="absolute inset-0 -z-10">
         <Image
-          src="/photos/pool.jpg"
+          src="/photos/pool-panorama-portrait.webp"
           alt=""
           fill
           sizes="100vw"

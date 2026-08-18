@@ -6,7 +6,7 @@ import Image from 'next/image'
 
 import { activities } from '@/lib/activities'
 
-const DEFAULT_IMAGE = '/photos/pool.jpg'
+const DEFAULT_IMAGE = '/photos/pool-panorama-portrait.webp'
 
 /** Photo de fond correspondant à l'activité choisie (repli : piscine). */
 export function activityBackground(slug?: string): string {

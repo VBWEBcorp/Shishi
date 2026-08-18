@@ -40,7 +40,7 @@ export async function generateMetadata({
       url: `${siteConfig.url}/contact-location`,
       siteName: siteConfig.name,
       type: 'website',
-      images: [{ url: '/photos/pool-bar.jpg', alt: 'Shi Shi Samui location in Lamai' }],
+      images: [{ url: '/photos/pool-sala-portrait.webp', alt: 'Shi Shi Samui location in Lamai' }],
     },
   }
 }

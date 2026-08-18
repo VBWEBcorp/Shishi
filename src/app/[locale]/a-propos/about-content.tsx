@@ -39,7 +39,7 @@ function AboutHero({ cms }: { cms?: AboutHeroContent }) {
   const tNav = useTranslations('Nav')
   const stats = t.raw('stats') as { value: string; label: string }[]
   // `image` peut être une URL ou la paire { desktop, mobile } saisie en admin.
-  const heroImage = hasImage(cms?.image) ? cms!.image! : '/photos/pool.jpg'
+  const heroImage = hasImage(cms?.image) ? cms!.image! : '/photos/pool-panorama-portrait.webp'
   const eyebrow = cms?.eyebrow || t('hero.eyebrow')
   const description = cms?.description || t('hero.description')
 
@@ -141,7 +141,7 @@ function StorySection({ cms }: { cms?: Record<string, string> }) {
           transition={{ duration: 0.6, ease }}
           className="relative aspect-[4/3] overflow-hidden rounded-3xl ring-1 ring-border lg:aspect-[4/5]"
         >
-          <Image src="/photos/lounge.jpg" alt="" fill sizes="(min-width:1024px) 50vw, 100vw" className="object-cover" />
+          <Image src="/photos/pool-grand-angle-portrait.webp" alt="" fill sizes="(min-width:1024px) 50vw, 100vw" className="object-cover" />
           <div className="pointer-events-none absolute inset-0 bg-gradient-to-tr from-foreground/20 via-transparent to-transparent" aria-hidden />
         </motion.div>
 

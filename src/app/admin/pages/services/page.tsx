@@ -10,7 +10,7 @@ const defaults = {
     eyebrow: 'Nos activités',
     title: 'Tout pour une journée active à Lamai',
     description: 'Sport, bien-être et convivialité au même endroit, à deux pas les uns des autres. Réservez en ligne en moins d\'une minute.',
-    image: '/photos/fitness.jpg',
+    image: '/photos/fitness-portrait.webp',
   },
   services: [
     { title: 'Tennis', description: 'Un court de qualité au sud de Koh Samui : simple, double, coaching et location de raquette. 600 ฿/heure, ouvert 7h–22h.' },
@@ -28,7 +28,7 @@ const defaultsEn = {
     title: 'Everything for an active day in Lamai',
     description:
       'Sport, wellness and good company in one place, steps from each other. Book online in under a minute.',
-    image: '/photos/fitness.jpg',
+    image: '/photos/fitness-portrait.webp',
   },
   services: [
     { title: 'Tennis', description: 'A quality court in the south of Koh Samui: singles, doubles, coaching and racket rental. 600 ฿/hour, open 7am–10pm.' },

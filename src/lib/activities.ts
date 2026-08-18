@@ -167,7 +167,7 @@ export const activities: Activity[] = [
       en: ['Dedicated pickleball courts', 'Beginner clinics & open play', 'Paddle & ball rental', 'Social tournaments'],
       fr: ['Terrains de pickleball dédiés', 'Initiations & jeu libre', 'Location de raquette & balles', 'Tournois conviviaux'],
     },
-    gallery: ['/photos/pickleball.jpg', '/photos/tennis-aerial.jpg', '/photos/pool.jpg', '/photos/lounge.jpg'],
+    gallery: ['/photos/pickleball.jpg', '/photos/tennis-court-portrait.webp', '/photos/pool-panorama-portrait.webp', '/photos/pool-grand-angle-portrait.webp'],
     video: '/videos/pickleball.mp4',
     faq: [
       {
@@ -209,7 +209,7 @@ export const activities: Activity[] = [
       fr: 'Jouez sur un court de tennis de qualité au sud de Koh Samui. Simple, double, coaching et location de raquette : tout pour entrer sur le court en moins d’une minute.',
     },
     icon: 'tennis',
-    image: '/photos/tennis-aerial.jpg',
+    image: '/photos/tennis-court-portrait.webp',
     gradient: 'from-lime-500/15 to-emerald-500/5',
     inMenu: true,
     bookable: true,
@@ -250,7 +250,7 @@ export const activities: Activity[] = [
       en: ['A quality tennis court', 'Private & group coaching', 'Racket rental', 'Singles & doubles booking'],
       fr: ['Un court de tennis de qualité', 'Coaching privé & collectif', 'Location de raquette', 'Réservation simple & double'],
     },
-    gallery: ['/photos/tennis-aerial.jpg', '/photos/pickleball.jpg', '/photos/pool.jpg', '/photos/lounge.jpg'],
+    gallery: ['/photos/tennis-court-portrait.webp', '/photos/pickleball.jpg', '/photos/pool-panorama-portrait.webp', '/photos/pool-grand-angle-portrait.webp'],
     video: '/videos/tennis.mp4',
     faq: [
       {
@@ -292,7 +292,7 @@ export const activities: Activity[] = [
       fr: 'Entraînez-vous dans un espace fitness entièrement équipé (force, cardio et functional training) avec l’énergie d’un social club. Pass journée et abonnements disponibles.',
     },
     icon: 'fitness',
-    image: '/photos/fitness.jpg',
+    image: '/photos/fitness-portrait.webp',
     gradient: 'from-orange-500/15 to-amber-500/5',
     inMenu: true,
     bookable: true,
@@ -333,7 +333,7 @@ export const activities: Activity[] = [
       en: ['Strength & cardio zones', 'Functional training area', 'Day passes & memberships', 'Towel service'],
       fr: ['Zones force & cardio', 'Espace functional training', 'Pass journée & abonnements', 'Service de serviettes'],
     },
-    gallery: ['/photos/fitness.jpg', '/photos/fitness-2.jpg', '/photos/lounge.jpg', '/photos/pool.jpg'],
+    gallery: ['/photos/fitness-portrait.webp', '/photos/tennis-jardin-portrait.webp', '/photos/pool-grand-angle-portrait.webp', '/photos/pool-panorama-portrait.webp'],
     video: '/videos/fitness.mp4',
     faq: [
       {
@@ -413,7 +413,7 @@ export const activities: Activity[] = [
       en: ['Fresh healthy menu', 'Smoothies & bowls', 'Poolside dining', 'Vegetarian & vegan options'],
       fr: ['Carte fraîche & healthy', 'Smoothies & bowls', 'Repas au bord de la piscine', 'Options végétariennes & vegan'],
     },
-    gallery: ['/photos/restaurant.jpg', '/photos/restaurant-2.jpg', '/photos/pool-bar.jpg', '/photos/lounge.jpg'],
+    gallery: ['/photos/restaurant.jpg', '/photos/restaurant-2.jpg', '/photos/pool-sala-portrait.webp', '/photos/pool-grand-angle-portrait.webp'],
     video: '/videos/restaurant.mp4',
     faq: [
       {
@@ -455,7 +455,7 @@ export const activities: Activity[] = [
       fr: 'Un espace sûr et ludique pour les enfants, avec activités encadrées, pour que toute la famille profite du club. Idéal pour les expatriés et familles de passage à Koh Samui.',
     },
     icon: 'kids',
-    image: '/photos/kids-welcome.jpg',
+    image: '/photos/kids-aire-jeu-portrait.webp',
     gradient: 'from-sky-500/15 to-cyan-500/5',
     inMenu: true,
     bookable: true,
@@ -493,7 +493,7 @@ export const activities: Activity[] = [
       en: ['Supervised activities (1 hour)', 'Lunch for the child at midday', 'Safe & shaded play area', 'Family-friendly all day'],
       fr: ['Activités encadrées (1 heure)', 'Repas du midi possible pour l’enfant', 'Aire de jeu sûre & ombragée', 'Convivial pour les familles'],
     },
-    gallery: ['/photos/kids-welcome.jpg', '/photos/kids-play.jpg', '/photos/kids-outdoor.jpg', '/photos/kids-trampoline.jpg'],
+    gallery: ['/photos/kids-aire-jeu-portrait.webp', '/photos/equipe-kids-portrait.webp', '/photos/equipe-kids-bulles-portrait.webp', '/photos/pool-parasols-portrait.webp'],
     video: '/videos/kids.mp4',
     faq: [
       {
@@ -535,7 +535,7 @@ export const activities: Activity[] = [
       fr: 'Détendez-vous au bord de la piscine entre deux sessions ou passez la journée à lézarder. Le cœur social du resort, avec le restaurant à deux pas.',
     },
     icon: 'pool',
-    image: '/photos/pool.jpg',
+    image: '/photos/pool-panorama-portrait.webp',
     gradient: 'from-cyan-500/15 to-sky-500/5',
     inMenu: true,
     bookable: true,
@@ -573,7 +573,7 @@ export const activities: Activity[] = [
       en: ['Sun loungers & shade', 'Poolside service', 'Day pass access', 'Steps from the restaurant'],
       fr: ['Transats & coins ombragés', 'Service au bord de l’eau', 'Accès pass journée', 'À deux pas du restaurant'],
     },
-    gallery: ['/photos/pool.jpg', '/photos/pool-2.jpg', '/photos/pool-bar.jpg', '/photos/lounge.jpg'],
+    gallery: ['/photos/pool-panorama-portrait.webp', '/photos/pool-transats-portrait.webp', '/photos/pool-sala-portrait.webp', '/photos/pool-grand-angle-portrait.webp'],
     video: '/videos/hero-pool.mp4',
     faq: [
       {
@@ -622,7 +622,7 @@ export const babysitting: Activity = {
     fr: 'Un service de babysitting et de garde d’enfants à Lamai pour les familles, expatriés et touristes — pour que les parents jouent, s’entraînent ou se détendent l’esprit tranquille.',
   },
   icon: 'kids',
-  image: '/photos/kids-play.jpg',
+  image: '/photos/equipe-kids-portrait.webp',
   gradient: 'from-sky-500/15 to-cyan-500/5',
   inMenu: false,
   bookable: false,
@@ -661,7 +661,7 @@ export const babysitting: Activity = {
     en: ['Trusted childcare', 'On request booking', 'At the club in Lamai', 'For families & visitors'],
     fr: ['Garde de confiance', 'Réservation sur demande', 'Au club à Lamai', 'Pour familles & visiteurs'],
   },
-  gallery: ['/photos/kids-welcome.jpg', '/photos/kids-play.jpg', '/photos/kids-outdoor.jpg', '/photos/kids-trampoline.jpg'],
+  gallery: ['/photos/kids-aire-jeu-portrait.webp', '/photos/equipe-kids-portrait.webp', '/photos/equipe-kids-bulles-portrait.webp', '/photos/pool-parasols-portrait.webp'],
   video: '/videos/kids.mp4',
   faq: [
     {

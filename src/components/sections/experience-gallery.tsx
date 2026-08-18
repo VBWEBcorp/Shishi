@@ -22,7 +22,7 @@ const ease = [0.22, 1, 0.36, 1] as const
 const MOMENTS: Moment[] = [
   {
     time: '07:30',
-    image: '/photos/fitness.jpg',
+    image: '/photos/fitness-portrait.webp',
     title: { en: 'Morning workout', fr: 'Réveil sportif' },
     caption: {
       en: 'Start the day in motion in a fully-equipped fitness space.',
@@ -40,7 +40,7 @@ const MOMENTS: Moment[] = [
   },
   {
     time: '15:00',
-    image: '/photos/pool.jpg',
+    image: '/photos/pool-panorama-portrait.webp',
     title: { en: 'Afternoon by the pool', fr: 'Après-midi piscine' },
     caption: {
       en: 'Swim, sunbathe and unwind at the heart of the resort.',
@@ -49,7 +49,7 @@ const MOMENTS: Moment[] = [
   },
   {
     time: '18:30',
-    image: '/photos/pool-bar.jpg',
+    image: '/photos/pool-sala-portrait.webp',
     title: { en: 'Sunset drinks', fr: 'Apéro coucher de soleil' },
     caption: {
       en: 'A drink under the Lamai sky as the day winds down.',

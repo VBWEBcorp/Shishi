@@ -59,7 +59,7 @@ export function ComingSoon() {
     <section className="relative isolate flex min-h-dvh flex-col overflow-hidden bg-[oklch(0.16_0_0)]">
       {/* Fond cinématique : poster (LCP, visible sans JS) + vidéo de la piscine */}
       <Image
-        src="/photos/pool.jpg"
+        src="/photos/pool-panorama-portrait.webp"
         alt="Shi Shi Samui — le club resort à Lamai, Koh Samui"
         fill
         priority
@@ -72,7 +72,7 @@ export function ComingSoon() {
         loop
         playsInline
         preload="auto"
-        poster="/photos/pool.jpg"
+        poster="/photos/pool-panorama-portrait.webp"
         onCanPlay={() => setVideoReady(true)}
         aria-hidden
         className={`absolute inset-0 size-full object-cover transition-opacity duration-[1200ms] motion-reduce:hidden ${

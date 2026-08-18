@@ -12,7 +12,7 @@ const defaults = {
       'Sport, bien-être et convivialité au même endroit. Tennis, le repaire du pickleball sur l\'île, une salle premium, un restaurant healthy, un kids club et une piscine. Réservez en ligne en moins d\'une minute.',
     button1: 'Réserver',
     button2: 'Découvrir les activités',
-    images: ['/photos/tennis-aerial.jpg', '/photos/pool.jpg', '/photos/restaurant.jpg'],
+    images: ['/photos/tennis-court-portrait.webp', '/photos/pool-panorama-portrait.webp', '/photos/restaurant.jpg'],
   },
   story: {
     eyebrow: 'Notre histoire',
@@ -21,7 +21,7 @@ const defaults = {
       'Shi Shi Samui est né d\'une envie simple : créer, au sud de Koh Samui, un endroit où l\'on vient bouger, se détendre et se retrouver. Tout est réuni pour profiter, seul, entre amis ou en famille.',
     paragraph2:
       'Plus qu\'une salle ou un terrain, c\'est un véritable social club tropical : on s\'entraîne le matin et on déjeune au bord de l\'eau, les enfants jouent pendant que les parents soufflent.',
-    image: '/photos/lounge.jpg',
+    image: '/photos/pool-grand-angle-portrait.webp',
   },
   cta: {
     eyebrow: 'Prêt à jouer ?',
@@ -45,7 +45,7 @@ const defaultsEn = {
       "Sport, wellness and good company in one place. Tennis, the island's home of pickleball, a premium gym, a healthy restaurant, a kids club and a pool. Book your session online in under a minute.",
     button1: 'Book a court',
     button2: 'Explore activities',
-    images: ['/photos/tennis-aerial.jpg', '/photos/pool.jpg', '/photos/restaurant.jpg'],
+    images: ['/photos/tennis-court-portrait.webp', '/photos/pool-panorama-portrait.webp', '/photos/restaurant.jpg'],
   },
   story: {
     eyebrow: 'Our story',
@@ -54,7 +54,7 @@ const defaultsEn = {
       'Shi Shi Samui was born from a simple idea: to create, in the south of Koh Samui, a place to move, unwind and connect. Everything in one spot to enjoy, solo, with friends or as a family.',
     paragraph2:
       "More than a gym or a court, it's a true tropical social club: train in the morning and have lunch by the water, let the kids play while the parents relax.",
-    image: '/photos/lounge.jpg',
+    image: '/photos/pool-grand-angle-portrait.webp',
   },
   cta: {
     eyebrow: 'Ready to play?',

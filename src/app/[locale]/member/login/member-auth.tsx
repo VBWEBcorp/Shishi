@@ -100,7 +100,7 @@ export function MemberAuth() {
     <section className="relative isolate flex min-h-dvh flex-col items-center justify-center overflow-hidden px-4 py-10 sm:px-6">
       {/* Fond photo plein écran + voiles chauds + vignette premium */}
       <Image
-        src="/photos/pool.jpg"
+        src="/photos/pool-panorama-portrait.webp"
         alt="Shi Shi Samui — club à Lamai, Koh Samui"
         fill
         priority

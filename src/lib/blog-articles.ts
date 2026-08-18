@@ -353,7 +353,7 @@ const ARTICLES: BuiltinArticle[] = [
     author: 'Shi Shi Samui',
     publishedAt: '2026-06-01T08:00:00.000Z',
     updatedAt: '2026-06-10T08:00:00.000Z',
-    coverImage: '/photos/pool.jpg',
+    coverImage: '/photos/pool-panorama-portrait.webp',
     slug: {
       en: 'things-to-do-lamai-koh-samui',
       fr: 'que-faire-lamai-koh-samui',

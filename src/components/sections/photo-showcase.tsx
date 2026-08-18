@@ -12,13 +12,13 @@ import Image from 'next/image'
  */
 const SHOWCASE_PHOTOS: { src: string; alt: string }[] = [
   { src: '/photos/pickleball.jpg', alt: 'Pickleball' },
-  { src: '/photos/tennis-aerial.jpg', alt: 'Tennis' },
-  { src: '/photos/pool.jpg', alt: 'Piscine' },
+  { src: '/photos/tennis-court-portrait.webp', alt: 'Tennis' },
+  { src: '/photos/pool-panorama-portrait.webp', alt: 'Piscine' },
   { src: '/photos/restaurant.jpg', alt: 'Restaurant' },
-  { src: '/photos/fitness.jpg', alt: 'Fitness' },
-  { src: '/photos/kids-play.jpg', alt: 'Kids club' },
-  { src: '/photos/lounge.jpg', alt: 'Lounge' },
-  { src: '/photos/pool-bar.jpg', alt: 'Pool bar' },
+  { src: '/photos/fitness-portrait.webp', alt: 'Fitness' },
+  { src: '/photos/equipe-kids-portrait.webp', alt: 'Kids club' },
+  { src: '/photos/pool-grand-angle-portrait.webp', alt: 'Lounge' },
+  { src: '/photos/pool-sala-portrait.webp', alt: 'Pool bar' },
 ]
 
 export function PhotoShowcase() {

@@ -68,7 +68,7 @@ export async function generateMetadata({
       url: `${siteConfig.url}/prices`,
       siteName: siteConfig.name,
       type: 'website',
-      images: [{ url: '/photos/lounge.jpg', alt: 'Shi Shi Samui membership options' }],
+      images: [{ url: '/photos/pool-grand-angle-portrait.webp', alt: 'Shi Shi Samui membership options' }],
     },
   }
 }

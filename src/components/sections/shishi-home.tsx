@@ -102,7 +102,7 @@ export function StorySection() {
       <div className="grid items-center gap-12 lg:grid-cols-2">
         <div className="relative aspect-[4/3] overflow-hidden rounded-3xl ring-1 ring-border">
           <ResponsivePhoto
-            value={hasImage(s.image) ? s.image : '/photos/lounge.jpg'}
+            value={hasImage(s.image) ? s.image : '/photos/pool-grand-angle-portrait.webp'}
             alt="Shi Shi Samui social club"
             fill
             sizes="(min-width:1024px) 50vw, 100vw"
