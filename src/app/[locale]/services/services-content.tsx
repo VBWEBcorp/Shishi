@@ -7,6 +7,7 @@ import { useRef } from 'react'
 import { PremiumHero } from '@/components/sections/premium-hero'
 import { useContent } from '@/hooks/use-content'
 import { getIcon } from '@/lib/icons'
+import { hasImage } from '@/lib/responsive-image'
 import { images as siteImages, servicesContent } from '@/lib/site-content'
 
 const ease = [0.22, 1, 0.36, 1] as const
@@ -187,7 +188,8 @@ export function ServicesContent() {
         description={hero.description}
         breadcrumb="Services"
         compact
-        backgroundImage={siteImages.servicesHero}
+        // L'image saisie en admin prime ; sans elle, le visuel par défaut du site.
+        backgroundImage={hasImage(hero.image) ? hero.image : siteImages.servicesHero}
       >
         <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-4 text-sm">
           {servicesContent.kpis.map((kpi, i, arr) => (

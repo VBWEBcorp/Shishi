@@ -59,10 +59,10 @@ describe('isDayPass', () => {
 describe('getBookingConfig', () => {
   it('renvoie la config pour une activité réservable', () => {
     expect(getBookingConfig('tennis')).toEqual({
-      open: '08:00',
-      close: '20:00',
+      open: '07:00',
+      close: '22:00',
       slotMinutes: 60,
-      capacity: 2,
+      capacity: 1,
       unit: 'hour',
     })
   })
@@ -82,12 +82,17 @@ describe('formatDuration', () => {
 })
 
 describe('generateSlots — grille PUBLIQUE (créneaux d’1 h)', () => {
-  it('tennis : créneaux horaires de 08:00 à 19:00 (dernier créneau finit à 20:00)', () => {
+  it('tennis : créneaux horaires de 07:00 à 21:00 (dernier créneau finit à 22:00)', () => {
     const slots = generateSlots('tennis')
-    expect(slots).toHaveLength(12)
-    expect(slots[0]).toBe('08:00')
-    expect(slots[slots.length - 1]).toBe('19:00')
-    expect(slots).not.toContain('20:00')
+    expect(slots).toHaveLength(15)
+    expect(slots[0]).toBe('07:00')
+    expect(slots[slots.length - 1]).toBe('21:00')
+    expect(slots).not.toContain('22:00')
+  })
+
+  it('la fenêtre interne de 06:00 n’est JAMAIS proposée aux clients', () => {
+    expect(generateSlots('tennis')).not.toContain('06:00')
+    expect(generateSlots('tennis', { scope: 'admin' })).toContain('06:00')
   })
 
   it('ne propose JAMAIS de demi-heure aux clients', () => {
@@ -118,7 +123,7 @@ describe('generateSlots — grille ADMIN (demi-heures)', () => {
     expect(slots).toContain('07:30')
     expect(slots).toContain('08:30')
     expect(slots[0]).toBe('06:00')
-    expect(slots[slots.length - 1]).toBe('21:30')
+    expect(slots[slots.length - 1]).toBe('22:30')
   })
 
   it('un pass journée reste un créneau unique, même côté admin', () => {
@@ -137,7 +142,9 @@ describe('isPublicSlotTime', () => {
   it('accepte les heures pleines d’ouverture, refuse les demi-heures', () => {
     expect(isPublicSlotTime('tennis', '09:00')).toBe(true)
     expect(isPublicSlotTime('tennis', '09:30')).toBe(false)
-    expect(isPublicSlotTime('tennis', '07:00')).toBe(false)
+    // 06:00 est la fenêtre réservée au club, 22:00 est l'heure de fermeture.
+    expect(isPublicSlotTime('tennis', '06:00')).toBe(false)
+    expect(isPublicSlotTime('tennis', '22:00')).toBe(false)
   })
 })
 
@@ -170,7 +177,10 @@ describe('bookingInterval — garde-fou de la grille', () => {
 
   it('borne la durée maximale et l’amplitude de saisie', () => {
     expect(bookingInterval('tennis', '08:00', MAX_BOOKING_MINUTES + ADMIN_STEP_MINUTES, 'admin')).toBeNull()
-    expect(bookingInterval('tennis', '21:30', 60, 'admin')).toBeNull()
+    // L'admin garde une heure de marge après la fermeture publique de 22:00…
+    expect(bookingInterval('tennis', '22:00', 60, 'admin')).toEqual({ start: 1320, end: 1380 })
+    // …mais pas au-delà de 23:00, ni avant la fenêtre interne de 06:00.
+    expect(bookingInterval('tennis', '22:30', 60, 'admin')).toBeNull()
     expect(bookingInterval('tennis', '05:30', 60, 'admin')).toBeNull()
   })
 
@@ -209,15 +219,11 @@ describe('maxOverlap', () => {
 
 describe('computeAvailability — grille publique', () => {
   it('calcule la disponibilité restante par créneau', () => {
-    const avail = computeAvailability('tennis', [
-      range('08:00', 60),
-      range('08:00', 60),
-      range('09:00', 60),
-    ])
-    expect(avail).toHaveLength(12)
-    expect(avail.find((s) => s.time === '08:00')).toMatchObject({ capacity: 2, booked: 2, available: 0 })
-    expect(avail.find((s) => s.time === '09:00')).toMatchObject({ capacity: 2, booked: 1, available: 1 })
-    expect(avail.find((s) => s.time === '10:00')).toMatchObject({ capacity: 2, booked: 0, available: 2 })
+    // Un seul terrain : la moindre réservation ferme le créneau.
+    const avail = computeAvailability('tennis', [range('09:00', 60)])
+    expect(avail).toHaveLength(15)
+    expect(avail.find((s) => s.time === '09:00')).toMatchObject({ capacity: 1, booked: 1, available: 0 })
+    expect(avail.find((s) => s.time === '10:00')).toMatchObject({ capacity: 1, booked: 0, available: 1 })
   })
 
   it('ne renvoie jamais de disponibilité négative (survente)', () => {
@@ -226,18 +232,19 @@ describe('computeAvailability — grille publique', () => {
   })
 
   it('une séance admin de 07:30 à 09:00 mange les DEUX créneaux publics qu’elle chevauche', () => {
-    // Capacité 2 : une seule séance laisse encore un terrain, deux le saturent.
-    const avail = computeAvailability('tennis', [range('07:30', 90), range('07:30', 90)])
+    const avail = computeAvailability('tennis', [range('07:30', 90)])
+    // Elle déborde sur la seconde moitié de 07:00 et occupe tout 08:00.
+    expect(avail.find((s) => s.time === '07:00')!.available).toBe(0)
     expect(avail.find((s) => s.time === '08:00')!.available).toBe(0)
-    // 07:00 n’existe pas dans la grille publique (ouverture 08:00) : le créneau
-    // suivant, lui, doit rester intact.
-    expect(avail.find((s) => s.time === '09:00')!.available).toBe(2)
+    // Le créneau suivant, lui, doit rester intact.
+    expect(avail.find((s) => s.time === '09:00')!.available).toBe(1)
   })
 
-  it('un créneau public d’1 h reste vendable si le terrain est libre toute l’heure', () => {
-    // Deux demi-heures consécutives sur le même terrain ≠ deux terrains occupés.
+  it('deux demi-heures qui se suivent n’occupent qu’un terrain, pas deux', () => {
+    // Le créneau public n'est plus vendable (le terrain est pris toute l'heure),
+    // mais l'occupation doit rester comptée à 1 : pas de survente fantôme.
     const avail = computeAvailability('tennis', [range('08:00', 30), range('08:30', 30)])
-    expect(avail.find((s) => s.time === '08:00')!.available).toBe(1)
+    expect(avail.find((s) => s.time === '08:00')).toMatchObject({ booked: 1, available: 0 })
   })
 
   it('renvoie une liste vide pour une activité inconnue', () => {
@@ -248,8 +255,8 @@ describe('computeAvailability — grille publique', () => {
 describe('computeAvailability — grille admin', () => {
   it('mesure chaque demi-heure indépendamment', () => {
     const avail = computeAvailability('tennis', [range('08:00', 30)], { scope: 'admin' })
-    expect(avail.find((s) => s.time === '08:00')).toMatchObject({ endTime: '08:30', available: 1 })
-    expect(avail.find((s) => s.time === '08:30')).toMatchObject({ endTime: '09:00', available: 2 })
+    expect(avail.find((s) => s.time === '08:00')).toMatchObject({ endTime: '08:30', available: 0 })
+    expect(avail.find((s) => s.time === '08:30')).toMatchObject({ endTime: '09:00', available: 1 })
   })
 
   it('expose la fin de chaque créneau élémentaire', () => {

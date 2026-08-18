@@ -7,6 +7,9 @@ import Link from 'next/link'
 import type { ReactNode } from 'react'
 
 import { HeroCurve } from '@/components/hero-curve'
+import { ResponsivePhoto } from '@/components/responsive-photo'
+// Alias : `hasImage` est déjà le nom d'une variable locale plus bas (image de droite).
+import { hasImage as hasPhoto, type ResponsiveImageValue } from '@/lib/responsive-image'
 
 const ease = [0.22, 1, 0.36, 1] as const
 
@@ -17,7 +20,8 @@ interface PremiumHeroProps {
   /** Image affichée à droite (mode 2-col, quand `compact` est false) */
   image?: string
   /** Image de fond plein écran derrière le hero (mode compact + photo) */
-  backgroundImage?: string
+  /** URL simple, ou paire { desktop, mobile } saisie dans l'espace admin. */
+  backgroundImage?: ResponsiveImageValue
   breadcrumb: string
   /** Affichage compact (centré, sans image à droite) */
   compact?: boolean
@@ -47,7 +51,7 @@ export function PremiumHero({
 }: PremiumHeroProps) {
   const { lead, accent } = splitTitle(title)
   const hasImage = !compact && Boolean(image)
-  const hasBgImage = Boolean(backgroundImage)
+  const hasBgImage = hasPhoto(backgroundImage)
   const darkOver = hasBgImage // texte blanc sur photo sombre
 
   return (
@@ -60,13 +64,13 @@ export function PremiumHero({
       {hasBgImage && backgroundImage && (
         <>
           <div className="absolute inset-0 -z-20" aria-hidden>
-            <Image
-              src={backgroundImage}
+            <ResponsivePhoto
+              value={backgroundImage}
               alt=""
               fill
               sizes="100vw"
               priority
-              className="object-cover"
+              className="absolute inset-0 h-full w-full object-cover"
             />
           </div>
           {/* Overlay sombre uniforme en haut + s'estompe sur le dernier quart (sinon ça crée du gris quand le fade blanc arrive) */}

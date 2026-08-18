@@ -2,8 +2,10 @@
 
 import { motion } from 'framer-motion'
 import { ChevronRight, Home } from 'lucide-react'
-import Image from 'next/image'
 import Link from 'next/link'
+
+import { ResponsivePhoto } from '@/components/responsive-photo'
+import type { ResponsiveImageValue } from '@/lib/responsive-image'
 
 const ease = [0.22, 1, 0.36, 1] as const
 
@@ -11,7 +13,8 @@ type PageHeroProps = {
   eyebrow: string
   title: string
   description?: string
-  image: string
+  /** URL simple, ou paire { desktop, mobile } issue de l'espace admin. */
+  image: ResponsiveImageValue
   breadcrumb: string
 }
 
@@ -20,13 +23,13 @@ export function PageHero({ eyebrow, title, description, image, breadcrumb }: Pag
     <section className="relative isolate overflow-hidden">
       {/* Background image */}
       <div className="absolute inset-0" aria-hidden>
-        <Image
-          src={image}
+        <ResponsivePhoto
+          value={image}
           alt=""
           fill
           sizes="100vw"
           priority
-          className="object-cover"
+          className="absolute inset-0 h-full w-full object-cover"
         />
         <div className="absolute inset-0 bg-black/55" />
         <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-black/20" />

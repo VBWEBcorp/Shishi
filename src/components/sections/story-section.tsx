@@ -2,10 +2,10 @@
 
 import { motion, useReducedMotion, useScroll, useTransform } from 'framer-motion'
 import { ArrowUpRight, BookOpen } from 'lucide-react'
-import Image from 'next/image'
 import Link from 'next/link'
 import { useRef } from 'react'
 
+import { ResponsivePhoto } from '@/components/responsive-photo'
 import { useContent } from '@/hooks/use-content'
 import { storyContent as defaults } from '@/lib/site-content'
 
@@ -107,12 +107,12 @@ export function StorySection() {
               className="relative aspect-[4/5] overflow-hidden rounded-2xl bg-muted shadow-[0_20px_60px_-20px_rgba(0,0,0,0.2)] ring-1 ring-foreground/5"
             >
               <motion.div className="absolute inset-0 -inset-y-8" style={{ y: imageY }}>
-                <Image
-                  src={story.image}
+                <ResponsivePhoto
+                  value={story.image}
                   alt=""
                   fill
                   sizes="(min-width:768px) 45vw, 100vw"
-                  className="object-cover"
+                  className="absolute inset-0 h-full w-full object-cover"
                 />
               </motion.div>
             </motion.div>

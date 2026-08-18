@@ -24,9 +24,14 @@ export interface AgendaBooking {
 
 /** Hauteur d'une heure, en pixels. Une demi-heure reste donc bien lisible. */
 const HOUR_PX = 56
-/** Amplitude affichée par défaut, élargie si des réservations débordent. */
-const DEFAULT_START_HOUR = 7
-const DEFAULT_END_HOUR = 21
+/**
+ * Amplitude affichée par défaut, élargie si des réservations débordent.
+ * Calée sur `ADMIN_WINDOW` : la fenêtre interne de 06:00 et le dernier créneau
+ * public de 21:00–22:00 doivent être visibles SANS qu'une réservation existe
+ * déjà à ces heures-là — sinon le club ne peut pas cliquer pour en créer une.
+ */
+const DEFAULT_START_HOUR = 6
+const DEFAULT_END_HOUR = 22
 
 const GRID_COLS = 'grid-cols-[3.25rem_repeat(7,minmax(0,1fr))]'
 

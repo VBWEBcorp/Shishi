@@ -1,7 +1,8 @@
 'use client'
 
 import { PageEditor } from '@/components/admin/page-editor'
-import { FieldEditor, SectionEditor, ImageField } from '@/components/admin/field-editor'
+import { FieldEditor, SectionEditor, ResponsiveImageField } from '@/components/admin/field-editor'
+import type { ResponsiveImageValue } from '@/lib/responsive-image'
 
 const defaults = {
   hero: {
@@ -64,7 +65,7 @@ export default function AdminAboutPage() {
             <FieldEditor label="Accroche" value={content.hero?.eyebrow} onChange={(v) => update('hero.eyebrow', v)} />
             <FieldEditor label="Titre" value={content.hero?.title} onChange={(v) => update('hero.title', v)} />
             <FieldEditor label="Description" value={content.hero?.description} onChange={(v) => update('hero.description', v)} type="textarea" />
-            <ImageField label="Image" value={content.hero?.image} onChange={(v) => update('hero.image', v)} />
+            <ResponsiveImageField label="Image" value={content.hero?.image} onChange={(v) => update('hero.image', v)} />
           </SectionEditor>
 
           <SectionEditor title="Notre histoire">
@@ -96,8 +97,8 @@ export default function AdminAboutPage() {
           </SectionEditor>
 
           <SectionEditor title="Galerie photos">
-            {content.gallery?.map((img: string, i: number) => (
-              <ImageField
+            {content.gallery?.map((img: ResponsiveImageValue, i: number) => (
+              <ResponsiveImageField
                 key={i}
                 label={`Image ${i + 1}`}
                 value={img}

@@ -157,10 +157,15 @@ export const PRICE_TIERS: Record<string, PriceTier[]> = {
   pool: [{ label: { en: 'Day access', fr: 'Accès journée' }, amount: 100 }],
 }
 
-/** Horaires d'ouverture affichés par activité (charte client). */
+/**
+ * Horaires d'ouverture affichés par activité (charte client).
+ * ATTENTION — doit rester cohérent avec `BOOKING_CONFIG` (availability.ts) :
+ * ici c'est du texte d'affichage, là-bas c'est ce que le moteur vend vraiment.
+ * Le tennis ouvre plus large que le reste depuis le 18/08/2026.
+ */
 export const OPENING_HOURS: Record<string, Localized> = {
   'kids-club': { en: '8 AM – 4 PM', fr: '8H – 16H' },
   fitness: { en: '8 AM – 8 PM', fr: '8H – 20H' },
-  tennis: { en: '8 AM – 8 PM', fr: '8H – 20H' },
+  tennis: { en: '7 AM – 10 PM', fr: '7H – 22H' },
   pool: { en: 'All day', fr: 'À la journée' },
 }

@@ -1,7 +1,8 @@
 'use client'
 
 import { PageEditor } from '@/components/admin/page-editor'
-import { FieldEditor, SectionEditor, ImageField } from '@/components/admin/field-editor'
+import { FieldEditor, SectionEditor, ResponsiveImageField } from '@/components/admin/field-editor'
+import type { ResponsiveImageValue } from '@/lib/responsive-image'
 
 const defaults = {
   hero: {
@@ -82,8 +83,8 @@ export default function AdminHomePage() {
             <FieldEditor label="Bouton 2" value={content.hero?.button2} onChange={(v) => update('hero.button2', v)} />
             <div className="space-y-3 pt-2">
               <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Images du slider</p>
-              {content.hero?.images?.map((img: string, i: number) => (
-                <ImageField
+              {content.hero?.images?.map((img: ResponsiveImageValue, i: number) => (
+                <ResponsiveImageField
                   key={i}
                   label={`Image ${i + 1}`}
                   value={img}
@@ -102,7 +103,7 @@ export default function AdminHomePage() {
             <FieldEditor label="Titre" value={content.story?.title} onChange={(v) => update('story.title', v)} />
             <FieldEditor label="Paragraphe 1" value={content.story?.paragraph1} onChange={(v) => update('story.paragraph1', v)} type="textarea" />
             <FieldEditor label="Paragraphe 2" value={content.story?.paragraph2} onChange={(v) => update('story.paragraph2', v)} type="textarea" />
-            <ImageField label="Image" value={content.story?.image} onChange={(v) => update('story.image', v)} />
+            <ResponsiveImageField label="Image" value={content.story?.image} onChange={(v) => update('story.image', v)} />
           </SectionEditor>
 
           <SectionEditor title="Appel à l'action (CTA)">

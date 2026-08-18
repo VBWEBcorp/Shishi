@@ -7,10 +7,21 @@ import type { ReactNode } from 'react'
 
 import { ActivityIcon } from '@/components/activity-icon'
 import { CtaButton } from '@/components/cta-button'
+import { ResponsivePhoto } from '@/components/responsive-photo'
 import { SectionEyebrow } from '@/components/section-eyebrow'
 import { useContent } from '@/hooks/use-content'
 import { Link } from '@/i18n/navigation'
 import { activities, type Locale } from '@/lib/activities'
+import { hasImage, type ResponsiveImageValue } from '@/lib/responsive-image'
+
+/** Section « Notre histoire » de l'accueil, pilotée par l'espace admin. */
+type StoryContent = {
+  eyebrow?: string
+  title?: string
+  paragraph1?: string
+  paragraph2?: string
+  image?: ResponsiveImageValue
+}
 
 export function ValuesBand() {
   const t = useTranslations('Home.values')
@@ -83,19 +94,19 @@ export function ValuesBand() {
 
 export function StorySection() {
   const t = useTranslations('Home.story')
-  const { data } = useContent('home', {} as { story?: Record<string, string> })
+  const { data } = useContent('home', {} as { story?: StoryContent })
   const s = data.story ?? {}
 
   return (
     <section className="mx-auto max-w-6xl px-4 py-20 sm:px-6 lg:px-8 lg:py-28">
       <div className="grid items-center gap-12 lg:grid-cols-2">
         <div className="relative aspect-[4/3] overflow-hidden rounded-3xl ring-1 ring-border">
-          <Image
-            src={s.image || '/photos/lounge.jpg'}
+          <ResponsivePhoto
+            value={hasImage(s.image) ? s.image : '/photos/lounge.jpg'}
             alt="Shi Shi Samui social club"
             fill
             sizes="(min-width:1024px) 50vw, 100vw"
-            className="object-cover"
+            className="absolute inset-0 h-full w-full object-cover"
           />
         </div>
         <div>

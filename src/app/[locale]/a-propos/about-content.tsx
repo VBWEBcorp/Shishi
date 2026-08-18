@@ -5,13 +5,23 @@ import { BookOpen, ChevronRight, Dumbbell, Home, LayoutGrid, Leaf, Sparkles, Use
 import { useLocale, useTranslations } from 'next-intl'
 import Image from 'next/image'
 
+import { ResponsivePhoto } from '@/components/responsive-photo'
 import { SectionEyebrow } from '@/components/section-eyebrow'
 import { ServicesShowcase } from '@/components/sections/services-showcase'
 import { useContent } from '@/hooks/use-content'
 import { Link } from '@/i18n/navigation'
 import type { Locale } from '@/i18n/routing'
+import { hasImage, type ResponsiveImageValue } from '@/lib/responsive-image'
 
 const ease = [0.22, 1, 0.36, 1] as const
+
+/** Champs du hero « À propos » pilotés par l'espace admin. */
+type AboutHeroContent = {
+  eyebrow?: string
+  title?: string
+  description?: string
+  image?: ResponsiveImageValue
+}
 
 /** Séparateur losange repris du logo (── ◆ ──), version claire pour fonds sombres. */
 function DiamondRule({ className = '' }: { className?: string }) {
@@ -24,17 +34,25 @@ function DiamondRule({ className = '' }: { className?: string }) {
   )
 }
 
-function AboutHero({ cms }: { cms?: Record<string, string> }) {
+function AboutHero({ cms }: { cms?: AboutHeroContent }) {
   const t = useTranslations('About')
   const tNav = useTranslations('Nav')
   const stats = t.raw('stats') as { value: string; label: string }[]
-  const heroImage = cms?.image || '/photos/pool.jpg'
+  // `image` peut être une URL ou la paire { desktop, mobile } saisie en admin.
+  const heroImage = hasImage(cms?.image) ? cms!.image! : '/photos/pool.jpg'
   const eyebrow = cms?.eyebrow || t('hero.eyebrow')
   const description = cms?.description || t('hero.description')
 
   return (
     <section className="relative isolate min-h-[88vh] overflow-hidden">
-      <Image src={heroImage} alt="" fill priority sizes="100vw" className="object-cover" />
+      <ResponsivePhoto
+        value={heroImage}
+        alt=""
+        fill
+        priority
+        sizes="100vw"
+        className="absolute inset-0 h-full w-full object-cover"
+      />
       <div className="absolute inset-0 bg-gradient-to-b from-[oklch(0.2_0_0/0.4)] via-[oklch(0.2_0_0/0.32)] to-[oklch(0.16_0_0/0.86)]" aria-hidden />
 
       <div className="relative mx-auto flex min-h-[88vh] max-w-4xl flex-col items-center justify-center px-4 pb-16 pt-28 text-center sm:px-6">
@@ -202,7 +220,7 @@ function ComplexSection({ cms }: { cms?: Record<string, string> }) {
 
 export function AboutContent() {
   const { data } = useContent('about', {} as {
-    hero?: Record<string, string>
+    hero?: AboutHeroContent
     story?: Record<string, string>
     complex?: Record<string, string>
     values?: { title?: string; description?: string }[]

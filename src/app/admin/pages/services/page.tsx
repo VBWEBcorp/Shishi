@@ -1,7 +1,7 @@
 'use client'
 
 import { PageEditor } from '@/components/admin/page-editor'
-import { FieldEditor, SectionEditor, ImageField } from '@/components/admin/field-editor'
+import { FieldEditor, SectionEditor, ResponsiveImageField } from '@/components/admin/field-editor'
 import { Button } from '@/components/ui/button'
 import { Plus, Trash2 } from 'lucide-react'
 
@@ -13,7 +13,7 @@ const defaults = {
     image: '/photos/fitness.jpg',
   },
   services: [
-    { title: 'Tennis', description: 'Courts de qualité au sud de Koh Samui : simple, double, coaching et location de raquette. 600 ฿/heure, ouvert 8h–20h.' },
+    { title: 'Tennis', description: 'Un court de qualité au sud de Koh Samui : simple, double, coaching et location de raquette. 600 ฿/heure, ouvert 7h–22h.' },
     { title: 'Pickleball', description: 'Le repaire du pickleball à Koh Samui : terrains dédiés, initiations et matchs conviviaux pour tous les niveaux.' },
     { title: 'Salle de sport', description: 'Espace fitness entièrement équipé (force, cardio, functional). 250 ฿/jour, 1000 ฿/semaine, 1500 ฿/mois. Ouvert 8h–20h.' },
     { title: 'Restaurant', description: 'Carte fraîche et healthy au bord de la piscine : smoothies, bowls et assiettes feel-good toute la journée.' },
@@ -31,7 +31,7 @@ const defaultsEn = {
     image: '/photos/fitness.jpg',
   },
   services: [
-    { title: 'Tennis', description: 'Quality courts in the south of Koh Samui: singles, doubles, coaching and racket rental. 600 ฿/hour, open 8am–8pm.' },
+    { title: 'Tennis', description: 'A quality court in the south of Koh Samui: singles, doubles, coaching and racket rental. 600 ฿/hour, open 7am–10pm.' },
     { title: 'Pickleball', description: "Koh Samui's home of pickleball: dedicated courts, intro sessions and friendly matches for all levels." },
     { title: 'Fitness gym', description: 'A fully equipped fitness space (strength, cardio, functional). 250 ฿/day, 1000 ฿/week, 1500 ฿/month. Open 8am–8pm.' },
     { title: 'Restaurant', description: 'A fresh, healthy menu by the pool: smoothies, bowls and feel-good plates all day.' },
@@ -49,7 +49,7 @@ export default function AdminServicesPage() {
             <FieldEditor label="Accroche" value={content.hero?.eyebrow} onChange={(v) => update('hero.eyebrow', v)} />
             <FieldEditor label="Titre" value={content.hero?.title} onChange={(v) => update('hero.title', v)} />
             <FieldEditor label="Description" value={content.hero?.description} onChange={(v) => update('hero.description', v)} type="textarea" />
-            <ImageField label="Image" value={content.hero?.image} onChange={(v) => update('hero.image', v)} />
+            <ResponsiveImageField label="Image" value={content.hero?.image} onChange={(v) => update('hero.image', v)} />
           </SectionEditor>
 
           <SectionEditor title="Liste des services">

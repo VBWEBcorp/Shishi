@@ -10,7 +10,9 @@
  * de 08:00. C'est ce qui permet à l'espace admin de saisir des demi-heures sans
  * jamais survendre les créneaux d'une heure proposés aux clients sur le site.
  *
- * PLACEHOLDER — horaires/capacités à confirmer avec le client (VBWEB).
+ * Horaires et capacités du tennis validés par le client le 18/08/2026 :
+ * ouverture publique 07:00–22:00, un seul terrain. Les autres pôles restent
+ * sur la charte initiale, à reconfirmer.
  */
 
 export interface ActivityBookingConfig {
@@ -37,8 +39,9 @@ export interface ActivityBookingConfig {
  * ligne » et renvoie vers le contact. À réactiver une fois les terrains prêts.
  */
 export const BOOKING_CONFIG: Record<string, ActivityBookingConfig> = {
-  // Tennis : réservation du terrain, session d'1 h.
-  tennis: { open: '08:00', close: '20:00', slotMinutes: 60, capacity: 2, unit: 'hour' },
+  // Tennis : réservation DU terrain (le club n'en a qu'un), session d'1 h.
+  // Ouverture publique 07:00 → 22:00 : dernier créneau vendable 21:00–22:00.
+  tennis: { open: '07:00', close: '22:00', slotMinutes: 60, capacity: 1, unit: 'hour' },
   // Salle de sport : accès illimité à la journée.
   fitness: { open: '08:00', close: '20:00', slotMinutes: 720, capacity: 20, unit: 'day' },
   // Kids Club : session d'1 h (repas du midi possible).
@@ -65,8 +68,13 @@ export const ADMIN_STEP_MINUTES = 30
  * Volontairement large : l'admin enregistre des séances déjà convenues et ne
  * doit jamais être bloqué par la grille du site. Les horaires d'ouverture de
  * `BOOKING_CONFIG` continuent, eux, de piloter ce que voient les clients.
+ *
+ * 06:00 — la « fenêtre perso » demandée par le club : le tennis ouvrant au
+ * public à 07:00, la tranche 06:00–07:00 n'est saisissable que depuis l'admin.
+ * 23:00 — même logique en fin de journée, pour garder une heure de marge après
+ * la fermeture publique de 22:00 (séance qui déborde, cours privé convenu).
  */
-export const ADMIN_WINDOW = { open: '06:00', close: '22:00' } as const
+export const ADMIN_WINDOW = { open: '06:00', close: '23:00' } as const
 
 /** Durée maximale d'une réservation, quelle qu'en soit l'origine. */
 export const MAX_BOOKING_MINUTES = 8 * 60

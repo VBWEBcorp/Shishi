@@ -2,13 +2,14 @@
 
 import { AnimatePresence, motion } from 'framer-motion'
 import { ArrowRight, Star } from 'lucide-react'
-import Image from 'next/image'
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
 
+import { ResponsivePhoto } from '@/components/responsive-photo'
 import { ValuesMarquee } from '@/components/sections/values-marquee'
 import { Button } from '@/components/ui/button'
 import { useContent } from '@/hooks/use-content'
+import type { ResponsiveImageValue } from '@/lib/responsive-image'
 import { heroContent as defaults } from '@/lib/site-content'
 
 const ease = [0.22, 1, 0.36, 1] as const
@@ -27,7 +28,8 @@ function splitTitle(title: string): { lead: string; accent: string } {
 export function HeroSection() {
   const { data } = useContent('home', { hero: defaults })
   const hero = data.hero ?? defaults
-  const images: string[] = hero.images ?? defaults.images
+  // Chaque entrée peut être une simple URL ou la paire { desktop, mobile }.
+  const images: ResponsiveImageValue[] = hero.images ?? defaults.images
   const [current, setCurrent] = useState(0)
   const { lead, accent } = splitTitle(hero.title)
 
@@ -52,13 +54,13 @@ export function HeroSection() {
             transition={{ duration: 1.2, ease }}
             className="absolute inset-0"
           >
-            <Image
-              src={images[current]}
+            <ResponsivePhoto
+              value={images[current]}
               alt=""
               fill
               sizes="100vw"
               priority={current === 0}
-              className="object-cover"
+              className="absolute inset-0 h-full w-full object-cover"
             />
           </motion.div>
         </AnimatePresence>

@@ -44,8 +44,11 @@ export function ContactContent() {
   const fitness = activities.find((a) => a.slug === 'fitness')!
   const kids = activities.find((a) => a.slug === 'kids-club')!
   const pool = activities.find((a) => a.slug === 'pool')!
+  // Le tennis ouvre 7H–22H depuis le 18/08/2026, le fitness reste 8H–20H : les
+  // deux ne peuvent plus partager une ligne d'horaires commune.
   const hoursRows = [
-    { name: `${tennis.name[l]} & ${fitness.name[l]}`, hours: OPENING_HOURS.tennis[l] },
+    { name: tennis.name[l], hours: OPENING_HOURS.tennis[l] },
+    { name: fitness.name[l], hours: OPENING_HOURS.fitness[l] },
     { name: kids.name[l], hours: OPENING_HOURS['kids-club'][l] },
     { name: pool.name[l], hours: OPENING_HOURS.pool[l] },
   ]

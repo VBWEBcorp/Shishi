@@ -205,8 +205,8 @@ export const activities: Activity[] = [
       fr: 'Des courts premium sous le soleil',
     },
     description: {
-      en: 'Play on quality tennis courts in the south of Koh Samui. Singles, doubles, coaching and racket rental: everything you need to get on court in under a minute.',
-      fr: 'Jouez sur des courts de tennis de qualité au sud de Koh Samui. Simple, double, coaching et location de raquette : tout pour entrer sur le court en moins d’une minute.',
+      en: 'Play on a quality tennis court in the south of Koh Samui. Singles, doubles, coaching and racket rental: everything you need to get on court in under a minute.',
+      fr: 'Jouez sur un court de tennis de qualité au sud de Koh Samui. Simple, double, coaching et location de raquette : tout pour entrer sur le court en moins d’une minute.',
     },
     icon: 'tennis',
     image: '/photos/tennis-aerial.jpg',
@@ -247,8 +247,8 @@ export const activities: Activity[] = [
       'tennis court rental in Koh Samui',
     ],
     highlights: {
-      en: ['Quality tennis courts', 'Private & group coaching', 'Racket rental', 'Singles & doubles booking'],
-      fr: ['Courts de tennis de qualité', 'Coaching privé & collectif', 'Location de raquette', 'Réservation simple & double'],
+      en: ['A quality tennis court', 'Private & group coaching', 'Racket rental', 'Singles & doubles booking'],
+      fr: ['Un court de tennis de qualité', 'Coaching privé & collectif', 'Location de raquette', 'Réservation simple & double'],
     },
     gallery: ['/photos/tennis-aerial.jpg', '/photos/pickleball.jpg', '/photos/pool.jpg', '/photos/lounge.jpg'],
     video: '/videos/tennis.mp4',
@@ -256,8 +256,8 @@ export const activities: Activity[] = [
       {
         q: { en: 'Where can I play tennis in Lamai, Koh Samui?', fr: 'Où jouer au tennis à Lamai, Koh Samui ?' },
         a: {
-          en: 'At Shi Shi Samui, a sports and social club in Lamai, south Koh Samui. Quality courts, open daily and easy to reach.',
-          fr: 'Chez Shi Shi Samui, club sportif et social à Lamai, au sud de Koh Samui. Des courts de qualité, ouverts tous les jours et faciles d’accès.',
+          en: 'At Shi Shi Samui, a sports and social club in Lamai, south Koh Samui. A quality court, open daily from 7 AM to 10 PM and easy to reach.',
+          fr: 'Chez Shi Shi Samui, club sportif et social à Lamai, au sud de Koh Samui. Un court de qualité, ouvert tous les jours de 7h à 22h et facile d’accès.',
         },
       },
       {

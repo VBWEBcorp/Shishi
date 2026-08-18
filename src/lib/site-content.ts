@@ -277,8 +277,8 @@ export const servicesContent = {
     {
       iconName: 'Trophy',
       title: 'Tennis',
-      description: 'Jouez sur des courts de qualité au sud de Koh Samui : simple, double, coaching et location de raquette.',
-      points: ['600 ฿ / heure', 'Ouvert 8h – 20h', 'Réservation en ligne'],
+      description: 'Jouez sur un court de qualité au sud de Koh Samui : simple, double, coaching et location de raquette.',
+      points: ['600 ฿ / heure', 'Ouvert 7h – 22h', 'Réservation en ligne'],
       image: '/photos/tennis-aerial.jpg',
     },
     {
