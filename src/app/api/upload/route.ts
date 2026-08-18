@@ -35,18 +35,36 @@ export async function POST(request: NextRequest) {
     }
 
     // Types autorisés : images (optimisées) + vidéos (galerie).
-    const imageTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'image/svg+xml']
+    // HEIC/HEIF est le format natif des photos iPhone. Certains téléphones
+    // l'envoient tel quel au lieu de le convertir en JPEG ; sans lui dans cette
+    // liste, le client se voyait refuser ses propres photos sans comprendre
+    // pourquoi. Sharp le décode, et la sortie est de toute façon du WebP.
+    const imageTypes = [
+      'image/jpeg',
+      'image/png',
+      'image/webp',
+      'image/gif',
+      'image/svg+xml',
+      'image/heic',
+      'image/heif',
+    ]
     const videoTypes = ['video/mp4', 'video/webm', 'video/quicktime']
     const isVideo = videoTypes.includes(file.type)
-    if (!imageTypes.includes(file.type) && !isVideo) {
+    // Certains navigateurs n'annoncent aucun type pour un HEIC : on se rabat
+    // alors sur l'extension du fichier plutôt que de rejeter à tort.
+    const looksLikeImage =
+      imageTypes.includes(file.type) || /\.(jpe?g|png|webp|gif|hei[cf])$/i.test(file.name || '')
+    if (!looksLikeImage && !isVideo) {
       return NextResponse.json({ error: 'File type not allowed' }, { status: 400 })
     }
 
-    // Taille max : 10 Mo pour une image, 200 Mo pour une vidéo.
-    const maxSize = isVideo ? 200 * 1024 * 1024 : 10 * 1024 * 1024
+    // Taille max : 25 Mo pour une image, 200 Mo pour une vidéo. Une photo
+    // d'iPhone récent (48 Mpx) dépasse facilement 10 Mo — elle est de toute
+    // façon compressée juste après, donc autant l'accepter à l'entrée.
+    const maxSize = isVideo ? 200 * 1024 * 1024 : 25 * 1024 * 1024
     if (file.size > maxSize) {
       return NextResponse.json(
-        { error: `File too large (max ${isVideo ? '200' : '10'}MB)` },
+        { error: `File too large (max ${isVideo ? '200' : '25'}MB)` },
         { status: 400 }
       )
     }
@@ -71,11 +89,28 @@ export async function POST(request: NextRequest) {
       contentType = 'image/svg+xml'
       filename = `${uniqueId}.svg`
     } else {
-      // Optimiser avec Sharp → WebP
-      const optimized = await optimizeImage(rawBuffer)
-      finalBuffer = optimized.buffer
-      contentType = optimized.contentType
-      filename = `${uniqueId}.${optimized.ext}`
+      // Optimiser avec Sharp → WebP (redimensionnement + orientation EXIF).
+      try {
+        const optimized = await optimizeImage(rawBuffer)
+        finalBuffer = optimized.buffer
+        contentType = optimized.contentType
+        filename = `${uniqueId}.${optimized.ext}`
+      } catch (err) {
+        // Le décodage HEIC dépend de la version de Sharp installée sur le
+        // serveur. En cas d'échec, on le dit clairement plutôt que de renvoyer
+        // une erreur 500 muette : le client saura quoi faire de sa photo.
+        const isHeic = /hei[cf]/i.test(file.type) || /\.hei[cf]$/i.test(file.name || '')
+        console.error('Optimisation image impossible:', err)
+        return NextResponse.json(
+          {
+            error: isHeic ? 'heic-unsupported' : 'image-unreadable',
+            message: isHeic
+              ? 'Cette photo est au format HEIC (iPhone) et n’a pas pu être convertie. Sur l’iPhone : Réglages → Appareil photo → Formats → « Le plus compatible », puis reprenez la photo. Une photo déjà prise peut aussi être envoyée par e-mail à soi-même, ce qui la convertit en JPEG.'
+              : 'Ce fichier n’a pas pu être lu comme une image. Essayez au format JPEG ou PNG.',
+          },
+          { status: 415 }
+        )
+      }
     }
 
     let url: string

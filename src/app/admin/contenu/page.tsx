@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Check, Eye, Loader2, Monitor, Save, Smartphone, X } from 'lucide-react'
 
-import { FieldEditor, ImageField, ResponsiveImageField } from '@/components/admin/field-editor'
+import { FieldEditor, ResponsiveImageField } from '@/components/admin/field-editor'
 import { VideoField } from '@/components/admin/video-field'
 import { Button } from '@/components/ui/button'
 import {
@@ -13,37 +13,11 @@ import {
   type EditablePage,
 } from '@/lib/editable-pages'
 import type { Locale } from '@/lib/activities'
+import { readPath, writePath } from '@/lib/content-path'
 import type { ResponsiveImageValue } from '@/lib/responsive-image'
 import { cn } from '@/lib/utils'
 
 type Bilingual = Record<Locale, Record<string, any>>
-
-/** Lit une valeur imbriquée à partir d'un chemin "hero.title" ou "gallery.0". */
-function readPath(source: Record<string, any>, path: string): any {
-  return path.split('.').reduce<any>((acc, key) => (acc == null ? undefined : acc[key]), source)
-}
-
-/**
- * Écrit une valeur imbriquée, en créant les niveaux manquants.
- * Un segment numérique crée un tableau, pas un objet : `gallery.0` doit donner
- * `{ gallery: [...] }`, sinon la page publique recevrait `{ "0": ... }` et
- * n'afficherait rien.
- */
-function writePath(source: Record<string, any>, path: string, value: any): Record<string, any> {
-  const next = structuredClone(source)
-  const keys = path.split('.')
-  let cursor: any = next
-  for (let i = 0; i < keys.length - 1; i++) {
-    const key = keys[i]
-    const childIsIndex = /^\d+$/.test(keys[i + 1])
-    if (cursor[key] == null || typeof cursor[key] !== 'object') {
-      cursor[key] = childIsIndex ? [] : {}
-    }
-    cursor = cursor[key]
-  }
-  cursor[keys[keys.length - 1]] = value
-  return next
-}
 
 export default function AdminContentPage() {
   const [pageId, setPageId] = useState(editablePages[0].id)

@@ -119,6 +119,13 @@ export function ImageField({
       })
 
       if (!response.ok) {
+        // Le serveur explique certains refus (photo HEIC d'iPhone, fichier
+        // illisible) : on montre SON message, bien plus utile que « réessayez ».
+        const detail = await response.json().catch(() => null)
+        if (detail?.message) {
+          setError(detail.message)
+          return
+        }
         failToLink()
         return
       }
