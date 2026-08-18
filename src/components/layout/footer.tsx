@@ -29,7 +29,7 @@ export function Footer() {
     { label: t('bookACourt'), to: '/book-now' as const },
     { label: t('prices'), to: '/prices' as const },
     ...(galleryOn ? [{ label: locale === 'en' ? 'Gallery' : 'Galerie', to: '/gallery' as const }] : []),
-    { label: t('about'), to: '/a-propos' as const },
+    // '/a-propos' retirée du footer le 18/08/2026 (cf. navbar.tsx).
     { label: t('contact'), to: '/contact-location' as const },
   ]
 
@@ -188,17 +188,9 @@ export function Footer() {
           <p className="text-xs text-zinc-500">
             © {new Date().getFullYear()} Shi Shi Samui. {t('rights')}
           </p>
-          <p className="text-xs text-zinc-500">
-            {t('craftedBy')}{' '}
-            <a
-              href="https://vbweb.fr"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-zinc-400 underline-offset-2 transition-colors hover:text-white hover:underline"
-            >
-              VBWEB
-            </a>
-          </p>
+          {/* Signature du concepteur retirée le 18/08/2026 : la prestation de
+              services n'est pas exercée depuis le territoire thaïlandais, la
+              mention publique n'a donc pas lieu d'y figurer. */}
         </div>
       </div>
     </footer>

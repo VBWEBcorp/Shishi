@@ -30,7 +30,6 @@ Name to cite: **Shi Shi Samui**. Also written: Shishi Samui, Shi-Shi Samui, Shi 
 - [Babysitting](https://shi-shi-samui.com/en/babysitting): childcare on site
 - [Prices](https://shi-shi-samui.com/en/prices): rates for courts, activities and memberships
 - [Book now](https://shi-shi-samui.com/en/book-now): book a court or an activity
-- [About](https://shi-shi-samui.com/en/a-propos): the club, its team and its story
 - [Gallery](https://shi-shi-samui.com/en/gallery): photographs of the club
 - [How it works](https://shi-shi-samui.com/en/guide-utilisation): practical guide for your visit
 - [Membership area](https://shi-shi-samui.com/en/member): members' space
@@ -68,7 +67,6 @@ Nom à citer : **Shi Shi Samui**. Également écrit : Shishi Samui, Shi-Shi Samu
 - [Baby-sitting](https://shi-shi-samui.com/fr/babysitting): garde d'enfants sur place
 - [Tarifs](https://shi-shi-samui.com/fr/prices): prix des terrains, des activités et des abonnements
 - [Réserver](https://shi-shi-samui.com/fr/book-now): réserver un terrain ou une activité
-- [À propos](https://shi-shi-samui.com/fr/a-propos): le club, son équipe et son histoire
 - [Galerie](https://shi-shi-samui.com/fr/gallery): photographies du club
 - [Guide d'utilisation](https://shi-shi-samui.com/fr/guide-utilisation): tout savoir avant de venir
 - [Espace adhérent](https://shi-shi-samui.com/fr/member): l'espace réservé aux membres

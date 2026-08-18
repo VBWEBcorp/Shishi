@@ -447,12 +447,12 @@ export const activities: Activity[] = [
     path: '/kids-club-lamai',
     name: { en: 'Kids Club', fr: 'Kids Club' },
     tagline: {
-      en: 'Kids club & family fun',
-      fr: 'Kids club & moments en famille',
+      en: 'From babies to 5 year olds, meals included',
+      fr: 'Des tout-petits aux 5 ans, repas compris',
     },
     description: {
-      en: 'A safe, fun space for children with supervised activities, so the whole family can enjoy the club. Perfect for expats and visiting families in Koh Samui.',
-      fr: 'Un espace sûr et ludique pour les enfants, avec activités encadrées, pour que toute la famille profite du club. Idéal pour les expatriés et familles de passage à Koh Samui.',
+      en: 'One of the very few places in Koh Samui that welcomes babies and toddlers, from a few months old to 5 years. Drop your child for an hour or the whole day: breakfast, lunch and an afternoon snack are included, with supervised play in a safe, shaded space. Going on an excursion your little one cannot join? Leave them with us for the day and enjoy the island with peace of mind.',
+      fr: 'L’un des rares endroits de Koh Samui à accueillir les bébés et les tout-petits, de quelques mois à 5 ans. Déposez votre enfant pour une heure ou pour la journée : petit-déjeuner, déjeuner et goûter de 15h compris, avec des activités encadrées dans un espace sûr et ombragé. Une excursion où votre enfant ne peut pas venir ? Confiez-le-nous à la journée et profitez de l’île l’esprit tranquille.',
     },
     icon: 'kids',
     image: '/photos/kids-aire-jeu-portrait.webp',
@@ -468,21 +468,28 @@ export const activities: Activity[] = [
       fr: 'Kids Club à Lamai, Koh Samui | Shi Shi Samui',
     },
     metaDescription: {
-      en: 'Discover Shi Shi Kids Club in Lamai. Fun activities for children while parents enjoy sport, fitness, food or pool time.',
-      fr: 'Découvrez le Kids Club Shi Shi à Lamai. Des activités ludiques pour les enfants pendant que les parents profitent du sport, du fitness, du restaurant ou de la piscine.',
+      en: 'Kids club in Lamai welcoming babies and toddlers up to 5 years. Hourly or full day, meals included. Leave your child while you enjoy an excursion.',
+      fr: 'Kids club à Lamai accueillant bébés et tout-petits jusqu’à 5 ans. À l’heure ou à la journée, repas compris. Confiez votre enfant le temps d’une excursion.',
     },
+    // Mots-clés retravaillés le 18/08/2026 : le club est l'un des seuls de
+    // l'île à prendre les tout-petits, et la journée avec repas répond à un
+    // besoin très concret des familles en excursion. Ces requêtes-là sont
+    // longues et se jouent dans le contenu des pages, pas sur la fiche Google.
     keywordsPrimary: [
       'kids club lamai',
       'kids club koh samui',
-      'kids activities lamai',
-      'children activities koh samui',
+      'childcare for babies koh samui',
+      'kids club for toddlers koh samui',
+      'daycare koh samui',
     ],
     keywordsSecondary: [
-      'kids club for tourists koh samui',
+      'where to leave my child koh samui',
+      'childcare during excursion koh samui',
+      'kids club with meals koh samui',
+      'nursery lamai koh samui',
       'kids club for expats koh samui',
-      'kids play area koh samui',
       'kids club lamai price',
-      'kids club koh samui menu',
+      'full day childcare koh samui',
     ],
     schema: 'service',
     altImages: [
@@ -490,24 +497,47 @@ export const activities: Activity[] = [
       'children activities in Lamai Koh Samui',
     ],
     highlights: {
-      en: ['Supervised activities (1 hour)', 'Lunch for the child at midday', 'Safe & shaded play area', 'Family-friendly all day'],
-      fr: ['Activités encadrées (1 heure)', 'Repas du midi possible pour l’enfant', 'Aire de jeu sûre & ombragée', 'Convivial pour les familles'],
+      en: [
+        'Babies & toddlers welcome, up to 5 years',
+        'Breakfast, lunch and 3 pm snack included',
+        'By the hour or for the full day',
+        'Safe & shaded play area, supervised throughout',
+      ],
+      fr: [
+        'Bébés et tout-petits acceptés, jusqu’à 5 ans',
+        'Petit-déjeuner, déjeuner et goûter de 15h compris',
+        'À l’heure ou à la journée complète',
+        'Aire de jeu sûre & ombragée, encadrée en permanence',
+      ],
     },
     gallery: ['/photos/kids-aire-jeu-portrait.webp', '/photos/equipe-kids-portrait.webp', '/photos/equipe-kids-bulles-portrait.webp', '/photos/pool-parasols-portrait.webp'],
     video: '/videos/kids.mp4',
     faq: [
       {
-        q: { en: 'What is the Shi Shi Kids Club?', fr: 'Qu’est-ce que le Kids Club Shi Shi ?' },
+        q: {
+          en: 'From what age do you take children?',
+          fr: 'À partir de quel âge accueillez-vous les enfants ?',
+        },
         a: {
-          en: 'A safe, supervised space in Lamai with fun activities for children while parents enjoy sport, the pool or the restaurant.',
-          fr: 'Un espace sûr et encadré à Lamai avec des activités ludiques pour les enfants pendant que les parents profitent du sport, de la piscine ou du restaurant.',
+          en: 'We welcome babies and toddlers, from a few months old up to 5 years. Very few places in Koh Samui take children this young, which is why many families come to us.',
+          fr: 'Nous accueillons les bébés et les tout-petits, de quelques mois jusqu’à 5 ans. Très peu d’endroits à Koh Samui prennent les enfants aussi jeunes, c’est pourquoi beaucoup de familles viennent chez nous.',
         },
       },
       {
-        q: { en: 'Who is the Kids Club for?', fr: 'À qui s’adresse le Kids Club ?' },
+        q: {
+          en: 'Can I leave my child for a full day while I go on an excursion?',
+          fr: 'Puis-je confier mon enfant à la journée pendant une excursion ?',
+        },
         a: {
-          en: 'It welcomes families visiting or living in Koh Samui. Reach out for age details and current activities.',
-          fr: 'Il accueille les familles de passage ou résidentes à Koh Samui. Contactez-nous pour les tranches d’âge et les activités du moment.',
+          en: 'Yes, that is exactly what many parents do. Leave your child with us for the day, enjoy your excursion, and come back knowing they were fed, supervised and entertained throughout.',
+          fr: 'Oui, c’est exactement ce que font de nombreux parents. Confiez-nous votre enfant à la journée, profitez de votre excursion, et retrouvez-le nourri, encadré et occupé toute la journée.',
+        },
+      },
+      {
+        q: { en: 'Are meals included?', fr: 'Les repas sont-ils compris ?' },
+        a: {
+          en: 'Yes. Breakfast in the morning for children who have not eaten at home, lunch at midday and a snack at 3 pm are all included.',
+          fr: 'Oui. Le petit-déjeuner du matin pour les enfants qui n’ont pas eu le temps de manger à la maison, le déjeuner du midi et le goûter de 15h sont compris.',
         },
       },
       {
@@ -527,12 +557,12 @@ export const activities: Activity[] = [
     path: '/swimming-pool-lamai',
     name: { en: 'Pool', fr: 'Piscine' },
     tagline: {
-      en: 'Cool off, soak up the sun',
-      fr: 'Rafraîchissez-vous au soleil',
+      en: 'Swim, learn, soak up the sun',
+      fr: 'Nagez, apprenez, profitez du soleil',
     },
     description: {
-      en: 'Relax by the pool between sessions or spend the whole day lounging. The social heart of the resort, with the restaurant just steps away.',
-      fr: 'Détendez-vous au bord de la piscine entre deux sessions ou passez la journée à lézarder. Le cœur social du resort, avec le restaurant à deux pas.',
+      en: 'A large pool to swim proper lengths, relax between sessions or spend the whole day lounging. Swimming lessons are available with an instructor on site, for children learning to swim as well as adults who want to improve. The social heart of the resort, with the restaurant just steps away.',
+      fr: 'Une grande piscine pour nager de vraies longueurs, se détendre entre deux sessions ou passer la journée à lézarder. Des cours de natation sont proposés avec une professeure sur place, pour les enfants qui apprennent à nager comme pour les adultes qui souhaitent progresser. Le cœur social du resort, avec le restaurant à deux pas.',
     },
     icon: 'pool',
     image: '/photos/pool-panorama-portrait.webp',
@@ -548,21 +578,26 @@ export const activities: Activity[] = [
       fr: 'Piscine à Lamai, Koh Samui | Shi Shi Samui',
     },
     metaDescription: {
-      en: 'Relax at Shi Shi Samui swimming pool in Lamai. Enjoy pool access with sports, healthy food and a family-friendly club atmosphere.',
-      fr: 'Détendez-vous à la piscine Shi Shi Samui à Lamai. Profitez d’un accès piscine avec sport, cuisine healthy et une ambiance club familiale.',
+      en: 'Swimming pool in Lamai with swimming lessons for children and adults. Day access, sun loungers and a family-friendly club atmosphere.',
+      fr: 'Piscine à Lamai avec cours de natation pour enfants et adultes. Accès à la journée, transats et ambiance club familiale.',
     },
+    // Les cours de natation sont une vraie demande locale (parents qui font
+    // apprendre à nager à leurs enfants) : ajoutés aux mots-clés le 18/08/2026.
     keywordsPrimary: [
       'swimming pool lamai',
       'swimming pool koh samui',
+      'swimming lessons koh samui',
+      'swimming lessons for kids koh samui',
       'pool access lamai',
-      'pool club lamai',
     ],
     keywordsSecondary: [
-      'swimming pool lamai opening hours',
+      'learn to swim koh samui',
+      'swimming teacher lamai',
+      'kids swimming lessons lamai',
+      'adult swimming lessons koh samui',
       'family pool koh samui',
-      'kids pool lamai',
       'pool and restaurant lamai',
-      'private swimming pool lamai',
+      'swimming pool lamai opening hours',
     ],
     schema: 'service',
     altImages: [
@@ -570,8 +605,18 @@ export const activities: Activity[] = [
       'pool access in Lamai Koh Samui',
     ],
     highlights: {
-      en: ['Sun loungers & shade', 'Poolside service', 'Day pass access', 'Steps from the restaurant'],
-      fr: ['Transats & coins ombragés', 'Service au bord de l’eau', 'Accès pass journée', 'À deux pas du restaurant'],
+      en: [
+        'Swimming lessons for children & adults',
+        'Sun loungers & shade',
+        'Day pass access',
+        'Steps from the restaurant',
+      ],
+      fr: [
+        'Cours de natation enfants & adultes',
+        'Transats & coins ombragés',
+        'Accès pass journée',
+        'À deux pas du restaurant',
+      ],
     },
     gallery: ['/photos/pool-panorama-portrait.webp', '/photos/pool-transats-portrait.webp', '/photos/pool-sala-portrait.webp', '/photos/pool-grand-angle-portrait.webp'],
     video: '/videos/hero-pool.mp4',
@@ -581,6 +626,16 @@ export const activities: Activity[] = [
         a: {
           en: 'Yes. Shi Shi Samui offers swimming pool access in Lamai with sun loungers, shade and poolside service.',
           fr: 'Oui. Shi Shi Samui propose un accès piscine à Lamai avec transats, ombre et service au bord de l’eau.',
+        },
+      },
+      {
+        q: {
+          en: 'Do you offer swimming lessons in Koh Samui?',
+          fr: 'Proposez-vous des cours de natation à Koh Samui ?',
+        },
+        a: {
+          en: 'Yes. A swimming instructor gives lessons at our pool in Lamai, for children learning to swim and for adults who want to build confidence or improve their technique. Contact us to arrange a session.',
+          fr: 'Oui. Une professeure de natation donne des cours dans notre piscine à Lamai, pour les enfants qui apprennent à nager comme pour les adultes qui souhaitent gagner en aisance ou progresser techniquement. Contactez-nous pour convenir d’une séance.',
         },
       },
       {

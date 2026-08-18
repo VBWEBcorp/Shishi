@@ -83,5 +83,10 @@ export const routes = [
   '/prices',
   '/book-now',
   '/contact-location',
-  '/a-propos',
+  // '/a-propos' — RETIRÉE VOLONTAIREMENT (18/08/2026).
+  // Les gérants attendent leurs work permits et la police contrôle Samui : la
+  // page reste en ligne et accessible par son adresse directe, mais elle sort
+  // du sitemap, de la navigation et de l'index Google le temps que la
+  // situation soit régularisée (une à deux semaines). À remettre ensuite :
+  // Google attend une page « À propos » pour rattacher le site à une entité.
 ] as const

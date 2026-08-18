@@ -62,7 +62,9 @@ export default function LegalPage() {
                   <strong>Adresse :</strong> {siteConfig.address.street}, {siteConfig.address.city},{' '}
                   {siteConfig.address.region} {siteConfig.address.postalCode}, Thaïlande
                 </li>
-                <li><strong>Responsable de la publication :</strong> Paul Poulain</li>
+                {/* Nom du gerant retire le 18/08/2026 en attendant les work permits ;
+                    l'entite juridique reste identifiee. A remettre ensuite. */}
+                <li><strong>Responsable de la publication :</strong> la direction de {siteConfig.name}</li>
                 <li><strong>Email :</strong> {siteConfig.email}</li>
                 <li><strong>Téléphone :</strong> {siteConfig.phone}</li>
                 <li>
@@ -199,10 +201,7 @@ export default function LegalPage() {
             <section className="space-y-3">
               <h2>9. Crédits</h2>
               <ul className="list-inside list-disc space-y-1 pl-1">
-                <li>
-                  <strong>Conception et développement :</strong>{' '}
-                  <a href="https://vbweb.fr" target="_blank" rel="noopener noreferrer" className="font-medium text-primary underline underline-offset-4 hover:text-primary/80">VBWEB</a>
-                </li>
+                {/* Crédit du concepteur retiré le 18/08/2026 (cf. footer.tsx). */}
                 <li><strong>Icônes :</strong> Lucide Icons (licence ISC)</li>
                 <li><strong>Crédits photos :</strong> Shi Shi Samui</li>
               </ul>

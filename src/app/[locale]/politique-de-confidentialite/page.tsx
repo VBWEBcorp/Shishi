@@ -71,7 +71,8 @@ export default function PrivacyPage() {
               <h2>1. Responsable du traitement</h2>
               <ul className="list-inside list-disc space-y-1 pl-1">
                 <li><strong>Nom commercial :</strong> {siteConfig.name}</li>
-                <li><strong>Responsable :</strong> Paul Poulain</li>
+                {/* Cf. mentions legales : nom du gerant retire temporairement. */}
+                <li><strong>Responsable :</strong> la direction de {siteConfig.name}</li>
                 <li>
                   <strong>Adresse :</strong> {siteConfig.address.street}, {siteConfig.address.city},{' '}
                   {siteConfig.address.region} {siteConfig.address.postalCode}, Thaïlande
