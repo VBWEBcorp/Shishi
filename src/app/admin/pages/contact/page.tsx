@@ -1,7 +1,7 @@
 'use client'
 
 import { PageEditor } from '@/components/admin/page-editor'
-import { FieldEditor, SectionEditor, ImageField } from '@/components/admin/field-editor'
+import { FieldEditor, SectionEditor, ResponsiveImageField } from '@/components/admin/field-editor'
 
 const defaults = {
   hero: {
@@ -45,7 +45,7 @@ export default function AdminContactPage() {
             <FieldEditor label="Accroche" value={content.hero?.eyebrow} onChange={(v) => update('hero.eyebrow', v)} />
             <FieldEditor label="Titre" value={content.hero?.title} onChange={(v) => update('hero.title', v)} />
             <FieldEditor label="Description" value={content.hero?.description} onChange={(v) => update('hero.description', v)} type="textarea" />
-            <ImageField label="Image" value={content.hero?.image} onChange={(v) => update('hero.image', v)} />
+            <ResponsiveImageField label="Image" value={content.hero?.image} onChange={(v) => update('hero.image', v)} />
           </SectionEditor>
 
           <SectionEditor title="Informations de contact">

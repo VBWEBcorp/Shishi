@@ -12,6 +12,7 @@ import { Link } from '@/i18n/navigation'
 import { activities, BOOK_NOW_PATH } from '@/lib/activities'
 import type { Locale, Localized } from '@/lib/activities'
 import { getActivityPrice, PRICE_TIERS } from '@/lib/booking-pricing'
+import { getPageContent, orDefault } from '@/lib/page-content'
 import { siteConfig } from '@/lib/seo'
 
 const PRICE_KEYWORDS = [
@@ -50,6 +51,9 @@ function priceGroups(): { slug: string; rows: Row[] }[] {
   })
 }
 
+/** Régénérée au plus une fois par minute : l'admin est visible sans redéploiement. */
+export const revalidate = 60
+
 export async function generateMetadata({
   params,
 }: {
@@ -82,6 +86,14 @@ export default async function PricesPage({
   setRequestLocale(locale)
   const l = locale as Locale
   const t = await getTranslations('Prices')
+
+  // Textes modifiables depuis l'espace admin ; vides, on garde les traductions.
+  const cms = await getPageContent('prices', l)
+  const heroCms = (cms.hero ?? {}) as Record<string, string>
+  const eyebrow = orDefault(heroCms.eyebrow, t('eyebrow'))
+  const h1 = orDefault(heroCms.title, t('h1'))
+  const intro = orDefault(heroCms.description, t('intro'))
+  const note = orDefault(cms.note as string, t('disclaimer'))
 
   const groups = priceGroups()
   const bySlug = (slug: string) => activities.find((a) => a.slug === slug)!
@@ -126,11 +138,11 @@ export default async function PricesPage({
             <span aria-hidden>/</span>
             <span className="font-medium text-foreground/80">{t('breadcrumb')}</span>
           </nav>
-          <span className="text-xs font-semibold uppercase tracking-[0.28em] text-accent">{t('eyebrow')}</span>
+          <span className="text-xs font-semibold uppercase tracking-[0.28em] text-accent">{eyebrow}</span>
           <h1 className="mt-3 font-editorial text-4xl font-normal leading-[1.05] tracking-[-0.01em] text-foreground sm:text-5xl">
-            {t('h1')}
+            {h1}
           </h1>
-          <p className="mt-4 max-w-2xl text-lg leading-relaxed text-muted-foreground">{t('intro')}</p>
+          <p className="mt-4 max-w-2xl text-lg leading-relaxed text-muted-foreground">{intro}</p>
           <div className="mt-7 flex flex-wrap items-center gap-3">
             <Link
               href={BOOK_NOW_PATH}
@@ -191,7 +203,7 @@ export default async function PricesPage({
         </div>
 
         <p className="mt-8 flex items-center gap-2 text-sm text-muted-foreground">
-          <Tag className="size-4 text-accent" aria-hidden /> {t('disclaimer')}
+          <Tag className="size-4 text-accent" aria-hidden /> {note}
         </p>
       </section>
     </>

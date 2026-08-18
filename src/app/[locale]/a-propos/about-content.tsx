@@ -12,6 +12,7 @@ import { useContent } from '@/hooks/use-content'
 import { Link } from '@/i18n/navigation'
 import type { Locale } from '@/i18n/routing'
 import { hasImage, type ResponsiveImageValue } from '@/lib/responsive-image'
+import { images as siteImages } from '@/lib/site-content'
 
 const ease = [0.22, 1, 0.36, 1] as const
 
@@ -218,12 +219,56 @@ function ComplexSection({ cms }: { cms?: Record<string, string> }) {
   )
 }
 
+/**
+ * Galerie photo de la page À propos, pilotée depuis l'espace admin.
+ * Les emplacements vides sont ignorés : le client peut n'en remplir que deux
+ * sans laisser de case grise sur la page.
+ */
+function AboutGallery({ images }: { images?: ResponsiveImageValue[] }) {
+  const t = useTranslations('About')
+  const shown = (images ?? []).filter((img) => hasImage(img))
+  if (shown.length === 0) return null
+
+  return (
+    <section className="border-t border-border bg-background">
+      <div className="mx-auto max-w-6xl px-4 py-20 sm:px-6 lg:px-8 lg:py-28">
+        <SectionEyebrow icon={LayoutGrid}>{t('hero.eyebrow')}</SectionEyebrow>
+        <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          {shown.map((img, i) => (
+            <motion.div
+              key={i}
+              initial={{ opacity: 0, y: 16 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.2 }}
+              transition={{ duration: 0.5, ease, delay: i * 0.06 }}
+              className="relative aspect-[3/4] overflow-hidden rounded-2xl ring-1 ring-border"
+            >
+              <ResponsivePhoto
+                value={img}
+                alt=""
+                fill
+                sizes="(min-width:1024px) 25vw, (min-width:640px) 50vw, 100vw"
+                className="absolute inset-0 h-full w-full object-cover"
+              />
+            </motion.div>
+          ))}
+        </div>
+      </div>
+    </section>
+  )
+}
+
 export function AboutContent() {
-  const { data } = useContent('about', {} as {
+  // Les défauts de la galerie reprennent ceux de l'éditeur admin : la section
+  // est donc visible avant même que le client n'ait enregistré quoi que ce soit.
+  const { data } = useContent('about', {
+    gallery: siteImages.aboutGallery,
+  } as {
     hero?: AboutHeroContent
     story?: Record<string, string>
     complex?: Record<string, string>
     values?: { title?: string; description?: string }[]
+    gallery?: ResponsiveImageValue[]
   })
 
   return (
@@ -232,6 +277,7 @@ export function AboutContent() {
       <StorySection cms={data.story} />
       <PillarsSection values={data.values} />
       <ComplexSection cms={data.complex} />
+      <AboutGallery images={data.gallery} />
     </>
   )
 }

@@ -33,6 +33,8 @@ import { useSidebar } from '@/components/admin/sidebar-context'
 const navItems = [
   { href: '/admin/dashboard', label: 'Tableau de bord', icon: LayoutDashboard },
   { href: '/admin/bookings', label: 'Réservations', icon: CalendarCheck },
+  // Point d'entrée unique pour tout le contenu du site (textes + photos).
+  { href: '/admin/contenu', label: 'Contenu du site', icon: FileText },
   { href: '/admin/members', label: 'Adhérents', icon: CreditCard },
   { href: '/admin/subscriptions', label: 'Abonnements', icon: Ticket },
   { href: '/admin/contacts', label: 'CRM', icon: Users },

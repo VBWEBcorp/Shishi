@@ -9,10 +9,26 @@ import { ActivitySelect } from '@/components/activity-select'
 import { BookingDialog } from '@/components/booking-dialog'
 import { DatePopover } from '@/components/date-popover'
 import { WeatherWidget } from '@/components/weather-widget'
+import { ResponsivePhoto } from '@/components/responsive-photo'
 import { useContent } from '@/hooks/use-content'
 import { Link } from '@/i18n/navigation'
 import type { Locale } from '@/i18n/routing'
 import { activities } from '@/lib/activities'
+import { hasImage, type ResponsiveImageValue } from '@/lib/responsive-image'
+
+/** Vidéo drone livrée avec le site, tant que le club n'en fournit pas d'autre. */
+const DEFAULT_HERO_VIDEO = '/videos/hero-pool.mp4'
+
+/** Hero de l'accueil, piloté par l'espace admin. */
+type HeroContent = {
+  eyebrow?: string
+  title?: string
+  description?: string
+  /** Vidéo de fond. Vidée dans l'admin, seule la photo reste. */
+  video?: string
+  /** Photo de fond : visible sous la vidéo, et seule si aucune vidéo. */
+  image?: ResponsiveImageValue
+}
 
 /** Sépare un titre éditable pour mettre le dernier mot en italique éditorial (DA). */
 function splitAccent(title: string): { lead: string; accent: string } {
@@ -35,10 +51,13 @@ function DiamondRule() {
 export function ShishiHero() {
   const t = useTranslations('Home.hero')
   const l = useLocale() as Locale
-  const { data } = useContent('home', {} as { hero?: Record<string, string> })
+  const { data } = useContent('home', {} as { hero?: HeroContent })
   const hero = data.hero ?? {}
   const badge = hero.eyebrow || t('badge')
   const subtitle = hero.description || t('subtitle')
+  // Vidéo de fond : celle saisie en admin, sinon la vidéo drone livrée avec le
+  // site. Vidée volontairement dans l'admin, le hero garde la photo seule.
+  const heroVideo = hero.video === '' ? '' : hero.video || DEFAULT_HERO_VIDEO
   const featured = activities.find((a) => a.featured) ?? activities[0]
 
   // Recherche fonctionnelle : activité + date → /booking pré-rempli
@@ -64,23 +83,36 @@ export function ShishiHero() {
 
   return (
     <section className="relative isolate z-20 min-h-[94vh] bg-[oklch(0.16_0_0)]">
-      {/* Vidéo drone uniquement — aucune photo avant le démarrage (ni image LCP,
-          ni poster). Léger fondu depuis le fond sombre le temps que la vidéo
-          charge. Remplacer /videos/hero-pool.mp4 par la vidéo définitive. */}
-      <video
-        autoPlay
-        muted
-        loop
-        playsInline
-        preload="auto"
-        onCanPlay={() => setVideoReady(true)}
-        aria-hidden
-        className={`absolute inset-0 size-full object-cover transition-opacity duration-1000 motion-reduce:hidden ${
-          videoReady ? 'opacity-100' : 'opacity-0'
-        }`}
-      >
-        <source src="/videos/hero-pool.mp4" type="video/mp4" />
-      </video>
+      {/* Fond du hero, remplaçable depuis l'espace admin : une vidéo si le club
+          en fournit une, sinon une photo. La photo sert aussi de repli quand le
+          navigateur refuse l'autoplay (mouvement réduit). */}
+      {hasImage(hero.image) && (
+        <ResponsivePhoto
+          value={hero.image}
+          alt=""
+          fill
+          priority
+          sizes="100vw"
+          className="absolute inset-0 h-full w-full object-cover"
+        />
+      )}
+      {heroVideo && (
+        <video
+          key={heroVideo}
+          autoPlay
+          muted
+          loop
+          playsInline
+          preload="auto"
+          onCanPlay={() => setVideoReady(true)}
+          aria-hidden
+          className={`absolute inset-0 size-full object-cover transition-opacity duration-1000 motion-reduce:hidden ${
+            videoReady ? 'opacity-100' : 'opacity-0'
+          }`}
+        >
+          <source src={heroVideo} type="video/mp4" />
+        </video>
+      )}
       {/* Voile neutre : assez de contraste pour le texte, sans teinte chaude */}
       <div
         className="absolute inset-0 bg-gradient-to-b from-[oklch(0.2_0_0/0.4)] via-[oklch(0.2_0_0/0.32)] to-[oklch(0.16_0_0/0.86)]"

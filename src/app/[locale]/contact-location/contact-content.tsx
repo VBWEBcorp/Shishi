@@ -21,21 +21,52 @@ import { PremiumHero } from '@/components/sections/premium-hero'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { useContent } from '@/hooks/use-content'
 import { Link } from '@/i18n/navigation'
 import { activities, resolveLink } from '@/lib/activities'
 import type { Locale } from '@/lib/activities'
 import { OPENING_HOURS } from '@/lib/booking-pricing'
+import { hasImage, type ResponsiveImageValue } from '@/lib/responsive-image'
 import { mapsDirectionsUrl, mapsEmbedUrl, siteConfig } from '@/lib/seo'
 import { images as siteImages } from '@/lib/site-content'
 
 type FormStatus = 'idle' | 'sending' | 'success' | 'error'
+
+/** Contenu de la page Contact piloté par l'espace admin. */
+type ContactCms = {
+  hero?: {
+    eyebrow?: string
+    title?: string
+    description?: string
+    image?: ResponsiveImageValue
+  }
+  info?: {
+    phone?: string
+    email?: string
+    street?: string
+    postalCode?: string
+    city?: string
+  }
+}
 
 export function ContactContent() {
   const t = useTranslations('Contact')
   const l = useLocale() as Locale
   const [status, setStatus] = useState<FormStatus>('idle')
 
-  const phoneHref = `tel:${siteConfig.phone.replace(/\s/g, '')}`
+  // Contenu saisi dans l'espace admin. Chaque champ laissé vide retombe sur la
+  // traduction native (hero) ou sur `siteConfig` (coordonnées).
+  const { data: cms } = useContent<ContactCms>('contact', {})
+  const hero = cms.hero ?? {}
+  const info = cms.info ?? {}
+
+  const phone = info.phone?.trim() || siteConfig.phone
+  const email = info.email?.trim() || siteConfig.email
+  const street = info.street?.trim() || siteConfig.address.street
+  const postalCode = info.postalCode?.trim() || siteConfig.address.postalCode
+  const city = info.city?.trim() || siteConfig.address.city
+
+  const phoneHref = `tel:${phone.replace(/\s/g, '')}`
   const waLink = `https://wa.me/${siteConfig.whatsapp}?text=${encodeURIComponent(
     t('whatsappPrefill')
   )}`
@@ -85,12 +116,12 @@ export function ContactContent() {
   return (
     <>
       <PremiumHero
-        eyebrow={t('eyebrow')}
-        title={t('h1')}
-        description={t('description')}
+        eyebrow={hero.eyebrow || t('eyebrow')}
+        title={hero.title || t('h1')}
+        description={hero.description || t('description')}
         breadcrumb={t('breadcrumb')}
         compact
-        backgroundImage={siteImages.contactHero}
+        backgroundImage={hasImage(hero.image) ? hero.image : siteImages.contactHero}
       >
         {/* CTA contact rapides — WhatsApp prioritaire (visible mobile) */}
         <div className="flex flex-wrap items-center justify-center gap-3">
@@ -137,18 +168,18 @@ export function ContactContent() {
                       </span>
                       <span>
                         <span className="block text-xs font-medium text-muted-foreground">{t('call')}</span>
-                        <span className="block text-sm font-semibold text-foreground">{siteConfig.phone}</span>
+                        <span className="block text-sm font-semibold text-foreground">{phone}</span>
                       </span>
                     </a>
                   </li>
                   <li>
-                    <a href={`mailto:${siteConfig.email}`} className="group flex items-start gap-4">
+                    <a href={`mailto:${email}`} className="group flex items-start gap-4">
                       <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-ocean/10 text-ocean">
                         <Mail className="size-4" aria-hidden />
                       </span>
                       <span>
                         <span className="block text-xs font-medium text-muted-foreground">{t('email')}</span>
-                        <span className="block break-all text-sm font-semibold text-foreground">{siteConfig.email}</span>
+                        <span className="block break-all text-sm font-semibold text-foreground">{email}</span>
                       </span>
                     </a>
                   </li>
@@ -161,9 +192,9 @@ export function ContactContent() {
                       <span className="block text-sm font-semibold text-foreground">
                         {siteConfig.name}
                         <br />
-                        {siteConfig.address.street}, {siteConfig.address.city}
+                        {street}, {city}
                         <br />
-                        {siteConfig.address.region} {siteConfig.address.postalCode}, Thailand
+                        {siteConfig.address.region} {postalCode}, Thailand
                       </span>
                     </span>
                   </li>
@@ -281,7 +312,7 @@ export function ContactContent() {
                   )}
                   {status === 'error' && (
                     <p className="rounded-xl bg-red-500/10 px-4 py-3 text-sm font-medium text-red-700 ring-1 ring-red-500/20">
-                      {t('formError')} {siteConfig.email}.
+                      {t('formError')} {email}.
                     </p>
                   )}
                 </form>
