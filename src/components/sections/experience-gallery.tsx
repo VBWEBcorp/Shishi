@@ -122,14 +122,11 @@ export function ExperienceGallery() {
         </div>
 
         {/* Pied de section : invitation — filet — bouton pilule.
-            Le bouton menait vers « À propos », masquée le 18/08/2026 le temps
-            des work permits ; il renvoie donc vers les activités, qui est la
-            suite de visite la plus naturelle. À rebasculer sur /a-propos quand
-            la page sera de nouveau publique. */}
+*/}
         <div className="mt-16 flex flex-col items-center gap-6 sm:flex-row sm:gap-8">
           <p className="text-sm text-muted-foreground">{more}</p>
           <span className="hidden h-px flex-1 bg-border sm:block" aria-hidden />
-          <CtaButton href="/services" tone="dark" size="sm" className="shrink-0">
+          <CtaButton href="/a-propos" tone="dark" size="sm" className="shrink-0">
             {t('cta')}
           </CtaButton>
         </div>

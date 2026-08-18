@@ -118,9 +118,7 @@ export function StorySection() {
             <p>{s.paragraph1 || t('p1')}</p>
             <p>{s.paragraph2 || t('p2')}</p>
           </div>
-          {/* Renvoyait vers « À propos », masquée le 18/08/2026 (work permits).
-              À rebasculer sur /a-propos une fois la page de nouveau publique. */}
-          <CtaButton href="/services" tone="dark" size="sm" className="mt-7">
+          <CtaButton href="/a-propos" tone="dark" size="sm" className="mt-7">
             {t('cta')}
           </CtaButton>
         </div>

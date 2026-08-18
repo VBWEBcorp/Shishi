@@ -8,7 +8,14 @@
  * mensuelle.
  */
 
-/** Fenêtre de réservation à l'avance pour un client SANS compte (jours). */
-export const PUBLIC_ADVANCE_DAYS = 3
+/**
+ * Fenêtre de réservation à l'avance pour un client SANS compte (jours).
+ *
+ * Portée de 3 à 7 jours le 18/08/2026 à la demande du club : une semaine de
+ * visibilité suffit aux clients, et au-delà le club garde la main pour placer
+ * les cours privés — qui rapportent davantage qu'une simple location de
+ * terrain. L'espace admin, lui, n'est jamais borné.
+ */
+export const PUBLIC_ADVANCE_DAYS = 7
 /** Fenêtre de réservation à l'avance pour un adhérent connecté (jours). */
 export const MEMBER_ADVANCE_DAYS = 10

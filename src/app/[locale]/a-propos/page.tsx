@@ -10,13 +10,6 @@ export const metadata: Metadata = {
   title: 'About',
   description,
   alternates: { canonical: '/a-propos' },
-  // MASQUAGE TEMPORAIRE (18/08/2026) — en attente des work permits.
-  // La page reste accessible par son adresse directe : elle n'est ni
-  // supprimée, ni redirigée, donc rien à recréer ensuite. Elle sort seulement
-  // de l'index Google, le temps que la situation soit régularisée.
-  // Pour la réactiver : retirer ce bloc `robots` ET remettre '/a-propos' dans
-  // `routes` (src/lib/seo.ts).
-  robots: { index: false, follow: true },
 }
 
 const jsonLd = {

@@ -1,4 +1,5 @@
 import { describe, it, expect } from 'vitest'
+import { MEMBER_ADVANCE_DAYS, PUBLIC_ADVANCE_DAYS } from '@/lib/membership-plans'
 import { isValidBookingDate, isBookingDateTimeInPast } from '@/lib/booking-validation'
 
 describe('isValidBookingDate', () => {
@@ -51,5 +52,24 @@ describe('isBookingDateTimeInPast', () => {
     expect(isBookingDateTimeInPast('2026-07-23', '', now)).toBe(true)
     // mais début du 2026-07-24 reste futur
     expect(isBookingDateTimeInPast('2026-07-24', 'xx:xx', now)).toBe(false)
+  })
+})
+
+describe('Fenêtre de réservation en ligne (demande client du 18/08/2026)', () => {
+  it('le site ouvre les réservations sur 7 jours', () => {
+    expect(PUBLIC_ADVANCE_DAYS).toBe(7)
+  })
+
+  it('les adhérents gardent une longueur d’avance', () => {
+    // L'accès anticipé est un argument de vente de l'abonnement : il doit
+    // rester strictement supérieur à la fenêtre ouverte à tous.
+    expect(MEMBER_ADVANCE_DAYS).toBeGreaterThan(PUBLIC_ADVANCE_DAYS)
+  })
+
+  it('la fenêtre laisse au club de quoi placer ses cours privés', () => {
+    // Trop court, le client ne peut plus s'organiser ; trop long, le club perd
+    // la main sur ses créneaux les plus rentables.
+    expect(PUBLIC_ADVANCE_DAYS).toBeGreaterThanOrEqual(3)
+    expect(PUBLIC_ADVANCE_DAYS).toBeLessThanOrEqual(14)
   })
 })

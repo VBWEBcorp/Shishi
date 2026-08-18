@@ -29,7 +29,7 @@ export function Footer() {
     { label: t('bookACourt'), to: '/book-now' as const },
     { label: t('prices'), to: '/prices' as const },
     ...(galleryOn ? [{ label: locale === 'en' ? 'Gallery' : 'Galerie', to: '/gallery' as const }] : []),
-    // '/a-propos' retirée du footer le 18/08/2026 (cf. navbar.tsx).
+    { label: t('about'), to: '/a-propos' as const },
     { label: t('contact'), to: '/contact-location' as const },
   ]
 

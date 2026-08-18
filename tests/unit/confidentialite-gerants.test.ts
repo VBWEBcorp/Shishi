@@ -67,23 +67,19 @@ describe('Aucune signature du prestataire sur le site public', () => {
   })
 })
 
-describe('La page À propos est masquée sans être supprimée', () => {
+describe('La page À propos est publique, mais sans personne nommée', () => {
   const aboutPage = read('src/app/[locale]/a-propos/page.tsx')
   const seo = read('src/lib/seo.ts')
-  const navbar = read('src/components/layout/navbar.tsx')
 
-  it('elle demande à ne pas être indexée', () => {
-    expect(aboutPage).toMatch(/robots:\s*\{\s*index:\s*false/)
+  it('elle est de nouveau indexable : le masquage n’avait de sens qu’avec un nom', () => {
+    expect(aboutPage).not.toMatch(/index:\s*false/)
   })
 
-  it('elle ne figure plus dans le sitemap ni dans le menu', () => {
-    // Seule la ligne active compte : les commentaires d'explication en
-    // contiennent le chemin, d'où la recherche sur une entrée de liste.
-    expect(seo).not.toMatch(/^\s*'\/a-propos',\s*$/m)
-    expect(navbar).not.toMatch(/^\s*\{ to: '\/a-propos'/m)
+  it('elle est bien de retour dans le sitemap', () => {
+    expect(seo).toMatch(/^\s*'\/a-propos',\s*$/m)
   })
 
-  it('elle reste accessible : le fichier de page existe toujours', () => {
+  it('la page existe toujours', () => {
     expect(aboutPage).toMatch(/export default function AboutPage/)
   })
 })

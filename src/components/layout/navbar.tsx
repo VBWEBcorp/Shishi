@@ -17,9 +17,7 @@ import { cn } from '@/lib/utils'
 
 const navItems = [
   { to: '/book-now', key: 'book' },
-  // '/a-propos' retirée du menu le 18/08/2026 (work permits en cours) : la page
-  // existe toujours et reste accessible par son adresse directe. À remettre ici
-  // en même temps que dans le footer et le sitemap.
+  { to: '/a-propos', key: 'about' },
   { to: '/contact-location', key: 'contact' },
 ] as const
 
