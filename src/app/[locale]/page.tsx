@@ -20,10 +20,22 @@ import {
 import { LAUNCHED, PREVIEW_CODE, PREVIEW_COOKIE } from '@/lib/launch'
 import { alternatesFor, siteConfig } from '@/lib/seo'
 
-// Titre & description « à la lettre » de l'audit (Accueil), marque incluse.
-const title = 'Sports & Social Club in Lamai, Koh Samui | Shi Shi Samui'
-const description =
-  'Discover Shi Shi Samui, a sports and social club in Lamai with tennis, pickleball, fitness, kids club, healthy food and pool.'
+/*
+ * Titre & description « à la lettre » de l'audit (Accueil), marque incluse — DANS LES DEUX
+ * LANGUES. La version française servait jusqu'ici le titre anglais : le H1 de /fr était bien en
+ * français, mais la balise <title>, c'est-à-dire la ligne que Google affiche et sur laquelle on
+ * clique, restait « Sports & Social Club in Lamai, Koh Samui ». Le texte français n'est pas la
+ * traduction mot à mot de l'anglais : il vise les tournures réellement tapées en français.
+ */
+const TITLE = {
+  en: 'Sports & Social Club in Lamai, Koh Samui | Shi Shi Samui',
+  fr: 'Club de Sport à Lamai, Koh Samui | Shi Shi Samui',
+} as const
+
+const DESCRIPTION = {
+  en: 'Discover Shi Shi Samui, a sports and social club in Lamai with tennis, pickleball, fitness, kids club, healthy food and pool.',
+  fr: 'Club de sport et de loisirs à Lamai, Koh Samui : tennis, pickleball, salle de sport, piscine, kids club et restaurant healthy. Ouvert à tous, résidents comme voyageurs.',
+} as const
 
 // Mots-clés principaux + complémentaires (audit Accueil).
 const keywords = [
@@ -47,6 +59,9 @@ export async function generateMetadata({
   params: Promise<{ locale: string }>
 }): Promise<Metadata> {
   const { locale } = await params
+  const l = locale === 'fr' ? 'fr' : 'en'
+  const title = TITLE[l]
+  const description = DESCRIPTION[l]
   return {
     title: {
       absolute: title,
@@ -71,15 +86,17 @@ export async function generateMetadata({
   }
 }
 
-const jsonLd = {
+/* Le JSON-LD suit la langue de la page : décrire en anglais une page française reviendrait à
+   donner aux moteurs une description qui ne correspond pas au texte affiché. */
+const graphePour = (l: 'en' | 'fr') => ({
   '@context': 'https://schema.org',
   '@graph': [
     webSiteJsonLd(),
     organizationJsonLd(),
     localBusinessJsonLd(),
-    webPageJsonLd(siteConfig.name, description, '/'),
+    webPageJsonLd(siteConfig.name, DESCRIPTION[l], '/'),
   ],
-}
+})
 
 export default async function HomePage({
   params,
@@ -96,6 +113,8 @@ export default async function HomePage({
   const cookieStore = await cookies()
   const hasPreview = cookieStore.get(PREVIEW_COOKIE)?.value === PREVIEW_CODE
   const fullSite = process.env.NODE_ENV === 'development' || LAUNCHED || hasPreview
+
+  const jsonLd = graphePour(locale === 'fr' ? 'fr' : 'en')
 
   return (
     <>

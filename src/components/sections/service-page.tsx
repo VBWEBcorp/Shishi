@@ -4,11 +4,13 @@ import Image from 'next/image'
 
 import { ActivityIcon } from '@/components/activity-icon'
 import { FaqAccordion } from '@/components/faq-accordion'
+import { ReadMore } from '@/components/read-more'
 import { ServicesShowcase } from '@/components/sections/services-showcase'
 import { Link } from '@/i18n/navigation'
 import type { Activity, Locale } from '@/lib/activities'
 import { BOOK_NOW_PATH, CONTACT_PATH, PRICES_PATH } from '@/lib/activities'
 import { LAUNCH_OFFER, OPENING_HOURS, PRICE_TIERS } from '@/lib/booking-pricing'
+import { getServiceBody } from '@/lib/service-body'
 import { siteConfig } from '@/lib/seo'
 
 /**
@@ -31,6 +33,8 @@ export async function ServicePage({
   const tiers = PRICE_TIERS[service.slug] ?? []
   const hours = OPENING_HOURS[service.slug]?.[l]
   const highlights = service.highlights[l]
+  // Contenu long de la page, écrit séparément pour chaque langue (pas une traduction).
+  const body = getServiceBody(service.slug, l)
   const fmtPrice = (amount: number) =>
     `฿${amount.toLocaleString(l === 'fr' ? 'fr-FR' : 'en-US')}`
 
@@ -191,6 +195,28 @@ export async function ServicePage({
                     <span className="text-sm font-medium text-foreground">{h}</span>
                   </div>
                 ))}
+              </div>
+            )}
+
+            {/* Contenu long — replié derrière « Lire la suite », mais TOUJOURS dans le HTML.
+                Ces pages tenaient en 200 mots alors que ce sont elles qui doivent capter
+                « tennis koh samui » ou « cours de natation koh samui », et que tous les
+                articles du blog pointeront ici. Une section par public : celui qui vit sur
+                l'île et celui qui n'y passe qu'une semaine. */}
+            {body && body.length > 0 && (
+              <div className="mt-10">
+                <ReadMore labelMore={t('readMore')} labelLess={t('readLess')}>
+                  <div className="space-y-7">
+                    {body.map((bloc) => (
+                      <div key={bloc.h3}>
+                        <h3 className="font-editorial text-xl font-medium tracking-[-0.01em] text-foreground sm:text-[1.35rem]">
+                          {bloc.h3}
+                        </h3>
+                        <p className="mt-2.5 leading-relaxed text-muted-foreground">{bloc.p}</p>
+                      </div>
+                    ))}
+                  </div>
+                </ReadMore>
               </div>
             )}
           </div>
