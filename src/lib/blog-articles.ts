@@ -418,8 +418,23 @@ function resolve(a: BuiltinArticle, locale: BlogLocale): ResolvedArticle {
   }
 }
 
+/**
+ * Les deux articles livrés avec le site apparaissent-ils encore au blog ?
+ *
+ * Mis à `false` à la demande du client : le blog ne doit lister que les articles écrits pour
+ * lui, pas ceux posés par défaut à la construction. Une seule ligne à repasser à `true` pour
+ * les faire revenir.
+ *
+ * Ce drapeau ne coupe QUE la liste et le sitemap. `getBuiltinArticle` continue de les
+ * résoudre, donc leurs quatre adresses répondent toujours 200 au lieu de tomber en 404 :
+ * elles sont en ligne depuis des mois et peuvent être indexées ou partagées. Les retirer
+ * vraiment est une décision séparée, qui demande une redirection, pas une suppression sèche.
+ */
+const ARTICLES_INTEGRES_AU_BLOG = false
+
 /** Tous les articles intégrés, résolus dans la langue demandée. */
 export function getBuiltinArticles(locale: BlogLocale): ResolvedArticle[] {
+  if (!ARTICLES_INTEGRES_AU_BLOG) return []
   return ARTICLES.map((a) => resolve(a, locale))
 }
 

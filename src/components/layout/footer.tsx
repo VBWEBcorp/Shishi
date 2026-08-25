@@ -29,6 +29,9 @@ export function Footer() {
     { label: t('bookACourt'), to: '/book-now' as const },
     { label: t('prices'), to: '/prices' as const },
     ...(galleryOn ? [{ label: locale === 'en' ? 'Gallery' : 'Galerie', to: '/gallery' as const }] : []),
+    // Le blog n'etait atteignable que depuis le menu haut : un article publie n'avait aucun
+    // lien depuis le bas des pages, la ou l'on regarde quand on a fini de lire.
+    { label: locale === 'en' ? 'News' : 'Actualités', to: '/blog' as const },
     { label: t('about'), to: '/a-propos' as const },
     { label: t('contact'), to: '/contact-location' as const },
   ]
