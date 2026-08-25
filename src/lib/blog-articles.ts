@@ -446,6 +446,9 @@ export function getBuiltinArticle(locale: BlogLocale, slug: string): ResolvedArt
 
 /** Paires de slugs (en/fr) des articles intégrés — pour le sitemap (hreflang). */
 export function builtinArticleSlugPairs(): Record<BlogLocale, string>[] {
+  // Retirés du blog : on cesse aussi de les proposer au sitemap. Les laisser dedans reviendrait
+  // à déclarer à Google des pages que le site ne référence plus nulle part.
+  if (!ARTICLES_INTEGRES_AU_BLOG) return []
   return ARTICLES.map((a) => ({ en: a.slug.en, fr: a.slug.fr }))
 }
 
