@@ -13,6 +13,7 @@ interface BlogPost {
   excerpt: string
   content: string
   coverImage: string
+  coverImageAlt?: string
   category: string
   tags: string[]
   author: string
@@ -55,6 +56,8 @@ export default function BlogPostContent({
       : 'Découvrez nos autres articles ou contactez-nous pour préparer votre séjour.',
     all: en ? 'All articles' : 'Tous les articles',
     contact: en ? 'Contact us' : 'Nous contacter',
+    home: en ? 'Home' : 'Accueil',
+    blog: 'Blog',
   }
   const blogHref = `/${locale}/blog`
   const contactHref = `/${locale}/contact-location`
@@ -114,72 +117,91 @@ export default function BlogPostContent({
 
   return (
     <article className="min-h-screen">
-      {/* Cover image */}
-      {post.coverImage && (
-        <div className="relative w-full h-[300px] sm:h-[400px] lg:h-[480px] overflow-hidden bg-muted">
+      {/*
+        HERO FIGÉ, puis le contenu qui remonte par-dessus dans un panneau à coins arrondis.
+        C'est le motif de TOUT le site — pages service, accueil, index du blog. L'article était
+        la seule page à ne pas le suivre : une simple bande d'image, un titre en font-display et
+        un contenu qui démarrait sans transition. Il détonnait au milieu du reste.
+      */}
+      <section className="sticky top-0 z-0 isolate min-h-[58vh] overflow-hidden pt-14">
+        {post.coverImage ? (
           <Image
             src={post.coverImage}
-            alt={post.title}
+            alt={post.coverImageAlt || post.title}
             fill
             sizes="100vw"
             priority
             className="object-cover"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-background/80 via-transparent to-transparent" />
-        </div>
-      )}
+        ) : (
+          <div className="absolute inset-0 bg-muted" aria-hidden />
+        )}
+        <div
+          className="absolute inset-0 bg-gradient-to-b from-[oklch(0.16_0_0/0.55)] via-[oklch(0.16_0_0/0.5)] to-[oklch(0.14_0_0/0.88)]"
+          aria-hidden
+        />
 
-      {/* Content */}
-      <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+        <div className="relative mx-auto flex min-h-[58vh] max-w-3xl flex-col justify-end px-4 pb-20 pt-24 sm:px-6 sm:pb-24 lg:px-8">
+          {/* Fil d'Ariane visible, comme sur les pages service. */}
+          <nav className="mb-5 flex items-center gap-2 text-xs text-white/70" aria-label="Breadcrumb">
+            <Link href={`/${locale}`} className="transition-colors hover:text-white">
+              {tx.home}
+            </Link>
+            <span aria-hidden>/</span>
+            <Link href={blogHref} className="transition-colors hover:text-white">
+              {tx.blog}
+            </Link>
+          </nav>
+
+          {post.category && (
+            <span className="mb-4 inline-flex w-fit items-center rounded-full bg-white/15 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-white ring-1 ring-white/25 backdrop-blur">
+              {post.category}
+            </span>
+          )}
+
+          <h1 className="font-editorial text-3xl font-medium leading-[1.12] tracking-[-0.01em] text-white sm:text-5xl">
+            {post.title}
+          </h1>
+
+          {post.excerpt && (
+            <p className="mt-4 max-w-xl text-lg leading-relaxed text-white/85">{post.excerpt}</p>
+          )}
+
+          <div className="mt-6 flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-white/75">
+            <span className="inline-flex items-center gap-1.5">
+              <Calendar className="size-4" aria-hidden />
+              {formattedDate}
+            </span>
+            <span className="inline-flex items-center gap-1.5">
+              <Clock className="size-4" aria-hidden />
+              {tx.readTime(readTime)}
+            </span>
+            {post.author && (
+              <span className="inline-flex items-center gap-1.5">
+                <User className="size-4" aria-hidden />
+                {post.author}
+              </span>
+            )}
+          </div>
+        </div>
+      </section>
+
+      {/* Panneau opaque qui glisse par-dessus le hero figé. */}
+      <div className="relative z-10 rounded-t-[2rem] bg-background sm:rounded-t-[2.5rem]">
+      <div className="mx-auto max-w-3xl px-4 pt-14 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, ease }}
-          className={post.coverImage ? '-mt-20 relative z-10' : 'pt-16'}
         >
           {/* Back link */}
           <Link
             href={blogHref}
-            className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors mb-6"
+            className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors mb-8"
           >
             <ArrowLeft className="size-3.5" />
             {tx.back}
           </Link>
-
-          {/* Header */}
-          <header className="space-y-4 mb-10">
-            <div className="flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
-              {post.category && (
-                <span className="font-medium text-primary bg-primary/10 px-2.5 py-1 rounded-full text-xs">
-                  {post.category}
-                </span>
-              )}
-              <span className="flex items-center gap-1.5">
-                <Calendar className="size-3.5" />
-                {formattedDate}
-              </span>
-              <span className="flex items-center gap-1.5">
-                <Clock className="size-3.5" />
-                {tx.readTime(readTime)}
-              </span>
-              {post.author && (
-                <span className="flex items-center gap-1.5">
-                  <User className="size-3.5" />
-                  {post.author}
-                </span>
-              )}
-            </div>
-
-            <h1 className="font-display text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-foreground leading-tight">
-              {post.title}
-            </h1>
-
-            {post.excerpt && (
-              <p className="text-lg text-muted-foreground leading-relaxed">
-                {post.excerpt}
-              </p>
-            )}
-          </header>
 
           {/* Article body, rendered HTML from TipTap */}
           <div
@@ -222,6 +244,7 @@ export default function BlogPostContent({
             </div>
           </div>
         </motion.div>
+      </div>
       </div>
 
       {/* Blog content styles */}
@@ -295,6 +318,68 @@ export default function BlogPostContent({
           max-width: 100%;
           height: auto;
           margin: 1.5rem 0;
+        }
+        /* Sommaire cliquable en tete d'article. Le balisage existait deja dans les articles
+           (<nav class="toc">), mais aucune regle ne le visait : il s'affichait comme une liste
+           a puces perdue au milieu du texte, impossible a reconnaitre comme un sommaire. */
+        .blog-content .toc {
+          margin: 1.75rem 0 2.25rem;
+          padding: 1.1rem 1.35rem;
+          border: 1px solid var(--border);
+          border-left: 3px solid hsl(var(--primary));
+          border-radius: 0 0.75rem 0.75rem 0;
+          background: var(--muted);
+        }
+        .blog-content .toc strong {
+          display: block;
+          margin-bottom: 0.5rem;
+          font-size: 0.72rem;
+          font-weight: 700;
+          letter-spacing: 0.14em;
+          text-transform: uppercase;
+        }
+        .blog-content .toc ul {
+          margin: 0;
+          padding-left: 1.1rem;
+          list-style: disc;
+        }
+        .blog-content .toc li {
+          margin-bottom: 0.25rem;
+        }
+        .blog-content .toc a {
+          text-decoration: none;
+        }
+        .blog-content .toc a:hover {
+          text-decoration: underline;
+        }
+        /* Tableaux : aucune regle ne les visait non plus, donc ils tombaient sur les valeurs
+           par defaut du navigateur — sans bordure, colonnes collees, illisible sur mobile.
+           Le conteneur defile horizontalement pour qu'un tableau large ne pousse jamais la
+           page entiere de travers. */
+        .blog-content .tableau {
+          overflow-x: auto;
+          margin: 1.5rem 0;
+        }
+        .blog-content table {
+          width: 100%;
+          border-collapse: collapse;
+          font-size: 0.875rem;
+        }
+        .blog-content thead th {
+          text-align: left;
+          padding: 0.6rem 0.75rem;
+          border-bottom: 2px solid var(--border);
+          color: var(--foreground);
+          font-weight: 700;
+          white-space: nowrap;
+        }
+        .blog-content tbody td {
+          padding: 0.6rem 0.75rem;
+          border-bottom: 1px solid var(--border);
+          vertical-align: top;
+        }
+        .blog-content tbody tr:last-child td {
+          border-bottom: none;
         }
         .blog-content pre {
           background: var(--muted);
