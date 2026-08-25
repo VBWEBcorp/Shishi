@@ -14,7 +14,7 @@ import {
 import { Link } from '@/i18n/navigation'
 import { activities, resolveLink } from '@/lib/activities'
 import type { Locale } from '@/lib/activities'
-import { siteConfig } from '@/lib/seo'
+import { alternatesFor, siteConfig } from '@/lib/seo'
 import { BookingWidget } from './booking-widget'
 
 // Mots-clés audit « Book Now / Reservation ».
@@ -43,7 +43,7 @@ export async function generateMetadata({
     title: { absolute: t('seoTitle') },
     description: t('seoDescription'),
     keywords: BOOK_KEYWORDS,
-    alternates: { canonical: '/book-now' },
+    alternates: alternatesFor('/book-now', locale),
     openGraph: {
       title: t('seoTitle'),
       description: t('seoDescription'),

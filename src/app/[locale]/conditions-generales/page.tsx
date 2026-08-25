@@ -3,16 +3,23 @@ import Link from 'next/link'
 
 import { breadcrumbJsonLd, webPageJsonLd } from '@/components/seo/json-ld'
 import { Breadcrumb } from '@/components/ui/breadcrumb'
-import { siteConfig } from '@/lib/seo'
+import { alternatesFor, siteConfig } from '@/lib/seo'
 
 const description =
   "Conditions générales d'utilisation du site Shi Shi Samui : accès au site, réservations et règles d'utilisation."
 
-export const metadata: Metadata = {
-  title: "Conditions générales d'utilisation",
-  description,
-  alternates: { canonical: '/conditions-generales' },
-  robots: { index: false, follow: false },
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>
+}): Promise<Metadata> {
+  const { locale } = await params
+  return {
+    title: "Conditions générales d'utilisation",
+    description,
+    alternates: alternatesFor('/conditions-generales', locale),
+    robots: { index: false, follow: false },
+  }
 }
 
 const jsonLd = {

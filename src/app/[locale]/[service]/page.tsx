@@ -16,7 +16,7 @@ import { getService, serviceUrlSlugs } from '@/lib/activities'
 import type { Activity, Locale, Localized } from '@/lib/activities'
 import { routing } from '@/i18n/routing'
 import { getPageContent, orDefault, serviceContentId } from '@/lib/page-content'
-import { siteConfig } from '@/lib/seo'
+import { alternatesFor, siteConfig } from '@/lib/seo'
 
 export const dynamicParams = false
 
@@ -52,7 +52,7 @@ export async function generateMetadata({
     title: { absolute: metaTitle },
     description: metaDescription,
     keywords: [...svc.keywordsPrimary, ...svc.keywordsSecondary],
-    alternates: { canonical: svc.path },
+    alternates: alternatesFor(svc.path, l),
     openGraph: {
       title: metaTitle,
       description: metaDescription,

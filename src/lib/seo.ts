@@ -56,6 +56,29 @@ export function buildTitle(page?: string) {
 }
 
 /**
+ * Canonical + alternances de langue d'une page, à partir de son chemin SANS locale.
+ *
+ * À poser dans `alternates` de CHAQUE page. Les pages déclaraient jusqu'ici un canonical
+ * sans préfixe de langue (`canonical: '/tennis-court-lamai'`), donc identique en anglais et
+ * en français. Or ce chemin n'existe pas : il répond 307 et redirige vers /en. La page
+ * française annonçait ainsi à Google que sa version de référence était la page anglaise —
+ * autrement dit elle se retirait elle-même de l'index français. Vingt-six des trente URL du
+ * sitemap étaient dans ce cas ; seuls les articles de blog, qui construisaient déjà leur
+ * canonical avec la locale, y échappaient.
+ *
+ * `languages` double le hreflang déjà présent dans le sitemap. Les deux sont valables pour
+ * Google, et le mettre aussi dans la page rend le couple fr/en explicite là où il était
+ * précisément cassé. `x-default` pointe vers l'anglais, langue par défaut du routage.
+ */
+export function alternatesFor(path: string, locale: string) {
+  const p = path === '/' ? '' : path
+  return {
+    canonical: `/${locale}${p}`,
+    languages: { en: `/en${p}`, fr: `/fr${p}`, 'x-default': `/en${p}` },
+  }
+}
+
+/**
  * Sérialise un objet JSON-LD pour injection dans une balise <script>. `JSON.stringify`
  * n'échappe pas la séquence `</script>` ni `<`/`>` : un champ contrôlé par l'admin
  * (titre d'article, tags…) contenant `</script><img onerror=…>` pourrait sinon

@@ -3,16 +3,23 @@ import Link from 'next/link'
 
 import { breadcrumbJsonLd, webPageJsonLd } from '@/components/seo/json-ld'
 import { Breadcrumb } from '@/components/ui/breadcrumb'
-import { siteConfig } from '@/lib/seo'
+import { alternatesFor, siteConfig } from '@/lib/seo'
 
 const description =
   'Politique de confidentialité de Shi Shi Samui : comment nous collectons, utilisons et protégeons vos données, conformément au PDPA thaïlandais et au RGPD.'
 
-export const metadata: Metadata = {
-  title: 'Politique de confidentialité',
-  description,
-  alternates: { canonical: '/politique-de-confidentialite' },
-  robots: { index: false, follow: false },
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>
+}): Promise<Metadata> {
+  const { locale } = await params
+  return {
+    title: 'Politique de confidentialité',
+    description,
+    alternates: alternatesFor('/politique-de-confidentialite', locale),
+    robots: { index: false, follow: false },
+  }
 }
 
 const jsonLd = {

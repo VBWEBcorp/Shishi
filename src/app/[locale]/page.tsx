@@ -18,7 +18,7 @@ import {
   webSiteJsonLd,
 } from '@/components/seo/json-ld'
 import { LAUNCHED, PREVIEW_CODE, PREVIEW_COOKIE } from '@/lib/launch'
-import { siteConfig } from '@/lib/seo'
+import { alternatesFor, siteConfig } from '@/lib/seo'
 
 // Titre & description « à la lettre » de l'audit (Accueil), marque incluse.
 const title = 'Sports & Social Club in Lamai, Koh Samui | Shi Shi Samui'
@@ -41,27 +41,34 @@ const keywords = [
   'tennis pickleball fitness lamai',
 ]
 
-export const metadata: Metadata = {
-  title: {
-    absolute: title,
-  },
-  description,
-  keywords,
-  alternates: { canonical: '/' },
-  openGraph: {
-    title,
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>
+}): Promise<Metadata> {
+  const { locale } = await params
+  return {
+    title: {
+      absolute: title,
+    },
     description,
-    url: siteConfig.url,
-    siteName: siteConfig.name,
-    type: 'website',
-    images: [{ url: '/photos/pool-panorama-portrait.webp', width: 1200, height: 800, alt: siteConfig.name }],
-  },
-  twitter: {
-    card: 'summary_large_image',
-    title,
-    description,
-    images: ['/photos/pool-panorama-portrait.webp'],
-  },
+    keywords,
+    alternates: alternatesFor('/', locale),
+    openGraph: {
+      title,
+      description,
+      url: siteConfig.url,
+      siteName: siteConfig.name,
+      type: 'website',
+      images: [{ url: '/photos/pool-panorama-portrait.webp', width: 1200, height: 800, alt: siteConfig.name }],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description,
+      images: ['/photos/pool-panorama-portrait.webp'],
+    },
+  }
 }
 
 const jsonLd = {

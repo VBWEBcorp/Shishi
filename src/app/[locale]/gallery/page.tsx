@@ -3,7 +3,7 @@ import { notFound } from 'next/navigation'
 
 import { connectDB } from '@/lib/db'
 import { GallerySettings, GalleryImage } from '@/models/Gallery'
-import { siteConfig } from '@/lib/seo'
+import { alternatesFor, siteConfig } from '@/lib/seo'
 import GalleryContent from './gallery-content'
 
 export const revalidate = 60
@@ -15,7 +15,12 @@ const defaultSettings = {
   eyebrow: 'Galerie',
 }
 
-export async function generateMetadata(): Promise<Metadata> {
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>
+}): Promise<Metadata> {
+  const { locale } = await params
   try {
     await connectDB()
     const settings = (await GallerySettings.findOne().lean()) as any
@@ -41,12 +46,12 @@ export async function generateMetadata(): Promise<Metadata> {
         description,
         images: settings?.heroImage ? [settings.heroImage] : [],
       },
-      alternates: {
-        canonical: '/gallery',
-      },
+      alternates: alternatesFor('/gallery', locale),
     }
   } catch {
-    return { title: defaultSettings.title }
+    // Base indisponible : on garde quand meme le canonical. Sans lui, un incident de base
+    // suffirait a republier la page sans son adresse de reference.
+    return { title: defaultSettings.title, alternates: alternatesFor('/gallery', locale) }
   }
 }
 

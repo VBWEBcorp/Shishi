@@ -7,7 +7,7 @@ import {
   localBusinessJsonLd,
   webPageJsonLd,
 } from '@/components/seo/json-ld'
-import { siteConfig } from '@/lib/seo'
+import { alternatesFor, siteConfig } from '@/lib/seo'
 
 const CONTACT_KEYWORDS = [
   'shi shi samui contact',
@@ -33,7 +33,7 @@ export async function generateMetadata({
     title: { absolute: t('metaTitle') },
     description: t('metaDescription'),
     keywords: CONTACT_KEYWORDS,
-    alternates: { canonical: '/contact-location' },
+    alternates: alternatesFor('/contact-location', locale),
     openGraph: {
       title: t('metaTitle'),
       description: t('metaDescription'),

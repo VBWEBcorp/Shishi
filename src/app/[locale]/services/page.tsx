@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import { alternatesFor } from '@/lib/seo'
 
 import { ServicesContent } from './services-content'
 import {
@@ -11,10 +12,17 @@ import { activities } from '@/lib/activities'
 const description =
   'Discover everything Shi Shi Samui offers in Lamai, Koh Samui: tennis, pickleball, a premium fitness gym, a healthy restaurant, a kids club and a pool.'
 
-export const metadata: Metadata = {
-  title: 'Sports & Wellness Activities in Lamai',
-  description,
-  alternates: { canonical: '/services' },
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>
+}): Promise<Metadata> {
+  const { locale } = await params
+  return {
+    title: 'Sports & Wellness Activities in Lamai',
+    description,
+    alternates: alternatesFor('/services', locale),
+  }
 }
 
 const jsonLd = {

@@ -3,16 +3,23 @@ import Link from 'next/link'
 
 import { breadcrumbJsonLd, webPageJsonLd } from '@/components/seo/json-ld'
 import { Breadcrumb } from '@/components/ui/breadcrumb'
-import { siteConfig } from '@/lib/seo'
+import { alternatesFor, siteConfig } from '@/lib/seo'
 
 const description =
   'Politique de cookies de Shi Shi Samui : stockage local technique utilisé, finalités et gestion de vos préférences.'
 
-export const metadata: Metadata = {
-  title: 'Politique de cookies',
-  description,
-  alternates: { canonical: '/politique-cookies' },
-  robots: { index: false, follow: false },
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>
+}): Promise<Metadata> {
+  const { locale } = await params
+  return {
+    title: 'Politique de cookies',
+    description,
+    alternates: alternatesFor('/politique-cookies', locale),
+    robots: { index: false, follow: false },
+  }
 }
 
 const jsonLd = {

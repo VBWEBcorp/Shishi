@@ -13,7 +13,7 @@ import { activities, BOOK_NOW_PATH } from '@/lib/activities'
 import type { Locale, Localized } from '@/lib/activities'
 import { getActivityPrice, PRICE_TIERS } from '@/lib/booking-pricing'
 import { getPageContent, orDefault } from '@/lib/page-content'
-import { siteConfig } from '@/lib/seo'
+import { alternatesFor, siteConfig } from '@/lib/seo'
 
 const PRICE_KEYWORDS = [
   'shi shi samui prices',
@@ -65,7 +65,7 @@ export async function generateMetadata({
     title: { absolute: t('metaTitle') },
     description: t('metaDescription'),
     keywords: PRICE_KEYWORDS,
-    alternates: { canonical: '/prices' },
+    alternates: alternatesFor('/prices', locale),
     openGraph: {
       title: t('metaTitle'),
       description: t('metaDescription'),
