@@ -58,20 +58,30 @@ export function PushToggle() {
   const [erreur, setErreur] = useState('')
 
   const rafraichir = useCallback(async () => {
-    // Le navigateur sait-il faire ?
-    if (
-      typeof window === 'undefined' ||
-      !('serviceWorker' in navigator) ||
-      !('PushManager' in window) ||
-      !CLE_PUBLIQUE
-    ) {
+    if (typeof window === 'undefined' || !CLE_PUBLIQUE) {
       setEtat('indisponible')
       return
     }
 
-    // iOS : rien n'est possible tant que l'admin n'est pas sur l'écran d'accueil.
+    // L'IPHONE D'ABORD, ET C'EST IMPORTANT.
+    //
+    // Dans Safari, sur iPhone, l'API de notification n'existe tout simplement
+    // pas tant que le site n'a pas été ajouté à l'écran d'accueil. Si on testait
+    // les capacités du navigateur avant, le composant se déclarerait
+    // « indisponible » et disparaîtrait de l'écran, précisément là où il faut
+    // expliquer comment faire. On regarde donc le téléphone avant ses capacités.
     if (estIOS() && !estInstallee()) {
       setEtat('ios-non-installe')
+      return
+    }
+
+    // Ailleurs : le navigateur sait-il faire ?
+    if (
+      !('serviceWorker' in navigator) ||
+      !('PushManager' in window) ||
+      !('Notification' in window)
+    ) {
+      setEtat('indisponible')
       return
     }
 
