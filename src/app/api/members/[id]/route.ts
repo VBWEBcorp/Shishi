@@ -42,6 +42,8 @@ function memberResponse(target: IUser) {
           name: target.subscription.name,
           priceTHB: target.subscription.priceTHB || 0,
           startedAt: target.subscription.startedAt,
+          endsAt: target.subscription.endsAt ?? null,
+          activity: target.subscription.activity || '',
         }
       : null,
     memberSince: target.memberSince || null,
@@ -103,6 +105,36 @@ export async function PATCH(request: NextRequest, { params }: { params: Params }
       }
       if (!target.memberSince) target.memberSince = new Date()
       target.markModified('activityCredits')
+      await target.save()
+      return NextResponse.json({ ok: true, member: memberResponse(target) })
+    }
+
+    // 1 bis) Corriger les DATES et l'activité de l'abonnement en cours.
+    //
+    // Le club place l'abonnement à la main, souvent après coup : « il a commencé
+    // ce mois-ci, il se finit [là] ». Ces deux dates sont tout ce dont ils ont
+    // besoin pour s'y retrouver, et rien ne permettait de les saisir.
+    if (body.subscriptionDates && typeof body.subscriptionDates === 'object') {
+      if (!target.subscription) {
+        return NextResponse.json({ error: 'Aucun abonnement en cours' }, { status: 400 })
+      }
+      const d = body.subscriptionDates as {
+        startedAt?: string
+        endsAt?: string | null
+        activity?: string
+      }
+      if (typeof d.startedAt === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(d.startedAt)) {
+        target.subscription.startedAt = new Date(`${d.startedAt}T12:00:00Z`)
+      }
+      if (d.endsAt === null || d.endsAt === '') {
+        target.subscription.endsAt = undefined
+      } else if (typeof d.endsAt === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(d.endsAt)) {
+        target.subscription.endsAt = new Date(`${d.endsAt}T12:00:00Z`)
+      }
+      if (typeof d.activity === 'string') {
+        target.subscription.activity = d.activity.trim()
+      }
+      target.markModified('subscription')
       await target.save()
       return NextResponse.json({ ok: true, member: memberResponse(target) })
     }

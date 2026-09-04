@@ -31,6 +31,18 @@ export interface IMemberSubscription {
   name: string
   priceTHB: number
   startedAt: Date
+  /**
+   * Fin de l'abonnement. Vide = sans échéance connue.
+   *
+   * Ajouté en septembre 2026, quand le club a changé de stratégie : « on n'a pas
+   * d'abonnement réel en fait, c'est juste l'abonnement gym, il a commencé cette
+   * date-là, il se finit là, c'est tout ». L'abonnement leur sert de repère
+   * d'organisation, pas de compteur de séances : ce qu'il leur faut, c'est
+   * savoir jusqu'à quand quelqu'un est couvert.
+   */
+  endsAt?: Date
+  /** Activité concernée (gym, tennis…), quand l'abonnement n'en couvre qu'une. */
+  activity?: string
 }
 
 export interface IUser extends Document {
@@ -100,6 +112,8 @@ const UserSchema = new Schema<IUser>(
       type: {
         _id: false,
         planId: String,
+        endsAt: Date,
+        activity: { type: String, default: '' },
         name: { type: String, required: true },
         priceTHB: { type: Number, default: 0 },
         startedAt: { type: Date, default: Date.now },

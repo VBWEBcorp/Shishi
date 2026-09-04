@@ -57,14 +57,18 @@ const T = {
       `Prices: in Thai baht (฿), drop-in rates, day passes and memberships`,
     ],
     labels: {
+      goodToKnow: 'Good to know',
       services: 'All activities',
+      coaching: 'Tennis lessons and coaching',
       prices: 'Prices and memberships',
       book: 'Book an activity',
       about: 'About the club',
       contact: 'Contact and location',
     },
     descs: {
+      goodToKnow: 'what the price includes, how each activity works, how to book',
       services: 'everything the club offers, on one page',
+      coaching: 'private tennis lessons on the club court, all levels',
       prices: 'rates for courts, activities and memberships',
       book: 'book a court, the gym, the pool or the kids club',
       about: 'who Shi Shi Samui is and what it brings together',
@@ -97,14 +101,18 @@ const T = {
       `Tarifs : en bahts (฿), prix à l'unité, pass journée et abonnements`,
     ],
     labels: {
+      goodToKnow: 'Infos pratiques',
       services: 'Toutes les activités',
+      coaching: 'Cours de tennis et coaching',
       prices: 'Tarifs et abonnements',
       book: 'Réserver une activité',
       about: 'À propos du club',
       contact: 'Contact et accès',
     },
     descs: {
+      goodToKnow: 'ce que le tarif comprend, comment marche chaque activité, comment réserver',
       services: 'tout ce que propose le club, sur une page',
+      coaching: 'cours de tennis particuliers sur le court du club, tous niveaux',
       prices: 'prix des terrains, des activités et des abonnements',
       book: 'réserver un terrain, la salle, la piscine ou le club enfants',
       about: 'qui est Shi Shi Samui et ce que le club réunit',
@@ -150,7 +158,9 @@ ${t.activites}
 ${activitesListe}
 
 ${t.pages}
+- [${t.labels.goodToKnow}](${l('/good-to-know')}) : ${t.descs.goodToKnow}
 - [${t.labels.services}](${l('/services')}) : ${t.descs.services}
+- [${t.labels.coaching}](${l('/tennis-coaching-lamai')}) : ${t.descs.coaching}
 - [${t.labels.prices}](${l('/prices')}) : ${t.descs.prices}
 - [${t.labels.book}](${l('/book-now')}) : ${t.descs.book}
 - [${t.labels.about}](${l('/a-propos')}) : ${t.descs.about}

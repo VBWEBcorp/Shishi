@@ -27,7 +27,8 @@ import {
   LAUNCH_OFFER,
 } from '@/lib/booking-pricing'
 import { PUBLIC_ADVANCE_DAYS } from '@/lib/membership-plans'
-import { BOOKING_COMING_SOON, ONLINE_BOOKING_ENABLED } from '@/lib/launch'
+import { useBookingSettings } from '@/hooks/use-booking-settings'
+import { activiteOuverte, creneauOuvert, messageFermeture } from '@/lib/booking-settings'
 import { siteConfig } from '@/lib/seo'
 
 /** Session adhérent minimale (crédits + pré-remplissage de l'identité). */
@@ -214,6 +215,27 @@ export function BookingForm({
   const useCredits = !!member && walletCredits >= creditsNeeded
   const netTotal = useCredits ? 0 : grossTotal
   const advanceDays = member?.advanceDays ?? PUBLIC_ADVANCE_DAYS
+
+  /*
+   * OUVERTURE DES RÉSERVATIONS : décidée par le club, pas par le code.
+   *
+   * Avant, deux constantes du dépôt disaient si le formulaire s'affichait :
+   * fermer un dimanche parce que personne n'est là demandait un déploiement.
+   * Le club voulait « mettre juste bloqué » depuis son téléphone, et que le
+   * site affiche « contactez-nous sur WhatsApp ». C'est ce que lisent ces
+   * réglages, rafraîchis à chaque chargement de page.
+   *
+   * Trois niveaux : l'interrupteur général, l'activité, la date. Tant que
+   * l'activité n'est pas choisie, on regarde les deux premiers ; dès qu'une
+   * date est posée, elle compte aussi (congés, journée bloquée).
+   */
+  const { reglages, chargement: chargementReglages } = useBookingSettings()
+  const reservationOuverte = activitySlug
+    ? date
+      ? creneauOuvert(reglages, activitySlug, date)
+      : activiteOuverte(reglages, activitySlug)
+    : reglages.online
+  const noticeFermeture = messageFermeture(reglages, locale)
   const activityName = activitySlug
     ? activities.find((a) => a.slug === activitySlug)?.name[locale] ?? activitySlug
     : ''
@@ -298,9 +320,10 @@ export function BookingForm({
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
-    // Réservation en ligne désactivée → on ouvre le popup WhatsApp au lieu de
-    // créer la réservation (couvre aussi une soumission via la touche Entrée).
-    if (!ONLINE_BOOKING_ENABLED) {
+    // Fermé entre-temps (le club a coupé pendant que la page était ouverte) :
+    // on propose WhatsApp au lieu de partir vers un refus du serveur. Couvre
+    // aussi la soumission à la touche Entrée.
+    if (!reservationOuverte) {
       setShowWaPrompt(true)
       return
     }
@@ -394,25 +417,34 @@ export function BookingForm({
           </div>
         </div>
 
-        {BOOKING_COMING_SOON ? (
-          /* Réservation en ligne en cours de finalisation : on affiche un état
-             « en développement · bientôt disponible » AU LIEU du formulaire, pour
-             ne pas laisser le visiteur tout remplir avant de découvrir qu'il ne
-             peut pas encore réserver. RÉVERSIBLE : repasser BOOKING_COMING_SOON à
-             false restaure exactement le formulaire + la popup WhatsApp d'avant. */
-          <div className="mt-6 flex flex-col items-center gap-3 rounded-2xl bg-secondary/50 px-6 py-12 text-center ring-1 ring-border">
-            <span className="text-4xl" aria-hidden>🚧</span>
-            <span className="inline-flex items-center gap-2 rounded-full bg-accent/15 px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.18em] text-accent ring-1 ring-accent/25">
-              {fr ? 'Bientôt disponible' : 'Coming soon'}
+        {chargementReglages ? (
+          /* Le temps de savoir si les réservations sont ouvertes. Bref, mais
+             préférable à un formulaire qui s'affiche puis disparaît. */
+          <div className="mt-6 h-48 animate-pulse rounded-2xl bg-secondary/50 ring-1 ring-border" />
+        ) : !reservationOuverte ? (
+          /* RÉSERVATIONS FERMÉES par le club. Le visiteur n'a rien à remplir :
+             il voit le message et le bouton WhatsApp, un point c'est tout.
+             Le message est celui saisi dans l'espace admin, ou le texte par
+             défaut du site si le club n'en a pas écrit. */
+          <div className="mt-6 flex flex-col items-center gap-4 rounded-2xl bg-secondary/50 px-6 py-12 text-center ring-1 ring-border">
+            <span className="flex size-14 items-center justify-center rounded-2xl bg-accent/10 text-accent ring-1 ring-accent/15">
+              <MessageCircle className="size-7" aria-hidden />
             </span>
             <p className="font-display text-xl font-semibold text-foreground">
-              {fr ? 'Fonctionnalité en développement 🙂' : 'Feature in development 🙂'}
+              {fr ? 'Réservation par WhatsApp' : 'Booking by WhatsApp'}
             </p>
-            <p className="mx-auto max-w-xs text-sm text-muted-foreground">
-              {fr
-                ? 'La réservation en ligne arrive très bientôt. Merci de votre patience !'
-                : 'Online booking is coming very soon. Thanks for your patience!'}
+            <p className="mx-auto max-w-sm text-sm leading-relaxed text-muted-foreground">
+              {noticeFermeture}
             </p>
+            <a
+              href={waPrefillLink}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 rounded-xl bg-accent px-5 py-3 text-sm font-semibold text-accent-foreground transition-all hover:brightness-105"
+            >
+              <MessageCircle className="size-4" aria-hidden />
+              {fr ? 'Nous écrire sur WhatsApp' : 'Message us on WhatsApp'}
+            </a>
           </div>
         ) : status === 'request-received' || status === 'paid' ? (
           <motion.div
@@ -548,6 +580,26 @@ export function BookingForm({
                 />
               </div>
             </div>
+
+            {/* La fenêtre publique s'arrête à 7 jours : au-delà, le club garde la
+                main pour placer ses cours privés. Le calendrier le montrait déjà
+                (dates grisées) sans jamais l'expliquer, et quelqu'un qui veut poser
+                deux mois de tennis repartait sans savoir quoi faire. Il sait
+                maintenant, et il arrive sur WhatsApp, ce que le club veut. */}
+            <p className="text-xs leading-relaxed text-muted-foreground">
+              {fr
+                ? `Les réservations en ligne sont ouvertes ${advanceDays} jours à l'avance. Pour réserver plus loin, `
+                : `Online booking is open ${advanceDays} days ahead. To book further out, `}
+              <a
+                href={waPrefillLink}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-medium text-accent underline underline-offset-4 hover:brightness-110"
+              >
+                {fr ? 'écrivez-nous sur WhatsApp' : 'message us on WhatsApp'}
+              </a>
+              .
+            </p>
 
             {/* Tarif de l'activité sélectionnée */}
             {bookable && activitySlug && (
@@ -974,10 +1026,10 @@ export function BookingForm({
                 )}
 
                 <Button
-                  type={ONLINE_BOOKING_ENABLED ? 'submit' : 'button'}
-                  onClick={ONLINE_BOOKING_ENABLED ? undefined : () => setShowWaPrompt(true)}
+                  type={reservationOuverte ? 'submit' : 'button'}
+                  onClick={reservationOuverte ? undefined : () => setShowWaPrompt(true)}
                   size="lg"
-                  disabled={ONLINE_BOOKING_ENABLED && (status === 'submitting' || !selectedTime)}
+                  disabled={reservationOuverte && (status === 'submitting' || !selectedTime)}
                   className="w-full group bg-accent text-accent-foreground hover:bg-accent shadow-[0_10px_30px_-8px_oklch(0.63_0.187_47/0.5)]"
                 >
                   {status === 'submitting' ? (

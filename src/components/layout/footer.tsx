@@ -27,6 +27,9 @@ export function Footer() {
   const exploreLinks = [
     { label: t('home'), to: '/' as const },
     { label: t('bookACourt'), to: '/book-now' as const },
+    // Page « infos pratiques » : celle que le club envoie en reponse a un message.
+    // Elle repond aux memes questions, elle a sa place la ou on cherche une reponse.
+    { label: locale === 'en' ? 'Good to know' : 'Infos pratiques', to: '/good-to-know' as const },
     { label: t('prices'), to: '/prices' as const },
     ...(galleryOn ? [{ label: locale === 'en' ? 'Gallery' : 'Galerie', to: '/gallery' as const }] : []),
     // Le blog n'etait atteignable que depuis le menu haut : un article publie n'avait aucun

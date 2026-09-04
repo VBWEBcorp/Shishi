@@ -1,4 +1,4 @@
-import { ArrowRight, Check, Clock, Lock, MapPin, MessageCircle, ShoppingBag, Sparkles, Tag } from 'lucide-react'
+import { ArrowRight, Check, Clock, Lock, MapPin, MessageCircle, ShoppingBag, Sparkles, Tag, Users } from 'lucide-react'
 import { getTranslations } from 'next-intl/server'
 import Image from 'next/image'
 
@@ -6,11 +6,14 @@ import { ActivityIcon } from '@/components/activity-icon'
 import { BackgroundVideo } from '@/components/background-video'
 import { FaqAccordion } from '@/components/faq-accordion'
 import { ReadMore } from '@/components/read-more'
+import { ServiceBooking } from '@/components/sections/service-booking'
 import { ServicesShowcase } from '@/components/sections/services-showcase'
 import { Link } from '@/i18n/navigation'
 import type { Activity, Locale } from '@/lib/activities'
 import { BOOK_NOW_PATH, CONTACT_PATH, PRICES_PATH } from '@/lib/activities'
 import { LAUNCH_OFFER, OPENING_HOURS, PRICE_TIERS } from '@/lib/booking-pricing'
+import { bonASavoir, lienComplementaire } from '@/lib/service-good-to-know'
+import { TAKE_AWAY_ENABLED } from '@/lib/launch'
 import { getServiceBody } from '@/lib/service-body'
 import { siteConfig } from '@/lib/seo'
 
@@ -34,6 +37,10 @@ export async function ServicePage({
   const tiers = PRICE_TIERS[service.slug] ?? []
   const hours = OPENING_HOURS[service.slug]?.[l]
   const highlights = service.highlights[l]
+  // Les quelques lignes qui répondent aux questions posées tous les jours.
+  const infos = bonASavoir(service.slug, l)
+  // Lien complementaire (le tennis mene aux cours) : deux demandes differentes.
+  const lienPlus = lienComplementaire(service.slug, l)
   // Contenu long de la page, écrit séparément pour chaque langue (pas une traduction).
   const body = getServiceBody(service.slug, l)
   const fmtPrice = (amount: number) =>
@@ -146,34 +153,85 @@ export async function ServicePage({
             </h2>
             <p className="mt-5 text-lg leading-relaxed text-muted-foreground">{service.description[l]}</p>
 
-            {/* Mise en avant du service Take Away (restaurant) */}
+            {/* BON À SAVOIR : les questions que le club reçoit tous les jours.
+                Placé haut et encadré : c'est l'argument qui fait dire « waouh »
+                à leurs clients (raquettes, balles et serviettes comprises, pas
+                de supplément à l'arrivée), et c'est justement ce que le site
+                ne disait nulle part. Cf. src/lib/service-good-to-know.ts. */}
+            {infos.length > 0 && (
+              <div className="mt-8 rounded-3xl border border-accent/25 bg-accent/[0.05] p-6 sm:p-7">
+                <h3 className="flex items-center gap-2 font-display text-sm font-semibold uppercase tracking-[0.16em] text-accent">
+                  <Sparkles className="size-4" aria-hidden />
+                  {l === 'fr' ? 'Bon à savoir' : 'Good to know'}
+                </h3>
+                <ul className="mt-4 space-y-2.5">
+                  {infos.map((ligne) => (
+                    <li key={ligne} className="flex items-start gap-3">
+                      <span className="mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full bg-accent/15 text-accent">
+                        <Check className="size-3" aria-hidden />
+                      </span>
+                      <span className="text-[0.95rem] leading-relaxed text-foreground">{ligne}</span>
+                    </li>
+                  ))}
+                </ul>
+
+                {/* Le tennis mene aux cours : louer le terrain et prendre un cours
+                    sont deux demandes distinctes, et rien ne menait de la premiere a la seconde. */}
+                {lienPlus && (
+                  <div className="mt-5 flex flex-wrap items-center gap-x-3 gap-y-1.5 border-t border-accent/20 pt-4">
+                    <span className="text-sm text-muted-foreground">{lienPlus.texte}</span>
+                    <Link
+                      href={lienPlus.href}
+                      className="inline-flex items-center gap-1 text-sm font-semibold text-accent underline underline-offset-4 hover:brightness-110"
+                    >
+                      {lienPlus.label}
+                      <ArrowRight className="size-3.5" aria-hidden />
+                    </Link>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* RESTAURANT, mis en avant pour ce qu'il est : un lieu où l'on
+                s'installe, pas seulement une carte.
+                La vente à emporter a été RETIRÉE (septembre 2026) : « pas
+                maintenant parce qu'on n'est pas préparés ». Elle revient en
+                repassant TAKE_AWAY_ENABLED à true dans src/lib/launch.ts.
+                À la place, ce que le club veut faire savoir : c'est ouvert à
+                tout le monde, ça se vit en famille, et il n'y a rien à
+                apporter. Le nombre de gens qui viennent avec leur pique-nique
+                les rend fous. */}
             {isRestaurant && (
               <div className="mt-8 overflow-hidden rounded-3xl border border-accent/20 bg-gradient-to-br from-accent/[0.08] to-accent/[0.02] p-6 sm:p-7">
                 <div className="flex flex-wrap items-center gap-4">
                   <span className="flex size-14 shrink-0 items-center justify-center rounded-2xl bg-accent text-accent-foreground shadow-[0_12px_28px_-10px_oklch(0.63_0.187_47/0.6)]">
-                    <ShoppingBag className="size-7" aria-hidden />
+                    <Users className="size-7" aria-hidden />
                   </span>
                   <div className="min-w-0 flex-1">
                     <span className="text-xs font-semibold uppercase tracking-[0.2em] text-accent">
-                      Take Away
+                      {l === 'fr' ? 'Restaurant & pool bar' : 'Restaurant & pool bar'}
                     </span>
                     <h3 className="mt-1 font-editorial text-xl font-medium text-foreground sm:text-2xl">
-                      {l === 'fr' ? 'Vos plats healthy à emporter' : 'Your healthy meals to go'}
+                      {l === 'fr'
+                        ? 'On y passe la journée, en famille comme entre amis'
+                        : 'A place to settle in, with family or with friends'}
                     </h3>
                     <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">
                       {l === 'fr'
-                        ? 'Commandez smoothies, bowls et assiettes feel-good à emporter. Passez commande et récupérez sur place — rapide et sans attente.'
-                        : 'Order smoothies, bowls and feel-good plates to take away. Place your order and pick it up — quick, no waiting.'}
+                        ? 'Ouvert à tous, adhérents comme visiteurs, sans réservation. Cuisine healthy servie toute la journée au bord de la piscine : boissons et repas sont sur place, il n’y a rien à apporter.'
+                        : 'Open to everyone, members and visitors alike, no booking needed. Healthy food served all day by the pool: food and drinks are on site, there is nothing to bring along.'}
                     </p>
-                    <a
-                      href={waLink}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="mt-4 inline-flex h-11 items-center gap-2 rounded-full bg-accent px-5 text-sm font-semibold text-accent-foreground transition-all hover:brightness-105"
-                    >
-                      <ShoppingBag className="size-4" aria-hidden />
-                      {l === 'fr' ? 'Commander à emporter' : 'Order take away'}
-                    </a>
+                    {TAKE_AWAY_ENABLED && (
+                      <a
+                        href={waLink}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="mt-4 inline-flex h-11 items-center gap-2 rounded-full bg-accent px-5 text-sm font-semibold text-accent-foreground transition-all hover:brightness-105"
+                      >
+                        <ShoppingBag className="size-4" aria-hidden />
+                        {l === 'fr' ? 'Commander à emporter' : 'Order take away'}
+                      </a>
+                    )}
                   </div>
                 </div>
               </div>
@@ -262,7 +320,11 @@ export async function ServicePage({
                   href={bookHref}
                   className="group mt-6 flex h-12 w-full items-center justify-center gap-2 rounded-full bg-accent text-sm font-semibold text-accent-foreground shadow-[0_10px_30px_-8px_oklch(0.63_0.187_47/0.5)] transition-all hover:brightness-105"
                 >
-                  {isRestaurant ? (l === 'fr' ? 'Commander à emporter' : 'Order take away') : bookLabel}
+                  {isRestaurant && TAKE_AWAY_ENABLED
+                  ? l === "fr"
+                    ? 'Commander à emporter'
+                    : 'Order take away'
+                  : bookLabel}
                   {isRestaurant ? (
                     <ShoppingBag className="size-4" aria-hidden />
                   ) : (
@@ -325,7 +387,15 @@ export async function ServicePage({
         </section>
       )}
 
-      {/* 5 · MAILLAGE INTERNE — showcase « nos pôles » (image + liste cliquable) */}
+      {/* 5 · RÉSERVER : le module, sur la page même de l'activité */}
+      <ServiceBooking
+        slug={service.slug}
+        locale={l}
+        bookable={service.bookable}
+        activityName={service.name[l]}
+      />
+
+      {/* 6 · MAILLAGE INTERNE : showcase « nos pôles » (image + liste cliquable) */}
       <ServicesShowcase locale={l} title={t('keepExploring')} excludeSlug={service.slug} />
 
       {/* 6 · CTA de fin de page (audit) */}
@@ -337,7 +407,11 @@ export async function ServicePage({
                 href={bookHref}
                 className="group inline-flex h-12 items-center gap-2 rounded-full bg-accent px-6 text-sm font-semibold text-accent-foreground shadow-[0_10px_30px_-8px_oklch(0.63_0.187_47/0.5)] transition-all hover:brightness-105"
               >
-                {isRestaurant ? (l === 'fr' ? 'Commander à emporter' : 'Order take away') : bookLabel}
+                {isRestaurant && TAKE_AWAY_ENABLED
+                  ? l === "fr"
+                    ? 'Commander à emporter'
+                    : 'Order take away'
+                  : bookLabel}
                 <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" aria-hidden />
               </Link>
             )}

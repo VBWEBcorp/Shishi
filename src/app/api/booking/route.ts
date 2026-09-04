@@ -12,19 +12,15 @@ import { bookingInterval, getBookingConfig, isBookable, isDayPass } from '@/lib/
 import { isRangeAvailable } from '@/lib/availability-query'
 import { isValidBookingDate, isBookingDateTimeInPast } from '@/lib/booking-validation'
 import { notifyNewBooking } from '@/lib/booking-emails'
+import { notifierNouvelleReservation } from '@/lib/push'
 import { langFromPhoneCountry } from '@/lib/country-codes'
 import { resolveMemberBenefits, refundCredits } from '@/lib/membership'
 import { getMemberFromRequest } from '@/lib/member-auth'
-import { ONLINE_BOOKING_ENABLED } from '@/lib/launch'
+import { lireReglages } from '@/lib/booking-settings-server'
+import { creneauOuvert } from '@/lib/booking-settings'
 
 export async function POST(request: NextRequest) {
   try {
-    // Réservation en ligne désactivée : on refuse toute création (protège même
-    // contre une page laissée en cache qui tenterait encore de réserver).
-    if (!ONLINE_BOOKING_ENABLED) {
-      return NextResponse.json({ error: 'booking-disabled' }, { status: 403 })
-    }
-
     const body = await request.json()
     const activitySlug = String(body.activitySlug || '').trim()
     const date = String(body.date || '').trim()
@@ -54,6 +50,19 @@ export async function POST(request: NextRequest) {
     // francophone (ex: +33), sinon anglais par défaut. L'alerte interne envoyée
     // à Shi Shi Samui reste, elle, toujours en français.
     const locale = langFromPhoneCountry(phoneCountry)
+
+    // Réservation fermée : on refuse la création. Le contrôle est ici, côté
+    // serveur, et pas seulement dans le formulaire : une page laissée ouverte
+    // dans un onglet, ou mise en cache avant la fermeture, ne doit pas pouvoir
+    // glisser une réservation dans un planning que le club a fermé.
+    //
+    // Trois motifs possibles, dans l'ordre : l'interrupteur général, l'activité,
+    // la date (congés, journée bloquée). Le client reçoit le même refus dans les
+    // trois cas, le formulaire l'invite à passer par WhatsApp.
+    const reglages = await lireReglages()
+    if (!creneauOuvert(reglages, activitySlug, date)) {
+      return NextResponse.json({ error: 'booking-disabled' }, { status: 403 })
+    }
 
     const activity = getActivityBySlug(activitySlug)
     if (!activity) {
@@ -234,6 +243,18 @@ export async function POST(request: NextRequest) {
       })
     } catch (e) {
       console.error('[booking] email notify failed:', e)
+    }
+
+    // Notification sur le telephone du club, en plus de l'e-mail : « quelqu'un
+    // a reserve un nouveau creneau ». Un e-mail se lit quand on y pense, une
+    // bulle se voit tout de suite, et c'est ce moment-la qui compte quand le
+    // client se presente au club une heure plus tard.
+    // Best-effort, comme l'e-mail : une notification qui echoue ne doit pas
+    // faire echouer la reservation.
+    try {
+      await notifierNouvelleReservation({ name, activityName, date, time })
+    } catch (e) {
+      console.error('[booking] push notify failed:', e)
     }
 
     return NextResponse.json({

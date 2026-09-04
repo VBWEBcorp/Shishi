@@ -58,3 +58,16 @@ export const ONLINE_BOOKING_ENABLED = false
  *   ONLINE_BOOKING_ENABLED à `true`.
  */
 export const BOOKING_COMING_SOON = true
+
+/**
+ * VENTE À EMPORTER du restaurant, mise en avant sur la page « restaurant healthy ».
+ *
+ * Retirée en septembre 2026 à la demande du club : « la vente à emporter, pas
+ * maintenant, parce qu'on n'est pas préparés ». Le bloc restaurant reste, il met
+ * simplement en avant le lieu (ouvert à tous, sans réservation, rien à apporter)
+ * plutôt que la commande à emporter.
+ *
+ * Repasser à  le jour où le service est prêt : le bouton « Commander à
+ * emporter » revient tel quel.
+ */
+export const TAKE_AWAY_ENABLED = false

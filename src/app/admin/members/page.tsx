@@ -40,6 +40,10 @@ interface ActivityCredit {
 interface MemberSubscription {
   name: string
   priceTHB: number
+  /** Fin de l'abonnement, ou null s'il n'en a pas. */
+  endsAt?: string | null
+  /** Activité couverte (gym, tennis…), vide si l'abonnement les couvre toutes. */
+  activity?: string
   startedAt: string | null
 }
 
@@ -324,6 +328,7 @@ export default function MembersPage() {
                               }
                               onApplyPlan={(planId) => patchMember(m.id, { subscriptionPlanId: planId })}
                               onCancelPlan={() => patchMember(m.id, { action: 'cancel-subscription' })}
+                              onDates={(dates) => patchMember(m.id, { subscriptionDates: dates })}
                             />
                           </td>
                         </tr>
@@ -351,6 +356,7 @@ function ActivityCreditsPanel({
   onCredit,
   onApplyPlan,
   onCancelPlan,
+  onDates,
 }: {
   member: Member
   plans: PlanOption[]
@@ -358,8 +364,15 @@ function ActivityCreditsPanel({
   onCredit: (activity: string, payload: Record<string, number>) => void
   onApplyPlan: (planId: string) => void
   onCancelPlan: () => void
+  onDates: (dates: { startedAt?: string; endsAt?: string | null; activity?: string }) => void
 }) {
   const [planId, setPlanId] = useState('')
+  // Période de l'abonnement. Le club la saisit à la main : « il a commencé ce
+  // mois-ci, il se finit là », c'est tout ce dont ils ont besoin pour s'y
+  // retrouver entre le kids club et la gym.
+  const jour = (v?: string | null) => (v ? String(v).slice(0, 10) : '')
+  const [debut, setDebut] = useState(() => jour(member.subscription?.startedAt))
+  const [fin, setFin] = useState(() => jour(member.subscription?.endsAt))
 
   return (
     <div className="space-y-3">
@@ -376,7 +389,8 @@ function ActivityCreditsPanel({
                 {member.subscription.priceTHB > 0
                   ? ` · ${member.subscription.priceTHB.toLocaleString('fr-FR')} ฿/mois`
                   : ''}
-                {member.subscription.startedAt ? ` · depuis le ${fmtDate(member.subscription.startedAt)}` : ''}
+                {member.subscription.startedAt ? ` · du ${fmtDate(member.subscription.startedAt)}` : ''}
+                {member.subscription.endsAt ? ` au ${fmtDate(member.subscription.endsAt)}` : ''}
               </p>
             ) : (
               <p className="mt-0.5 text-xs text-muted-foreground">
@@ -394,6 +408,40 @@ function ActivityCreditsPanel({
             </button>
           )}
         </div>
+
+        {member.subscription && (
+          <div className="mt-3 flex flex-wrap items-end gap-2 rounded-lg bg-muted/40 p-2.5">
+            <label className="flex flex-col gap-1 text-[11px] text-muted-foreground">
+              Début
+              <input
+                type="date"
+                value={debut}
+                onChange={(e) => setDebut(e.target.value)}
+                className="h-9 rounded-lg border border-border bg-background px-2 text-sm text-foreground outline-none"
+              />
+            </label>
+            <label className="flex flex-col gap-1 text-[11px] text-muted-foreground">
+              Fin
+              <input
+                type="date"
+                value={fin}
+                onChange={(e) => setFin(e.target.value)}
+                className="h-9 rounded-lg border border-border bg-background px-2 text-sm text-foreground outline-none"
+              />
+            </label>
+            <button
+              type="button"
+              disabled={saving}
+              onClick={() => onDates({ startedAt: debut || undefined, endsAt: fin || null })}
+              className="inline-flex h-9 items-center rounded-lg bg-accent px-3 text-xs font-semibold text-accent-foreground transition-all hover:brightness-105 disabled:opacity-40"
+            >
+              Enregistrer la période
+            </button>
+            <span className="text-[11px] text-muted-foreground">
+              Fin vide = sans échéance.
+            </span>
+          </div>
+        )}
 
         {plans.length > 0 ? (
           <div className="mt-3 flex flex-wrap items-center gap-2">

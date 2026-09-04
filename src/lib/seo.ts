@@ -111,6 +111,13 @@ export const routes = [
   '/prices',
   '/book-now',
   '/contact-location',
+  // La page « infos pratiques » : celle que le club envoie en réponse à un
+  // message, et qui répond aux questions posées tous les jours.
+  '/good-to-know',
+  // Cours de tennis. Page à part du court : « tennis lessons koh samui » et
+  // « cours de tennis koh samui » sont des recherches différentes de la
+  // location de terrain, et personne n'y répondait.
+  '/tennis-coaching-lamai',
   // Réindexée le 18/08/2026 : la page ne nomme plus aucun gérant ni leur
   // nombre, le motif du masquage a donc disparu. Google attend une page
   // « À propos » pour rattacher le site à une entité — autant la garder.

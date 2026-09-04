@@ -16,6 +16,7 @@ import {
   LayoutGrid,
   Mail,
   Phone,
+  Repeat,
   RefreshCw,
   Search,
   Table2,
@@ -33,17 +34,12 @@ import { ActivityIcon } from '@/components/activity-icon'
 import { activities } from '@/lib/activities'
 import { formatDuration, isBookable, isDayPass, toHHMM, toMinutes } from '@/lib/availability'
 import { cn } from '@/lib/utils'
+import { PushToggle } from '@/components/admin/push-toggle'
+
+import { BookingSwitch } from './booking-switch'
 import { NewBookingModal } from './new-booking-modal'
 import { WeekAgenda } from './week-agenda'
 
-// Activités concernées par le module de réservation : ouvertes (réservables) ou
-// « Bientôt » (prévues mais pas encore lancées, ex. pickleball). Le restaurant,
-// qui ne se réserve pas par créneau, n'apparaît pas ici.
-const RESERVATION_ACTIVITIES = activities
-  .filter((a) => isBookable(a.slug) || a.comingSoon)
-  .sort((a, b) => Number(isBookable(b.slug)) - Number(isBookable(a.slug)))
-const OPEN_COUNT = RESERVATION_ACTIVITIES.filter((a) => isBookable(a.slug)).length
-const SOON_COUNT = RESERVATION_ACTIVITIES.length - OPEN_COUNT
 
 interface Booking {
   _id: string
@@ -365,6 +361,59 @@ export default function AdminBookingsPage() {
     }
   }
 
+  /**
+   * RECONDUIRE UN HABITUÉ À LA SEMAINE SUIVANTE.
+   *
+   * Le club fonctionne comme ça, mot pour mot : « le dimanche quand Paul finit
+   * sa session, il dit à Franco : semaine prochaine on fait quoi ? Il répond
+   * pareil, mercredi et samedi. » Pas d'abonnement, pas de récurrence posée sur
+   * un mois : on reconduit, semaine après semaine.
+   *
+   * Le bouton recopie donc la réservation sept jours plus tard, avec la même
+   * activité, le même horaire, la même durée et les mêmes coordonnées. Un seul
+   * geste, à l'endroit où ils regardent déjà leur planning.
+   *
+   * Si le créneau est déjà pris la semaine suivante, le serveur refuse et on le
+   * dit : c'est exactement l'information utile à ce moment-là.
+   */
+  const reconduire = async (b: Booking) => {
+    setBusyId(b._id)
+    try {
+      const suivant = addDays(fromKey(b.date), 7)
+      const res = await fetch('/api/bookings', {
+        method: 'POST',
+        headers: { ...authHeaders(), 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          mode: 'booking',
+          activitySlug: b.activitySlug,
+          date: ymd(suivant),
+          time: b.time,
+          duration: b.duration,
+          name: b.name,
+          email: b.email || '',
+          phone: b.phone || '',
+          notes: b.notes || '',
+          // Pas de second email de confirmation : c'est un habitué que le club
+          // reconduit de vive voix, pas une nouvelle demande.
+          sendEmail: false,
+        }),
+      })
+      const data = await res.json().catch(() => ({}))
+      if (!res.ok) {
+        alert(
+          data?.error === 'slot-unavailable'
+            ? `Créneau déjà pris le ${ymd(suivant)} à ${b.time}.`
+            : "Reconduction impossible. Vérifiez le créneau dans le planning."
+        )
+        return
+      }
+      await load(filter)
+      setAllBookings(null)
+    } finally {
+      setBusyId(null)
+    }
+  }
+
   const remove = async (id: string) => {
     if (!confirm('Supprimer définitivement cette réservation ?')) return
     setBusyId(id)
@@ -611,6 +660,16 @@ export default function AdminBookingsPage() {
               <X className="size-3.5" aria-hidden /> Annuler
             </button>
           )}
+          {b.status !== 'cancelled' && (
+            <button
+              onClick={() => reconduire(b)}
+              disabled={busyId === b._id}
+              title="Recopier cette réservation sept jours plus tard"
+              className="inline-flex items-center gap-1.5 rounded-lg bg-accent/15 px-3 py-1.5 text-xs font-semibold text-accent transition-colors hover:bg-accent/25 disabled:opacity-40"
+            >
+              <Repeat className="size-3.5" aria-hidden /> Semaine +1
+            </button>
+          )}
           <button
             onClick={() => remove(b._id)}
             disabled={busyId === b._id}
@@ -668,51 +727,13 @@ export default function AdminBookingsPage() {
         />
       )}
 
-      {/* Activités du module de réservation : ouvertes vs « Bientôt » */}
-      <div className="rounded-2xl border border-border bg-card p-4 sm:p-5">
-        <div className="flex flex-wrap items-center justify-between gap-2">
-          <h2 className="flex items-center gap-2 font-display text-sm font-semibold text-foreground">
-            <LayoutGrid className="size-4 text-accent" aria-hidden />
-            Activités réservables
-          </h2>
-          <span className="text-xs text-muted-foreground">
-            {OPEN_COUNT} ouverte{OPEN_COUNT > 1 ? 's' : ''} · {SOON_COUNT} à venir
-          </span>
-        </div>
-        <div className="mt-3 flex flex-wrap gap-2">
-          {RESERVATION_ACTIVITIES.map((a) => {
-            const open = isBookable(a.slug)
-            return (
-              <span
-                key={a.slug}
-                className={cn(
-                  'inline-flex items-center gap-2 rounded-xl border px-3 py-1.5 text-sm',
-                  open ? 'border-emerald-500/30 bg-emerald-500/10' : 'border-orange-500/30 bg-orange-500/10'
-                )}
-              >
-                <span className="flex size-6 items-center justify-center rounded-lg bg-card text-accent ring-1 ring-border">
-                  <ActivityIcon name={a.icon} className="size-3.5" />
-                </span>
-                <span className="font-medium text-foreground">{a.name.fr}</span>
-                <span
-                  className={cn(
-                    'rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide',
-                    open
-                      ? 'bg-emerald-500/20 text-emerald-700 dark:text-emerald-300'
-                      : 'bg-orange-500/20 text-orange-700 dark:text-orange-300'
-                  )}
-                >
-                  {open ? 'Réservable' : 'Bientôt'}
-                </span>
-              </span>
-            )
-          })}
-        </div>
-        <p className="mt-3 text-xs text-muted-foreground">
-          Seules les activités « Réservable » apparaissent dans le module de réservation du site. Les autres
-          sont marquées « Bientôt » et renvoient vers le contact en attendant.
-        </p>
-      </div>
+      {/* Interrupteur des réservations : ouvert/fermé, par activité, journées bloquées.
+          Remplace le panneau qui se contentait de LIRE la configuration du code :
+          le club pilote maintenant lui-même ce que le site accepte. */}
+      {/* Notifications de reservation sur cet appareil (telephone, tablette). */}
+      <PushToggle />
+
+      <BookingSwitch />
 
       {/* Barre d'outils : sélecteur de vue + recherche */}
       <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">

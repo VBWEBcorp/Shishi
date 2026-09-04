@@ -1,6 +1,8 @@
 import 'server-only'
 import { connectDB } from '@/lib/db'
 import { Booking } from '@/models/Booking'
+import { creneauOuvert } from '@/lib/booking-settings'
+import { lireReglages } from '@/lib/booking-settings-server'
 import {
   bookingInterval,
   computeAvailability,
@@ -57,6 +59,15 @@ export async function getAvailability(
   options: SlotGridOptions = {}
 ): Promise<SlotAvailability[]> {
   if (!getBookingConfig(activitySlug)) return []
+
+  // Journée fermée par le club (congés, absence, semaine bloquée) : aucun
+  // créneau proposé côté SITE. L'espace admin, lui, continue de tout voir,
+  // c'est justement là qu'ils enregistrent ce qui se passe malgré tout.
+  if (options.scope !== 'admin') {
+    const reglages = await lireReglages()
+    if (!creneauOuvert(reglages, activitySlug, date)) return []
+  }
+
   const booked = await loadActiveRanges(activitySlug, date)
   return computeAvailability(activitySlug, booked, options)
 }

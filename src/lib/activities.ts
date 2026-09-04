@@ -98,6 +98,10 @@ export const PRICES_PATH = '/prices'
 export const BOOK_NOW_PATH = '/book-now'
 export const CONTACT_PATH = '/contact-location'
 export const ABOUT_PATH = '/a-propos'
+/** Page « infos pratiques » : celle que le club envoie en réponse à un message. */
+export const GOOD_TO_KNOW_PATH = '/good-to-know'
+/** Cours de tennis : les cours ne passent pas par le calendrier, ils se calent avec le club. */
+export const TENNIS_COACHING_PATH = '/tennis-coaching-lamai'
 
 export const SPECIAL_LINKS: Record<
   string,
@@ -107,6 +111,14 @@ export const SPECIAL_LINKS: Record<
   prices: { path: PRICES_PATH, label: { en: 'View prices', fr: 'Voir les tarifs' } },
   'book-now': { path: BOOK_NOW_PATH, label: { en: 'Book now', fr: 'Réserver' } },
   contact: { path: CONTACT_PATH, label: { en: 'Contact', fr: 'Contact' } },
+  'good-to-know': {
+    path: GOOD_TO_KNOW_PATH,
+    label: { en: 'Good to know', fr: 'Infos pratiques' },
+  },
+  coaching: {
+    path: TENNIS_COACHING_PATH,
+    label: { en: 'Tennis lessons', fr: 'Cours de tennis' },
+  },
 }
 
 export const activities: Activity[] = [
@@ -275,7 +287,7 @@ export const activities: Activity[] = [
         },
       },
     ],
-    related: ['pickleball-club-lamai', 'prices', 'book-now', 'contact'],
+    related: ['coaching', 'pickleball-club-lamai', 'prices', 'book-now', 'contact'],
     keywords: ['tennis koh samui', 'tennis court lamai', 'tennis lessons samui'],
   },
   {
