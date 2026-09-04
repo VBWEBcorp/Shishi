@@ -27,6 +27,7 @@ import {
   LAUNCH_OFFER,
 } from '@/lib/booking-pricing'
 import { PUBLIC_ADVANCE_DAYS } from '@/lib/membership-plans'
+import { SHOW_MEMBER_AREA } from '@/lib/launch'
 import { useBookingSettings } from '@/hooks/use-booking-settings'
 import { activiteOuverte, creneauOuvert, messageFermeture } from '@/lib/booking-settings'
 import { siteConfig } from '@/lib/seo'
@@ -207,12 +208,26 @@ export function BookingForm({
     (dayPass ? (fr ? 'jour' : 'day') : fr ? 'heure' : 'hour')
   const fmtPrice = (n: number) => n.toLocaleString(fr ? 'fr-FR' : 'en-GB')
 
-  // Crédits adhérent : miroir du serveur. Le portefeuille de l'activité
-  // choisie couvre la durée → réservation déduite automatiquement (gratuite).
+  /*
+   * CRÉDITS ADHÉRENT : DÉVELOPPÉS, PAS EN SERVICE.
+   *
+   * Le club a changé de stratégie en septembre 2026 : « on n'a pas d'abonnement
+   * réel en fait », et l'espace client ne sert à rien tant qu'il n'y a ni
+   * abonnement ni programme de fidélité. Rien de tout cela ne doit donc
+   * apparaître sur le site vitrine : ni bandeau de crédits, ni invitation à se
+   * connecter, ni ligne « crédits » dans le récapitulatif de la réservation.
+   * Un visiteur à qui l'on parle de crédits qu'il ne peut pas obtenir se pose
+   * une question de plus au moment de réserver, et c'est exactement ce que le
+   * club veut éviter.
+   *
+   * Le code reste entier derrière SHOW_MEMBER_AREA (cf. src/lib/launch.ts) :
+   * repasser ce drapeau à `true` rallume l'espace adhérent, ses crédits et ce
+   * bandeau, sans rien réécrire.
+   */
   const creditsNeeded = effectiveHours
   const activityWallet = member?.activityCredits?.find((w) => w.activity === activitySlug)
   const walletCredits = activityWallet?.credits ?? 0
-  const useCredits = !!member && walletCredits >= creditsNeeded
+  const useCredits = SHOW_MEMBER_AREA && !!member && walletCredits >= creditsNeeded
   const netTotal = useCredits ? 0 : grossTotal
   const advanceDays = member?.advanceDays ?? PUBLIC_ADVANCE_DAYS
 
@@ -512,8 +527,10 @@ export function BookingForm({
           </motion.div>
         ) : (
           <form className="mt-6 space-y-5" onSubmit={handleSubmit}>
-            {/* Bandeau crédits : état limpide pour l'activité choisie */}
-            {member ? (
+            {/* Bandeau crédits, et invitation à se connecter pour les utiliser.
+                Masqués tant que l'espace adhérent n'est pas promu : cf. le
+                commentaire sur `useCredits` plus haut. */}
+            {!SHOW_MEMBER_AREA ? null : member ? (
               activitySlug && walletCredits > 0 ? (
                 <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1 rounded-xl bg-ocean/[0.06] px-4 py-3 ring-1 ring-ocean/15">
                   <Ticket className="size-4 shrink-0 text-ocean" aria-hidden />

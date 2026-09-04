@@ -34,8 +34,11 @@ export const HOME_FAQ: FaqItem[] = [
   {
     q: { en: 'Do I need to be a member?', fr: 'Faut-il être adhérent ?' },
     a: {
-      en: 'No. Shi Shi is open to everyone: book a single session or a day pass without any membership. Memberships simply offer better rates for regulars.',
-      fr: 'Non. Shi Shi est ouvert à tous : réservez une session ou un pass journée sans abonnement. Les abonnements offrent simplement de meilleurs tarifs aux habitués.',
+      // Le club n'a pas de système d'adhésion, et ne veut pas en promettre un :
+      // « on n'a pas d'abonnement réel en fait ». La réponse s'arrête donc à ce
+      // qui est vrai : on vient, on paie sa séance, personne n'a de compte à créer.
+      en: 'No. Shi Shi is open to everyone: book a single session or a day pass, nothing to sign up for. The gym also has weekly and monthly passes if you come often.',
+      fr: 'Non. Shi Shi est ouvert à tous : réservez une séance ou un pass journée, sans rien à souscrire. La salle propose aussi des pass à la semaine et au mois si vous venez souvent.',
     },
   },
   {

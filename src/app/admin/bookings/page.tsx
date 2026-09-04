@@ -730,10 +730,10 @@ export default function AdminBookingsPage() {
       {/* Interrupteur des réservations : ouvert/fermé, par activité, journées bloquées.
           Remplace le panneau qui se contentait de LIRE la configuration du code :
           le club pilote maintenant lui-même ce que le site accepte. */}
-      {/* Notifications de reservation sur cet appareil (telephone, tablette). */}
-      <PushToggle />
-
       <BookingSwitch />
+
+      {/* Notifications sur CET appareil. Discret une fois active : cf. <PushToggle />. */}
+      <PushToggle />
 
       {/* Barre d'outils : sélecteur de vue + recherche */}
       <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">

@@ -3,8 +3,6 @@
 import { Bell, BellOff, Loader2, Smartphone } from 'lucide-react'
 import { useCallback, useEffect, useState } from 'react'
 
-import { cn } from '@/lib/utils'
-
 /**
  * Activer les notifications de réservation sur CET appareil.
  *
@@ -170,41 +168,56 @@ export function PushToggle() {
   }
 
   if (etat === 'chargement') {
-    return <div className="h-16 animate-pulse rounded-2xl border border-border bg-card" />
+    return <div className="h-9 animate-pulse rounded-xl border border-border bg-card" />
   }
 
   if (etat === 'indisponible') return null
+
+  /*
+   * ACTIVÉ : une seule ligne discrète.
+   *
+   * Une fois les notifications en place, il n'y a plus rien à faire : garder une
+   * grande carte en haut du planning reviendrait à occuper l'écran avec un
+   * réglage déjà réglé. La ligne confirme l'état et laisse de quoi couper, sans
+   * plus. Le planning, lui, remonte.
+   */
+  if (etat === 'actif') {
+    return (
+      <div className="flex flex-wrap items-center gap-x-2 gap-y-1 px-1 text-xs text-muted-foreground">
+        <Bell className="size-3.5 text-emerald-600 dark:text-emerald-400" aria-hidden />
+        <span>
+          Notifications actives sur cet appareil
+          {appareils > 1 ? ` (${appareils} appareils)` : ''}.
+        </span>
+        <button
+          type="button"
+          disabled={envoi}
+          onClick={desactiver}
+          className="font-medium underline underline-offset-4 transition-colors hover:text-foreground disabled:opacity-60"
+        >
+          Désactiver ici
+        </button>
+      </div>
+    )
+  }
 
   return (
     <div className="rounded-2xl border border-border bg-card p-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-3">
-          <span
-            className={cn(
-              'flex size-10 items-center justify-center rounded-xl ring-1',
-              etat === 'actif'
-                ? 'bg-emerald-500/10 text-emerald-600 ring-emerald-500/25 dark:text-emerald-400'
-                : 'bg-muted text-muted-foreground ring-border'
-            )}
-          >
-            {etat === 'actif' ? (
-              <Bell className="size-5" aria-hidden />
-            ) : (
-              <BellOff className="size-5" aria-hidden />
-            )}
+          <span className="flex size-10 items-center justify-center rounded-xl bg-muted text-muted-foreground ring-1 ring-border">
+            <BellOff className="size-5" aria-hidden />
           </span>
           <div className="min-w-0">
             <h3 className="font-display text-sm font-semibold text-foreground">
               Notifications de réservation
             </h3>
             <p className="text-xs text-muted-foreground">
-              {etat === 'actif'
-                ? `Actives sur cet appareil${appareils > 1 ? ` (${appareils} appareils au total)` : ''}.`
-                : etat === 'refuse'
-                  ? 'Refusées par le navigateur. Autorisez-les dans les réglages du site, puis rechargez.'
-                  : etat === 'ios-non-installe'
-                    ? 'Sur iPhone : Partager, puis « Ajouter à l’écran d’accueil ». Ouvrez ensuite l’icône Shi Shi Admin.'
-                    : 'Recevez une bulle sur cet appareil dès qu’un client réserve.'}
+              {etat === 'refuse'
+                ? 'Refusées par le navigateur. Autorisez-les dans les réglages du site, puis rechargez.'
+                : etat === 'ios-non-installe'
+                  ? 'Sur iPhone : Partager, puis « Ajouter à l’écran d’accueil ». Ouvrez ensuite l’icône Shi Shi Admin.'
+                  : 'Recevez une bulle sur ce téléphone dès qu’un client réserve.'}
             </p>
           </div>
         </div>
@@ -218,22 +231,15 @@ export function PushToggle() {
           <button
             type="button"
             disabled={envoi}
-            onClick={etat === 'actif' ? desactiver : activer}
-            className={cn(
-              'inline-flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold transition-all disabled:opacity-60',
-              etat === 'actif'
-                ? 'border border-border bg-card text-foreground hover:bg-muted'
-                : 'bg-accent text-accent-foreground hover:brightness-105'
-            )}
+            onClick={activer}
+            className="inline-flex items-center gap-2 rounded-xl bg-accent px-4 py-2 text-sm font-semibold text-accent-foreground transition-all hover:brightness-105 disabled:opacity-60"
           >
             {envoi ? (
               <Loader2 className="size-4 animate-spin" aria-hidden />
-            ) : etat === 'actif' ? (
-              <BellOff className="size-4" aria-hidden />
             ) : (
               <Bell className="size-4" aria-hidden />
             )}
-            {etat === 'actif' ? 'Désactiver ici' : 'Activer sur cet appareil'}
+            Activer sur cet appareil
           </button>
         )}
       </div>
