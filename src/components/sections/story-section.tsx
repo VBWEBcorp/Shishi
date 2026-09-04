@@ -1,5 +1,10 @@
 'use client'
 
+import { useLocale } from 'next-intl'
+
+import type { Locale } from '@/i18n/routing'
+import { photoAlt } from '@/lib/photo-alt'
+
 import { motion, useReducedMotion, useScroll, useTransform } from 'framer-motion'
 import { ArrowUpRight, BookOpen } from 'lucide-react'
 import Link from 'next/link'
@@ -12,6 +17,7 @@ import { storyContent as defaults } from '@/lib/site-content'
 const ease = [0.22, 1, 0.36, 1] as const
 
 export function StorySection() {
+  const locale = useLocale() as Locale
   const { data } = useContent('home', { story: defaults })
   const story = data.story ?? defaults
   const ref = useRef<HTMLDivElement>(null)
@@ -109,7 +115,7 @@ export function StorySection() {
               <motion.div className="absolute inset-0 -inset-y-8" style={{ y: imageY }}>
                 <ResponsivePhoto
                   value={story.image}
-                  alt=""
+                  alt={photoAlt(typeof story.image === 'string' ? story.image : undefined, locale)}
                   fill
                   sizes="(min-width:768px) 45vw, 100vw"
                   className="absolute inset-0 h-full w-full object-cover"

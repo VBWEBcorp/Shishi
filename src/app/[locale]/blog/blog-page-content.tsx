@@ -6,6 +6,8 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { ArrowUpRight, Search } from 'lucide-react'
 
+import { photoAlt } from '@/lib/photo-alt'
+
 interface BlogPost {
   _id: string
   title: string
@@ -83,7 +85,7 @@ export default function BlogPageContent({ initialSettings, initialPosts, locale 
           {settings.heroImage ? (
             <Image
               src={settings.heroImage}
-              alt=""
+              alt={photoAlt(settings.heroImage, locale, settings.title)}
               fill
               sizes="100vw"
               priority
@@ -229,7 +231,7 @@ export default function BlogPageContent({ initialSettings, initialPosts, locale 
           <div className="relative overflow-hidden rounded-[2rem]">
             <Image
               src="/photos/pool-panorama-portrait.webp"
-              alt=""
+              alt={photoAlt('/photos/pool-panorama-portrait.webp', locale)}
               fill
               sizes="(min-width:1152px) 1152px, 100vw"
               loading="lazy"

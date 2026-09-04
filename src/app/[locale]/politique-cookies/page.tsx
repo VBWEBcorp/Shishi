@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import Link from 'next/link'
+import { Link } from '@/i18n/navigation'
 
 import { breadcrumbJsonLd, webPageJsonLd } from '@/components/seo/json-ld'
 import { Breadcrumb } from '@/components/ui/breadcrumb'
@@ -22,18 +22,30 @@ export async function generateMetadata({
   }
 }
 
-const jsonLd = {
-  '@context': 'https://schema.org',
-  '@graph': [
-    webPageJsonLd('Politique de cookies', description, '/politique-cookies'),
-    breadcrumbJsonLd([
-      { name: 'Accueil', path: '/' },
-      { name: 'Politique de cookies', path: '/politique-cookies' },
-    ]),
-  ],
+/** Le graphe suit la langue de la page (ses URL portent /en ou /fr). */
+function graphe(locale: string) {
+  return {
+    '@context': 'https://schema.org',
+    '@graph': [
+      webPageJsonLd('Politique de cookies', description, '/politique-cookies', locale),
+      breadcrumbJsonLd(
+        [
+          { name: 'Accueil', path: '/' },
+          { name: 'Politique de cookies', path: '/politique-cookies' },
+        ],
+        locale
+      ),
+    ],
+  }
 }
 
-export default function CookiePolicyPage() {
+export default async function CookiePolicyPage({
+  params,
+}: {
+  params: Promise<{ locale: string }>
+}) {
+  const { locale } = await params
+  const jsonLd = graphe(locale)
   return (
     <>
       <script

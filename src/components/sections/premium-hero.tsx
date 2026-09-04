@@ -2,12 +2,15 @@
 
 import { motion } from 'framer-motion'
 import { ChevronRight, Home } from 'lucide-react'
+import { useLocale } from 'next-intl'
 import Image from 'next/image'
-import Link from 'next/link'
 import type { ReactNode } from 'react'
 
 import { HeroCurve } from '@/components/hero-curve'
 import { ResponsivePhoto } from '@/components/responsive-photo'
+import { Link } from '@/i18n/navigation'
+import type { Locale } from '@/i18n/routing'
+import { photoAlt } from '@/lib/photo-alt'
 // Alias : `hasImage` est déjà le nom d'une variable locale plus bas (image de droite).
 import { hasImage as hasPhoto, type ResponsiveImageValue } from '@/lib/responsive-image'
 
@@ -19,9 +22,13 @@ interface PremiumHeroProps {
   description?: string
   /** Image affichée à droite (mode 2-col, quand `compact` est false) */
   image?: string
+  /** Texte alternatif de cette image. Sans lui, la description de `photoAlt` s'applique. */
+  imageAlt?: string
   /** Image de fond plein écran derrière le hero (mode compact + photo) */
   /** URL simple, ou paire { desktop, mobile } saisie dans l'espace admin. */
   backgroundImage?: ResponsiveImageValue
+  /** Texte alternatif du fond. Sans lui, la description de `photoAlt` s'applique. */
+  backgroundAlt?: string
   breadcrumb: string
   /** Affichage compact (centré, sans image à droite) */
   compact?: boolean
@@ -44,11 +51,14 @@ export function PremiumHero({
   title,
   description,
   image,
+  imageAlt,
   backgroundImage,
+  backgroundAlt,
   breadcrumb,
   compact = false,
   children,
 }: PremiumHeroProps) {
+  const locale = useLocale() as Locale
   const { lead, accent } = splitTitle(title)
   const hasImage = !compact && Boolean(image)
   const hasBgImage = hasPhoto(backgroundImage)
@@ -66,7 +76,14 @@ export function PremiumHero({
           <div className="absolute inset-0 -z-20" aria-hidden>
             <ResponsivePhoto
               value={backgroundImage}
-              alt=""
+              alt={
+                backgroundAlt ||
+                photoAlt(
+                  typeof backgroundImage === 'string' ? backgroundImage : undefined,
+                  locale,
+                  title
+                )
+              }
               fill
               sizes="100vw"
               priority
@@ -196,7 +213,7 @@ export function PremiumHero({
                 <div className="relative aspect-[4/5] overflow-hidden rounded-xl lg:aspect-[3/4]">
                   <Image
                     src={image}
-                    alt=""
+                    alt={imageAlt || photoAlt(image, locale)}
                     fill
                     sizes="(min-width: 1024px) 500px, 100vw"
                     priority

@@ -140,8 +140,8 @@ export const activities: Activity[] = [
       fr: 'Club de Pickleball à Lamai, Koh Samui | Shi Shi Samui',
     },
     metaDescription: {
-      en: 'Play pickleball in Lamai at Shi Shi Samui. Book a court, join the community and discover pickleball in Koh Samui.',
-      fr: 'Jouez au pickleball à Lamai chez Shi Shi Samui. Réservez un terrain, rejoignez la communauté et découvrez le pickleball à Koh Samui.',
+      en: 'Play pickleball in Lamai, Koh Samui on dedicated courts. Beginners welcome, paddles to rent on site, a friendly club scene. Book your court.',
+      fr: 'Jouez au pickleball à Lamai, Koh Samui sur des terrains dédiés. Débutants bienvenus, raquettes à louer sur place, ambiance club. Réservez votre terrain.',
     },
     keywordsPrimary: [
       'pickleball lamai',
@@ -222,8 +222,8 @@ export const activities: Activity[] = [
       fr: 'Court de Tennis à Lamai, Koh Samui | Shi Shi Samui',
     },
     metaDescription: {
-      en: 'Book a tennis court in Lamai at Shi Shi Samui. Play tennis in Koh Samui with easy booking, prices and club facilities.',
-      fr: 'Réservez un court de tennis à Lamai chez Shi Shi Samui. Jouez au tennis à Koh Samui : réservation simple, tarifs et installations du club.',
+      en: 'Play tennis in Lamai, Koh Samui on the hard court at Shi Shi Samui. Rackets to rent on site, clear prices, easy booking. Visitors welcome.',
+      fr: 'Jouez au tennis à Lamai, Koh Samui sur le court en dur de Shi Shi Samui. Raquettes à louer sur place, tarifs clairs et réservation simple.',
     },
     keywordsPrimary: [
       'tennis court lamai',
@@ -305,8 +305,8 @@ export const activities: Activity[] = [
       fr: 'Salle de Sport à Lamai, Koh Samui | Shi Shi Samui',
     },
     metaDescription: {
-      en: 'Train at Shi Shi Samui, a fitness gym in Lamai with memberships, day passes and access to a premium sports club.',
-      fr: 'Entraînez-vous chez Shi Shi Samui, salle de sport à Lamai avec abonnements, pass journée et accès à un club sportif premium.',
+      en: 'Train in an air-conditioned gym in Lamai, Koh Samui: cardio, weights and free space. Day passes, weekly and monthly memberships at Shi Shi Samui.',
+      fr: 'Entraînez-vous dans une salle climatisée à Lamai, Koh Samui : cardio, musculation et espace libre. Pass journée, semaine ou mois chez Shi Shi Samui.',
     },
     keywordsPrimary: [
       'gym lamai',
@@ -464,12 +464,12 @@ export const activities: Activity[] = [
       fr: 'Kids Club à Lamai, Koh Samui',
     },
     metaTitle: {
-      en: 'Kids Club in Lamai, Koh Samui | Shi Shi Samui',
-      fr: 'Kids Club à Lamai, Koh Samui | Shi Shi Samui',
+      en: 'Kids Club in Lamai, Koh Samui (Ages 0-5) | Shi Shi Samui',
+      fr: 'Kids Club à Lamai, Koh Samui (0 à 5 ans) | Shi Shi Samui',
     },
     metaDescription: {
-      en: 'Kids club in Lamai welcoming babies and toddlers up to 5 years. Hourly or full day, meals included. Leave your child while you enjoy an excursion.',
-      fr: 'Kids club à Lamai accueillant bébés et tout-petits jusqu’à 5 ans. À l’heure ou à la journée, repas compris. Confiez votre enfant le temps d’une excursion.',
+      en: 'Kids club in Lamai, Koh Samui for babies and toddlers up to 5. By the hour or the full day, meals included, supervised on site. Book before you head out.',
+      fr: 'Kids club à Lamai, Koh Samui pour les bébés et tout-petits jusqu’à 5 ans. À l’heure ou à la journée, repas compris, encadrement sur place. Réservez avant de partir.',
     },
     // Mots-clés retravaillés le 18/08/2026 : le club est l'un des seuls de
     // l'île à prendre les tout-petits, et la journée avec repas répond à un
@@ -578,8 +578,8 @@ export const activities: Activity[] = [
       fr: 'Piscine à Lamai, Koh Samui | Shi Shi Samui',
     },
     metaDescription: {
-      en: 'Swimming pool in Lamai with swimming lessons for children and adults. Day access, sun loungers and a family-friendly club atmosphere.',
-      fr: 'Piscine à Lamai avec cours de natation pour enfants et adultes. Accès à la journée, transats et ambiance club familiale.',
+      en: 'Swimming pool in Lamai, Koh Samui with lessons for children and adults. Day access, sun loungers, pool bar and a family-friendly club.',
+      fr: 'Piscine à Lamai, Koh Samui avec cours de natation pour enfants et adultes. Accès à la journée, transats, pool bar et ambiance club familiale.',
     },
     // Les cours de natation sont une vraie demande locale (parents qui font
     // apprendre à nager à leurs enfants) : ajoutés aux mots-clés le 18/08/2026.

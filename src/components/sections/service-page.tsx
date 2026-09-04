@@ -3,6 +3,7 @@ import { getTranslations } from 'next-intl/server'
 import Image from 'next/image'
 
 import { ActivityIcon } from '@/components/activity-icon'
+import { BackgroundVideo } from '@/components/background-video'
 import { FaqAccordion } from '@/components/faq-accordion'
 import { ReadMore } from '@/components/read-more'
 import { ServicesShowcase } from '@/components/sections/services-showcase'
@@ -70,18 +71,11 @@ export async function ServicePage({
           sizes="100vw"
           className="object-cover"
         />
-        <video
-          autoPlay
-          muted
-          loop
-          playsInline
-          preload="auto"
+        <BackgroundVideo
+          src={service.video}
           poster={service.image}
-          aria-hidden
-          className="absolute inset-0 size-full object-cover motion-reduce:hidden"
-        >
-          <source src={service.video} type="video/mp4" />
-        </video>
+          className="absolute inset-0 size-full object-cover"
+        />
         <div className="absolute inset-0 bg-gradient-to-b from-[oklch(0.16_0_0/0.55)] via-[oklch(0.16_0_0/0.5)] to-[oklch(0.14_0_0/0.88)]" aria-hidden />
 
         <div className="relative mx-auto flex min-h-[60vh] max-w-6xl flex-col justify-end px-4 pb-24 pt-24 sm:px-6 sm:pb-28 lg:px-8">

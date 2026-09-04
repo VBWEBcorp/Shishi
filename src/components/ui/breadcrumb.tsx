@@ -1,5 +1,5 @@
 import { ChevronRight, Home } from 'lucide-react'
-import Link from 'next/link'
+import { Link } from '@/i18n/navigation'
 
 export type BreadcrumbItem = {
   label: string

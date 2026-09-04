@@ -4,7 +4,9 @@ import { useEffect, useState, use } from 'react'
 import { motion } from 'framer-motion'
 import Image from 'next/image'
 import Link from 'next/link'
-import { ArrowLeft, Calendar, User, Tag, Clock } from 'lucide-react'
+import { ArrowLeft, ArrowRight, Calendar, User, Tag, Clock } from 'lucide-react'
+
+import { servicesLies } from '@/lib/service-links'
 
 interface BlogPost {
   _id: string
@@ -56,6 +58,10 @@ export default function BlogPostContent({
       : 'Découvrez nos autres articles ou contactez-nous pour préparer votre séjour.',
     all: en ? 'All articles' : 'Tous les articles',
     contact: en ? 'Contact us' : 'Nous contacter',
+    services: en ? 'At the club' : 'Au club',
+    servicesSub: en
+      ? 'The activities mentioned in this article, at Shi Shi Samui in Lamai.'
+      : 'Les activités dont parle cet article, à Shi Shi Samui, à Lamai.',
     home: en ? 'Home' : 'Accueil',
     blog: 'Blog',
   }
@@ -208,6 +214,45 @@ export default function BlogPostContent({
             className="blog-content pb-16"
             dangerouslySetInnerHTML={{ __html: post.content }}
           />
+
+          {/* Maillage interne vers les pages service.
+              Un article parlait de tennis ou de pickleball sans jamais mener à la page
+              du club : ni le lecteur ni Google n'avaient de chemin. Les liens sont
+              choisis d'après le contenu de l'article (cf. servicesLies). */}
+          {(() => {
+            const liens = servicesLies(
+              [post.title, post.excerpt, (post.tags || []).join(' '), post.content].join(' '),
+              locale
+            )
+            if (liens.length === 0) return null
+            return (
+              <nav
+                className="border-t border-border/60 py-10"
+                aria-label={tx.services}
+              >
+                <p className="text-lg font-semibold text-foreground">{tx.services}</p>
+                <p className="mt-1 text-sm text-muted-foreground">{tx.servicesSub}</p>
+                <ul className="mt-5 grid gap-3 sm:grid-cols-2">
+                  {liens.map((lien) => (
+                    <li key={lien.slug}>
+                      <Link
+                        href={lien.href}
+                        className="group flex h-full flex-col rounded-xl border border-border/70 bg-card/60 px-4 py-3 transition-colors hover:border-accent/60 hover:bg-muted"
+                      >
+                        <span className="flex items-center gap-1.5 text-sm font-semibold text-foreground">
+                          {lien.label}
+                          <ArrowRight className="size-3.5 text-accent transition-transform group-hover:translate-x-0.5" />
+                        </span>
+                        <span className="mt-1 text-xs leading-relaxed text-muted-foreground">
+                          {lien.description}
+                        </span>
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </nav>
+            )
+          })()}
 
           {/* Tags */}
           {post.tags?.length > 0 && (

@@ -12,6 +12,7 @@ import { SectionEyebrow } from '@/components/section-eyebrow'
 import { useContent } from '@/hooks/use-content'
 import { Link } from '@/i18n/navigation'
 import { activities, type Locale } from '@/lib/activities'
+import { photoAlt } from '@/lib/photo-alt'
 import { hasImage, type ResponsiveImageValue } from '@/lib/responsive-image'
 
 /** Section « Notre histoire » de l'accueil, pilotée par l'espace admin. */
@@ -173,6 +174,7 @@ function ActivityMarquee() {
 
 export function BookingCta() {
   const t = useTranslations('Home.cta')
+  const l = useLocale() as Locale
   const { data } = useContent('home', {} as { cta?: Record<string, string> })
   const c = data.cta ?? {}
 
@@ -180,7 +182,7 @@ export function BookingCta() {
     <section className="relative isolate overflow-hidden">
       <Image
         src="/photos/cta-pret-a-jouer.png"
-        alt=""
+        alt={photoAlt('/photos/cta-pret-a-jouer.png', l)}
         fill
         sizes="100vw"
         className="object-cover"

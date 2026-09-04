@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import Link from 'next/link'
+import { Link } from '@/i18n/navigation'
 
 import { breadcrumbJsonLd, webPageJsonLd } from '@/components/seo/json-ld'
 import { Breadcrumb } from '@/components/ui/breadcrumb'
@@ -22,18 +22,30 @@ export async function generateMetadata({
   }
 }
 
-const jsonLd = {
-  '@context': 'https://schema.org',
-  '@graph': [
-    webPageJsonLd("Conditions générales d'utilisation", description, '/conditions-generales'),
-    breadcrumbJsonLd([
-      { name: 'Accueil', path: '/' },
-      { name: "Conditions générales d'utilisation", path: '/conditions-generales' },
-    ]),
-  ],
+/** Le graphe suit la langue de la page (ses URL portent /en ou /fr). */
+function graphe(locale: string) {
+  return {
+    '@context': 'https://schema.org',
+    '@graph': [
+      webPageJsonLd("Conditions générales d'utilisation", description, '/conditions-generales', locale),
+      breadcrumbJsonLd(
+        [
+          { name: 'Accueil', path: '/' },
+          { name: "Conditions générales d'utilisation", path: '/conditions-generales' },
+        ],
+        locale
+      ),
+    ],
+  }
 }
 
-export default function CGUPage() {
+export default async function CGUPage({
+  params,
+}: {
+  params: Promise<{ locale: string }>
+}) {
+  const { locale } = await params
+  const jsonLd = graphe(locale)
   return (
     <>
       <script

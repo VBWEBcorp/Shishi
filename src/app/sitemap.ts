@@ -87,15 +87,23 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   try {
     await connectDB()
 
-    // Gallery page if enabled
+    // Galerie, si elle est activée dans l'espace admin.
+    //
+    // L'adresse était poussée SANS préfixe de langue (« /gallery »). Or le site n'existe
+    // qu'en /en et /fr : cette URL répond une redirection, jamais une page. C'est très
+    // probablement la « page avec redirection » relevée par Search Console dans le rapport
+    // d'août 2026 (§3) : un sitemap ne doit contenir que des adresses finales.
     const gallerySettings = await GallerySettings.findOne()
     if (gallerySettings?.enabled) {
-      pages.push({
-        url: `${baseUrl}/gallery`,
-        lastModified: new Date(),
-        changeFrequency: 'weekly',
-        priority: 0.7,
-      })
+      for (const locale of routing.locales) {
+        pages.push({
+          url: localizedUrl(locale, '/gallery'),
+          lastModified: new Date(),
+          changeFrequency: 'weekly',
+          priority: 0.6,
+          alternates: { languages: languageAlternates('/gallery') },
+        })
+      }
     }
 
     // Articles de blog réels (admin/MongoDB) si le blog est activé.

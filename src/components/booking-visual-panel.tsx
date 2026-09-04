@@ -1,10 +1,12 @@
 'use client'
 
 import { MapPin } from 'lucide-react'
-import { useTranslations } from 'next-intl'
+import { useLocale, useTranslations } from 'next-intl'
 import Image from 'next/image'
 
+import type { Locale } from '@/i18n/routing'
 import { activities } from '@/lib/activities'
+import { photoAlt } from '@/lib/photo-alt'
 
 const DEFAULT_IMAGE = '/photos/pool-panorama-portrait.webp'
 
@@ -20,12 +22,13 @@ export function activityBackground(slug?: string): string {
  */
 export function BookingVisualPanel({ image }: { image: string }) {
   const t = useTranslations('Booking')
+  const locale = useLocale() as Locale
   return (
     <div className="relative hidden flex-col justify-between overflow-hidden bg-foreground p-8 text-white lg:flex">
       {/* Fond réactif : change selon l'activité sélectionnée dans le formulaire. */}
       <Image
         src={image}
-        alt=""
+        alt={photoAlt(image, locale)}
         fill
         sizes="40vw"
         className="object-cover opacity-70 transition-opacity duration-500"

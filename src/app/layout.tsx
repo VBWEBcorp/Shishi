@@ -87,6 +87,14 @@ export default function RootLayout({
     >
       <head>
         <ThemeScript />
+        {/* Les sections de l'accueil arrivent en fondu au défilement (cf. <Reveal />),
+            donc masquées tant que le JavaScript ne les a pas vues passer. Sans JavaScript
+            (robot qui n'exécute rien, script bloqué), elles resteraient invisibles : cette
+            règle les rend simplement visibles. Trois lignes, et la page ne dépend plus du
+            JavaScript pour montrer son contenu. */}
+        <noscript>
+          <style>{'.reveal-defilement{opacity:1;transform:none}'}</style>
+        </noscript>
       </head>
       <body className="flex min-h-dvh flex-col">{children}</body>
     </html>

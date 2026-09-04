@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import Link from 'next/link'
+import { Link } from '@/i18n/navigation'
 
 import { breadcrumbJsonLd, webPageJsonLd } from '@/components/seo/json-ld'
 import { Breadcrumb } from '@/components/ui/breadcrumb'
@@ -22,25 +22,38 @@ export async function generateMetadata({
   }
 }
 
-const jsonLd = {
-  '@context': 'https://schema.org',
-  '@graph': [
-    webPageJsonLd(
-      'Politique de confidentialité',
-      description,
-      '/politique-de-confidentialite'
-    ),
-    breadcrumbJsonLd([
-      { name: 'Accueil', path: '/' },
-      {
-        name: 'Politique de confidentialité',
-        path: '/politique-de-confidentialite',
-      },
-    ]),
-  ],
+/** Le graphe suit la langue de la page (ses URL portent /en ou /fr). */
+function graphe(locale: string) {
+  return {
+    '@context': 'https://schema.org',
+    '@graph': [
+      webPageJsonLd(
+        'Politique de confidentialité',
+        description,
+        '/politique-de-confidentialite',
+        locale
+      ),
+      breadcrumbJsonLd(
+        [
+          { name: 'Accueil', path: '/' },
+          {
+            name: 'Politique de confidentialité',
+            path: '/politique-de-confidentialite',
+          },
+        ],
+        locale
+      ),
+    ],
+  }
 }
 
-export default function PrivacyPage() {
+export default async function PrivacyPage({
+  params,
+}: {
+  params: Promise<{ locale: string }>
+}) {
+  const { locale } = await params
+  const jsonLd = graphe(locale)
   return (
     <>
       <script

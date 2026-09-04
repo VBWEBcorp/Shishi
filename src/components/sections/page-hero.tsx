@@ -1,5 +1,10 @@
 'use client'
 
+import { useLocale } from 'next-intl'
+
+import type { Locale } from '@/i18n/routing'
+import { photoAlt } from '@/lib/photo-alt'
+
 import { motion } from 'framer-motion'
 import { ChevronRight, Home } from 'lucide-react'
 import Link from 'next/link'
@@ -19,13 +24,14 @@ type PageHeroProps = {
 }
 
 export function PageHero({ eyebrow, title, description, image, breadcrumb }: PageHeroProps) {
+  const locale = useLocale() as Locale
   return (
     <section className="relative isolate overflow-hidden">
       {/* Background image */}
       <div className="absolute inset-0" aria-hidden>
         <ResponsivePhoto
           value={image}
-          alt=""
+          alt={photoAlt(typeof image === 'string' ? image : undefined, locale, title)}
           fill
           sizes="100vw"
           priority

@@ -110,12 +110,12 @@ export default async function PricesPage({
   const jsonLd = {
     '@context': 'https://schema.org',
     '@graph': [
-      webPageJsonLd(t('h1'), t('metaDescription'), '/prices'),
+      webPageJsonLd(t('h1'), t('metaDescription'), '/prices', locale),
       breadcrumbJsonLd([
         { name: l === 'fr' ? 'Accueil' : 'Home', path: '/' },
         { name: t('breadcrumb'), path: '/prices' },
       ]),
-      offerCatalogJsonLd('Shi Shi Samui — Pricing & Membership', offers),
+      offerCatalogJsonLd('Shi Shi Samui Pricing & Membership', offers, locale),
     ],
   }
 

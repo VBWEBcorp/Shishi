@@ -2,6 +2,7 @@ import { notFound } from 'next/navigation'
 import { NextIntlClientProvider, hasLocale } from 'next-intl'
 import { setRequestLocale } from 'next-intl/server'
 
+import { GoogleAnalytics } from '@/components/analytics/google-analytics'
 import { RootWrapper } from '@/components/layout/root-wrapper'
 import { routing } from '@/i18n/routing'
 
@@ -27,6 +28,7 @@ export default async function LocaleLayout({
   return (
     <NextIntlClientProvider>
       <RootWrapper>{children}</RootWrapper>
+      <GoogleAnalytics />
     </NextIntlClientProvider>
   )
 }

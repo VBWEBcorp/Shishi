@@ -242,6 +242,19 @@
   .animate-reveal {
     animation: reveal-up 0.85s cubic-bezier(0.22, 1, 0.36, 1) both;
   }
+
+  /* Revelation au defilement des sections (accueil).
+     Remplace le composant framer-motion : meme rendu, zero JS d'animation.
+     Le composant <Reveal /> se contente de basculer data-vu quand la section
+     entre dans l'ecran (IntersectionObserver), le reste est du CSS. */
+  .reveal-defilement {
+    opacity: 0;
+    transform: translateY(var(--reveal-y, 26px));
+  }
+  .reveal-defilement[data-vu='true'] {
+    animation: reveal-defilement-in var(--reveal-duree, 0.6s)
+      cubic-bezier(0.22, 1, 0.36, 1) var(--reveal-delai, 0s) both;
+  }
 }
 
 @keyframes reveal-up {
@@ -257,6 +270,27 @@
 
 @media (prefers-reduced-motion: reduce) {
   .animate-reveal {
+    animation: none;
+  }
+}
+
+@keyframes reveal-defilement-in {
+  from {
+    opacity: 0;
+    transform: translateY(var(--reveal-y, 26px));
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Mouvement reduit : la section est simplement la, sans apparition. */
+@media (prefers-reduced-motion: reduce) {
+  .reveal-defilement,
+  .reveal-defilement[data-vu='true'] {
+    opacity: 1;
+    transform: none;
     animation: none;
   }
 }

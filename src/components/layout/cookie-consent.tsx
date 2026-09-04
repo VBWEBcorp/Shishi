@@ -2,15 +2,16 @@
 
 import { useEffect, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import Link from 'next/link'
 
 import { ActivityIcon } from '@/components/activity-icon'
+import { CONSENT_EVENT, CONSENT_KEY } from '@/components/analytics/google-analytics'
+import { Link } from '@/i18n/navigation'
 
 export function CookieConsent() {
   const [visible, setVisible] = useState(false)
 
   useEffect(() => {
-    const consent = localStorage.getItem('cookie-consent')
+    const consent = localStorage.getItem(CONSENT_KEY)
     if (!consent) {
       const timer = setTimeout(() => setVisible(true), 1500)
       return () => clearTimeout(timer)
@@ -18,7 +19,11 @@ export function CookieConsent() {
   }, [])
 
   const decide = (value: 'accepted' | 'refused') => {
-    localStorage.setItem('cookie-consent', value)
+    localStorage.setItem(CONSENT_KEY, value)
+    // La bannière ne faisait que ranger une valeur dans le navigateur : rien ne l'écoutait.
+    // Elle prévient maintenant la page, pour que la mesure d'audience démarre (ou reste
+    // éteinte) tout de suite, sans attendre un rechargement.
+    window.dispatchEvent(new Event(CONSENT_EVENT))
     setVisible(false)
   }
 

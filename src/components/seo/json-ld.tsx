@@ -1,7 +1,31 @@
+import { routing } from '@/i18n/routing'
 import { siteConfig, socialLinks } from '@/lib/seo'
 
 const ORG_ID = `${siteConfig.url}/#organization`
 const LOCALBUSINESS_ID = `${siteConfig.url}/#localbusiness`
+
+/**
+ * URL absolue d'une page, PRÉFIXE DE LANGUE COMPRIS.
+ *
+ * Toutes ces fonctions construisaient jusqu'ici `https://shi-shi-samui.com/tennis-court-lamai`,
+ * sans /en ni /fr. Or cette adresse n'existe pas : elle redirige. Les données structurées
+ * de la page française annonçaient donc à Google et aux moteurs d'IA une URL qui n'est pas
+ * celle de la page, et la même pour les deux langues : exactement le doublon que le rapport
+ * SEO d'août 2026 demande de faire disparaître (§3 et §7).
+ *
+ * Sans locale explicite, on retombe sur la langue par défaut du routage plutôt que sur une
+ * adresse sans langue, qui n'est jamais servie.
+ */
+function pageUrl(path: string, locale?: string) {
+  const l = locale && routing.locales.includes(locale as never) ? locale : routing.defaultLocale
+  const p = path === '/' ? '' : path
+  return `${siteConfig.url}/${l}${p}`
+}
+
+/** Nom de langue attendu par schema.org (inLanguage). */
+function langTag(locale?: string) {
+  return locale === 'fr' ? 'fr-FR' : 'en-US'
+}
 
 /** Adresse postale partagée (PostalAddress). */
 function postalAddress() {
@@ -76,18 +100,25 @@ export function webSiteJsonLd() {
   }
 }
 
-export function webPageJsonLd(name: string, description: string, path: string) {
+export function webPageJsonLd(
+  name: string,
+  description: string,
+  path: string,
+  locale?: string
+) {
   return {
     '@context': 'https://schema.org',
     '@type': 'WebPage',
     name,
     description,
-    url: `${siteConfig.url}${path}`,
+    url: pageUrl(path, locale),
+    inLanguage: langTag(locale),
     isPartOf: {
       '@type': 'WebSite',
       name: siteConfig.name,
       url: siteConfig.url,
     },
+    about: { '@id': LOCALBUSINESS_ID },
   }
 }
 
@@ -111,7 +142,8 @@ export function serviceJsonLd(
   name: string,
   description: string,
   path: string,
-  image?: string
+  image?: string,
+  locale?: string
 ) {
   return {
     '@context': 'https://schema.org',
@@ -121,7 +153,7 @@ export function serviceJsonLd(
     ...(image ? { image: `${siteConfig.url}${image}` } : {}),
     areaServed: siteConfig.areaServed.map((a) => ({ '@type': 'Place', name: a })),
     provider: { '@id': LOCALBUSINESS_ID },
-    url: `${siteConfig.url}${path}`,
+    url: pageUrl(path, locale),
   }
 }
 
@@ -133,7 +165,8 @@ export function sportsActivityLocationJsonLd(
   name: string,
   description: string,
   path: string,
-  image?: string
+  image?: string,
+  locale?: string
 ) {
   return {
     '@context': 'https://schema.org',
@@ -141,7 +174,7 @@ export function sportsActivityLocationJsonLd(
     name: `${siteConfig.name} — ${name}`,
     description,
     ...(image ? { image: `${siteConfig.url}${image}` } : {}),
-    url: `${siteConfig.url}${path}`,
+    url: pageUrl(path, locale),
     telephone: siteConfig.phone,
     address: postalAddress(),
     geo: {
@@ -159,7 +192,8 @@ export function healthClubJsonLd(
   name: string,
   description: string,
   path: string,
-  image?: string
+  image?: string,
+  locale?: string
 ) {
   return {
     '@context': 'https://schema.org',
@@ -167,7 +201,7 @@ export function healthClubJsonLd(
     name: `${siteConfig.name} — ${name}`,
     description,
     ...(image ? { image: `${siteConfig.url}${image}` } : {}),
-    url: `${siteConfig.url}${path}`,
+    url: pageUrl(path, locale),
     telephone: siteConfig.phone,
     address: postalAddress(),
     geo: {
@@ -185,7 +219,8 @@ export function restaurantJsonLd(
   name: string,
   description: string,
   path: string,
-  image?: string
+  image?: string,
+  locale?: string
 ) {
   return {
     '@context': 'https://schema.org',
@@ -193,7 +228,7 @@ export function restaurantJsonLd(
     name: `${siteConfig.name} — ${name}`,
     description,
     ...(image ? { image: `${siteConfig.url}${image}` } : {}),
-    url: `${siteConfig.url}${path}`,
+    url: pageUrl(path, locale),
     telephone: siteConfig.phone,
     address: postalAddress(),
     geo: {
@@ -210,13 +245,14 @@ export function restaurantJsonLd(
 /** Catalogue d'offres (page Prices) — tarifs réellement affichés uniquement. */
 export function offerCatalogJsonLd(
   name: string,
-  offers: { name: string; price: number; unit?: string }[]
+  offers: { name: string; price: number; unit?: string }[],
+  locale?: string
 ) {
   return {
     '@context': 'https://schema.org',
     '@type': 'OfferCatalog',
     name,
-    url: `${siteConfig.url}/prices`,
+    url: pageUrl('/prices', locale),
     provider: { '@id': LOCALBUSINESS_ID },
     itemListElement: offers.map((o) => ({
       '@type': 'Offer',
@@ -229,7 +265,10 @@ export function offerCatalogJsonLd(
   }
 }
 
-export function breadcrumbJsonLd(items: { name: string; path: string }[]) {
+export function breadcrumbJsonLd(
+  items: { name: string; path: string }[],
+  locale?: string
+) {
   return {
     '@context': 'https://schema.org',
     '@type': 'BreadcrumbList',
@@ -237,7 +276,7 @@ export function breadcrumbJsonLd(items: { name: string; path: string }[]) {
       '@type': 'ListItem',
       position: i + 1,
       name: item.name,
-      item: `${siteConfig.url}${item.path}`,
+      item: pageUrl(item.path, locale),
     })),
   }
 }

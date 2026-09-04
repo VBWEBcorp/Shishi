@@ -45,7 +45,7 @@ export function renderNewsletter({ body, lang, imageUrl, buttonText, buttonLink,
     .join('')
 
   const image = imageUrl
-    ? `<tr><td style="padding:0"><img src="${escapeHtml(imageUrl)}" alt="" width="560" style="display:block;width:100%;height:auto;border:0"/></td></tr>`
+    ? `<tr><td style="padding:0"><img src="${escapeHtml(imageUrl)}" alt="${lang === 'en' ? 'Shi Shi Samui in Lamai, Koh Samui' : 'Shi Shi Samui a Lamai, Koh Samui'}" width="560" style="display:block;width:100%;height:auto;border:0"/></td></tr>`
     : ''
 
   const button =

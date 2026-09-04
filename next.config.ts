@@ -19,6 +19,12 @@ const SLUG_REDIRECTS: { from: string; to: string }[] = [
 const nextConfig: NextConfig = {
   compress: true,
   poweredByHeader: false,
+  // Une page = une adresse, sans barre oblique finale (rapport SEO août 2026, §3 :
+  // /fr et /fr/ apparaissaient comme deux pages dans Search Console). C'est déjà le
+  // défaut de Next, mais l'écrire noir sur blanc évite qu'un réglage d'hébergeur ou
+  // une mise à jour ne le retourne sans que personne ne s'en aperçoive. La redirection
+  // elle-même est posée dans src/middleware.ts, en amont de tout le reste.
+  trailingSlash: false,
   images: {
     formats: ['image/avif', 'image/webp'],
     minimumCacheTTL: 2592000,

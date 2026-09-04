@@ -1,5 +1,10 @@
 'use client'
 
+import { useLocale } from 'next-intl'
+
+import type { Locale } from '@/i18n/routing'
+import { photoAlt } from '@/lib/photo-alt'
+
 import { AnimatePresence, motion } from 'framer-motion'
 import { ArrowRight, Star } from 'lucide-react'
 import Link from 'next/link'
@@ -26,6 +31,7 @@ function splitTitle(title: string): { lead: string; accent: string } {
 }
 
 export function HeroSection() {
+  const locale = useLocale() as Locale
   const { data } = useContent('home', { hero: defaults })
   const hero = data.hero ?? defaults
   // Chaque entrée peut être une simple URL ou la paire { desktop, mobile }.
@@ -56,7 +62,7 @@ export function HeroSection() {
           >
             <ResponsivePhoto
               value={images[current]}
-              alt=""
+              alt={photoAlt(typeof images[current] === 'string' ? images[current] : undefined, locale)}
               fill
               sizes="100vw"
               priority={current === 0}

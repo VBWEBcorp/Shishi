@@ -6,6 +6,7 @@ import { useLocale, useTranslations } from 'next-intl'
 import Image from 'next/image'
 
 import { ActivityIcon } from '@/components/activity-icon'
+import { BackgroundVideo } from '@/components/background-video'
 import { WeatherWidget } from '@/components/weather-widget'
 import type { Locale } from '@/i18n/routing'
 import { activities } from '@/lib/activities'
@@ -66,21 +67,14 @@ export function ComingSoon() {
         sizes="100vw"
         className="object-cover"
       />
-      <video
-        autoPlay
-        muted
-        loop
-        playsInline
-        preload="auto"
+      <BackgroundVideo
+        src="/videos/hero-pool.mp4"
         poster="/photos/pool-panorama-portrait.webp"
-        onCanPlay={() => setVideoReady(true)}
-        aria-hidden
-        className={`absolute inset-0 size-full object-cover transition-opacity duration-[1200ms] motion-reduce:hidden ${
+        onReady={() => setVideoReady(true)}
+        className={`absolute inset-0 size-full object-cover transition-opacity duration-[1200ms] ${
           videoReady ? 'opacity-100' : 'opacity-0'
         }`}
-      >
-        <source src="/videos/hero-pool.mp4" type="video/mp4" />
-      </video>
+      />
 
       {/* Voiles : dégradé vertical pour le contraste + vignette radiale premium */}
       <div

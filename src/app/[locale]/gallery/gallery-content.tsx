@@ -4,6 +4,10 @@ import { useState } from 'react'
 import { motion } from 'framer-motion'
 import Image from 'next/image'
 import { Play, X } from 'lucide-react'
+import { useLocale } from 'next-intl'
+
+import type { Locale } from '@/i18n/routing'
+import { photoAlt } from '@/lib/photo-alt'
 
 interface GalleryItem {
   _id: string
@@ -46,6 +50,7 @@ function thumbFor(item: GalleryItem): string | null {
 }
 
 export default function GalleryContent({ initialSettings, initialImages }: Props) {
+  const locale = useLocale() as Locale
   const [settings] = useState<GallerySettings>(initialSettings)
   const [items] = useState<GalleryItem[]>(initialImages)
   const [lightbox, setLightbox] = useState<GalleryItem | null>(null)
@@ -66,7 +71,7 @@ export default function GalleryContent({ initialSettings, initialImages }: Props
       <section className="relative flex min-h-[340px] items-center overflow-hidden sm:min-h-[400px] lg:min-h-[440px]">
         <div className="absolute inset-0">
           {settings.heroImage ? (
-            <Image src={settings.heroImage} alt="" fill sizes="100vw" priority className="object-cover" />
+            <Image src={settings.heroImage} alt={photoAlt(settings.heroImage, locale, settings.title)} fill sizes="100vw" priority className="object-cover" />
           ) : (
             <div className="h-full w-full bg-gradient-to-br from-accent/25 via-foreground/10 to-background" />
           )}

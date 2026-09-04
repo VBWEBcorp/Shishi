@@ -1,6 +1,8 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+
+import { fetchMarketing } from '@/lib/marketing-client'
 import { safeUrl } from '@/lib/utils'
 
 interface BannerData {
@@ -56,18 +58,20 @@ export function MarketingBanner() {
   const [banner, setBanner] = useState<BannerData | null>(null)
 
   useEffect(() => {
-    const fetchBanner = async () => {
-      try {
-        const res = await fetch('/api/marketing')
-        const data = await res.json()
-        if (data?.banner?.enabled && data.banner.text) {
-          setBanner(data.banner)
-        }
-      } catch {
+    let annule = false
+    // Requête partagée avec <MarketingPopup /> : un seul appel à /api/marketing par page.
+    fetchMarketing()
+      .then((data) => {
+        const d = data as { banner?: BannerData }
+        if (annule) return
+        if (d?.banner?.enabled && d.banner.text) setBanner(d.banner)
+      })
+      .catch(() => {
         // silently fail
-      }
+      })
+    return () => {
+      annule = true
     }
-    fetchBanner()
   }, [])
 
   if (!banner) return null

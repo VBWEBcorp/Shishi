@@ -2,11 +2,14 @@
 
 import { motion, useMotionValue, useTransform, animate } from 'framer-motion'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
+import { useLocale } from 'next-intl'
 import Image from 'next/image'
 import { useCallback, useEffect, useRef, useState } from 'react'
 
 import { Button } from '@/components/ui/button'
 import { useContent } from '@/hooks/use-content'
+import type { Locale } from '@/i18n/routing'
+import { photoAlt } from '@/lib/photo-alt'
 import { galleryContent } from '@/lib/site-content'
 
 const defaultImages = galleryContent.images
@@ -16,6 +19,7 @@ const GAP = 20
 const CARD_WIDTH = 340
 
 export function GalleryCarousel() {
+  const locale = useLocale() as Locale
   const { data } = useContent('home', { gallery: defaults })
   const gallery = data.gallery ?? defaults
   const images = gallery.images ?? defaultImages
@@ -82,7 +86,7 @@ export function GalleryCarousel() {
                   <div className="relative aspect-[4/3] overflow-hidden">
                     <Image
                       src={src}
-                      alt=""
+                      alt={photoAlt(src, locale)}
                       fill
                       sizes="340px"
                       loading="lazy"

@@ -7,73 +7,18 @@ import { FaqAccordion } from '@/components/faq-accordion'
 import { SectionEyebrow } from '@/components/section-eyebrow'
 import type { Locale } from '@/i18n/routing'
 
-type Bilingual = { en: string; fr: string }
-type Item = { q: Bilingual; a: Bilingual }
+import { HOME_FAQ, type Bilingue } from '@/lib/home-faq'
 
-const EYEBROW: Bilingual = { en: 'Frequently asked questions', fr: 'Questions fréquentes' }
-const TITLE: Bilingual = {
+const EYEBROW: Bilingue = { en: 'Frequently asked questions', fr: 'Questions fréquentes' }
+const TITLE: Bilingue = {
   en: 'Everything you need to know before you visit',
   fr: 'Tout ce qu’il faut savoir avant de venir',
 }
 
-const ITEMS: Item[] = [
-  {
-    q: { en: 'How do I book an activity?', fr: 'Comment réserver une activité ?' },
-    a: {
-      en: 'Pick an activity, choose your date and time slot, and confirm online in a few taps. You receive an instant confirmation by email.',
-      fr: 'Choisissez une activité, votre date et votre créneau, et confirmez en ligne en quelques clics. Vous recevez une confirmation immédiate par e-mail.',
-    },
-  },
-  {
-    q: { en: 'Do I need to be a member?', fr: 'Faut-il être adhérent ?' },
-    a: {
-      en: 'No. Shi Shi is open to everyone: book a single session or a day pass without any membership. Memberships simply offer better rates for regulars.',
-      fr: 'Non. Shi Shi est ouvert à tous : réservez une session ou un pass journée sans abonnement. Les abonnements offrent simplement de meilleurs tarifs aux habitués.',
-    },
-  },
-  {
-    q: { en: 'Are there day passes?', fr: 'Proposez-vous des pass journée ?' },
-    a: {
-      en: 'Yes. A pool day pass and fitness day passes are available, as well as weekly and monthly options for the gym.',
-      fr: 'Oui. Un pass journée piscine et des pass journée fitness sont disponibles, ainsi que des formules à la semaine et au mois pour la salle.',
-    },
-  },
-  {
-    q: { en: 'How does the kids club work?', fr: 'Comment fonctionne le kids club ?' },
-    a: {
-      en: 'A safe, supervised space with activities for children, plus babysitting on request — so the whole family can enjoy the club.',
-      fr: 'Un espace sûr et encadré avec des activités pour les enfants, et du babysitting sur demande — pour que toute la famille profite du club.',
-    },
-  },
-  {
-    q: { en: 'What is pickleball?', fr: 'Qu’est-ce que le pickleball ?' },
-    a: {
-      en: 'A fast, fun racket sport that mixes tennis, badminton and ping-pong. Beginner-friendly and very social, on dedicated courts in Lamai.',
-      fr: 'Un sport de raquette rapide et fun mêlant tennis, badminton et ping-pong. Accessible et très convivial, sur des terrains dédiés à Lamai.',
-    },
-  },
-  {
-    q: { en: 'Is the restaurant open to everyone?', fr: 'Le restaurant est-il ouvert à tous ?' },
-    a: {
-      en: 'Yes. The healthy restaurant and pool bar welcome members and visitors alike, all day long — no booking needed to come and eat.',
-      fr: 'Oui. Le restaurant healthy et le pool bar accueillent adhérents et visiteurs, toute la journée — aucune réservation nécessaire pour venir manger.',
-    },
-  },
-  {
-    q: { en: 'Where are you located?', fr: 'Où êtes-vous situés ?' },
-    a: {
-      en: 'In Lamai, in the south of Koh Samui, Thailand — a short drive from the main beaches and easy to reach for expats and visitors.',
-      fr: 'À Lamai, au sud de Koh Samui, en Thaïlande — à quelques minutes des plages principales et facile d’accès pour les expatriés et les visiteurs.',
-    },
-  },
-  {
-    q: { en: 'Can I rent equipment?', fr: 'Peut-on louer du matériel ?' },
-    a: {
-      en: 'Yes. Rackets and essential gear are available to rent on site for tennis and pickleball, so you can simply turn up and play.',
-      fr: 'Oui. Raquettes et équipement essentiel sont disponibles à la location sur place pour le tennis et le pickleball : venez les mains dans les poches.',
-    },
-  },
-]
+// Les questions vivent dans src/lib/home-faq.ts : la page d’accueil les déclare aussi en
+// JSON-LD (FAQPage), et une réponse modifiée ici l’est donc au même instant pour Google
+// et pour les moteurs d’IA. Sans cette source commune, les deux finissent par diverger.
+const ITEMS = HOME_FAQ
 
 /** FAQ deux colonnes, accordéon animé « Framer » (cf. FaqAccordion). */
 export function FaqSection() {

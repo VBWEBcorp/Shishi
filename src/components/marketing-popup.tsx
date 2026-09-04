@@ -3,6 +3,8 @@
 import { useEffect, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { X, ArrowRight } from 'lucide-react'
+
+import { fetchMarketing } from '@/lib/marketing-client'
 import { safeUrl } from '@/lib/utils'
 
 interface PopupData {
@@ -25,21 +27,26 @@ export function MarketingPopup() {
   useEffect(() => {
     if (sessionStorage.getItem('marketing-popup-dismissed')) return
 
-    const fetchPopup = async () => {
-      try {
-        const res = await fetch('/api/marketing')
-        const data = await res.json()
-        if (!data.enabled) return
+    let timer: ReturnType<typeof setTimeout> | undefined
+    let annule = false
 
-        setPopup(data)
-        const timer = setTimeout(() => setVisible(true), (data.delay || 5) * 1000)
-        return () => clearTimeout(timer)
-      } catch {
+    // Requête partagée avec <MarketingBanner /> : la page n'interroge /api/marketing
+    // qu'une seule fois, au lieu de deux appels identiques au même instant.
+    fetchMarketing()
+      .then((data) => {
+        const d = data as PopupData
+        if (annule || !d?.enabled) return
+        setPopup(d)
+        timer = setTimeout(() => setVisible(true), (d.delay || 5) * 1000)
+      })
+      .catch(() => {
         // Silently fail
-      }
-    }
+      })
 
-    fetchPopup()
+    return () => {
+      annule = true
+      if (timer) clearTimeout(timer)
+    }
   }, [])
 
   const handleClose = () => {

@@ -37,7 +37,7 @@ export async function generateMetadata({
     openGraph: {
       title: t('metaTitle'),
       description: t('metaDescription'),
-      url: `${siteConfig.url}/contact-location`,
+      url: `${siteConfig.url}/${locale}/contact-location`,
       siteName: siteConfig.name,
       type: 'website',
       images: [{ url: '/photos/pool-sala-portrait.webp', alt: 'Shi Shi Samui location in Lamai' }],
@@ -58,7 +58,7 @@ export default async function ContactPage({
     '@context': 'https://schema.org',
     '@graph': [
       localBusinessJsonLd(),
-      webPageJsonLd(t('h1'), t('metaDescription'), '/contact-location'),
+      webPageJsonLd(t('h1'), t('metaDescription'), '/contact-location', locale),
       breadcrumbJsonLd([
         { name: locale === 'fr' ? 'Accueil' : 'Home', path: '/' },
         { name: t('breadcrumb'), path: '/contact-location' },

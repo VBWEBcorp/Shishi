@@ -2,11 +2,14 @@
 
 import { motion } from 'framer-motion'
 import { ArrowRight } from 'lucide-react'
+import { useLocale } from 'next-intl'
 import Image from 'next/image'
 import Link from 'next/link'
 
 import { Button } from '@/components/ui/button'
 import { useContent } from '@/hooks/use-content'
+import type { Locale } from '@/i18n/routing'
+import { photoAlt } from '@/lib/photo-alt'
 import { ctaContent } from '@/lib/site-content'
 
 const ease = [0.22, 1, 0.36, 1] as const
@@ -22,6 +25,7 @@ const col1Images = ctaContent.scrollImages.col1
 const col2Images = ctaContent.scrollImages.col2
 
 function ScrollColumn({ images, direction, speed }: { images: string[]; direction: 'up' | 'down'; speed: number }) {
+  const locale = useLocale() as Locale
   // Duplicate once for seamless loop (2 copies, translate -50%)
   const doubled = [...images, ...images]
   const from = direction === 'up' ? '0%' : '-50%'
@@ -48,7 +52,7 @@ function ScrollColumn({ images, direction, speed }: { images: string[]; directio
           >
             <Image
               src={src}
-              alt=""
+              alt={photoAlt(src, locale)}
               fill
               sizes="150px"
               loading="lazy"

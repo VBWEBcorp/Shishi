@@ -12,11 +12,13 @@ import { StorySection, ValuesBand } from '@/components/sections/shishi-home'
 import { TestimonialsSection } from '@/components/sections/testimonials-section'
 import { Reveal } from '@/components/reveal'
 import {
+  faqJsonLd,
   localBusinessJsonLd,
   organizationJsonLd,
   webPageJsonLd,
   webSiteJsonLd,
 } from '@/components/seo/json-ld'
+import { homeFaqEntries } from '@/lib/home-faq'
 import { LAUNCHED, PREVIEW_CODE, PREVIEW_COOKIE } from '@/lib/launch'
 import { alternatesFor, siteConfig } from '@/lib/seo'
 
@@ -94,7 +96,13 @@ const graphePour = (l: 'en' | 'fr') => ({
     webSiteJsonLd(),
     organizationJsonLd(),
     localBusinessJsonLd(),
-    webPageJsonLd(siteConfig.name, DESCRIPTION[l], '/'),
+    webPageJsonLd(TITLE[l], DESCRIPTION[l], '/', l),
+    // La FAQ de l'accueil est affichée depuis toujours, mais n'était déclarée nulle part.
+    // C'est le premier geste GEO demandé par le rapport d'août 2026 (§7) : donner des
+    // réponses directes. Une question posée à un moteur d'IA (faut-il être membre, peut-on
+    // louer une raquette, où est le club) trouve maintenant la réponse du club, dans la
+    // langue de la page, au lieu d'une page à interpréter.
+    faqJsonLd(homeFaqEntries(l)),
   ],
 })
 

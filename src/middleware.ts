@@ -23,6 +23,24 @@ function isPublicDuringComingSoon(pathname: string): boolean {
 }
 
 export default function middleware(req: NextRequest) {
+  // UNE SEULE ADRESSE PAR PAGE : barre oblique finale retirée.
+  //
+  // Rapport SEO d'août 2026 (§3) : Search Console listait séparément
+  // « https://shi-shi-samui.com/fr/ » et « https://shi-shi-samui.com/fr », donc deux
+  // pages là où il n'y en a qu'une, avec le signal de popularité coupé en deux. Next
+  // sait faire cette redirection, mais elle arrive APRÈS le middleware d'internationalisation
+  // et l'hébergeur peut la court-circuiter : on tranche donc ici, en tout premier, avant
+  // le code d'aperçu et avant next-intl.
+  //
+  // 308 (et non 302) : permanent, la méthode est conservée, et Google la traite comme un 301.
+  // L'accueil « / » est exclu : il n'a pas d'autre forme que la barre oblique.
+  const chemin = req.nextUrl.pathname
+  if (chemin.length > 1 && chemin.endsWith('/')) {
+    const propre = req.nextUrl.clone()
+    propre.pathname = chemin.replace(/\/+$/, '')
+    return NextResponse.redirect(propre, 308)
+  }
+
   // Déverrouillage par lien : « …/?code=XXXX » → on pose le cookie d'aperçu puis
   // on redirige vers l'URL propre (sans le paramètre). Pratique pour partager
   // un seul lien au client.

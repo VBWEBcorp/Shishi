@@ -96,6 +96,11 @@ export function jsonLdScript(data: unknown): string {
 // Utilisé par le sitemap au lancement (cf. sitemap.ts, drapeau LAUNCHED).
 export const routes = [
   '/',
+  // Page carrefour des activités : elle lie les sept pages service et reçoit leurs liens
+  // de retour. Elle était absente du sitemap alors qu'elle est liée depuis le menu, donc
+  // connue de Google, mais jamais proposée (rapport SEO août 2026, §7 : « vérifier le
+  // sitemap et les liens internes »).
+  '/services',
   '/tennis-court-lamai',
   '/pickleball-club-lamai',
   '/fitness-gym-lamai',

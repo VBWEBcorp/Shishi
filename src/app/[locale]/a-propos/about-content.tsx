@@ -12,6 +12,7 @@ import { useContent } from '@/hooks/use-content'
 import { Link } from '@/i18n/navigation'
 import type { Locale } from '@/i18n/routing'
 import { hasImage, type ResponsiveImageValue } from '@/lib/responsive-image'
+import { photoAlt } from '@/lib/photo-alt'
 import { images as siteImages } from '@/lib/site-content'
 
 const ease = [0.22, 1, 0.36, 1] as const
@@ -37,6 +38,7 @@ function DiamondRule({ className = '' }: { className?: string }) {
 
 function AboutHero({ cms }: { cms?: AboutHeroContent }) {
   const t = useTranslations('About')
+  const l = useLocale() as Locale
   const tNav = useTranslations('Nav')
   const stats = t.raw('stats') as { value: string; label: string }[]
   // `image` peut être une URL ou la paire { desktop, mobile } saisie en admin.
@@ -48,7 +50,7 @@ function AboutHero({ cms }: { cms?: AboutHeroContent }) {
     <section className="relative isolate min-h-[88vh] overflow-hidden">
       <ResponsivePhoto
         value={heroImage}
-        alt=""
+        alt={photoAlt(typeof heroImage === 'string' ? heroImage : undefined, l, t('hero.eyebrow'))}
         fill
         priority
         sizes="100vw"
@@ -129,6 +131,7 @@ function AboutHero({ cms }: { cms?: AboutHeroContent }) {
 
 function StorySection({ cms }: { cms?: Record<string, string> }) {
   const t = useTranslations('About.story')
+  const l = useLocale() as Locale
   const title = cms?.title || t('title')
   const p1 = cms?.paragraph1 || t('p1')
   const p2 = cms?.paragraph2 || t('p2')
@@ -142,7 +145,7 @@ function StorySection({ cms }: { cms?: Record<string, string> }) {
           transition={{ duration: 0.6, ease }}
           className="relative aspect-[4/3] overflow-hidden rounded-3xl ring-1 ring-border lg:aspect-[4/5]"
         >
-          <Image src="/photos/pool-grand-angle-portrait.webp" alt="" fill sizes="(min-width:1024px) 50vw, 100vw" className="object-cover" />
+          <Image src="/photos/pool-grand-angle-portrait.webp" alt={photoAlt('/photos/pool-grand-angle-portrait.webp', l)} fill sizes="(min-width:1024px) 50vw, 100vw" className="object-cover" />
           <div className="pointer-events-none absolute inset-0 bg-gradient-to-tr from-foreground/20 via-transparent to-transparent" aria-hidden />
         </motion.div>
 
@@ -226,6 +229,7 @@ function ComplexSection({ cms }: { cms?: Record<string, string> }) {
  */
 function AboutGallery({ images }: { images?: ResponsiveImageValue[] }) {
   const t = useTranslations('About')
+  const l = useLocale() as Locale
   const shown = (images ?? []).filter((img) => hasImage(img))
   if (shown.length === 0) return null
 
@@ -245,7 +249,7 @@ function AboutGallery({ images }: { images?: ResponsiveImageValue[] }) {
             >
               <ResponsivePhoto
                 value={img}
-                alt=""
+                alt={photoAlt(typeof img === 'string' ? img : undefined, l)}
                 fill
                 sizes="(min-width:1024px) 25vw, (min-width:640px) 50vw, 100vw"
                 className="absolute inset-0 h-full w-full object-cover"

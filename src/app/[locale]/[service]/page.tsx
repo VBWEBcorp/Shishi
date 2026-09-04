@@ -56,7 +56,7 @@ export async function generateMetadata({
     openGraph: {
       title: metaTitle,
       description: metaDescription,
-      url: `${siteConfig.url}${svc.path}`,
+      url: `${siteConfig.url}/${l}${svc.path}`,
       siteName: siteConfig.name,
       type: 'website',
       images: [{ url: svc.image, alt: svc.altImages[0] }],
@@ -78,28 +78,31 @@ function serviceGraph(svc: Activity, l: Locale) {
   const img = svc.image
 
   const base: Record<string, unknown>[] = [
-    webPageJsonLd(svc.h1[l], desc, path),
-    breadcrumbJsonLd([
-      { name: l === 'fr' ? 'Accueil' : 'Home', path: '/' },
-      { name, path },
-    ]),
+    webPageJsonLd(svc.h1[l], desc, path, l),
+    breadcrumbJsonLd(
+      [
+        { name: l === 'fr' ? 'Accueil' : 'Home', path: '/' },
+        { name, path },
+      ],
+      l
+    ),
   ]
 
   switch (svc.schema) {
     case 'sportsActivity':
-      base.push(serviceJsonLd(svc.h1[l], desc, path, img))
-      base.push(sportsActivityLocationJsonLd(name, desc, path, img))
+      base.push(serviceJsonLd(svc.h1[l], desc, path, img, l))
+      base.push(sportsActivityLocationJsonLd(name, desc, path, img, l))
       break
     case 'healthClub':
-      base.push(healthClubJsonLd(name, desc, path, img))
-      base.push(serviceJsonLd(svc.h1[l], desc, path, img))
+      base.push(healthClubJsonLd(name, desc, path, img, l))
+      base.push(serviceJsonLd(svc.h1[l], desc, path, img, l))
       break
     case 'restaurant':
-      base.push(restaurantJsonLd(name, desc, path, img))
+      base.push(restaurantJsonLd(name, desc, path, img, l))
       break
     case 'service':
     default:
-      base.push(serviceJsonLd(svc.h1[l], desc, path, img))
+      base.push(serviceJsonLd(svc.h1[l], desc, path, img, l))
       break
   }
 

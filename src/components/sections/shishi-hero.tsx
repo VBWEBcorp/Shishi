@@ -1,12 +1,14 @@
 'use client'
 
+import dynamic from 'next/dynamic'
 import { useEffect, useState } from 'react'
 import { MapPin, Search } from 'lucide-react'
 import { useLocale, useTranslations } from 'next-intl'
 
 import { ActivityIcon } from '@/components/activity-icon'
+import { BackgroundVideo } from '@/components/background-video'
 import { ActivitySelect } from '@/components/activity-select'
-import { BookingDialog } from '@/components/booking-dialog'
+
 import { DatePopover } from '@/components/date-popover'
 import { WeatherWidget } from '@/components/weather-widget'
 import { ResponsivePhoto } from '@/components/responsive-photo'
@@ -14,10 +16,37 @@ import { useContent } from '@/hooks/use-content'
 import { Link } from '@/i18n/navigation'
 import type { Locale } from '@/i18n/routing'
 import { activities } from '@/lib/activities'
+import { photoAlt } from '@/lib/photo-alt'
 import { hasImage, type ResponsiveImageValue } from '@/lib/responsive-image'
+
+/**
+ * Modale de réservation, chargée SEULEMENT quand le visiteur clique sur « Rechercher ».
+ *
+ * Elle tire tout le formulaire de /book-now (52 Ko de source à elle seule, plus la liste
+ * des indicatifs téléphoniques, le sélecteur de date et le sélecteur d'activité). Tout
+ * cela partait dans le JavaScript initial de l'accueil alors que la modale reste fermée
+ * tant qu'on ne clique pas. Le rapport SEO d'août 2026 (§7) demande précisément d'alléger
+ * les scripts chargés au démarrage : c'est le plus gros morceau de la page.
+ *
+ * `ssr: false` : une modale fermée n'a rien à rendre côté serveur.
+ */
+const BookingDialog = dynamic(
+  () => import('@/components/booking-dialog').then((m) => m.BookingDialog),
+  { ssr: false }
+)
 
 /** Vidéo drone livrée avec le site, tant que le club n'en fournit pas d'autre. */
 const DEFAULT_HERO_VIDEO = '/videos/hero-pool.mp4'
+
+/**
+ * Photo de fond par défaut du hero.
+ *
+ * Le hero n'affichait une photo QUE si une image avait été déposée dans l'espace admin.
+ * Sans elle, le premier écran de l'accueil était un aplat noir jusqu'à ce que la vidéo
+ * démarre. Sur mobile, où la vidéo ne part plus (cf. <BackgroundVideo />), il le serait
+ * resté. Cette photo est aussi le poster de la vidéo : même image, aucune rupture.
+ */
+const DEFAULT_HERO_IMAGE = '/photos/pool-panorama-portrait.webp'
 
 /** Hero de l'accueil, piloté par l'espace admin. */
 type HeroContent = {
@@ -86,33 +115,24 @@ export function ShishiHero() {
       {/* Fond du hero, remplaçable depuis l'espace admin : une vidéo si le club
           en fournit une, sinon une photo. La photo sert aussi de repli quand le
           navigateur refuse l'autoplay (mouvement réduit). */}
-      {hasImage(hero.image) && (
-        <ResponsivePhoto
-          value={hero.image}
-          alt=""
-          fill
-          priority
-          sizes="100vw"
-          className="absolute inset-0 h-full w-full object-cover"
-        />
-      )}
-      {heroVideo && (
-        <video
-          key={heroVideo}
-          autoPlay
-          muted
-          loop
-          playsInline
-          preload="auto"
-          onCanPlay={() => setVideoReady(true)}
-          aria-hidden
-          className={`absolute inset-0 size-full object-cover transition-opacity duration-1000 motion-reduce:hidden ${
-            videoReady ? 'opacity-100' : 'opacity-0'
-          }`}
-        >
-          <source src={heroVideo} type="video/mp4" />
-        </video>
-      )}
+      <ResponsivePhoto
+        value={hasImage(hero.image) ? hero.image : DEFAULT_HERO_IMAGE}
+        alt={photoAlt(hasImage(hero.image) ? undefined : DEFAULT_HERO_IMAGE, l)}
+        fill
+        priority
+        sizes="100vw"
+        className="absolute inset-0 h-full w-full object-cover"
+      />
+      {/* Chargée après la page, jamais avant : cf. <BackgroundVideo />. */}
+      <BackgroundVideo
+        key={heroVideo}
+        src={heroVideo}
+        poster={hasImage(hero.image) ? undefined : DEFAULT_HERO_IMAGE}
+        onReady={() => setVideoReady(true)}
+        className={`absolute inset-0 size-full object-cover transition-opacity duration-1000 ${
+          videoReady ? 'opacity-100' : 'opacity-0'
+        }`}
+      />
       {/* Voile neutre : assez de contraste pour le texte, sans teinte chaude */}
       <div
         className="absolute inset-0 bg-gradient-to-b from-[oklch(0.2_0_0/0.4)] via-[oklch(0.2_0_0/0.32)] to-[oklch(0.16_0_0/0.86)]"
@@ -206,13 +226,17 @@ export function ShishiHero() {
 
       </div>
 
-      {/* Popup de réservation — pré-rempli avec l'activité + la date choisies */}
-      <BookingDialog
-        open={bookingOpen}
-        onClose={() => setBookingOpen(false)}
-        activity={activitySlug}
-        date={date}
-      />
+      {/* Popup de réservation, pré-rempli avec l'activité et la date choisies.
+          Monté au premier clic seulement : sans cette condition, le chargement
+          différé n'éviterait que le rendu, pas le téléchargement du morceau. */}
+      {bookingOpen && (
+        <BookingDialog
+          open={bookingOpen}
+          onClose={() => setBookingOpen(false)}
+          activity={activitySlug}
+          date={date}
+        />
+      )}
     </section>
   )
 }

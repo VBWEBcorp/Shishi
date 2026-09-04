@@ -5,6 +5,7 @@ import { getTranslations, setRequestLocale } from 'next-intl/server'
 import Image from 'next/image'
 
 import { ActivityIcon } from '@/components/activity-icon'
+import { BackgroundVideo } from '@/components/background-video'
 import { HeroCurve } from '@/components/hero-curve'
 import {
   breadcrumbJsonLd,
@@ -47,7 +48,7 @@ export async function generateMetadata({
     openGraph: {
       title: t('seoTitle'),
       description: t('seoDescription'),
-      url: `${siteConfig.url}/book-now`,
+      url: `${siteConfig.url}/${locale}/book-now`,
       siteName: siteConfig.name,
       type: 'website',
       images: [{ url: '/photos/tennis-court-portrait.webp', alt: 'Booking tennis and pickleball at Shi Shi Samui' }],
@@ -83,12 +84,15 @@ export default async function BookNowPage({
   const jsonLd = {
     '@context': 'https://schema.org',
     '@graph': [
-      webPageJsonLd(t('h1'), t('seoDescription'), '/book-now'),
-      serviceJsonLd(t('h1'), t('seoDescription'), '/book-now', '/photos/tennis-court-portrait.webp'),
-      breadcrumbJsonLd([
-        { name: locale === 'fr' ? 'Accueil' : 'Home', path: '/' },
-        { name: t('breadcrumb'), path: '/book-now' },
-      ]),
+      webPageJsonLd(t('h1'), t('seoDescription'), '/book-now', locale),
+      serviceJsonLd(t('h1'), t('seoDescription'), '/book-now', '/photos/tennis-court-portrait.webp', locale),
+      breadcrumbJsonLd(
+        [
+          { name: locale === 'fr' ? 'Accueil' : 'Home', path: '/' },
+          { name: t('breadcrumb'), path: '/book-now' },
+        ],
+        locale
+      ),
     ],
   }
 
@@ -123,18 +127,11 @@ function BookingContent({ initialActivity }: { initialActivity?: string }) {
       <section className="relative isolate overflow-hidden pt-14">
         <Image src="/photos/tennis-court-portrait.webp" alt="Booking tennis and pickleball at Shi Shi Samui" fill priority sizes="100vw" className="object-cover" />
         {/* Vidéo cinématique. Remplacer /videos/hero-pool.mp4 par la vidéo définitive du client. */}
-        <video
-          autoPlay
-          muted
-          loop
-          playsInline
-          preload="auto"
+        <BackgroundVideo
+          src="/videos/hero-pool.mp4"
           poster="/photos/tennis-court-portrait.webp"
-          aria-hidden
-          className="absolute inset-0 size-full object-cover motion-reduce:hidden"
-        >
-          <source src="/videos/hero-pool.mp4" type="video/mp4" />
-        </video>
+          className="absolute inset-0 size-full object-cover"
+        />
         <div className="absolute inset-0 bg-gradient-to-b from-[oklch(0.16_0_0/0.62)] via-[oklch(0.16_0_0/0.55)] to-[oklch(0.14_0_0/0.9)]" aria-hidden />
 
         <div className="relative mx-auto max-w-6xl px-4 py-20 sm:px-6 lg:px-8 lg:py-28">
