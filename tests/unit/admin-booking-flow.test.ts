@@ -123,17 +123,19 @@ describe('La fenêtre perso de 6h demandée par le club', () => {
 })
 
 describe('Amplitude publique 07:00 – 22:00', () => {
-  it('07:00 est le premier créneau vendable, 21:00 le dernier', () => {
+  it('07:00 est le premier créneau vendable, 21:30 le dernier (pour 30 min)', () => {
     const slots = generateSlots(TENNIS)
     expect(slots[0]).toBe('07:00')
-    expect(slots[slots.length - 1]).toBe('21:00')
+    expect(slots[slots.length - 1]).toBe('21:30')
     expect(trySave('07:00', 60, [], 'public')).toBe('ok')
     expect(trySave('21:00', 60, [], 'public')).toBe('ok')
+    expect(trySave('21:30', 30, [], 'public')).toBe('ok')
   })
 
   it('un client ne peut pas réserver au-delà de la fermeture', () => {
     expect(trySave('22:00', 60, [], 'public')).toBe('invalid-slot')
-    // 21:30 n'est pas une heure pleine ET déborderait : doublement refusé.
+    expect(trySave('22:00', 30, [], 'public')).toBe('invalid-slot')
+    // 21:30 existe, mais une heure entière déborderait sur 22:30.
     expect(trySave('21:30', 60, [], 'public')).toBe('invalid-slot')
   })
 
@@ -146,9 +148,19 @@ describe('Amplitude publique 07:00 – 22:00', () => {
 })
 
 describe('Saisie à la demi-heure et durées libres (le cas du club)', () => {
-  it('la séance 07:30 → 09:00 est acceptée en admin, refusée côté site', () => {
+  it('la séance 07:30 → 09:00 est acceptée en admin comme côté site', () => {
     expect(trySave('07:30', 90)).toBe('ok')
-    expect(trySave('07:30', 90, [], 'public')).toBe('invalid-slot')
+    // Depuis le 18/09/2026 : « mettre les réservations de 30 minutes aussi sur
+    // le site, car sur l'app on peut ». Le site suit l'admin, dans ses horaires.
+    expect(trySave('07:30', 90, [], 'public')).toBe('ok')
+    expect(trySave('07:30', 30, [], 'public')).toBe('ok')
+  })
+
+  it('ce qui reste propre à l’admin : la fenêtre de 06:00 et l’heure après la fermeture', () => {
+    expect(trySave('06:30', 30)).toBe('ok')
+    expect(trySave('06:30', 30, [], 'public')).toBe('invalid-slot')
+    expect(trySave('22:00', 30)).toBe('ok')
+    expect(trySave('22:00', 30, [], 'public')).toBe('invalid-slot')
   })
 
   it('une durée farfelue est ramenée au pas de 30 min, jamais rejetée bêtement', () => {
@@ -173,20 +185,29 @@ describe('Saisie à la demi-heure et durées libres (le cas du club)', () => {
 })
 
 describe('Ce que le client voit sur le site après une saisie admin', () => {
-  it('une séance interne de 06:30 à 08:00 ferme le créneau public de 07:00', () => {
+  it('une séance interne de 06:30 à 08:00 ferme les deux demi-heures publiques de 07:00', () => {
     const avail = computeAvailability(TENNIS, [booked('06:30', 90)])
     expect(avail.find((s) => s.time === '07:00')!.available).toBe(0)
+    expect(avail.find((s) => s.time === '07:30')!.available).toBe(0)
     expect(avail.find((s) => s.time === '08:00')!.available).toBe(1)
   })
 
-  it('la grille publique compte 15 créneaux d’une heure', () => {
+  it('une séance de 07:30 à 09:00 laisse au client la demi-heure de 07:00', () => {
+    const existing = [booked('07:30', 90)]
+    const avail = computeAvailability(TENNIS, existing)
+    expect(avail.find((s) => s.time === '07:00')!.available).toBe(1)
+    expect(trySave('07:00', 30, existing, 'public')).toBe('ok')
+    expect(trySave('07:00', 60, existing, 'public')).toBe('slot-unavailable')
+  })
+
+  it('la grille publique compte 30 demi-heures', () => {
     const avail = computeAvailability(TENNIS, [])
-    expect(avail).toHaveLength(15)
+    expect(avail).toHaveLength(30)
     expect(avail.every((s) => s.capacity === 1 && s.available === 1)).toBe(true)
   })
 
   it('journée complète réservée : plus aucun créneau disponible', () => {
-    const journee = generateSlots(TENNIS).map((t) => booked(t, 60))
+    const journee = generateSlots(TENNIS).map((t) => booked(t, 30))
     const avail = computeAvailability(TENNIS, journee)
     expect(avail.every((s) => s.available === 0)).toBe(true)
   })

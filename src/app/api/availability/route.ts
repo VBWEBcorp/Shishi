@@ -14,11 +14,12 @@ import { getAvailability } from '@/lib/availability-query'
 /**
  * Disponibilités d'une activité à une date.
  *
- * `?scope=admin` renvoie la grille interne (demi-heures, amplitude élargie)
+ * `?scope=admin` renvoie la grille interne (amplitude élargie à 06:00–23:00)
  * utilisée par la modale de saisie de l'espace admin. Sans ce paramètre, on
- * renvoie la grille publique d'1 h : le site ne voit donc jamais les
- * demi-heures. La lecture reste ouverte (c'est un calendrier de dispo) ; ce qui
- * protège la grille publique, c'est la validation à la CRÉATION (`bookingInterval`).
+ * renvoie la grille publique, bornée aux horaires d'ouverture. Les deux sont à
+ * la demi-heure. La lecture reste ouverte (c'est un calendrier de dispo) ; ce
+ * qui protège la grille publique, c'est la validation à la CRÉATION
+ * (`bookingInterval`).
  */
 export async function GET(request: NextRequest) {
   try {

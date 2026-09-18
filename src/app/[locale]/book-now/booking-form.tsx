@@ -17,13 +17,20 @@ import { DEFAULT_ISO2 } from '@/lib/country-codes'
 import { Link, usePathname } from '@/i18n/navigation'
 import type { Locale } from '@/i18n/routing'
 import { activities } from '@/lib/activities'
-import { isBookable, isDayPass } from '@/lib/availability'
+import {
+  formatDuration,
+  getBookingConfig,
+  isBookable,
+  isDayPass,
+  MAX_BOOKING_MINUTES,
+  STEP_MINUTES,
+} from '@/lib/availability'
 import {
   getActivityPrice,
+  getBookingAmountForMinutes,
   getUnitLabel,
+  hasVariableDuration,
   isPricePerPerson,
-  supportsHours,
-  MAX_BOOKING_HOURS,
   LAUNCH_OFFER,
 } from '@/lib/booking-pricing'
 import { PUBLIC_ADVANCE_DAYS } from '@/lib/membership-plans'
@@ -53,6 +60,8 @@ type Status = 'idle' | 'submitting' | 'request-received' | 'paid' | 'error'
 
 interface Slot {
   time: string
+  /** Fin de la demi-heure ("HH:mm") : sert à vérifier que la plage est d'un seul tenant. */
+  endTime: string
   available: number
   capacity: number
 }
@@ -108,8 +117,9 @@ export function BookingForm({
   const [status, setStatus] = useState<Status>('idle')
   const [errorMsg, setErrorMsg] = useState('')
 
-  // Nombre d'heures (activités à durée variable, ex. Kids Club).
-  const [hours, setHours] = useState(1)
+  // Durée choisie, en minutes, au pas de la demi-heure (tennis, Kids Club).
+  // Une heure par défaut : c'est ce que le club vend le plus.
+  const [durationMinutes, setDurationMinutes] = useState(60)
   const [showWaPrompt, setShowWaPrompt] = useState(false)
   // Session adhérent : avantages appliqués automatiquement (crédits + remise).
   const [member, setMember] = useState<MemberInfo | null>(null)
@@ -184,25 +194,41 @@ export function BookingForm({
   const fr = locale === 'fr'
   const unitPrice = activitySlug ? getActivityPrice(activitySlug) : 0
   const perPerson = activitySlug ? isPricePerPerson(activitySlug) : false
-  const hasHours = activitySlug ? supportsHours(activitySlug) : false
+  const hasDuration = activitySlug ? hasVariableDuration(activitySlug) : false
+  /** Durée de référence de l'activité (l'heure pour tennis et Kids Club). */
+  const slotMinutes = activitySlug ? (getBookingConfig(activitySlug)?.slotMinutes ?? 60) : 60
   /**
-   * Nombre d'heures réellement réservable depuis le créneau choisi : on avance
-   * tant que les créneaux suivants existent (donc avant la fermeture) et restent
-   * libres. Sans ce plafond, le formulaire proposerait des durées que le serveur
-   * refuse — il valide désormais la plage ENTIÈRE, fermeture comprise.
+   * Durée réellement réservable depuis le créneau choisi : on avance de
+   * demi-heure en demi-heure tant que les créneaux suivants existent (donc
+   * avant la fermeture), restent libres et se suivent sans trou. Sans ce
+   * plafond, le formulaire proposerait des durées que le serveur refuse — il
+   * valide la plage ENTIÈRE, fermeture comprise.
    */
-  const maxHours = useMemo(() => {
-    if (!hasHours) return 1
+  const maxDuration = useMemo(() => {
+    if (!hasDuration) return slotMinutes
     const startIndex = slots.findIndex((s) => s.time === selectedTime)
-    if (startIndex < 0) return MAX_BOOKING_HOURS
-    let n = 0
-    while (n < MAX_BOOKING_HOURS && slots[startIndex + n]?.available > 0) n++
-    return Math.max(1, n)
-  }, [hasHours, slots, selectedTime])
-  const effectiveHours = hasHours ? Math.min(hours, maxHours) : 1
+    if (startIndex < 0) return MAX_BOOKING_MINUTES
+    let minutes = 0
+    for (let i = startIndex; i < slots.length && minutes < MAX_BOOKING_MINUTES; i++) {
+      const slot = slots[i]
+      if (slot.available <= 0) break
+      if (i > startIndex && slot.time !== slots[i - 1].endTime) break
+      minutes += STEP_MINUTES
+    }
+    return Math.max(STEP_MINUTES, minutes)
+  }, [hasDuration, slotMinutes, slots, selectedTime])
+  const effectiveDuration = hasDuration ? Math.min(durationMinutes, maxDuration) : slotMinutes
+  /** Heure de fin de la plage choisie ("HH:mm"), pour l'afficher au client. */
+  const endTime = useMemo(() => {
+    if (!selectedTime || !hasDuration) return ''
+    const [h, m] = selectedTime.split(':').map(Number)
+    const end = h * 60 + m + effectiveDuration
+    return `${String(Math.floor(end / 60)).padStart(2, '0')}:${String(end % 60).padStart(2, '0')}`
+  }, [selectedTime, hasDuration, effectiveDuration])
   const partySize = 1 + participants.length
-  const baseTotal = perPerson ? unitPrice * partySize : unitPrice
-  const grossTotal = hasHours ? baseTotal * effectiveHours : baseTotal
+  const grossTotal = activitySlug
+    ? getBookingAmountForMinutes(activitySlug, partySize, effectiveDuration)
+    : 0
   const unitWord =
     (activitySlug && getUnitLabel(activitySlug, locale)) ||
     (dayPass ? (fr ? 'jour' : 'day') : fr ? 'heure' : 'hour')
@@ -224,7 +250,8 @@ export function BookingForm({
    * repasser ce drapeau à `true` rallume l'espace adhérent, ses crédits et ce
    * bandeau, sans rien réécrire.
    */
-  const creditsNeeded = effectiveHours
+  // Un crédit vaut une heure : une demi-heure entamée en consomme un entier.
+  const creditsNeeded = Math.max(1, Math.ceil(effectiveDuration / 60))
   const activityWallet = member?.activityCredits?.find((w) => w.activity === activitySlug)
   const walletCredits = activityWallet?.credits ?? 0
   const useCredits = SHOW_MEMBER_AREA && !!member && walletCredits >= creditsNeeded
@@ -257,9 +284,10 @@ export function BookingForm({
 
   // Lien WhatsApp pré-rempli avec la demande en cours (réservation en ligne
   // désactivée → on invite à finaliser sur WhatsApp, cf. ONLINE_BOOKING_ENABLED).
+  const waDuration = hasDuration && selectedTime ? ` (${formatDuration(effectiveDuration)})` : ''
   const waBookingMessage = fr
-    ? `Bonjour Shi Shi Samui ! Je souhaite réserver${activityName ? ` : ${activityName}` : ' une session'}${date ? ` le ${date}` : ''}${selectedTime ? ` à ${selectedTime}` : ''}${hasHours && effectiveHours > 1 ? ` (${effectiveHours}h)` : ''}${partySize > 1 ? `, ${partySize} personnes` : ''}.`
-    : `Hi Shi Shi Samui! I'd like to book${activityName ? `: ${activityName}` : ' a session'}${date ? ` on ${date}` : ''}${selectedTime ? ` at ${selectedTime}` : ''}${hasHours && effectiveHours > 1 ? ` (${effectiveHours}h)` : ''}${partySize > 1 ? `, ${partySize} people` : ''}.`
+    ? `Bonjour Shi Shi Samui ! Je souhaite réserver${activityName ? ` : ${activityName}` : ' une session'}${date ? ` le ${date}` : ''}${selectedTime ? ` à ${selectedTime}` : ''}${waDuration}${partySize > 1 ? `, ${partySize} personnes` : ''}.`
+    : `Hi Shi Shi Samui! I'd like to book${activityName ? `: ${activityName}` : ' a session'}${date ? ` on ${date}` : ''}${selectedTime ? ` at ${selectedTime}` : ''}${waDuration}${partySize > 1 ? `, ${partySize} people` : ''}.`
   const waPrefillLink = `https://wa.me/${siteConfig.whatsapp}?text=${encodeURIComponent(waBookingMessage)}`
 
   // Date maximale réservable (fenêtre : 10 j membre, sinon défaut public).
@@ -272,7 +300,7 @@ export function BookingForm({
 
   // L'activité change → on réinitialise la durée à 1 h.
   useEffect(() => {
-    setHours(1)
+    setDurationMinutes(60)
   }, [activitySlug])
 
   // Ferme le popup « réservation → WhatsApp » sur Échap.
@@ -370,7 +398,7 @@ export function BookingForm({
       phoneCountry: String(fd.get('phoneCountry') || ''),
       notes: String(fd.get('notes') || ''),
       newsletterOptIn: fd.get('newsletterOptIn') === 'on',
-      hours: effectiveHours,
+      durationMinutes: effectiveDuration,
       participants: participants
         .map((pp) => ({ name: pp.name.trim(), email: pp.email.trim(), phone: pp.phone.trim() }))
         .filter((pp) => pp.name && pp.email),
@@ -402,7 +430,7 @@ export function BookingForm({
       // enregistrée (paiement sur place / confirmation par email).
       setStatus(data.paid ? 'paid' : 'request-received')
       setParticipants([])
-      setHours(1)
+      setDurationMinutes(60)
       form.reset()
     } catch (err) {
       setErrorMsg(err instanceof Error ? err.message : 'error')
@@ -644,39 +672,6 @@ export function BookingForm({
               </div>
             )}
 
-            {/* Nombre d'heures (Kids Club) — le prix se met à jour automatiquement */}
-            {bookable && activitySlug && hasHours && (
-              <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-border bg-background/50 px-4 py-3">
-                <span className="inline-flex items-center gap-2 text-sm font-medium text-foreground">
-                  <CalendarCheck className="size-4 text-accent" aria-hidden />
-                  {fr ? 'Nombre d’heures' : 'Number of hours'}
-                </span>
-                <div className="flex items-center gap-3">
-                  <button
-                    type="button"
-                    aria-label={fr ? 'Moins' : 'Less'}
-                    onClick={() => setHours(Math.max(1, effectiveHours - 1))}
-                    disabled={effectiveHours <= 1}
-                    className="flex size-8 items-center justify-center rounded-full border border-border text-foreground transition-colors hover:bg-muted disabled:opacity-40"
-                  >
-                    <Minus className="size-4" aria-hidden />
-                  </button>
-                  <span className="w-10 text-center font-semibold text-foreground">
-                    {effectiveHours} h
-                  </span>
-                  <button
-                    type="button"
-                    aria-label={fr ? 'Plus' : 'More'}
-                    onClick={() => setHours((h) => Math.min(maxHours, h + 1))}
-                    disabled={effectiveHours >= maxHours}
-                    className="flex size-8 items-center justify-center rounded-full border border-border text-foreground transition-colors hover:bg-muted disabled:opacity-40"
-                  >
-                    <Plus className="size-4" aria-hidden />
-                  </button>
-                </div>
-              </div>
-            )}
-
             {/* Activité « bientôt disponible » (pickleball en travaux) : état
                 Coming Soon, aucune réservation ni orientation WhatsApp — pour ne
                 pas laisser croire qu'on peut la réserver en contactant le club. */}
@@ -797,13 +792,15 @@ export function BookingForm({
                       })()}
                     </motion.div>
                   ) : (
+                    /* Deux fois plus de créneaux qu'avant (la demi-heure) : une
+                       colonne de plus pour ne pas doubler la hauteur. */
                     <motion.div
                       key="grid"
                       variants={{ hidden: {}, show: { transition: { staggerChildren: 0.025 } } }}
                       initial="hidden"
                       animate="show"
                       exit={{ opacity: 0 }}
-                      className="grid grid-cols-3 gap-2 sm:grid-cols-5"
+                      className="grid grid-cols-4 gap-2 sm:grid-cols-6"
                     >
                       {slots.map((s) => {
                         const full = s.available <= 0
@@ -839,6 +836,46 @@ export function BookingForm({
                 </AnimatePresence>
                 {!loadingSlots && !dayPass && slots.some((s) => s.available > 0) && (
                   <p className="text-xs text-muted-foreground">{t('slotHint')}</p>
+                )}
+
+                {/* Durée, à partir de 30 minutes et par demi-heure — le club la
+                    saisissait déjà ainsi depuis son espace admin, le site la
+                    propose au client depuis le 18/09/2026. Le prix suit. */}
+                {hasDuration && selectedTime && (
+                  <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-border bg-background/50 px-4 py-3">
+                    <span className="inline-flex flex-col gap-0.5 text-sm font-medium text-foreground">
+                      <span className="inline-flex items-center gap-2">
+                        <CalendarCheck className="size-4 text-accent" aria-hidden />
+                        {fr ? 'Durée' : 'Duration'}
+                      </span>
+                      <span className="text-xs font-normal text-muted-foreground">
+                        {selectedTime} → {endTime}
+                      </span>
+                    </span>
+                    <div className="flex items-center gap-3">
+                      <button
+                        type="button"
+                        aria-label={fr ? 'Moins' : 'Less'}
+                        onClick={() => setDurationMinutes(Math.max(STEP_MINUTES, effectiveDuration - STEP_MINUTES))}
+                        disabled={effectiveDuration <= STEP_MINUTES}
+                        className="flex size-8 items-center justify-center rounded-full border border-border text-foreground transition-colors hover:bg-muted disabled:opacity-40"
+                      >
+                        <Minus className="size-4" aria-hidden />
+                      </button>
+                      <span className="w-16 text-center font-semibold text-foreground">
+                        {formatDuration(effectiveDuration)}
+                      </span>
+                      <button
+                        type="button"
+                        aria-label={fr ? 'Plus' : 'More'}
+                        onClick={() => setDurationMinutes(Math.min(maxDuration, effectiveDuration + STEP_MINUTES))}
+                        disabled={effectiveDuration >= maxDuration}
+                        className="flex size-8 items-center justify-center rounded-full border border-border text-foreground transition-colors hover:bg-muted disabled:opacity-40"
+                      >
+                        <Plus className="size-4" aria-hidden />
+                      </button>
+                    </div>
+                  </div>
                 )}
               </div>
             )}
@@ -996,12 +1033,14 @@ export function BookingForm({
                 {/* Récap : sous-total, crédits utilisés, montant à régler sur place (aucun paiement en ligne) */}
                 {bookable && activitySlug && (
                   <div className="rounded-xl border border-accent/20 bg-accent/[0.04] px-4 py-3">
-                    {(useCredits || (hasHours && effectiveHours > 1)) && (
+                    {(useCredits || (hasDuration && effectiveDuration !== slotMinutes)) && (
                       <div className="mb-2 space-y-1 border-b border-border/60 pb-2 text-sm">
                         <div className="flex justify-between text-muted-foreground">
                           <span>
                             {fr ? 'Sous-total' : 'Subtotal'}
-                            {hasHours && effectiveHours > 1 ? ` · ${effectiveHours} h` : ''}
+                            {hasDuration && effectiveDuration !== slotMinutes
+                              ? ` · ${formatDuration(effectiveDuration)}`
+                              : ''}
                           </span>
                           <span>{fmtPrice(grossTotal)} ฿</span>
                         </div>

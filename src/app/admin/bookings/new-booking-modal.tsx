@@ -65,10 +65,12 @@ const DEFAULT_DURATION_MINUTES = 60
  * téléphone) ou de BLOCAGE d'un créneau, depuis l'espace admin. Reprend la
  * charte de l'admin (cartes arrondies, accent orange) — aucun nouveau style.
  *
- * Grille de saisie à la DEMI-HEURE (`scope=admin`) : le club enregistre ce qui
- * se passe réellement (ex. une élève de 07:30 à 09:00), là où le site public
- * reste sur des créneaux d'1 h pleine. La plage saisie ici rend automatiquement
- * indisponibles, côté site, TOUS les créneaux qu'elle chevauche.
+ * Grille de saisie à la demi-heure sur l'AMPLITUDE ÉLARGIE (`scope=admin`,
+ * 06:00–23:00) : le club enregistre ce qui se passe réellement, y compris hors
+ * des horaires publics (la fenêtre perso de 06:00, un cours qui déborde après
+ * la fermeture). Le site propose lui aussi la demi-heure depuis le 18/09/2026,
+ * mais dans les seuls horaires d'ouverture. La plage saisie ici rend
+ * automatiquement indisponibles, côté site, TOUS les créneaux qu'elle chevauche.
  */
 export function NewBookingModal({
   onClose,
@@ -397,7 +399,7 @@ export function NewBookingModal({
                 <p className="text-[11px] text-muted-foreground">
                   {time && endOptions.length > 0
                     ? `Séance de ${time} à ${selectedEnd || '—'}. Les créneaux du site qui chevauchent cette plage passent automatiquement en indisponible.`
-                    : 'Choisissez un début : les demi-heures sont réservées à l’espace admin, les clients ne voient que des créneaux d’1 h.'}
+                    : 'Choisissez un début. Les clients réservent aussi à la demi-heure sur le site ; seuls 06:00 et l’heure qui suit la fermeture restent réservés à l’admin.'}
                 </p>
               </div>
               {perPerson && mode === 'booking' && (

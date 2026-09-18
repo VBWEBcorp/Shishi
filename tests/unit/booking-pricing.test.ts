@@ -2,14 +2,13 @@ import { describe, it, expect } from 'vitest'
 import {
   getActivityPrice,
   getUnitLabel,
-  supportsHours,
+  hasVariableDuration,
   isPricePerPerson,
-  getBookingAmount,
   getBookingAmountForMinutes,
   getActivityBySlug,
   PRICE_TIERS,
-  MAX_BOOKING_HOURS,
 } from '@/lib/booking-pricing'
+import { MAX_BOOKING_MINUTES } from '@/lib/availability'
 
 describe('getActivityPrice', () => {
   it('renvoie le tarif drop-in de la charte client', () => {
@@ -44,12 +43,17 @@ describe('getUnitLabel', () => {
   })
 })
 
-describe('supportsHours', () => {
-  it('seul le Kids Club propose un choix du nombre d’heures', () => {
-    expect(supportsHours('kids-club')).toBe(true)
-    expect(supportsHours('tennis')).toBe(false)
-    expect(supportsHours('fitness')).toBe(false)
-    expect(supportsHours('inconnu')).toBe(false)
+describe('hasVariableDuration', () => {
+  it('tout ce qui se vend à l’heure se réserve pour une durée au choix', () => {
+    expect(hasVariableDuration('kids-club')).toBe(true)
+    // Le tennis aussi, depuis la demande du club du 18/09/2026 (30 min sur le site).
+    expect(hasVariableDuration('tennis')).toBe(true)
+  })
+
+  it('un pass journée ou une activité inconnue n’a pas de durée à choisir', () => {
+    expect(hasVariableDuration('fitness')).toBe(false)
+    expect(hasVariableDuration('pool')).toBe(false)
+    expect(hasVariableDuration('inconnu')).toBe(false)
   })
 })
 
@@ -66,72 +70,42 @@ describe('isPricePerPerson', () => {
   })
 })
 
-describe('getBookingAmount', () => {
-  it('tennis : prix fixe du terrain, indépendant du nombre de joueurs et des heures', () => {
-    expect(getBookingAmount('tennis', 1)).toBe(600)
-    expect(getBookingAmount('tennis', 4)).toBe(600)
-    expect(getBookingAmount('tennis', 4, 3)).toBe(600)
-  })
-
-  it('fitness : multiplié par le nombre de participants, pas par les heures', () => {
-    expect(getBookingAmount('fitness', 1)).toBe(250)
-    expect(getBookingAmount('fitness', 3)).toBe(750)
-    expect(getBookingAmount('fitness', 3, 5)).toBe(750)
-  })
-
-  it('kids-club : multiplié par les participants ET par les heures', () => {
-    expect(getBookingAmount('kids-club', 1, 1)).toBe(200)
-    expect(getBookingAmount('kids-club', 2, 3)).toBe(1200)
-    expect(getBookingAmount('kids-club', 1, 4)).toBe(800)
-  })
-
-  it('pool : par personne, une seule journée', () => {
-    expect(getBookingAmount('pool', 5)).toBe(500)
-  })
-
-  it('slug inconnu : tarif par défaut 500, prix fixe', () => {
-    expect(getBookingAmount('inconnu', 3)).toBe(500)
-  })
-
-  it('normalise les entrées invalides (0, négatif, décimal) à au moins 1', () => {
-    expect(getBookingAmount('fitness', 0)).toBe(250)
-    expect(getBookingAmount('fitness', -2)).toBe(250)
-    expect(getBookingAmount('fitness', 2.9)).toBe(500)
-    expect(getBookingAmount('kids-club', 1, 0)).toBe(200)
-    expect(getBookingAmount('kids-club', 1, -3)).toBe(200)
-  })
-})
-
-describe('getBookingAmountForMinutes — saisie admin à durée libre', () => {
+describe('getBookingAmountForMinutes — site et espace admin', () => {
   it('facture le tennis au prorata de la demi-heure', () => {
     expect(getBookingAmountForMinutes('tennis', 1, 60)).toBe(600)
     expect(getBookingAmountForMinutes('tennis', 1, 90)).toBe(900)
+    // La réservation de 30 minutes demandée par le club : la moitié du tarif horaire.
     expect(getBookingAmountForMinutes('tennis', 1, 30)).toBe(300)
   })
 
   it('reste un prix de terrain : le nombre de joueurs ne change rien', () => {
+    expect(getBookingAmountForMinutes('tennis', 4, 60)).toBe(600)
     expect(getBookingAmountForMinutes('tennis', 4, 90)).toBe(900)
   })
 
   it('kids-club : prorata de durée ET multiplication par participant', () => {
+    expect(getBookingAmountForMinutes('kids-club', 1, 60)).toBe(200)
+    expect(getBookingAmountForMinutes('kids-club', 1, 30)).toBe(100)
     expect(getBookingAmountForMinutes('kids-club', 2, 90)).toBe(600)
+    expect(getBookingAmountForMinutes('kids-club', 2, 180)).toBe(1200)
   })
 
-  it('pass journée : forfait, la durée n’entre pas en compte', () => {
+  it('pass journée : forfait par personne, la durée n’entre pas en compte', () => {
     expect(getBookingAmountForMinutes('pool', 5, 720)).toBe(500)
+    expect(getBookingAmountForMinutes('fitness', 1, 720)).toBe(250)
     expect(getBookingAmountForMinutes('fitness', 3, 60)).toBe(750)
   })
 
-  it('donne le même montant que getBookingAmount sur un créneau plein', () => {
-    expect(getBookingAmountForMinutes('tennis', 1, 60)).toBe(getBookingAmount('tennis', 1, 1))
-    expect(getBookingAmountForMinutes('kids-club', 2, 180)).toBe(getBookingAmount('kids-club', 2, 3))
-    expect(getBookingAmountForMinutes('pool', 5, 720)).toBe(getBookingAmount('pool', 5))
+  it('normalise un nombre de participants invalide (0, négatif, décimal) à au moins 1', () => {
+    expect(getBookingAmountForMinutes('fitness', 0, 720)).toBe(250)
+    expect(getBookingAmountForMinutes('fitness', -2, 720)).toBe(250)
+    expect(getBookingAmountForMinutes('fitness', 2.9, 720)).toBe(500)
   })
 
   it('borne les durées aberrantes', () => {
     expect(getBookingAmountForMinutes('tennis', 1, 0)).toBe(600) // repli sur un créneau
     expect(getBookingAmountForMinutes('tennis', 1, -90)).toBe(600)
-    expect(getBookingAmountForMinutes('tennis', 1, 10_000)).toBe(600 * MAX_BOOKING_HOURS)
+    expect(getBookingAmountForMinutes('tennis', 1, 10_000)).toBe(600 * (MAX_BOOKING_MINUTES / 60))
   })
 
   it('slug inconnu : tarif par défaut forfaitaire', () => {
@@ -150,8 +124,8 @@ describe('getActivityBySlug', () => {
 })
 
 describe('constantes de tarification', () => {
-  it('MAX_BOOKING_HOURS vaut 8', () => {
-    expect(MAX_BOOKING_HOURS).toBe(8)
+  it('une réservation ne dépasse jamais 8 heures', () => {
+    expect(MAX_BOOKING_MINUTES).toBe(8 * 60)
   })
 
   it('la grille fitness comporte séance / semaine / mois', () => {

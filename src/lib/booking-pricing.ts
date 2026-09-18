@@ -42,19 +42,15 @@ export function getUnitLabel(slug: string, locale: 'en' | 'fr'): string | null {
 }
 
 /**
- * Activités dont le tarif se multiplie par le NOMBRE D'HEURES choisi par le
- * client (sélecteur de durée). Ex : Kids Club — l'utilisateur choisit combien
- * d'heures et le prix se met à jour automatiquement.
+ * L'activité se réserve-t-elle pour une DURÉE AU CHOIX (sélecteur de durée,
+ * prix proratisé) ? C'est le cas de tout ce qui se vend à l'heure : tennis et
+ * Kids Club. Longtemps réservé au Kids Club côté site, le tennis restant sur
+ * l'heure pleine ; le club a demandé le 18/09/2026 que le site propose aussi
+ * les 30 minutes, comme son espace admin le permettait déjà.
  */
-const SUPPORTS_HOURS = new Set(['kids-club'])
-
-/** L'activité propose-t-elle un choix du nombre d'heures (durée variable) ? */
-export function supportsHours(slug: string): boolean {
-  return SUPPORTS_HOURS.has(slug)
+export function hasVariableDuration(slug: string): boolean {
+  return getBookingConfig(slug)?.unit === 'hour'
 }
-
-/** Nombre d'heures maximum réservable en une fois (activités à durée variable). */
-export const MAX_BOOKING_HOURS = MAX_BOOKING_MINUTES / 60
 
 /**
  * Offre de lancement affichée en attendant la grille d'abonnements (Phase 1).
@@ -80,32 +76,13 @@ export function isPricePerPerson(slug: string): boolean {
 }
 
 /**
- * Montant total d'une réservation.
+ * Montant total d'une réservation, site comme espace admin.
  *  · `partySize` : nombre de participants (multiplie le tarif si l'activité est
  *    facturée par personne).
- *  · `hours` : nombre d'heures choisi (multiplie le tarif pour les activités à
- *    durée variable, ex. Kids Club). Ignoré ailleurs.
- */
-export function getBookingAmount(
-  slug: string,
-  partySize: number,
-  hours = 1
-): number {
-  const unit = getActivityPrice(slug)
-  const n = Math.max(1, Math.floor(partySize) || 1)
-  const h = Math.max(1, Math.floor(hours) || 1)
-  const base = isPricePerPerson(slug) ? unit * n : unit
-  return supportsHours(slug) ? base * h : base
-}
-
-/**
- * Montant total d'une réservation à DURÉE LIBRE (saisie de l'espace admin).
- * Les activités facturées à l'heure (tennis, Kids Club) sont proratisées à la
- * demi-heure près : 1 h 30 de tennis = 600 × 1,5 = 900 ฿. Les pass journée
- * restent au forfait, la durée n'entrant pas en compte.
- *
- * Pour une durée d'exactement un créneau, le montant est identique à celui de
- * `getBookingAmount` : le tunnel public n'est donc pas impacté.
+ *  · `durationMinutes` : les activités facturées à l'heure (tennis, Kids Club)
+ *    sont proratisées à la demi-heure près : 30 min de tennis = 300 ฿, 1 h 30
+ *    = 900 ฿. Les pass journée restent au forfait, la durée n'entrant pas en
+ *    compte.
  */
 export function getBookingAmountForMinutes(
   slug: string,

@@ -5,10 +5,10 @@
  * créneau et une capacité (nombre de terrains ou de places par créneau).
  *
  * La disponibilité se calcule par CHEVAUCHEMENT DE PLAGES, et non par comptage
- * sur un créneau figé : une séance interne de 07:30 à 09:00 occupe donc la
- * seconde moitié du créneau public de 07:00 autant que l'intégralité de celui
- * de 08:00. C'est ce qui permet à l'espace admin de saisir des demi-heures sans
- * jamais survendre les créneaux d'une heure proposés aux clients sur le site.
+ * sur un créneau figé : une séance de 07:30 à 09:00 occupe la seconde moitié
+ * de l'heure de 07:00 autant que l'intégralité de celle de 08:00. Chaque
+ * demi-heure de la grille est mesurée pour elle-même, quelle que soit la durée
+ * de la réservation qui la recouvre.
  *
  * Horaires et capacités du tennis validés par le client le 18/08/2026 :
  * ouverture publique 07:00–22:00, un seul terrain. Les autres pôles restent
@@ -20,7 +20,11 @@ export interface ActivityBookingConfig {
   open: string
   /** Heure de fermeture "HH:mm" (dernier créneau commence avant cette heure) */
   close: string
-  /** Durée d'un créneau en minutes */
+  /**
+   * Durée de RÉFÉRENCE d'un créneau, en minutes : l'unité du tarif (600 ฿
+   * « l'heure » de tennis) et la durée proposée par défaut. Ce n'est plus le
+   * pas de la grille : celui-ci est `STEP_MINUTES` pour toute activité horaire.
+   */
   slotMinutes: number
   /** Nombre de réservations simultanées possibles par créneau (terrains/places) */
   capacity: number
@@ -51,17 +55,26 @@ export const BOOKING_CONFIG: Record<string, ActivityBookingConfig> = {
 }
 
 /**
- * Contexte de réservation. Les deux grilles sont volontairement différentes :
- *  · 'public' — le site : créneaux d'1 h pleine, dans les horaires d'ouverture.
- *    Un client ne peut donc jamais réserver 1 h 30 ni démarrer à la demi-heure.
- *  · 'admin'  — l'espace admin : grille à la demi-heure, durée libre, sur une
- *    amplitude élargie. Le club note ce qui se passe réellement (ex. une élève
- *    de 07:30 à 09:00) sans que cette souplesse ne fuite côté client.
+ * Contexte de réservation. Les deux grilles partagent le même pas, la
+ * demi-heure, et la même durée libre : depuis le 18/09/2026 un client réserve
+ * 30 min de tennis à 07:30 depuis le site, comme le club le faisait déjà depuis
+ * l'espace admin (« sur l'app on peut, je ne suis pas sûr que le site le
+ * propose »). Ce qui les distingue désormais, c'est l'AMPLITUDE :
+ *  · 'public' — le site : dans les horaires d'ouverture, et rien d'autre.
+ *  · 'admin'  — l'espace admin : élargie à `ADMIN_WINDOW`, pour noter ce qui
+ *    se passe réellement (la fenêtre perso de 06:00, un cours qui déborde).
  */
 export type BookingScope = 'public' | 'admin'
 
-/** Pas de saisie de l'espace admin : la demi-heure. */
-export const ADMIN_STEP_MINUTES = 30
+/**
+ * Pas de la grille et plus petite durée réservable, site comme admin : la
+ * demi-heure. Une réservation dure un multiple de 30 min et démarre sur une
+ * demi-heure.
+ */
+export const STEP_MINUTES = 30
+
+/** Ancien nom du pas, quand seule l'admin descendait à la demi-heure. */
+export const ADMIN_STEP_MINUTES = STEP_MINUTES
 
 /**
  * Amplitude de saisie de l'espace admin, indépendante des horaires publics.
@@ -136,12 +149,17 @@ export function bookingWindow(slug: string, scope: BookingScope = 'public'): Tim
   }
 }
 
-/** Pas de la grille de créneaux (minutes) selon le contexte. */
+/**
+ * Pas de la grille de créneaux (minutes). Le contexte ne change rien pour une
+ * activité horaire (demi-heure partout) ; il reste dans la signature parce que
+ * l'amplitude, elle, en dépend, et que les appelants passent les deux ensemble.
+ */
 export function slotStep(slug: string, scope: BookingScope = 'public'): number {
   const cfg = getBookingConfig(slug)
   if (!cfg) return 60
   if (cfg.unit === 'day') return cfg.slotMinutes
-  return scope === 'admin' ? ADMIN_STEP_MINUTES : cfg.slotMinutes
+  void scope
+  return STEP_MINUTES
 }
 
 /** Durée minimale réservable (minutes) — aussi l'« atome » de calcul d'occupation. */
@@ -150,7 +168,7 @@ export function minBookingMinutes(slug: string, scope: BookingScope = 'public'):
 }
 
 export interface SlotGridOptions {
-  /** 'admin' élargit la grille et la descend à la demi-heure. Défaut : 'public'. */
+  /** 'admin' élargit l'amplitude de la grille (06:00–23:00). Défaut : 'public'. */
   scope?: BookingScope
 }
 
@@ -172,7 +190,7 @@ export function generateSlots(slug: string, options: SlotGridOptions = {}): stri
   return slots
 }
 
-/** L'heure demandée fait-elle partie de la grille publique (créneaux d'1 h) ? */
+/** L'heure demandée fait-elle partie de la grille publique (horaires d'ouverture) ? */
 export function isPublicSlotTime(slug: string, time: string): boolean {
   return generateSlots(slug).includes(time)
 }
@@ -181,7 +199,7 @@ export function isPublicSlotTime(slug: string, time: string): boolean {
  * Convertit une demande (heure de début + durée) en plage [début, fin), après
  * validation stricte selon le contexte : grille, durée, amplitude d'ouverture.
  * Renvoie `null` si la demande n'est pas recevable — c'est LE garde-fou qui
- * empêche un client de réserver 07:30 ou 1 h 30 depuis le site.
+ * empêche un client de réserver 06:00, 07:45 ou 20 minutes depuis le site.
  */
 export function bookingInterval(
   slug: string,
@@ -207,8 +225,8 @@ export function bookingInterval(
   const duration = Math.round(Number(durationMinutes))
   if (!Number.isFinite(duration) || duration < min || duration % min !== 0) return null
   if (duration > MAX_BOOKING_MINUTES) return null
-  // Le départ doit tomber sur la grille du contexte (heure pleine côté public,
-  // demi-heure côté admin) et toute la plage doit tenir dans l'amplitude.
+  // Le départ doit tomber sur la grille (la demi-heure) et toute la plage doit
+  // tenir dans l'amplitude du contexte.
   if (start < win.start || (start - win.start) % step !== 0) return null
   const end = start + duration
   if (end > win.end) return null
@@ -242,7 +260,7 @@ export function maxOverlap(booked: TimeRange[], start: number, end: number): num
 
 export interface SlotAvailability {
   time: string
-  /** Fin du créneau élémentaire ("HH:mm") — 1 h côté public, 30 min côté admin. */
+  /** Fin du créneau élémentaire ("HH:mm") — la demi-heure suivante. */
   endTime: string
   capacity: number
   booked: number
@@ -251,8 +269,8 @@ export interface SlotAvailability {
 
 /**
  * Disponibilité de chaque créneau de la grille, à partir des plages déjà
- * réservées. Chaque créneau est mesuré sur sa propre durée : un créneau public
- * d'1 h est libre seulement si une place reste libre pendant TOUTE l'heure.
+ * réservées. Chaque demi-heure est mesurée pour elle-même : c'est au moment de
+ * choisir la durée qu'on vérifie que les demi-heures suivantes sont libres.
  */
 export function computeAvailability(
   slug: string,

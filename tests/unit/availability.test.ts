@@ -81,30 +81,32 @@ describe('formatDuration', () => {
   })
 })
 
-describe('generateSlots — grille PUBLIQUE (créneaux d’1 h)', () => {
-  it('tennis : créneaux horaires de 07:00 à 21:00 (dernier créneau finit à 22:00)', () => {
+describe('generateSlots — grille PUBLIQUE (demi-heures, horaires d’ouverture)', () => {
+  it('tennis : demi-heures de 07:00 à 21:30 (la dernière finit à 22:00)', () => {
     const slots = generateSlots('tennis')
-    expect(slots).toHaveLength(15)
+    expect(slots).toHaveLength(30)
     expect(slots[0]).toBe('07:00')
-    expect(slots[slots.length - 1]).toBe('21:00')
+    expect(slots[slots.length - 1]).toBe('21:30')
     expect(slots).not.toContain('22:00')
   })
 
   it('la fenêtre interne de 06:00 n’est JAMAIS proposée aux clients', () => {
     expect(generateSlots('tennis')).not.toContain('06:00')
+    expect(generateSlots('tennis')).not.toContain('06:30')
     expect(generateSlots('tennis', { scope: 'admin' })).toContain('06:00')
   })
 
-  it('ne propose JAMAIS de demi-heure aux clients', () => {
-    expect(generateSlots('tennis').every((t) => t.endsWith(':00'))).toBe(true)
-    expect(generateSlots('kids-club')).not.toContain('08:30')
+  it('propose la demi-heure aux clients, comme l’admin (demande du club du 18/09/2026)', () => {
+    expect(generateSlots('tennis')).toContain('07:30')
+    expect(generateSlots('kids-club')).toContain('08:30')
+    expect(generateSlots('tennis')).toEqual(generateSlots('tennis', { scope: 'admin' }).slice(2, -2))
   })
 
-  it('kids-club : de 08:00 à 15:00 (fermeture 16:00)', () => {
+  it('kids-club : de 08:00 à 15:30 (fermeture 16:00)', () => {
     const slots = generateSlots('kids-club')
-    expect(slots).toHaveLength(8)
+    expect(slots).toHaveLength(16)
     expect(slots[0]).toBe('08:00')
-    expect(slots[slots.length - 1]).toBe('15:00')
+    expect(slots[slots.length - 1]).toBe('15:30')
   })
 
   it('accès journée : un unique créneau à l’ouverture', () => {
@@ -139,11 +141,12 @@ describe('generateSlots — grille ADMIN (demi-heures)', () => {
 })
 
 describe('isPublicSlotTime', () => {
-  it('accepte les heures pleines d’ouverture, refuse les demi-heures', () => {
+  it('accepte les demi-heures d’ouverture, refuse ce qui est hors horaires', () => {
     expect(isPublicSlotTime('tennis', '09:00')).toBe(true)
-    expect(isPublicSlotTime('tennis', '09:30')).toBe(false)
+    expect(isPublicSlotTime('tennis', '09:30')).toBe(true)
     // 06:00 est la fenêtre réservée au club, 22:00 est l'heure de fermeture.
     expect(isPublicSlotTime('tennis', '06:00')).toBe(false)
+    expect(isPublicSlotTime('tennis', '06:30')).toBe(false)
     expect(isPublicSlotTime('tennis', '22:00')).toBe(false)
   })
 })
@@ -153,10 +156,25 @@ describe('bookingInterval — garde-fou de la grille', () => {
     expect(bookingInterval('tennis', '09:00', 60)).toEqual({ start: 540, end: 600 })
   })
 
-  it('côté public : ni demi-heure de départ, ni durée de 1 h 30', () => {
-    expect(bookingInterval('tennis', '09:30', 60)).toBeNull()
-    expect(bookingInterval('tennis', '09:00', 90)).toBeNull()
-    expect(bookingInterval('tennis', '09:00', 30)).toBeNull()
+  it('côté public : 30 minutes, un départ à la demi-heure et 1 h 30 sont acceptés', () => {
+    expect(bookingInterval('tennis', '09:00', 30)).toEqual({ start: 540, end: 570 })
+    expect(bookingInterval('tennis', '09:30', 60)).toEqual({ start: 570, end: 630 })
+    expect(bookingInterval('tennis', '09:00', 90)).toEqual({ start: 540, end: 630 })
+    // La dernière demi-heure vendable finit pile à la fermeture.
+    expect(bookingInterval('tennis', '21:30', 30)).toEqual({ start: 1290, end: 1320 })
+  })
+
+  it('côté public : la demi-heure reste le pas, rien en dessous ni entre deux', () => {
+    expect(bookingInterval('tennis', '09:15', 30)).toBeNull()
+    expect(bookingInterval('tennis', '09:00', 20)).toBeNull()
+    expect(bookingInterval('tennis', '09:00', 45)).toBeNull()
+  })
+
+  it('côté public : la fenêtre élargie de l’admin reste fermée aux clients', () => {
+    expect(bookingInterval('tennis', '06:00', 60)).toBeNull()
+    expect(bookingInterval('tennis', '06:30', 30)).toBeNull()
+    expect(bookingInterval('tennis', '21:30', 60)).toBeNull()
+    expect(bookingInterval('tennis', '22:00', 30)).toBeNull()
   })
 
   it('côté public : une plage qui dépasse la fermeture est refusée', () => {
@@ -218,11 +236,12 @@ describe('maxOverlap', () => {
 })
 
 describe('computeAvailability — grille publique', () => {
-  it('calcule la disponibilité restante par créneau', () => {
-    // Un seul terrain : la moindre réservation ferme le créneau.
+  it('calcule la disponibilité restante par demi-heure', () => {
+    // Un seul terrain : la moindre réservation ferme les demi-heures qu'elle couvre.
     const avail = computeAvailability('tennis', [range('09:00', 60)])
-    expect(avail).toHaveLength(15)
+    expect(avail).toHaveLength(30)
     expect(avail.find((s) => s.time === '09:00')).toMatchObject({ capacity: 1, booked: 1, available: 0 })
+    expect(avail.find((s) => s.time === '09:30')).toMatchObject({ capacity: 1, booked: 1, available: 0 })
     expect(avail.find((s) => s.time === '10:00')).toMatchObject({ capacity: 1, booked: 0, available: 1 })
   })
 
@@ -231,20 +250,21 @@ describe('computeAvailability — grille publique', () => {
     expect(avail.find((s) => s.time === '08:00')!.available).toBe(0)
   })
 
-  it('une séance admin de 07:30 à 09:00 mange les DEUX créneaux publics qu’elle chevauche', () => {
+  it('une séance de 07:30 à 09:00 laisse 07:00 vendable pour 30 minutes', () => {
     const avail = computeAvailability('tennis', [range('07:30', 90)])
-    // Elle déborde sur la seconde moitié de 07:00 et occupe tout 08:00.
-    expect(avail.find((s) => s.time === '07:00')!.available).toBe(0)
-    expect(avail.find((s) => s.time === '08:00')!.available).toBe(0)
+    // La demi-heure de 07:00 reste libre : un client peut la prendre pour 30 min.
+    expect(avail.find((s) => s.time === '07:00')!.available).toBe(1)
+    expect(avail.find((s) => s.time === '07:30')!.available).toBe(0)
+    expect(avail.find((s) => s.time === '08:30')!.available).toBe(0)
     // Le créneau suivant, lui, doit rester intact.
     expect(avail.find((s) => s.time === '09:00')!.available).toBe(1)
   })
 
   it('deux demi-heures qui se suivent n’occupent qu’un terrain, pas deux', () => {
-    // Le créneau public n'est plus vendable (le terrain est pris toute l'heure),
-    // mais l'occupation doit rester comptée à 1 : pas de survente fantôme.
+    // L'occupation doit rester comptée à 1 : pas de survente fantôme.
     const avail = computeAvailability('tennis', [range('08:00', 30), range('08:30', 30)])
     expect(avail.find((s) => s.time === '08:00')).toMatchObject({ booked: 1, available: 0 })
+    expect(avail.find((s) => s.time === '08:30')).toMatchObject({ booked: 1, available: 0 })
   })
 
   it('renvoie une liste vide pour une activité inconnue', () => {

@@ -133,9 +133,8 @@ export async function POST(request: NextRequest) {
     const partyCount = Math.min(20, Math.max(1, Math.floor(Number(body.partySize) || 1)))
     const partySize = Math.min(20, Math.max(partyCount, 1 + participants.length))
 
-    // Durée saisie par l'admin, en MINUTES, au pas de la demi-heure. C'est ce
-    // qui permet d'enregistrer une séance de 07:30 à 09:00 (90 min) impossible
-    // à réserver depuis le site. `hours` reste accepté (compat ascendante).
+    // Durée saisie par l'admin, en MINUTES, au pas de la demi-heure (une séance
+    // de 07:30 à 09:00 = 90 min). `hours` reste accepté (compat ascendante).
     const slotMin = getBookingConfig(activitySlug)?.slotMinutes ?? 60
     const rawMinutes = Number(body.durationMinutes)
     const rawHours = Number(body.hours)

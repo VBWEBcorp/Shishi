@@ -1,3 +1,4 @@
+import { formatDuration } from '@/lib/availability'
 import { emailConfig, sendEmail } from '@/lib/email'
 import { mapsDirectionsUrl, siteConfig } from '@/lib/seo'
 
@@ -237,7 +238,9 @@ export async function sendBookingConfirmation(b: BookingEmailData) {
         }
 
   const secondary: [string, string][] = [
-    [t.rDuration, !b.dayPass && b.duration ? `${b.duration} min` : ''],
+    // « 1 h 30 » plutôt que « 90 min » : depuis que le site vend la demi-heure,
+    // la durée n'est plus forcément un nombre rond de minutes lisible.
+    [t.rDuration, !b.dayPass && b.duration ? formatDuration(b.duration) : ''],
     [t.rPeople, b.partySize && b.partySize > 1 ? String(b.partySize) : ''],
   ]
 

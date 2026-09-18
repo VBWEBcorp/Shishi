@@ -4,11 +4,17 @@ import { Booking } from '@/models/Booking'
 import { upsertContact } from '@/lib/contacts'
 import {
   getActivityBySlug,
-  getBookingAmount,
-  supportsHours,
-  MAX_BOOKING_HOURS,
+  getBookingAmountForMinutes,
+  hasVariableDuration,
 } from '@/lib/booking-pricing'
-import { bookingInterval, getBookingConfig, isBookable, isDayPass } from '@/lib/availability'
+import {
+  bookingInterval,
+  getBookingConfig,
+  isBookable,
+  isDayPass,
+  MAX_BOOKING_MINUTES,
+  STEP_MINUTES,
+} from '@/lib/availability'
 import { isRangeAvailable } from '@/lib/availability-query'
 import { isValidBookingDate, isBookingDateTimeInPast } from '@/lib/booking-validation'
 import { notifyNewBooking } from '@/lib/booking-emails'
@@ -86,21 +92,30 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'date-in-past' }, { status: 400 })
     }
 
-    // Nombre d'heures (activités à durée variable, ex. Kids Club). Borné [1..MAX].
-    const rawHours = Number(body.hours) || 1
-    const hours = supportsHours(activitySlug)
-      ? Math.min(MAX_BOOKING_HOURS, Math.max(1, Math.floor(rawHours)))
-      : 1
-
-    // Durée = nb d'heures × granularité pour les activités à durée variable,
-    // sinon la durée standard du créneau (jamais envoyée par le client).
+    // Durée demandée, en MINUTES, au pas de la demi-heure : 30 min de tennis,
+    // 1 h 30 de Kids Club. `hours` reste lu pour une page chargée avant la mise
+    // en place (elle envoyait un nombre d'heures). Un pass journée ignore tout
+    // cela : sa durée est celle de la journée.
     const slotMin = getBookingConfig(activitySlug)?.slotMinutes ?? 60
-    const duration = hours * slotMin
+    const rawMinutes = Number(body.durationMinutes)
+    const rawHours = Number(body.hours)
+    const requested =
+      Number.isFinite(rawMinutes) && rawMinutes > 0
+        ? rawMinutes
+        : Number.isFinite(rawHours) && rawHours > 0
+          ? rawHours * 60
+          : slotMin
+    const duration = hasVariableDuration(activitySlug)
+      ? Math.min(
+          MAX_BOOKING_MINUTES,
+          Math.max(STEP_MINUTES, Math.round(requested / STEP_MINUTES) * STEP_MINUTES)
+        )
+      : slotMin
 
-    // Garde-fou de la GRILLE PUBLIQUE : heure pleine, durée en créneaux entiers,
-    // le tout dans les horaires d'ouverture. Les demi-heures et les durées
-    // libres restent l'apanage de l'espace admin — un appel direct à l'API ne
-    // peut donc pas réserver 07:30 ni 1 h 30 depuis le site.
+    // Garde-fou de la GRILLE PUBLIQUE : départ sur la demi-heure, durée en
+    // demi-heures entières, le tout dans les horaires d'ouverture. Seule la
+    // fenêtre élargie (06:00, l'heure après la fermeture) reste l'apanage de
+    // l'espace admin — un appel direct à l'API ne peut donc pas réserver 06:30.
     if (!bookingInterval(activitySlug, time, duration, 'public')) {
       return NextResponse.json({ error: 'slot-unavailable' }, { status: 409 })
     }
@@ -112,14 +127,18 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'slot-unavailable' }, { status: 409 })
     }
 
-    // Le prix est TOUJOURS calculé côté serveur (jamais envoyé par le client).
-    const baseAmount = getBookingAmount(activitySlug, partySize, hours)
+    // Le prix est TOUJOURS calculé côté serveur (jamais envoyé par le client),
+    // proratisé à la demi-heure : 30 min de tennis = 300 ฿.
+    const baseAmount = getBookingAmountForMinutes(activitySlug, partySize, duration)
     const activityName = activity.name[locale]
 
     // ── Crédits adhérent ─────────────────────────────────────────────────
     // Si un membre connecté réserve et que ses crédits pour CETTE activité
     // couvrent la durée, la réservation est gratuite (crédits débités).
-    // Sinon : plein tarif, paiement sur place.
+    // Sinon : plein tarif, paiement sur place. Un crédit vaut une heure : une
+    // demi-heure entamée en consomme un entier (l'espace adhérent est de toute
+    // façon hors service, cf. SHOW_MEMBER_AREA).
+    const hours = Math.max(1, Math.ceil(duration / 60))
     const member = await getMemberFromRequest(request)
     const benefits = await resolveMemberBenefits({
       member,
