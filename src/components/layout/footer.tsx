@@ -8,12 +8,7 @@ import { useEffect, useState } from 'react'
 import { BookingCta } from '@/components/sections/shishi-home'
 import { Link } from '@/i18n/navigation'
 import type { Locale } from '@/i18n/routing'
-import {
-  activities,
-  AQUAGYM_PATH,
-  babysitting,
-  TENNIS_COACHING_PATH,
-} from '@/lib/activities'
+import { activities, babysitting, lessons } from '@/lib/activities'
 import { siteConfig } from '@/lib/seo'
 
 export function Footer() {
@@ -49,8 +44,7 @@ export function Footer() {
   const activityLinks = [
     ...activities,
     babysitting,
-    { slug: 'coach', path: TENNIS_COACHING_PATH, name: { en: 'Tennis coach', fr: 'Coach de tennis' } },
-    { slug: 'aquagym', path: AQUAGYM_PATH, name: { en: 'Aqua aerobics', fr: 'Aquagym' } },
+    ...lessons,
   ]
 
   const legalLinks = [

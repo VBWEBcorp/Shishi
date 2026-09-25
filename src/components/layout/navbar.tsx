@@ -10,7 +10,7 @@ import { Logo } from '@/components/layout/logo'
 import { Link, usePathname, useRouter } from '@/i18n/navigation'
 import type { Locale } from '@/i18n/routing'
 import { routing } from '@/i18n/routing'
-import { activities, AQUAGYM_PATH, serviceConfigs, TENNIS_COACHING_PATH } from '@/lib/activities'
+import { activities, lessons, serviceConfigs } from '@/lib/activities'
 import { SHOW_MEMBER_AREA } from '@/lib/launch'
 import { siteConfig } from '@/lib/seo'
 import { cn } from '@/lib/utils'
@@ -50,8 +50,7 @@ export function Navbar() {
     pathname?.startsWith('/contact-location') ||
     pathname?.startsWith('/a-propos') ||
     pathname?.startsWith('/services') ||
-    pathname === TENNIS_COACHING_PATH ||
-    pathname === AQUAGYM_PATH ||
+    lessons.some((lesson) => pathname === lesson.path) ||
     pathname?.startsWith('/blog')
   const lightText = open || (!!hasDarkHero && !scrolled)
 
@@ -219,11 +218,11 @@ function FullscreenMenu({
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 20 }}
             transition={{ duration: 0.4, ease: 'easeOut', delay: 0.32 }}
-            className="relative mx-auto flex h-dvh max-w-7xl flex-col overflow-y-auto px-4 sm:px-6 lg:overflow-hidden lg:px-8"
+            className="relative mx-auto flex h-dvh max-w-7xl flex-col overflow-y-auto px-4 sm:px-6 lg:px-8"
           >
             <div className="h-16 shrink-0" aria-hidden />
 
-            <nav className="flex flex-1 flex-col justify-center py-6 lg:py-8" aria-label="Activities">
+            <nav className="flex flex-1 flex-col justify-center py-6 lg:py-4" aria-label="Activities">
               <p className="mb-4 text-[11px] font-semibold uppercase tracking-[0.28em] text-accent">
                 {t('ourActivities')}
               </p>
@@ -235,7 +234,7 @@ function FullscreenMenu({
                       <Link
                         href={a.path}
                         onClick={onClose}
-                        className="group flex items-center gap-4 py-2.5 sm:py-3 lg:py-2.5"
+                        className="group flex items-center gap-4 py-2.5 sm:py-3 lg:py-1.5"
                       >
                         <ActivityIcon
                           name={a.icon}
@@ -243,7 +242,7 @@ function FullscreenMenu({
                         />
                         <span
                           className={cn(
-                            'font-editorial text-[1.7rem] font-normal leading-tight tracking-[-0.01em] transition-colors duration-200 group-hover:text-white sm:text-4xl lg:text-[2.5rem]',
+                            'font-editorial text-[1.7rem] font-normal leading-tight tracking-[-0.01em] transition-colors duration-200 group-hover:text-white sm:text-4xl lg:text-[2.25rem]',
                             active ? 'text-white' : 'text-white/65'
                           )}
                         >
@@ -262,6 +261,39 @@ function FullscreenMenu({
                         )}
                         <span className="ml-auto hidden truncate text-sm text-white/45 md:block">
                           {a.tagline[locale]}
+                        </span>
+                      </Link>
+                    </li>
+                  )
+                })}
+              </ul>
+
+              {/* Cours avec un prof : une ligne plus discrète sous les six pôles,
+                  pour ne pas en faire un septième et huitième pôle. */}
+              <p className="mb-3 mt-7 text-[11px] font-semibold uppercase tracking-[0.28em] text-accent lg:mt-6">
+                {fr ? 'Cours avec nos profs' : 'Lessons with our coaches'}
+              </p>
+              <ul className="flex flex-wrap gap-2.5">
+                {lessons.map((lesson) => {
+                  const active = pathname === lesson.path
+                  return (
+                    <li key={lesson.slug}>
+                      <Link
+                        href={lesson.path}
+                        onClick={onClose}
+                        className={cn(
+                          'group inline-flex items-center gap-2.5 rounded-full px-4 py-2.5 ring-1 transition-colors',
+                          active
+                            ? 'bg-white/15 text-white ring-white/40'
+                            : 'text-white/75 ring-white/20 hover:bg-white/10 hover:text-white'
+                        )}
+                      >
+                        <ActivityIcon name={lesson.icon} className="size-4 text-accent" />
+                        <span className="font-editorial text-lg leading-none sm:text-xl">
+                          {lesson.name[locale]}
+                        </span>
+                        <span className="hidden text-xs text-white/45 sm:inline">
+                          {lesson.price[locale]}
                         </span>
                       </Link>
                     </li>

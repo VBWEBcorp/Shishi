@@ -825,6 +825,53 @@ export const bookableActivities: Activity[] = [...activities, tennisCoaching]
 /** Aquagym : page à part, sans réservation en ligne (gérée sur WhatsApp). */
 export const AQUAGYM_PATH = '/aquagym-lamai'
 
+/**
+ * « Cours avec nos profs » : ce qui se fait avec un professeur, par-dessus les
+ * six pôles. Groupe à part dans le menu, l'accueil, la page Activités et le
+ * footer (25/09/2026), pour que les six pôles restent six et que chaque cours
+ * garde sa page et ses mots-clés. Un nouveau prof = une ligne ici.
+ */
+export interface Lesson {
+  slug: string
+  path: string
+  icon: string
+  image: string
+  name: Localized
+  tagline: Localized
+  price: Localized
+  /** Réservable dans le calendrier du site (sinon WhatsApp). */
+  bookableOnline: boolean
+}
+
+export const lessons: Lesson[] = [
+  {
+    slug: 'tennis-coaching',
+    path: TENNIS_COACHING_PATH,
+    icon: 'tennis',
+    image: '/photos/coach-paul-portrait.webp',
+    name: { en: 'Tennis coach', fr: 'Coach de tennis' },
+    tagline: {
+      en: 'One-to-one lessons with Coach Paul, adults and kids',
+      fr: 'Cours particuliers avec Coach Paul, adultes et enfants',
+    },
+    price: { en: '1,200 THB / hour', fr: '1 200 THB / heure' },
+    bookableOnline: true,
+  },
+  {
+    slug: 'aquagym',
+    path: AQUAGYM_PATH,
+    icon: 'pool',
+    image: '/photos/pool-transats-portrait.webp',
+    name: { en: 'Aqua aerobics', fr: 'Aquagym' },
+    tagline: {
+      en: '45-minute class with our instructor, pool all day',
+      fr: 'Séance de 45 min avec notre professeure, piscine à la journée',
+    },
+    price: { en: '400 THB / class', fr: '400 THB / séance' },
+    bookableOnline: false,
+  },
+]
+
 /** Tous les pôles disposant d'une page service dédiée (route + sitemap). */
 export const serviceConfigs: Activity[] = [...activities, babysitting]
 

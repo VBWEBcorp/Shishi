@@ -6,6 +6,7 @@ import { ActivityTiles } from '@/components/sections/activity-tiles'
 import { ComingSoon } from '@/components/sections/coming-soon'
 import { ExperienceGallery } from '@/components/sections/experience-gallery'
 import { FaqSection } from '@/components/sections/faq-section'
+import { LessonsSection } from '@/components/sections/lessons-section'
 import { PhotoShowcase } from '@/components/sections/photo-showcase'
 import { ShishiHero } from '@/components/sections/shishi-hero'
 import { StorySection, ValuesBand } from '@/components/sections/shishi-home'
@@ -134,6 +135,8 @@ export default async function HomePage({
         <>
           <ShishiHero />
           <Reveal><ActivityTiles /></Reveal>
+          {/* Cours avec un prof (coach de tennis, aquagym) : sous les six pôles. */}
+          <Reveal><LessonsSection /></Reveal>
           {/* Avis Google remontés (cahier des charges : preuve sociale visible rapidement). */}
           <Reveal><TestimonialsSection /></Reveal>
           <Reveal><ExperienceGallery /></Reveal>

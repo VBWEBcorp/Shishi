@@ -157,3 +157,20 @@ describe('Pages coach et aquagym', () => {
     }
   })
 })
+
+describe('Cours avec nos profs : un groupe à part, les six pôles restent six', () => {
+  it('liste le coach de tennis et l’aquagym, avec leurs pages', async () => {
+    const { lessons } = await import('@/lib/activities')
+    expect(lessons.map((x) => x.path)).toEqual(['/tennis-coaching-lamai', '/aquagym-lamai'])
+    expect(lessons.find((x) => x.slug === 'aquagym')?.bookableOnline).toBe(false)
+    expect(activities).toHaveLength(6)
+  })
+
+  it('le menu, le footer, l’accueil et la page Activités le reprennent', () => {
+    const src = (p: string) => readFileSync(resolve(__dirname, '../../src', p), 'utf8')
+    expect(src('components/layout/navbar.tsx')).toMatch(/lessons\.map/)
+    expect(src('components/layout/footer.tsx')).toMatch(/\.\.\.lessons/)
+    expect(src('app/[locale]/page.tsx')).toContain('<LessonsSection />')
+    expect(src('app/[locale]/services/page.tsx')).toContain('<LessonsSection />')
+  })
+})

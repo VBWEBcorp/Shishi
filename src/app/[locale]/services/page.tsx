@@ -3,6 +3,8 @@ import { setRequestLocale } from 'next-intl/server'
 
 import { alternatesFor, siteConfig } from '@/lib/seo'
 
+import { LessonsSection } from '@/components/sections/lessons-section'
+
 import { ServicesContent } from './services-content'
 import {
   breadcrumbJsonLd,
@@ -95,6 +97,7 @@ export default async function ServicesPage({
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
       <ServicesContent />
+      <LessonsSection />
     </>
   )
 }
