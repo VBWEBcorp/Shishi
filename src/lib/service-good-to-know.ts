@@ -179,6 +179,17 @@ const LIENS: Record<string, { href: string; label: BonASavoir; texte: BonASavoir
       en: 'Looking to improve rather than just book the court?',
     },
   },
+  pool: {
+    href: '/aquagym-lamai',
+    label: {
+      fr: 'Voir l’aquagym',
+      en: 'See aqua aerobics',
+    },
+    texte: {
+      fr: 'Envie de bouger dans l’eau ? Séance d’aquagym de 45 minutes, 400 THB.',
+      en: 'Fancy a workout in the water? 45-minute aqua aerobics class, 400 THB.',
+    },
+  },
 }
 
 export function lienComplementaire(slug: string, locale: Locale): LienComplementaire | null {

@@ -4,7 +4,7 @@ import { Ban, CalendarPlus, Loader2, Plus, X } from 'lucide-react'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 
 import { ActivityIcon } from '@/components/activity-icon'
-import { activities } from '@/lib/activities'
+import { bookableActivities } from '@/lib/activities'
 import {
   ADMIN_STEP_MINUTES,
   formatDuration,
@@ -20,7 +20,7 @@ type Slot = { time: string; endTime: string; capacity: number; available: number
 /** Fin possible pour la plage en cours de saisie. */
 type EndOption = { end: string; minutes: number }
 
-const BOOKABLE = activities.filter((a) => isBookable(a.slug))
+const BOOKABLE = bookableActivities.filter((a) => isBookable(a.slug))
 
 function authHeaders(): HeadersInit {
   const token = typeof window !== 'undefined' ? localStorage.getItem('authToken') : null

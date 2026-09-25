@@ -4,7 +4,7 @@ import {
   getBookingConfig,
   isBookable,
   MAX_BOOKING_MINUTES,
-  minBookingMinutes,
+  minPublicMinutes,
   slotStep,
   toHHMM,
   type BookingScope,
@@ -52,7 +52,7 @@ export async function GET(request: NextRequest) {
       /** Pas de la grille renvoyée : 60 côté public, 30 côté admin. */
       stepMinutes: slotStep(activity, scope),
       /** Plus petite durée réservable dans ce contexte. */
-      minMinutes: minBookingMinutes(activity, scope),
+      minMinutes: minPublicMinutes(activity, scope),
       maxMinutes: MAX_BOOKING_MINUTES,
       /** Amplitude de saisie ("HH:mm") — borne les heures de fin proposées. */
       window: win ? { open: toHHMM(win.start), close: toHHMM(win.end) } : null,

@@ -118,6 +118,8 @@ export const routes = [
   // « cours de tennis koh samui » sont des recherches différentes de la
   // location de terrain, et personne n'y répondait.
   '/tennis-coaching-lamai',
+  // Aquagym (25/09/2026) : page sans réservation en ligne, contact WhatsApp.
+  '/aquagym-lamai',
   // Réindexée le 18/08/2026 : la page ne nomme plus aucun gérant ni leur
   // nombre, le motif du masquage a donc disparu. Google attend une page
   // « À propos » pour rattacher le site à une entité — autant la garder.

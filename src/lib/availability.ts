@@ -34,6 +34,12 @@ export interface ActivityBookingConfig {
    * par jour, sans choix d'horaire.
    */
   unit?: 'hour' | 'day'
+  /**
+   * Durée minimale vendue sur le SITE, si elle dépasse la demi-heure. Le cours
+   * de tennis se vend à l'heure (flyer du coach) : 1 h, 1 h 30, 2 h… mais
+   * jamais 30 min. L'espace admin n'y est pas soumis.
+   */
+  minMinutes?: number
 }
 
 /**
@@ -46,6 +52,15 @@ export const BOOKING_CONFIG: Record<string, ActivityBookingConfig> = {
   // Tennis : réservation DU terrain (le club n'en a qu'un), session d'1 h.
   // Ouverture publique 07:00 → 22:00 : dernier créneau vendable 21:00–22:00.
   tennis: { open: '07:00', close: '22:00', slotMinutes: 60, capacity: 1, unit: 'hour' },
+  // Cours de tennis avec le coach : mêmes horaires, même (unique) court.
+  'tennis-coaching': {
+    open: '07:00',
+    close: '22:00',
+    slotMinutes: 60,
+    capacity: 1,
+    unit: 'hour',
+    minMinutes: 60,
+  },
   // Salle de sport : accès illimité à la journée.
   fitness: { open: '08:00', close: '20:00', slotMinutes: 720, capacity: 20, unit: 'day' },
   // Kids Club : session d'1 h (repas du midi possible).
@@ -91,6 +106,18 @@ export const ADMIN_WINDOW = { open: '06:00', close: '23:00' } as const
 
 /** Durée maximale d'une réservation, quelle qu'en soit l'origine. */
 export const MAX_BOOKING_MINUTES = 8 * 60
+
+/**
+ * Activités qui occupent la MÊME ressource physique. Un cours de tennis se
+ * donne sur le court que l'on loue : les deux réservations se comptent donc
+ * ensemble, sinon le site vendrait le court de 18:00 à un joueur et au coach.
+ */
+const SHARED_RESOURCE: string[][] = [['tennis', 'tennis-coaching']]
+
+/** Les activités dont les réservations se disputent la même place que `slug`. */
+export function resourceSlugs(slug: string): string[] {
+  return SHARED_RESOURCE.find((g) => g.includes(slug)) ?? [slug]
+}
 
 /** Une activité est-elle réservable par créneau ? */
 export function isBookable(slug: string): boolean {
@@ -167,6 +194,17 @@ export function minBookingMinutes(slug: string, scope: BookingScope = 'public'):
   return slotStep(slug, scope)
 }
 
+/**
+ * Plus courte réservation que le SITE accepte : la demi-heure, sauf activité
+ * qui impose davantage (`minMinutes`). Côté admin, toujours la demi-heure.
+ */
+export function minPublicMinutes(slug: string, scope: BookingScope = 'public'): number {
+  const cfg = getBookingConfig(slug)
+  const step = minBookingMinutes(slug, scope)
+  if (!cfg || cfg.unit === 'day' || scope === 'admin') return step
+  return Math.max(step, cfg.minMinutes ?? step)
+}
+
 export interface SlotGridOptions {
   /** 'admin' élargit l'amplitude de la grille (06:00–23:00). Défaut : 'public'. */
   scope?: BookingScope
@@ -183,7 +221,8 @@ export function generateSlots(slug: string, options: SlotGridOptions = {}): stri
   const win = bookingWindow(slug, scope)
   if (!win) return []
   const step = slotStep(slug, scope)
-  const min = minBookingMinutes(slug, scope)
+  // Le dernier départ proposé laisse le temps de la plus courte séance vendue.
+  const min = minPublicMinutes(slug, scope)
 
   const slots: string[] = []
   for (let t = win.start; t + min <= win.end; t += step) slots.push(toHHMM(t))
@@ -224,6 +263,7 @@ export function bookingInterval(
 
   const duration = Math.round(Number(durationMinutes))
   if (!Number.isFinite(duration) || duration < min || duration % min !== 0) return null
+  if (duration < minPublicMinutes(slug, scope)) return null
   if (duration > MAX_BOOKING_MINUTES) return null
   // Le départ doit tomber sur la grille (la demi-heure) et toute la plage doit
   // tenir dans l'amplitude du contexte.
@@ -282,7 +322,7 @@ export function computeAvailability(
   const scope = options.scope ?? 'public'
   const unit = cfg.unit === 'day' ? cfg.slotMinutes : minBookingMinutes(slug, scope)
 
-  return generateSlots(slug, options).map((time) => {
+  const grid = generateSlots(slug, options).map((time) => {
     const start = toMinutes(time)
     const end = start + unit
     const taken = maxOverlap(booked, start, end)
@@ -293,5 +333,17 @@ export function computeAvailability(
       booked: taken,
       available: Math.max(0, cfg.capacity - taken),
     }
+  })
+
+  // Séance minimale plus longue que la demi-heure (le cours de tennis, 1 h) :
+  // un départ n'est proposé que si la séance entière tient avant le prochain
+  // créneau pris. Sinon le client choisirait 17:30 pour se voir refuser l'heure.
+  const minimum = minPublicMinutes(slug, scope)
+  if (cfg.unit === 'day' || minimum <= unit) return grid
+  return grid.map((slot) => {
+    if (slot.available <= 0) return slot
+    const start = toMinutes(slot.time)
+    const libre = maxOverlap(booked, start, start + minimum) < cfg.capacity
+    return libre ? slot : { ...slot, available: 0 }
   })
 }

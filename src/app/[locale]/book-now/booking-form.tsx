@@ -16,13 +16,14 @@ import { PhoneInput } from '@/components/phone-input'
 import { DEFAULT_ISO2 } from '@/lib/country-codes'
 import { Link, usePathname } from '@/i18n/navigation'
 import type { Locale } from '@/i18n/routing'
-import { activities } from '@/lib/activities'
+import { bookableActivities } from '@/lib/activities'
 import {
   formatDuration,
   getBookingConfig,
   isBookable,
   isDayPass,
   MAX_BOOKING_MINUTES,
+  minPublicMinutes,
   STEP_MINUTES,
 } from '@/lib/availability'
 import {
@@ -105,7 +106,7 @@ export function BookingForm({
   // Pré-remplissage : props (popup) prioritaires, sinon l'URL (page /book-now).
   const presetActivity = initialActivity ?? params.get('activity') ?? ''
   const presetDate = initialDate ?? params.get('date') ?? ''
-  const validActivity = activities.some((a) => a.slug === presetActivity) ? presetActivity : ''
+  const validActivity = bookableActivities.some((a) => a.slug === presetActivity) ? presetActivity : ''
 
   const [activitySlug, setActivitySlug] = useState(validActivity)
   const [date, setDate] = useState(presetDate)
@@ -182,7 +183,7 @@ export function BookingForm({
   // affiche un état Coming Soon, SANS orientation WhatsApp/contact — pour ne pas
   // laisser croire qu'on peut la réserver en écrivant directement.
   const comingSoon = activitySlug
-    ? !!activities.find((a) => a.slug === activitySlug)?.comingSoon
+    ? !!bookableActivities.find((a) => a.slug === activitySlug)?.comingSoon
     : false
   // Accès à la journée (salle de sport, piscine) : pas d'horaires, un seul choix.
   const dayPass = activitySlug ? isDayPass(activitySlug) : false
@@ -197,6 +198,8 @@ export function BookingForm({
   const hasDuration = activitySlug ? hasVariableDuration(activitySlug) : false
   /** Durée de référence de l'activité (l'heure pour tennis et Kids Club). */
   const slotMinutes = activitySlug ? (getBookingConfig(activitySlug)?.slotMinutes ?? 60) : 60
+  /** Plus courte séance vendue : 30 min, sauf le cours de tennis (1 h). */
+  const minDuration = activitySlug ? minPublicMinutes(activitySlug) : STEP_MINUTES
   /**
    * Durée réellement réservable depuis le créneau choisi : on avance de
    * demi-heure en demi-heure tant que les créneaux suivants existent (donc
@@ -215,9 +218,13 @@ export function BookingForm({
       if (i > startIndex && slot.time !== slots[i - 1].endTime) break
       minutes += STEP_MINUTES
     }
-    return Math.max(STEP_MINUTES, minutes)
-  }, [hasDuration, slotMinutes, slots, selectedTime])
-  const effectiveDuration = hasDuration ? Math.min(durationMinutes, maxDuration) : slotMinutes
+    // Un départ proposé garantit toute la séance minimale (cf. computeAvailability) :
+    // le dernier créneau de la série compte donc pour `minDuration`, pas 30 min.
+    return Math.max(minDuration, minutes - STEP_MINUTES + minDuration)
+  }, [hasDuration, slotMinutes, slots, selectedTime, minDuration])
+  const effectiveDuration = hasDuration
+    ? Math.max(minDuration, Math.min(durationMinutes, maxDuration))
+    : slotMinutes
   /** Heure de fin de la plage choisie ("HH:mm"), pour l'afficher au client. */
   const endTime = useMemo(() => {
     if (!selectedTime || !hasDuration) return ''
@@ -279,7 +286,7 @@ export function BookingForm({
     : reglages.online
   const noticeFermeture = messageFermeture(reglages, locale)
   const activityName = activitySlug
-    ? activities.find((a) => a.slug === activitySlug)?.name[locale] ?? activitySlug
+    ? bookableActivities.find((a) => a.slug === activitySlug)?.name[locale] ?? activitySlug
     : ''
 
   // Lien WhatsApp pré-rempli avec la demande en cours (réservation en ligne
@@ -856,8 +863,8 @@ export function BookingForm({
                       <button
                         type="button"
                         aria-label={fr ? 'Moins' : 'Less'}
-                        onClick={() => setDurationMinutes(Math.max(STEP_MINUTES, effectiveDuration - STEP_MINUTES))}
-                        disabled={effectiveDuration <= STEP_MINUTES}
+                        onClick={() => setDurationMinutes(Math.max(minDuration, effectiveDuration - STEP_MINUTES))}
+                        disabled={effectiveDuration <= minDuration}
                         className="flex size-8 items-center justify-center rounded-full border border-border text-foreground transition-colors hover:bg-muted disabled:opacity-40"
                       >
                         <Minus className="size-4" aria-hidden />

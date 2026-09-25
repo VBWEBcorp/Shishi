@@ -8,7 +8,12 @@ import { useEffect, useState } from 'react'
 import { BookingCta } from '@/components/sections/shishi-home'
 import { Link } from '@/i18n/navigation'
 import type { Locale } from '@/i18n/routing'
-import { activities, babysitting } from '@/lib/activities'
+import {
+  activities,
+  AQUAGYM_PATH,
+  babysitting,
+  TENNIS_COACHING_PATH,
+} from '@/lib/activities'
 import { siteConfig } from '@/lib/seo'
 
 export function Footer() {
@@ -40,7 +45,13 @@ export function Footer() {
   ]
 
   // Pôles + babysitting (page service dédiée — maillage interne audit).
-  const activityLinks = [...activities, babysitting]
+  // Coach de tennis et aquagym (25/09/2026) : pages à part, hors des six pôles.
+  const activityLinks = [
+    ...activities,
+    babysitting,
+    { slug: 'coach', path: TENNIS_COACHING_PATH, name: { en: 'Tennis coach', fr: 'Coach de tennis' } },
+    { slug: 'aquagym', path: AQUAGYM_PATH, name: { en: 'Aqua aerobics', fr: 'Aquagym' } },
+  ]
 
   const legalLinks = [
     { label: t('legalNotice'), to: '/mentions-legales' as const },

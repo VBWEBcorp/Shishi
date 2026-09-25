@@ -71,7 +71,7 @@
     },
     "cta": {
       "title": "Prêt à jouer ?",
-      "subtitle": "Consultez les disponibilités en temps réel, choisissez votre créneau et payez en ligne en toute sécurité. Votre terrain est à une minute.",
+      "subtitle": "Consultez les disponibilités en temps réel, choisissez votre créneau, vous réglez sur place au club. Votre terrain est à une minute.",
       "bookCourt": "Réserver un terrain",
       "getInTouch": "Nous contacter",
       "eyebrow": "Réservation en ligne"
@@ -97,7 +97,7 @@
     "step1Title": "Choisissez un créneau",
     "step1Text": "Sélectionnez votre activité, la date et l'heure selon les disponibilités en temps réel.",
     "step2Title": "Envoyez votre demande",
-    "step2Text": "Renseignez vos coordonnées — aucun paiement en ligne.",
+    "step2Text": "Renseignez vos coordonnées, aucun paiement en ligne.",
     "step3Title": "Recevez la confirmation",
     "step3Text": "Recevez une confirmation par email, puis un rappel avant votre session.",
     "engineSoon": "Moteur de réservation en temps réel, bientôt disponible",
@@ -191,10 +191,10 @@
     "h1": "Tarifs & Abonnements chez Shi Shi Samui",
     "eyebrow": "Tarifs & Abonnements",
     "breadcrumb": "Tarifs",
-    "intro": "Des tarifs transparents pour le tennis, le pickleball, le fitness, le kids club, l’accès piscine et plus encore — chez Shi Shi Samui à Lamai, Koh Samui.",
+    "intro": "Des tarifs transparents pour le tennis, le pickleball, le fitness, le kids club, l’accès piscine et plus encore, chez Shi Shi Samui à Lamai, Koh Samui.",
     "bookNow": "Réserver",
     "discover": "Découvrir",
-    "aLaCarte": "À la carte — voir le menu sur place.",
+    "aLaCarte": "À la carte : voir le menu sur place.",
     "disclaimer": "Tarifs en bahts thaïlandais (฿). Réservation en ligne ou sur WhatsApp."
   },
   "Contact": {

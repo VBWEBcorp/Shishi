@@ -5,14 +5,14 @@ import { useLocale, useTranslations } from 'next-intl'
 import Image from 'next/image'
 
 import type { Locale } from '@/i18n/routing'
-import { activities } from '@/lib/activities'
+import { bookableActivities } from '@/lib/activities'
 import { photoAlt } from '@/lib/photo-alt'
 
 const DEFAULT_IMAGE = '/photos/pool-panorama-portrait.webp'
 
 /** Photo de fond correspondant à l'activité choisie (repli : piscine). */
 export function activityBackground(slug?: string): string {
-  return activities.find((a) => a.slug === slug)?.image || DEFAULT_IMAGE
+  return bookableActivities.find((a) => a.slug === slug)?.image || DEFAULT_IMAGE
 }
 
 /**

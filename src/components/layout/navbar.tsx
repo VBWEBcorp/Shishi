@@ -10,7 +10,7 @@ import { Logo } from '@/components/layout/logo'
 import { Link, usePathname, useRouter } from '@/i18n/navigation'
 import type { Locale } from '@/i18n/routing'
 import { routing } from '@/i18n/routing'
-import { activities, serviceConfigs } from '@/lib/activities'
+import { activities, AQUAGYM_PATH, serviceConfigs, TENNIS_COACHING_PATH } from '@/lib/activities'
 import { SHOW_MEMBER_AREA } from '@/lib/launch'
 import { siteConfig } from '@/lib/seo'
 import { cn } from '@/lib/utils'
@@ -50,6 +50,8 @@ export function Navbar() {
     pathname?.startsWith('/contact-location') ||
     pathname?.startsWith('/a-propos') ||
     pathname?.startsWith('/services') ||
+    pathname === TENNIS_COACHING_PATH ||
+    pathname === AQUAGYM_PATH ||
     pathname?.startsWith('/blog')
   const lightText = open || (!!hasDarkHero && !scrolled)
 

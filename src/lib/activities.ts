@@ -117,7 +117,11 @@ export const SPECIAL_LINKS: Record<
   },
   coaching: {
     path: TENNIS_COACHING_PATH,
-    label: { en: 'Tennis lessons', fr: 'Cours de tennis' },
+    label: { en: 'Tennis coach', fr: 'Coach de tennis' },
+  },
+  aquagym: {
+    path: '/aquagym-lamai',
+    label: { en: 'Aqua aerobics', fr: 'Aquagym' },
   },
 }
 
@@ -282,8 +286,8 @@ export const activities: Activity[] = [
       {
         q: { en: 'Can I rent a racket or take a lesson?', fr: 'Puis-je louer une raquette ou prendre un cours ?' },
         a: {
-          en: 'Yes. Racket rental is available and coaching can be arranged with the club for singles or doubles.',
-          fr: 'Oui. La location de raquette est disponible et un coaching peut être organisé avec le club, en simple ou en double.',
+          en: 'Yes. Racket rental is available, and Coach Paul gives private lessons on the court: 1,200 THB per hour, court included, bookable online from the tennis coach page.',
+          fr: 'Oui. La location de raquette est disponible, et Coach Paul donne des cours particuliers sur le court : 1 200 THB l’heure, court compris, à réserver en ligne depuis la page coach de tennis.',
         },
       },
     ],
@@ -665,7 +669,7 @@ export const activities: Activity[] = [
         },
       },
     ],
-    related: ['healthy-restaurant-lamai', 'kids-club-lamai', 'prices', 'book-now'],
+    related: ['aquagym', 'healthy-restaurant-lamai', 'kids-club-lamai', 'prices', 'book-now'],
     keywords: ['pool lamai', 'swimming pool koh samui', 'pool day pass samui'],
   },
 ]
@@ -756,6 +760,70 @@ export const babysitting: Activity = {
   related: ['kids-club-lamai', 'contact', 'prices', 'healthy-restaurant-lamai'],
   keywords: ['babysitting koh samui', 'babysitter lamai', 'childcare koh samui'],
 }
+
+/**
+ * Cours de tennis avec le coach — réservable dans le calendrier depuis le
+ * 25/09/2026 (« intégrer le calendrier de réservation à cette page aussi »).
+ *
+ * Ce n'est pas un septième pôle : hors menu et hors tuiles d'accueil, il a sa
+ * propre page (/tennis-coaching-lamai, hors route dynamique). Il n'existe que
+ * pour le moteur de réservation, qui le vend 1 200 ฿ l'heure (600 ฿ de coaching
+ * + 600 ฿ de court, tarifs du flyer) et lui fait partager LE court de tennis :
+ * un cours et une location ne peuvent pas tomber sur le même créneau (cf.
+ * `SHARED_RESOURCE` dans availability.ts).
+ */
+export const tennisCoaching: Activity = {
+  slug: 'tennis-coaching',
+  urlSlug: 'tennis-coaching-lamai',
+  path: TENNIS_COACHING_PATH,
+  name: { en: 'Tennis lesson', fr: 'Cours de tennis' },
+  tagline: {
+    en: 'One-to-one with Coach Paul',
+    fr: 'En tête à tête avec Coach Paul',
+  },
+  description: {
+    en: 'A private tennis lesson with Coach Paul on the club court in Lamai. All levels, adults and kids, rackets, balls, towel and water included.',
+    fr: 'Un cours de tennis particulier avec Coach Paul sur le court du club, à Lamai. Tous niveaux, adultes et enfants, raquettes, balles, serviette et eau comprises.',
+  },
+  icon: 'tennis',
+  // Fond du panneau de réservation : le portrait (640 px) y serait agrandi et flou.
+  image: '/photos/tennis-court-portrait.webp',
+  gradient: 'from-orange-500/15 to-lime-500/5',
+  inMenu: false,
+  bookable: true,
+  h1: {
+    en: 'Tennis Coach in Lamai, Koh Samui',
+    fr: 'Coach de Tennis à Lamai, Koh Samui',
+  },
+  metaTitle: {
+    en: 'Tennis Coach in Lamai, Koh Samui | Shi Shi Samui',
+    fr: 'Coach de Tennis à Lamai, Koh Samui | Shi Shi Samui',
+  },
+  metaDescription: {
+    en: 'Private tennis lessons with Coach Paul at Shi Shi Samui, Lamai. 1,200 THB per hour, court and equipment included. Book online, pay at the club.',
+    fr: 'Cours de tennis avec Coach Paul chez Shi Shi Samui, à Lamai. 1 200 THB l’heure, court et matériel compris. Réservez en ligne, payez au club.',
+  },
+  keywordsPrimary: ['tennis coach koh samui', 'tennis lessons koh samui'],
+  keywordsSecondary: ['cours de tennis koh samui', 'tennis coaching lamai'],
+  schema: 'sportsActivity',
+  altImages: ['Coach Paul, tennis coach at Shi Shi Samui in Lamai'],
+  highlights: { en: [], fr: [] },
+  gallery: [],
+  video: FALLBACK_VIDEO,
+  faq: [],
+  related: ['tennis-court-lamai', 'book-now', 'contact'],
+  keywords: ['tennis coach koh samui', 'tennis lessons lamai'],
+}
+
+/**
+ * Tout ce qui se réserve dans le calendrier : les pôles, plus le cours de
+ * tennis. C'est la liste des écrans de réservation (site et espace admin) ;
+ * le menu, le footer et les tuiles d'accueil restent sur `activities`.
+ */
+export const bookableActivities: Activity[] = [...activities, tennisCoaching]
+
+/** Aquagym : page à part, sans réservation en ligne (gérée sur WhatsApp). */
+export const AQUAGYM_PATH = '/aquagym-lamai'
 
 /** Tous les pôles disposant d'une page service dédiée (route + sitemap). */
 export const serviceConfigs: Activity[] = [...activities, babysitting]

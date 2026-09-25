@@ -22,7 +22,7 @@ import {
   type BookingSettingsData,
   type ClosureRule,
 } from '@/lib/booking-settings'
-import { activities } from '@/lib/activities'
+import { activities, bookableActivities } from '@/lib/activities'
 import { isBookable } from '@/lib/availability'
 import { cn } from '@/lib/utils'
 
@@ -73,7 +73,7 @@ function authHeaders(): HeadersInit {
 }
 
 /** Activités qui disposent d'un moteur de créneaux (les seules pilotables). */
-const RESERVABLES = activities.filter((a) => isBookable(a.slug))
+const RESERVABLES = bookableActivities.filter((a) => isBookable(a.slug))
 const A_VENIR = activities.filter((a) => !isBookable(a.slug))
 
 export function BookingSwitch() {
@@ -367,7 +367,7 @@ export function BookingSwitch() {
                         <span className="text-muted-foreground">
                           {' · '}
                           {c.activitySlug
-                            ? activities.find((a) => a.slug === c.activitySlug)?.name.fr ??
+                            ? bookableActivities.find((a) => a.slug === c.activitySlug)?.name.fr ??
                               c.activitySlug
                             : 'tout le club'}
                         </span>

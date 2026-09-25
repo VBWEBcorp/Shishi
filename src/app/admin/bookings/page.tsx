@@ -31,7 +31,7 @@ import { useRouter } from 'next/navigation'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 import { ActivityIcon } from '@/components/activity-icon'
-import { activities } from '@/lib/activities'
+import { bookableActivities } from '@/lib/activities'
 import { formatDuration, isBookable, isDayPass, toHHMM, toMinutes } from '@/lib/availability'
 import { cn } from '@/lib/utils'
 import { PushToggle } from '@/components/admin/push-toggle'
@@ -129,7 +129,7 @@ function authHeaders(): HeadersInit {
 }
 
 function activityIconName(slug: string): string {
-  return activities.find((a) => a.slug === slug)?.icon ?? 'pool'
+  return bookableActivities.find((a) => a.slug === slug)?.icon ?? 'pool'
 }
 
 /**

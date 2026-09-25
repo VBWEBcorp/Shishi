@@ -9,7 +9,7 @@ import {
   webPageJsonLd,
 } from '@/components/seo/json-ld'
 import { Link } from '@/i18n/navigation'
-import { activities, BOOK_NOW_PATH } from '@/lib/activities'
+import { activities, AQUAGYM_PATH, BOOK_NOW_PATH, tennisCoaching } from '@/lib/activities'
 import type { Locale, Localized } from '@/lib/activities'
 import { getActivityPrice, PRICE_TIERS } from '@/lib/booking-pricing'
 import { getPageContent, orDefault } from '@/lib/page-content'
@@ -29,12 +29,34 @@ const PRICE_KEYWORDS = [
   'family membership koh samui',
 ]
 
+/**
+ * Cartes de la grille : les pôles, puis le cours de tennis et l'aquagym
+ * (25/09/2026), qui ont leur page mais ne sont pas des pôles.
+ */
+type Card = { slug: string; icon: string; name: Localized; path: string; bookable: boolean }
+const CARDS: Card[] = [
+  ...[...activities, tennisCoaching].map(({ slug, icon, name, path, bookable }) => ({
+    slug,
+    icon,
+    name,
+    path,
+    bookable,
+  })),
+  {
+    slug: 'aquagym',
+    icon: 'pool',
+    name: { en: 'Aqua aerobics', fr: 'Aquagym' },
+    path: AQUAGYM_PATH,
+    bookable: false,
+  },
+]
+
 /** Une ligne tarifaire affichée (label localisé + montant en ฿). */
 type Row = { label: Localized; amount: number }
 
 /** Groupe tarifaire par activité (uniquement des prix réellement affichés). */
 function priceGroups(): { slug: string; rows: Row[] }[] {
-  return activities.map((a) => {
+  return CARDS.map((a) => {
     const tiers = PRICE_TIERS[a.slug]
     if (tiers && tiers.length > 0) {
       return { slug: a.slug, rows: tiers.map((t) => ({ label: t.label, amount: t.amount })) }
@@ -96,7 +118,7 @@ export default async function PricesPage({
   const note = orDefault(cms.note as string, t('disclaimer'))
 
   const groups = priceGroups()
-  const bySlug = (slug: string) => activities.find((a) => a.slug === slug)!
+  const bySlug = (slug: string) => CARDS.find((a) => a.slug === slug)!
 
   // OfferCatalog — uniquement les offres avec un prix affiché (règle audit).
   const offers = groups.flatMap((g) =>

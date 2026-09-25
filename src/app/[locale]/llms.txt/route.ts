@@ -59,7 +59,8 @@ const T = {
     labels: {
       goodToKnow: 'Good to know',
       services: 'All activities',
-      coaching: 'Tennis lessons and coaching',
+      coaching: 'Tennis coach',
+      aquagym: 'Aqua aerobics',
       prices: 'Prices and memberships',
       book: 'Book an activity',
       about: 'About the club',
@@ -68,7 +69,8 @@ const T = {
     descs: {
       goodToKnow: 'what the price includes, how each activity works, how to book',
       services: 'everything the club offers, on one page',
-      coaching: 'private tennis lessons on the club court, all levels',
+      coaching: 'private lessons with Coach Paul on the club court, 1,200 THB per hour court included, 1,000 THB per session from 6 lessons, bookable online, paid at the club',
+      aquagym: '45-minute class for 400 THB, equipment, instructor and towel included, pool access all day, booked on WhatsApp',
       prices: 'rates for courts, activities and memberships',
       book: 'book a court, the gym, the pool or the kids club',
       about: 'who Shi Shi Samui is and what it brings together',
@@ -103,7 +105,8 @@ const T = {
     labels: {
       goodToKnow: 'Infos pratiques',
       services: 'Toutes les activités',
-      coaching: 'Cours de tennis et coaching',
+      coaching: 'Coach de tennis',
+      aquagym: 'Aquagym',
       prices: 'Tarifs et abonnements',
       book: 'Réserver une activité',
       about: 'À propos du club',
@@ -112,7 +115,8 @@ const T = {
     descs: {
       goodToKnow: 'ce que le tarif comprend, comment marche chaque activité, comment réserver',
       services: 'tout ce que propose le club, sur une page',
-      coaching: 'cours de tennis particuliers sur le court du club, tous niveaux',
+      coaching: 'cours particuliers avec Coach Paul sur le court du club, 1 200 THB l’heure court compris, 1 000 THB la séance dès 6 cours, réservables en ligne, payés au club',
+      aquagym: 'séance de 45 minutes à 400 THB, matériel, professeure et serviette compris, piscine en accès libre la journée, réservation sur WhatsApp',
       prices: 'prix des terrains, des activités et des abonnements',
       book: 'réserver un terrain, la salle, la piscine ou le club enfants',
       about: 'qui est Shi Shi Samui et ce que le club réunit',
@@ -161,6 +165,7 @@ ${t.pages}
 - [${t.labels.goodToKnow}](${l('/good-to-know')}) : ${t.descs.goodToKnow}
 - [${t.labels.services}](${l('/services')}) : ${t.descs.services}
 - [${t.labels.coaching}](${l('/tennis-coaching-lamai')}) : ${t.descs.coaching}
+- [${t.labels.aquagym}](${l('/aquagym-lamai')}) : ${t.descs.aquagym}
 - [${t.labels.prices}](${l('/prices')}) : ${t.descs.prices}
 - [${t.labels.book}](${l('/book-now')}) : ${t.descs.book}
 - [${t.labels.about}](${l('/a-propos')}) : ${t.descs.about}

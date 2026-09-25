@@ -9,6 +9,7 @@ import {
   getBookingConfig,
   maxOverlap,
   PENDING_HOLD_MS,
+  resourceSlugs,
   toMinutes,
   type BookingScope,
   type SlotAvailability,
@@ -29,8 +30,9 @@ async function loadActiveRanges(activitySlug: string, date: string): Promise<Tim
   await connectDB()
   const cutoff = new Date(Date.now() - PENDING_HOLD_MS)
 
+  // Le court de tennis se partage entre location et cours (resourceSlugs).
   const bookings = await Booking.find({
-    activitySlug,
+    activitySlug: { $in: resourceSlugs(activitySlug) },
     date,
     $or: [{ status: 'paid' }, { status: 'pending', createdAt: { $gte: cutoff } }],
   })

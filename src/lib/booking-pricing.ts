@@ -1,4 +1,4 @@
-import { activities, type Localized } from '@/lib/activities'
+import { bookableActivities, type Localized } from '@/lib/activities'
 import { getBookingConfig, MAX_BOOKING_MINUTES } from '@/lib/availability'
 
 /**
@@ -9,6 +9,8 @@ import { getBookingConfig, MAX_BOOKING_MINUTES } from '@/lib/availability'
 const DROP_IN_PRICE: Record<string, number> = {
   pickleball: 500,
   tennis: 600, // 600 ฿ / heure
+  // Cours avec le coach : 600 ฿ de coaching + 600 ฿ de court (flyer, 25/09/2026).
+  'tennis-coaching': 1200,
   fitness: 250, // 250 ฿ / jour
   restaurant: 0,
   'kids-club': 200, // 200 ฿ / heure
@@ -30,6 +32,7 @@ export function getActivityPrice(slug: string): number {
  */
 const UNIT_LABEL: Record<string, Localized> = {
   tennis: { en: 'hour', fr: 'heure' },
+  'tennis-coaching': { en: 'hour', fr: 'heure' },
   'kids-club': { en: 'hour', fr: 'heure' },
   fitness: { en: 'session', fr: 'séance' },
   pool: { en: 'day', fr: 'jour' },
@@ -60,6 +63,11 @@ export const LAUNCH_OFFER: Record<string, Localized> = {
   tennis: {
     en: 'Launch offer: flat rate of 600 THB / hour, while we prepare our upcoming, very attractive membership plans.',
     fr: "Offre de lancement : tarif unique de 600 THB / heure, en attendant de vous proposer nos offres d'inscription très intéressantes.",
+  },
+  // Pas une offre de lancement : le détail du prix du cours, lu dans le calendrier.
+  'tennis-coaching': {
+    en: '1,200 THB per hour: 600 THB coaching + 600 THB court. Package from 6 lessons: 1,000 THB per session. Paid at the club, nothing online.',
+    fr: '1 200 THB l’heure : 600 THB de coaching + 600 THB de court. Forfait dès 6 cours : 1 000 THB la séance. Paiement au club, rien en ligne.',
   },
 }
 
@@ -107,7 +115,7 @@ export function getBookingAmountForMinutes(
 
 /** Vérifie qu'un slug correspond bien à une activité connue. */
 export function getActivityBySlug(slug: string) {
-  return activities.find((a) => a.slug === slug)
+  return bookableActivities.find((a) => a.slug === slug)
 }
 
 /** Un palier tarifaire affiché sur la page activité (label + montant + unité). */
@@ -126,12 +134,18 @@ export interface PriceTier {
 export const PRICE_TIERS: Record<string, PriceTier[]> = {
   'kids-club': [{ label: { en: 'Per hour', fr: 'Par heure' }, amount: 200 }],
   tennis: [{ label: { en: 'Per hour', fr: 'Par heure' }, amount: 600 }],
+  'tennis-coaching': [
+    { label: { en: '1 hour lesson', fr: 'Cours d’1 heure' }, amount: 1200 },
+    { label: { en: 'Per session, 6+ lessons', fr: 'La séance, dès 6 cours' }, amount: 1000 },
+  ],
   fitness: [
     { label: { en: 'Per session', fr: 'Par séance' }, amount: 250 },
     { label: { en: 'Week', fr: 'Semaine' }, amount: 1000 },
     { label: { en: 'Month', fr: 'Mois' }, amount: 1500 },
   ],
   pool: [{ label: { en: 'Day access', fr: 'Accès journée' }, amount: 100 }],
+  // Pas réservable en ligne (WhatsApp) : affiché sur la page Tarifs seulement.
+  aquagym: [{ label: { en: '45-minute class', fr: 'Séance de 45 min' }, amount: 400 }],
 }
 
 /**
@@ -144,5 +158,6 @@ export const OPENING_HOURS: Record<string, Localized> = {
   'kids-club': { en: '8 AM – 4 PM', fr: '8H – 16H' },
   fitness: { en: '8 AM – 8 PM', fr: '8H – 20H' },
   tennis: { en: '7 AM – 10 PM', fr: '7H – 22H' },
+  'tennis-coaching': { en: '7 AM – 10 PM', fr: '7H – 22H' },
   pool: { en: 'All day', fr: 'À la journée' },
 }

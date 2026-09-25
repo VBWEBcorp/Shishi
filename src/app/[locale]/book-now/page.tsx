@@ -13,7 +13,7 @@ import {
   webPageJsonLd,
 } from '@/components/seo/json-ld'
 import { Link } from '@/i18n/navigation'
-import { activities, resolveLink } from '@/lib/activities'
+import { bookableActivities, resolveLink } from '@/lib/activities'
 import type { Locale } from '@/lib/activities'
 import { alternatesFor, siteConfig } from '@/lib/seo'
 import { BookingWidget } from './booking-widget'
@@ -156,7 +156,7 @@ function BookingContent({ initialActivity }: { initialActivity?: string }) {
       <section className="mx-auto max-w-6xl px-4 py-16 sm:px-6 lg:px-8 lg:py-20">
         <h2 className="font-editorial text-2xl font-normal text-foreground sm:text-3xl">{t('whatToBook')}</h2>
         <div className="mt-7 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {activities.filter((a) => a.bookable).map((a) => (
+          {bookableActivities.filter((a) => a.bookable).map((a) => (
             <Link
               key={a.slug}
               href={`/book-now?activity=${a.slug}`}

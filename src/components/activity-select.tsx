@@ -5,7 +5,7 @@ import { useEffect, useRef, useState } from 'react'
 
 import { ActivityIcon } from '@/components/activity-icon'
 import type { Locale } from '@/i18n/routing'
-import { activities } from '@/lib/activities'
+import { activities, bookableActivities } from '@/lib/activities'
 import { cn } from '@/lib/utils'
 
 /**
@@ -39,8 +39,8 @@ export function ActivitySelect({
 }) {
   const [open, setOpen] = useState(false)
   const ref = useRef<HTMLDivElement>(null)
-  const options = bookableOnly ? activities.filter((a) => a.bookable) : activities
-  const selected = activities.find((a) => a.slug === value) ?? null
+  const options = bookableOnly ? bookableActivities.filter((a) => a.bookable) : activities
+  const selected = bookableActivities.find((a) => a.slug === value) ?? null
 
   // Ferme au clic extérieur / Échap.
   useEffect(() => {
