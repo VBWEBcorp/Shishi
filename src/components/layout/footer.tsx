@@ -8,7 +8,7 @@ import { useEffect, useState } from 'react'
 import { BookingCta } from '@/components/sections/shishi-home'
 import { Link } from '@/i18n/navigation'
 import type { Locale } from '@/i18n/routing'
-import { activities, babysitting, lessons } from '@/lib/activities'
+import { activities, babysitting, lessonsOf } from '@/lib/activities'
 import { siteConfig } from '@/lib/seo'
 
 export function Footer() {
@@ -40,11 +40,14 @@ export function Footer() {
   ]
 
   // Pôles + babysitting (page service dédiée — maillage interne audit).
-  // Coach de tennis et aquagym (25/09/2026) : pages à part, hors des six pôles.
+  // Pôles + babysitting, et chaque cours avec un prof rangé sous son activité
+  // (Tennis > Coach de tennis, Piscine > Aquagym), comme dans le menu.
   const activityLinks = [
-    ...activities,
-    babysitting,
-    ...lessons,
+    ...activities.flatMap((a) => [
+      { slug: a.slug, path: a.path, name: a.name, sub: false },
+      ...lessonsOf(a.slug).map((l) => ({ slug: l.slug, path: l.path, name: l.name, sub: true })),
+    ]),
+    { slug: babysitting.slug, path: babysitting.path, name: babysitting.name, sub: false },
   ]
 
   const legalLinks = [
@@ -120,7 +123,7 @@ export function Footer() {
             </h3>
             <ul className="mt-5 space-y-3">
               {activityLinks.map((a) => (
-                <li key={a.slug}>
+                <li key={a.slug} className={a.sub ? 'pl-4' : undefined}>
                   <Link
                     href={a.path}
                     className="group inline-flex items-center gap-1 text-sm text-zinc-300 transition-colors hover:text-white"

@@ -9,6 +9,7 @@ import {
 } from '@/lib/booking-pricing'
 import {
   bookingInterval,
+  fixedMinutes,
   getBookingConfig,
   isBookable,
   isDayPass,
@@ -105,7 +106,10 @@ export async function POST(request: NextRequest) {
         : Number.isFinite(rawHours) && rawHours > 0
           ? rawHours * 60
           : slotMin
-    const duration = hasVariableDuration(activitySlug)
+    const fixe = fixedMinutes(activitySlug)
+    const duration = fixe !== null
+      ? fixe
+      : hasVariableDuration(activitySlug)
       ? Math.min(
           MAX_BOOKING_MINUTES,
           Math.max(STEP_MINUTES, Math.round(requested / STEP_MINUTES) * STEP_MINUTES)

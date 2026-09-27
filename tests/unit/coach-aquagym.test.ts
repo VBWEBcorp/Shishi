@@ -12,6 +12,7 @@ import {
 import {
   bookingInterval,
   computeAvailability,
+  fixedMinutes,
   generateSlots,
   isBookable,
   minPublicMinutes,
@@ -142,9 +143,12 @@ describe('Pages coach et aquagym', () => {
     expect(src).toContain('Paiement directement au Shi Shi Samui')
   })
 
-  it('la page aquagym n’a pas de calendrier et renvoie vers le WhatsApp de Paul', () => {
+  it('la page aquagym suit l’interrupteur admin : calendrier si ouvert, WhatsApp de Paul sinon', () => {
     const src = page('aquagym-lamai/page.tsx')
-    expect(src).not.toContain('BookingWidget')
+    expect(src).toMatch(/activiteOuverte\(await lireReglages\(\), aquagym\.slug\)/)
+    expect(src).toMatch(/\{enLigne && \(/)
+    expect(src).toContain('export const revalidate = 60')
+    expect(src).toMatch(/<BookingWidget initialActivity=\{aquagym\.slug\} \/>/)
     expect(src).toContain('https://wa.me/qr/5XV6VKX2BOCCF1')
     expect(src).toContain('aquagym-whatsapp-qr.png')
     expect(src).toContain('400 THB')
@@ -158,7 +162,7 @@ describe('Pages coach et aquagym', () => {
   })
 })
 
-describe('Cours avec nos profs : un groupe à part, les six pôles restent six', () => {
+describe('Cours avec un prof : rangés sous leur activité, les six pôles restent six', () => {
   it('liste le coach de tennis et l’aquagym, avec leurs pages', async () => {
     const { lessons } = await import('@/lib/activities')
     expect(lessons.map((x) => x.path)).toEqual(['/tennis-coaching-lamai', '/aquagym-lamai'])
@@ -168,9 +172,57 @@ describe('Cours avec nos profs : un groupe à part, les six pôles restent six',
 
   it('le menu, le footer, l’accueil et la page Activités le reprennent', () => {
     const src = (p: string) => readFileSync(resolve(__dirname, '../../src', p), 'utf8')
-    expect(src('components/layout/navbar.tsx')).toMatch(/lessons\.map/)
-    expect(src('components/layout/footer.tsx')).toMatch(/\.\.\.lessons/)
+    expect(src('components/layout/navbar.tsx')).toMatch(/lessonsOf\(a\.slug\)/)
+    expect(src('components/layout/footer.tsx')).toMatch(/lessonsOf\(a\.slug\)/)
     expect(src('app/[locale]/page.tsx')).toContain('<LessonsSection />')
     expect(src('app/[locale]/services/page.tsx')).toContain('<LessonsSection />')
+  })
+})
+
+describe('Aquagym dans le module de réservation', () => {
+  it('est réservable, hors menu, rangé sous Piscine', async () => {
+    const { aquagym, lessonsOf } = await import('@/lib/activities')
+    expect(isBookable('aquagym')).toBe(true)
+    expect(bookableActivities.map((a) => a.slug)).toContain('aquagym')
+    expect(activities.map((a) => a.slug)).not.toContain('aquagym')
+    expect(aquagym.path).toBe('/aquagym-lamai')
+    expect(lessonsOf('pool').map((l) => l.slug)).toEqual(['aquagym'])
+    expect(lessonsOf('tennis').map((l) => l.slug)).toEqual(['tennis-coaching'])
+  })
+
+  it('séance fixe de 45 min, sans sélecteur de durée', () => {
+    expect(fixedMinutes('aquagym')).toBe(45)
+    expect(fixedMinutes('tennis')).toBeNull()
+    expect(hasVariableDuration('aquagym')).toBe(false)
+    expect(bookingInterval('aquagym', '10:00', 45, 'public')).toEqual(r('10:00', '10:45'))
+    expect(bookingInterval('aquagym', '10:30', 45, 'public')).toEqual(r('10:30', '11:15'))
+    expect(bookingInterval('aquagym', '10:00', 30, 'public')).toBeNull()
+    expect(bookingInterval('aquagym', '10:00', 60, 'public')).toBeNull()
+    expect(bookingInterval('aquagym', '10:00', 45, 'admin')).toEqual(r('10:00', '10:45'))
+  })
+
+  it('400 ฿ par personne', () => {
+    expect(getBookingAmountForMinutes('aquagym', 1, 45)).toBe(400)
+    expect(getBookingAmountForMinutes('aquagym', 3, 45)).toBe(1200)
+  })
+
+  it('dernier départ public 19:00 (fin 19:45 avant la fermeture de 20:00)', () => {
+    const slots = generateSlots('aquagym')
+    expect(slots[0]).toBe('08:00')
+    expect(slots.at(-1)).toBe('19:00')
+  })
+
+  it('une séance à 10:00 bloque 09:30 et 10:30, pas 09:00 ni 11:00', () => {
+    const grid = computeAvailability('aquagym', [r('10:00', '10:45')])
+    const at = (t: string) => grid.find((s) => s.time === t)!.available
+    expect(at('09:00')).toBe(1)
+    expect(at('09:30')).toBe(0)
+    expect(at('10:00')).toBe(0)
+    expect(at('10:30')).toBe(0)
+    expect(at('11:00')).toBe(1)
+  })
+
+  it('n’occupe pas le court ni la piscine à la journée', () => {
+    expect(resourceSlugs('aquagym')).toEqual(['aquagym'])
   })
 })

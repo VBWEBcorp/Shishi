@@ -7,10 +7,13 @@ import { ActivityIcon } from '@/components/activity-icon'
 import { bookableActivities } from '@/lib/activities'
 import {
   ADMIN_STEP_MINUTES,
+  fixedMinutes,
   formatDuration,
   isBookable,
   isDayPass,
   MAX_BOOKING_MINUTES,
+  toHHMM,
+  toMinutes,
 } from '@/lib/availability'
 import { isPricePerPerson } from '@/lib/booking-pricing'
 import { cn } from '@/lib/utils'
@@ -144,6 +147,13 @@ export function NewBookingModal({
     if (dayPass) return []
     const startIndex = slots.findIndex((s) => s.time === time)
     if (startIndex < 0) return []
+    // Séance à durée fixe (aquagym, 45 min) : une seule fin possible. La grille
+    // grise déjà les départs où la séance entière ne tient pas.
+    const fixe = fixedMinutes(activitySlug)
+    if (fixe !== null) {
+      if (slots[startIndex].available <= 0) return []
+      return [{ end: toHHMM(toMinutes(time) + fixe), minutes: fixe }]
+    }
     const out: EndOption[] = []
     let minutes = 0
     for (let i = startIndex; i < slots.length; i++) {
@@ -156,7 +166,7 @@ export function NewBookingModal({
       out.push({ end: slot.endTime, minutes })
     }
     return out
-  }, [slots, time, stepMinutes, dayPass])
+  }, [slots, time, stepMinutes, dayPass, activitySlug])
 
   // Recale la durée sur ce qui est réellement proposé (défaut : 1 h si possible).
   useEffect(() => {

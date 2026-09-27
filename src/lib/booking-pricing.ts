@@ -15,6 +15,7 @@ const DROP_IN_PRICE: Record<string, number> = {
   restaurant: 0,
   'kids-club': 200, // 200 ฿ / heure
   pool: 100, // 100 ฿ / jour
+  aquagym: 400, // 400 ฿ la séance de 45 min, par personne (25/09/2026)
 }
 
 const DEFAULT_PRICE = 500
@@ -36,6 +37,7 @@ const UNIT_LABEL: Record<string, Localized> = {
   'kids-club': { en: 'hour', fr: 'heure' },
   fitness: { en: 'session', fr: 'séance' },
   pool: { en: 'day', fr: 'jour' },
+  aquagym: { en: 'class', fr: 'séance' },
   pickleball: { en: 'hour', fr: 'heure' },
 }
 
@@ -52,7 +54,9 @@ export function getUnitLabel(slug: string, locale: 'en' | 'fr'): string | null {
  * les 30 minutes, comme son espace admin le permettait déjà.
  */
 export function hasVariableDuration(slug: string): boolean {
-  return getBookingConfig(slug)?.unit === 'hour'
+  const cfg = getBookingConfig(slug)
+  // Aquagym : horaire au choix mais séance de 45 min, pas de sélecteur de durée.
+  return cfg?.unit === 'hour' && !cfg.fixedMinutes
 }
 
 /**
@@ -76,7 +80,7 @@ export const LAUNCH_OFFER: Record<string, Localized> = {
  * total. Le tennis est une réservation de TERRAIN (prix fixe par session, quel
  * que soit le nombre de joueurs) → il n'est pas dans cette liste.
  */
-const PRICE_PER_PERSON = new Set(['fitness', 'kids-club', 'pool'])
+const PRICE_PER_PERSON = new Set(['fitness', 'kids-club', 'pool', 'aquagym'])
 
 /** Le tarif se multiplie-t-il par le nombre de participants ? */
 export function isPricePerPerson(slug: string): boolean {
@@ -144,7 +148,6 @@ export const PRICE_TIERS: Record<string, PriceTier[]> = {
     { label: { en: 'Month', fr: 'Mois' }, amount: 1500 },
   ],
   pool: [{ label: { en: 'Day access', fr: 'Accès journée' }, amount: 100 }],
-  // Pas réservable en ligne (WhatsApp) : affiché sur la page Tarifs seulement.
   aquagym: [{ label: { en: '45-minute class', fr: 'Séance de 45 min' }, amount: 400 }],
 }
 

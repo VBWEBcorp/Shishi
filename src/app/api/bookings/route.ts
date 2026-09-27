@@ -9,6 +9,7 @@ import {
   bookingInterval,
   getBookingConfig,
   isBookable,
+  fixedMinutes,
   isDayPass,
   MAX_BOOKING_MINUTES,
 } from '@/lib/availability'
@@ -145,9 +146,10 @@ export async function POST(request: NextRequest) {
           ? rawHours * 60
           : slotMin
     // Pass journée : durée imposée (l'accès couvre la journée entière).
+    // Pass journée ou séance à durée fixe (aquagym) : durée imposée.
     const duration = isDayPass(activitySlug)
       ? slotMin
-      : Math.min(
+      : fixedMinutes(activitySlug) ?? Math.min(
           MAX_BOOKING_MINUTES,
           Math.max(
             ADMIN_STEP_MINUTES,

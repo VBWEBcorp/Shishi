@@ -1,7 +1,7 @@
 'use client'
 
 import { AnimatePresence, motion } from 'framer-motion'
-import { ArrowRight, Check, Globe, Instagram, Lock, MapPin, UserRound } from 'lucide-react'
+import { ArrowRight, Check, CornerDownRight, Globe, Instagram, Lock, MapPin, UserRound } from 'lucide-react'
 import { useLocale, useTranslations } from 'next-intl'
 import { useEffect, useRef, useState, useTransition } from 'react'
 
@@ -10,7 +10,7 @@ import { Logo } from '@/components/layout/logo'
 import { Link, usePathname, useRouter } from '@/i18n/navigation'
 import type { Locale } from '@/i18n/routing'
 import { routing } from '@/i18n/routing'
-import { activities, lessons, serviceConfigs } from '@/lib/activities'
+import { activities, lessons, lessonsOf, serviceConfigs } from '@/lib/activities'
 import { SHOW_MEMBER_AREA } from '@/lib/launch'
 import { siteConfig } from '@/lib/seo'
 import { cn } from '@/lib/utils'
@@ -263,39 +263,26 @@ function FullscreenMenu({
                           {a.tagline[locale]}
                         </span>
                       </Link>
-                    </li>
-                  )
-                })}
-              </ul>
-
-              {/* Cours avec un prof : une ligne plus discrète sous les six pôles,
-                  pour ne pas en faire un septième et huitième pôle. */}
-              <p className="mb-3 mt-7 text-[11px] font-semibold uppercase tracking-[0.28em] text-accent lg:mt-6">
-                {fr ? 'Cours avec nos profs' : 'Lessons with our coaches'}
-              </p>
-              <ul className="flex flex-wrap gap-2.5">
-                {lessons.map((lesson) => {
-                  const active = pathname === lesson.path
-                  return (
-                    <li key={lesson.slug}>
-                      <Link
-                        href={lesson.path}
-                        onClick={onClose}
-                        className={cn(
-                          'group inline-flex items-center gap-2.5 rounded-full px-4 py-2.5 ring-1 transition-colors',
-                          active
-                            ? 'bg-white/15 text-white ring-white/40'
-                            : 'text-white/75 ring-white/20 hover:bg-white/10 hover:text-white'
-                        )}
-                      >
-                        <ActivityIcon name={lesson.icon} className="size-4 text-accent" />
-                        <span className="font-editorial text-lg leading-none sm:text-xl">
-                          {lesson.name[locale]}
-                        </span>
-                        <span className="hidden text-xs text-white/45 sm:inline">
-                          {lesson.price[locale]}
-                        </span>
-                      </Link>
+                      {/* Cours avec un prof, rangés sous leur activité (Tennis > Coach). */}
+                      {lessonsOf(a.slug).map((lesson) => (
+                        <Link
+                          key={lesson.slug}
+                          href={lesson.path}
+                          onClick={onClose}
+                          className="group -mt-1 flex items-center gap-2.5 pb-2.5 pl-9 sm:pl-10 lg:pb-2"
+                        >
+                          <CornerDownRight className="size-4 shrink-0 text-white/35" aria-hidden />
+                          <span
+                            className={cn(
+                              'font-editorial text-lg leading-none transition-colors group-hover:text-white sm:text-xl',
+                              pathname === lesson.path ? 'text-white' : 'text-white/65'
+                            )}
+                          >
+                            {lesson.name[locale]}
+                          </span>
+                          <span className="text-xs text-accent">{lesson.price[locale]}</span>
+                        </Link>
+                      ))}
                     </li>
                   )
                 })}

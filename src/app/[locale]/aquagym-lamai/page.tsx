@@ -1,4 +1,4 @@
-import { Clock, Droplets, MessageCircle, Sun, UserRound, Waves } from 'lucide-react'
+import { CalendarCheck, Clock, Droplets, MessageCircle, Sun, UserRound, Waves } from 'lucide-react'
 import type { Metadata } from 'next'
 import { setRequestLocale } from 'next-intl/server'
 import Image from 'next/image'
@@ -10,16 +10,28 @@ import {
   webPageJsonLd,
 } from '@/components/seo/json-ld'
 import { Link } from '@/i18n/navigation'
-import { AQUAGYM_PATH, type Locale } from '@/lib/activities'
+import { BookingWidget } from '@/app/[locale]/book-now/booking-widget'
+import { aquagym, AQUAGYM_PATH, type Locale } from '@/lib/activities'
+import { activiteOuverte } from '@/lib/booking-settings'
+import { lireReglages } from '@/lib/booking-settings-server'
 import { photoAlt } from '@/lib/photo-alt'
 import { alternatesFor, siteConfig } from '@/lib/seo'
 
 /*
  * AQUAGYM.
  *
- * Demandée le 25/09/2026 par Paul Poulain : une page aquagym SANS réservation
- * en ligne (« je gère ça sur un groupe WhatsApp de mon côté en perso »), avec
- * son QR code WhatsApp pour le contacter et réserver un créneau.
+ * Demandée le 25/09/2026 par Paul Poulain : une page aquagym avec son QR code
+ * WhatsApp pour le contacter et réserver un créneau (il gérait les séances sur
+ * un groupe WhatsApp). Le 27/09/2026, Victor l'a ajoutée au module de
+ * réservation : l'activité `aquagym` (45 min, 400 ฿ par personne) existe côté
+ * site et admin, mais Paul gère encore ses séances sur WhatsApp. D'où
+ * l'interrupteur « aquagym » de l'espace admin (bookingsettings.activities) :
+ *  · fermé (réglage de départ) → la page met le WhatsApp de Paul en avant,
+ *    comme il l'a demandé, sans calendrier ;
+ *  · ouvert → le calendrier passe en premier, le WhatsApp en second choix.
+ * La page se régénère chaque minute : basculer l'interrupteur suffit, sans
+ * déploiement. FAQ et données structurées suivent le même état, pour que
+ * Google et les IA décrivent la façon réelle de réserver.
  *
  * Tarif donné par le club : 400 ฿ la séance de 45 minutes, matériel,
  * professeur et serviette compris, avec accès à la piscine toute la journée.
@@ -46,8 +58,8 @@ const TITLE = {
 } as const
 
 const DESCRIPTION = {
-  en: 'Aqua aerobics at Shi Shi Samui in Lamai: 45-minute class for 400 THB, equipment, instructor and towel included, with pool access all day. Book on WhatsApp.',
-  fr: 'Aquagym chez Shi Shi Samui à Lamai : séance de 45 minutes à 400 THB, matériel, professeur et serviette compris, piscine en accès libre la journée. Réservation sur WhatsApp.',
+  en: 'Aqua aerobics at Shi Shi Samui in Lamai: 45-minute class for 400 THB, equipment, instructor and towel included, with pool access all day.',
+  fr: 'Aquagym chez Shi Shi Samui à Lamai : séance de 45 minutes à 400 THB, matériel, professeur et serviette compris, piscine en accès libre la journée.',
 } as const
 
 const KEYWORDS = [
@@ -65,7 +77,8 @@ const T = {
     eyebrow: 'Aqua aerobics',
     intro:
       'A 45-minute aqua aerobics class in the club pool, led by our instructor. Then stay: your pass gives you the pool for the rest of the day.',
-    cta: 'Book on WhatsApp',
+    cta: 'Book a class',
+    ctaWhatsapp: 'Book on WhatsApp',
     prixTitre: 'One class',
     prix: '400 THB',
     duree: '45 minutes',
@@ -78,7 +91,11 @@ const T = {
     ],
     reserverTitre: 'Book a class',
     reserverTexte:
-      'Classes are not booked online: they are arranged on WhatsApp. Scan the QR code with your phone, or tap the button, and message us to book your slot.',
+      'Pick a day and a time: the class lasts 45 minutes, 400 THB per person, paid at the club. Coming as a group? Add each person as a participant.',
+    whatsappTitre: 'Prefer WhatsApp?',
+    whatsappTexte: 'Scan the QR code with your phone, or tap the button, to message our instructor directly.',
+    whatsappSeulTexte:
+      'Classes are booked directly with our instructor on WhatsApp. Scan the QR code with your phone, or tap the button, and message her to book your slot.',
     qrAlt: 'WhatsApp QR code to book an aqua aerobics class at Shi Shi Samui',
     qrLegende: 'Scan to chat on WhatsApp',
     piscineTitre: 'Just want to swim?',
@@ -90,7 +107,8 @@ const T = {
     eyebrow: 'Aquagym',
     intro:
       'Une séance d’aquagym de 45 minutes dans la piscine du club, encadrée par notre professeure. Et après, restez : votre séance vous donne la piscine pour le reste de la journée.',
-    cta: 'Réserver sur WhatsApp',
+    cta: 'Réserver une séance',
+    ctaWhatsapp: 'Réserver sur WhatsApp',
     prixTitre: 'La séance',
     prix: '400 THB',
     duree: '45 minutes',
@@ -103,7 +121,11 @@ const T = {
     ],
     reserverTitre: 'Réserver une séance',
     reserverTexte:
-      'Les séances ne se réservent pas en ligne : elles se calent sur WhatsApp. Scannez le QR code avec votre téléphone, ou touchez le bouton, et écrivez-nous pour réserver votre créneau.',
+      'Choisissez un jour et une heure : la séance dure 45 minutes, 400 THB par personne, réglés au club. Vous venez à plusieurs ? Ajoutez chaque personne en participant.',
+    whatsappTitre: 'Vous préférez WhatsApp ?',
+    whatsappTexte: 'Scannez le QR code avec votre téléphone, ou touchez le bouton, pour écrire directement à notre professeure.',
+    whatsappSeulTexte:
+      'Les séances se réservent directement auprès de notre professeure, sur WhatsApp. Scannez le QR code avec votre téléphone, ou touchez le bouton, et écrivez-lui pour réserver votre créneau.',
     qrAlt: 'QR code WhatsApp pour réserver une séance d’aquagym chez Shi Shi Samui',
     qrLegende: 'Scannez pour écrire sur WhatsApp',
     piscineTitre: 'Vous voulez juste nager ?',
@@ -140,8 +162,13 @@ const FAQ = [
       fr: 'Comment réserver ?',
     },
     a: {
-      en: 'On WhatsApp: scan the QR code on this page or tap the button, and message us to book your slot.',
-      fr: 'Sur WhatsApp : scannez le QR code de cette page ou touchez le bouton, et écrivez-nous pour réserver votre créneau.',
+      en: 'Online, from the calendar on this page: pick a day and a time, you pay at the club. You can also message us on WhatsApp.',
+      fr: 'En ligne, depuis le calendrier de cette page : choisissez un jour et une heure, vous réglez au club. Vous pouvez aussi nous écrire sur WhatsApp.',
+    },
+    // Réponse quand la réservation en ligne de l'aquagym est fermée.
+    aWhatsapp: {
+      en: 'On WhatsApp, directly with our instructor: scan the QR code on this page or tap the button, and message her to book your slot. You pay at the club.',
+      fr: 'Sur WhatsApp, directement auprès de notre professeure : scannez le QR code de cette page ou touchez le bouton, et écrivez-lui pour réserver votre créneau. Vous réglez au club.',
     },
   },
   {
@@ -155,6 +182,9 @@ const FAQ = [
     },
   },
 ] as const
+
+/** Régénérée au plus une fois par minute : l'interrupteur admin suffit. */
+export const revalidate = 60
 
 function langue(locale: string): Locale {
   return locale === 'fr' ? 'fr' : 'en'
@@ -194,6 +224,13 @@ export default async function AquagymPage({
   const t = T[l]
   const fr = l === 'fr'
 
+  // Calendrier affiché seulement si le club a ouvert l'aquagym en ligne.
+  const enLigne = activiteOuverte(await lireReglages(), aquagym.slug)
+  const faq = FAQ.map((item) => ({
+    q: item.q[l],
+    a: !enLigne && 'aWhatsapp' in item ? item.aWhatsapp[l] : item.a[l],
+  }))
+
   const jsonLd = {
     '@context': 'https://schema.org',
     '@graph': [
@@ -207,7 +244,7 @@ export default async function AquagymPage({
         ],
         l
       ),
-      faqJsonLd(FAQ.map((item) => ({ question: item.q[l], answer: item.a[l] }))),
+      faqJsonLd(faq.map((item) => ({ question: item.q, answer: item.a }))),
     ],
   }
 
@@ -271,8 +308,12 @@ export default async function AquagymPage({
             href="#reserver"
             className="mt-8 inline-flex items-center gap-2 rounded-xl bg-accent px-5 py-3 text-sm font-semibold text-accent-foreground transition-all hover:brightness-105"
           >
-            <MessageCircle className="size-4" aria-hidden />
-            {t.cta}
+            {enLigne ? (
+              <CalendarCheck className="size-4" aria-hidden />
+            ) : (
+              <MessageCircle className="size-4" aria-hidden />
+            )}
+            {enLigne ? t.cta : t.ctaWhatsapp}
           </a>
         </div>
       </section>
@@ -316,15 +357,39 @@ export default async function AquagymPage({
         </div>
       </section>
 
-      {/* Réserver sur WhatsApp : QR + bouton (sur téléphone, on ne scanne pas son propre écran) */}
-      <section id="reserver" className="scroll-mt-20 border-y border-border bg-muted/40">
-        <div className="mx-auto grid max-w-5xl items-center gap-10 px-4 py-16 sm:px-6 md:grid-cols-[1fr_auto] lg:px-8 lg:py-20">
+      {/* Calendrier de réservation, si l'aquagym est ouverte en ligne */}
+      {enLigne && (
+        <section id="reserver" className="mx-auto max-w-5xl scroll-mt-20 px-4 pt-4 pb-16 sm:px-6 lg:px-8 lg:pb-20">
+          <h2 className="font-editorial text-[1.8rem] font-normal leading-[1.1] text-foreground sm:text-[2.2rem]">
+            {t.reserverTitre}
+          </h2>
+          <p className="mb-8 mt-3 max-w-2xl text-sm leading-relaxed text-muted-foreground">
+            {t.reserverTexte}
+          </p>
+          <BookingWidget initialActivity={aquagym.slug} />
+        </section>
+      )}
+
+      {/* WhatsApp de Paul, QR + bouton (sur téléphone, on ne scanne pas son propre
+          écran) : LA voie de réservation tant que l'aquagym est fermée en ligne,
+          un second choix sous le calendrier sinon. */}
+      <section
+        id={enLigne ? undefined : 'reserver'}
+        className="scroll-mt-20 border-y border-border bg-muted/40"
+      >
+        <div className="mx-auto grid max-w-5xl items-center gap-10 px-4 py-14 sm:px-6 md:grid-cols-[1fr_auto] lg:px-8">
           <div>
-            <h2 className="font-editorial text-[1.8rem] font-normal leading-[1.1] text-foreground sm:text-[2.2rem]">
-              {t.reserverTitre}
+            <h2
+              className={
+                enLigne
+                  ? 'font-display text-lg font-semibold text-foreground'
+                  : 'font-editorial text-[1.8rem] font-normal leading-[1.1] text-foreground sm:text-[2.2rem]'
+              }
+            >
+              {enLigne ? t.whatsappTitre : t.reserverTitre}
             </h2>
-            <p className="mt-4 max-w-xl text-[0.97rem] leading-relaxed text-muted-foreground">
-              {t.reserverTexte}
+            <p className="mt-3 max-w-xl text-[0.97rem] leading-relaxed text-muted-foreground">
+              {enLigne ? t.whatsappTexte : t.whatsappSeulTexte}
             </p>
             <a
               href={WHATSAPP_AQUAGYM}
@@ -333,7 +398,7 @@ export default async function AquagymPage({
               className="mt-7 inline-flex items-center gap-2 rounded-xl bg-[#25D366] px-5 py-3 text-sm font-semibold text-white transition-all hover:brightness-105"
             >
               <MessageCircle className="size-4" aria-hidden />
-              {t.cta}
+              {t.ctaWhatsapp}
             </a>
           </div>
 
@@ -372,13 +437,13 @@ export default async function AquagymPage({
           {t.faqTitre}
         </h2>
         <dl className="mt-8 space-y-6">
-          {FAQ.map((item) => (
-            <div key={item.q[l]} className="border-b border-border/60 pb-6 last:border-0">
+          {faq.map((item) => (
+            <div key={item.q} className="border-b border-border/60 pb-6 last:border-0">
               <dt className="font-display text-base font-semibold text-foreground">
-                {item.q[l]}
+                {item.q}
               </dt>
               <dd className="mt-2 text-sm leading-relaxed text-muted-foreground">
-                {item.a[l]}
+                {item.a}
               </dd>
             </div>
           ))}

@@ -815,24 +815,73 @@ export const tennisCoaching: Activity = {
   keywords: ['tennis coach koh samui', 'tennis lessons lamai'],
 }
 
-/**
- * Tout ce qui se réserve dans le calendrier : les pôles, plus le cours de
- * tennis. C'est la liste des écrans de réservation (site et espace admin) ;
- * le menu, le footer et les tuiles d'accueil restent sur `activities`.
- */
-export const bookableActivities: Activity[] = [...activities, tennisCoaching]
-
-/** Aquagym : page à part, sans réservation en ligne (gérée sur WhatsApp). */
+/** Aquagym : page à part, réservable dans le calendrier depuis le 27/09/2026. */
 export const AQUAGYM_PATH = '/aquagym-lamai'
 
 /**
- * « Cours avec nos profs » : ce qui se fait avec un professeur, par-dessus les
- * six pôles. Groupe à part dans le menu, l'accueil, la page Activités et le
- * footer (25/09/2026), pour que les six pôles restent six et que chaque cours
- * garde sa page et ses mots-clés. Un nouveau prof = une ligne ici.
+ * Aquagym : comme le cours de tennis, une activité du calendrier et pas un
+ * pôle. Séance de 45 min à 400 ฿ par personne (matériel, prof, serviette et
+ * piscine à la journée compris). D'abord gérée sur le WhatsApp de Paul, puis
+ * ajoutée au module de réservation, site et admin, le 27/09/2026.
+ */
+export const aquagym: Activity = {
+  slug: 'aquagym',
+  urlSlug: 'aquagym-lamai',
+  path: AQUAGYM_PATH,
+  name: { en: 'Aqua aerobics', fr: 'Aquagym' },
+  tagline: {
+    en: '45-minute class with our instructor',
+    fr: 'Séance de 45 min avec notre professeure',
+  },
+  description: {
+    en: 'A 45-minute aqua aerobics class in the club pool, equipment, instructor and towel included, with pool access all day.',
+    fr: 'Une séance d’aquagym de 45 minutes dans la piscine du club, matériel, professeure et serviette compris, avec la piscine toute la journée.',
+  },
+  icon: 'pool',
+  image: '/photos/pool-panorama-portrait.webp',
+  gradient: 'from-sky-500/15 to-cyan-500/5',
+  inMenu: false,
+  bookable: true,
+  h1: { en: 'Aqua Aerobics in Lamai, Koh Samui', fr: 'Aquagym à Lamai, Koh Samui' },
+  metaTitle: {
+    en: 'Aqua Aerobics in Lamai, Koh Samui | Shi Shi Samui',
+    fr: 'Aquagym à Lamai, Koh Samui | Shi Shi Samui',
+  },
+  metaDescription: {
+    en: 'Aqua aerobics at Shi Shi Samui in Lamai: 45-minute class for 400 THB, equipment, instructor and towel included, pool access all day.',
+    fr: 'Aquagym chez Shi Shi Samui à Lamai : séance de 45 minutes à 400 THB, matériel, professeure et serviette compris, piscine la journée.',
+  },
+  keywordsPrimary: ['aqua aerobics koh samui', 'aquagym koh samui'],
+  keywordsSecondary: ['aqua aerobics lamai', 'aquagym lamai'],
+  schema: 'service',
+  altImages: ['Aqua aerobics in the pool at Shi Shi Samui, Lamai'],
+  highlights: { en: [], fr: [] },
+  gallery: [],
+  video: FALLBACK_VIDEO,
+  faq: [],
+  related: ['swimming-pool-lamai', 'book-now', 'contact'],
+  keywords: ['aqua aerobics koh samui', 'aquagym lamai'],
+}
+
+/**
+ * Tout ce qui se réserve dans le calendrier : les pôles, plus le cours de
+ * tennis et l'aquagym. C'est la liste des écrans de réservation (site et
+ * espace admin) ; le menu, le footer et les tuiles d'accueil restent sur
+ * `activities`.
+ */
+export const bookableActivities: Activity[] = [...activities, tennisCoaching, aquagym]
+
+/**
+ * Cours avec un professeur, rangés SOUS leur activité (27/09/2026) : le coach
+ * de tennis sous Tennis, l'aquagym sous Piscine, dans le menu et le footer. Un
+ * visiteur pense « je veux faire du tennis » avant « je cherche un prof », et
+ * Google lit la même famille que le fil d'Ariane (Tennis > Coach de tennis).
+ * Un nouveau prof = une ligne ici, avec le slug de son activité parente.
  */
 export interface Lesson {
   slug: string
+  /** Pôle sous lequel le cours s'affiche (menu, footer). */
+  parent: string
   path: string
   icon: string
   image: string
@@ -846,6 +895,7 @@ export interface Lesson {
 export const lessons: Lesson[] = [
   {
     slug: 'tennis-coaching',
+    parent: 'tennis',
     path: TENNIS_COACHING_PATH,
     icon: 'tennis',
     image: '/photos/coach-paul-portrait.webp',
@@ -859,6 +909,7 @@ export const lessons: Lesson[] = [
   },
   {
     slug: 'aquagym',
+    parent: 'pool',
     path: AQUAGYM_PATH,
     icon: 'pool',
     image: '/photos/pool-transats-portrait.webp',
@@ -868,6 +919,8 @@ export const lessons: Lesson[] = [
       fr: 'Séance de 45 min avec notre professeure, piscine à la journée',
     },
     price: { en: '400 THB / class', fr: '400 THB / séance' },
+    // WhatsApp reste la voie annoncée : Paul gère ses séances là, et le reste
+    // même quand l'interrupteur admin ouvre le calendrier (second choix).
     bookableOnline: false,
   },
 ]
@@ -899,3 +952,8 @@ export function resolveLink(
 
 export const activitySlugs = activities.map((a) => a.slug)
 export const serviceUrlSlugs = serviceConfigs.map((a) => a.urlSlug)
+
+/** Les cours avec un prof rangés sous un pôle donné (menu, footer). */
+export function lessonsOf(parentSlug: string): Lesson[] {
+  return lessons.filter((lesson) => lesson.parent === parentSlug)
+}

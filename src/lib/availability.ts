@@ -40,6 +40,12 @@ export interface ActivityBookingConfig {
    * jamais 30 min. L'espace admin n'y est pas soumis.
    */
   minMinutes?: number
+  /**
+   * Séance à DURÉE FIXE (aquagym : 45 min), site comme admin. Le départ reste
+   * sur la demi-heure, mais la durée n'est pas au choix et n'a pas à être un
+   * multiple de 30.
+   */
+  fixedMinutes?: number
 }
 
 /**
@@ -60,6 +66,17 @@ export const BOOKING_CONFIG: Record<string, ActivityBookingConfig> = {
     capacity: 1,
     unit: 'hour',
     minMinutes: 60,
+  },
+  // Aquagym : séance de 45 min avec la prof, pendant les heures de la piscine.
+  // Une réservation = un créneau avec la prof (le groupe se déclare en
+  // participants, facturés 400 ฿ chacun).
+  aquagym: {
+    open: '08:00',
+    close: '20:00',
+    slotMinutes: 45,
+    capacity: 1,
+    unit: 'hour',
+    fixedMinutes: 45,
   },
   // Salle de sport : accès illimité à la journée.
   fitness: { open: '08:00', close: '20:00', slotMinutes: 720, capacity: 20, unit: 'day' },
@@ -117,6 +134,12 @@ const SHARED_RESOURCE: string[][] = [['tennis', 'tennis-coaching']]
 /** Les activités dont les réservations se disputent la même place que `slug`. */
 export function resourceSlugs(slug: string): string[] {
   return SHARED_RESOURCE.find((g) => g.includes(slug)) ?? [slug]
+}
+
+/** Durée imposée d'une séance (aquagym : 45 min), ou null si elle est au choix. */
+export function fixedMinutes(slug: string): number | null {
+  const cfg = getBookingConfig(slug)
+  return cfg && cfg.unit !== 'day' && cfg.fixedMinutes ? cfg.fixedMinutes : null
 }
 
 /** Une activité est-elle réservable par créneau ? */
@@ -201,6 +224,8 @@ export function minBookingMinutes(slug: string, scope: BookingScope = 'public'):
 export function minPublicMinutes(slug: string, scope: BookingScope = 'public'): number {
   const cfg = getBookingConfig(slug)
   const step = minBookingMinutes(slug, scope)
+  // Durée fixe : c'est la séance entière, y compris dans l'admin.
+  if (cfg?.fixedMinutes && cfg.unit !== 'day') return cfg.fixedMinutes
   if (!cfg || cfg.unit === 'day' || scope === 'admin') return step
   return Math.max(step, cfg.minMinutes ?? step)
 }
@@ -262,8 +287,13 @@ export function bookingInterval(
   const min = minBookingMinutes(slug, scope)
 
   const duration = Math.round(Number(durationMinutes))
-  if (!Number.isFinite(duration) || duration < min || duration % min !== 0) return null
-  if (duration < minPublicMinutes(slug, scope)) return null
+  const fixe = fixedMinutes(slug)
+  if (fixe !== null) {
+    if (duration !== fixe) return null
+  } else {
+    if (!Number.isFinite(duration) || duration < min || duration % min !== 0) return null
+    if (duration < minPublicMinutes(slug, scope)) return null
+  }
   if (duration > MAX_BOOKING_MINUTES) return null
   // Le départ doit tomber sur la grille (la demi-heure) et toute la plage doit
   // tenir dans l'amplitude du contexte.
