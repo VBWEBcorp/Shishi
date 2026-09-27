@@ -15,6 +15,7 @@ import { useCallback, useEffect, useState } from 'react'
 
 import { ActivityIcon } from '@/components/activity-icon'
 import {
+  activiteActivee,
   DEFAUT,
   NOTICE_DEFAUT,
   dateFermee,
@@ -129,7 +130,7 @@ export function BookingSwitch() {
   const ouvert = reglages.online
   const aujourdhui = jourJ()
   const fermeAujourdhui = dateFermee(reglages, aujourdhui)
-  const activitesFermees = RESERVABLES.filter((a) => reglages.activities[a.slug] === false)
+  const activitesFermees = RESERVABLES.filter((a) => !activiteActivee(reglages, a.slug))
 
   function ajouterFermeture() {
     if (!DATE.test(du) || !DATE.test(au)) return
@@ -265,7 +266,7 @@ export function BookingSwitch() {
             </h3>
             <div className="mt-3 flex flex-wrap gap-2">
               {RESERVABLES.map((a) => {
-                const actif = reglages.activities[a.slug] !== false
+                const actif = activiteActivee(reglages, a.slug)
                 return (
                   <button
                     key={a.slug}

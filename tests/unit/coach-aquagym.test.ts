@@ -226,3 +226,20 @@ describe('Aquagym dans le module de réservation', () => {
     expect(resourceSlugs('aquagym')).toEqual(['aquagym'])
   })
 })
+
+describe('Aquagym fermée en ligne tant que le club ne l’ouvre pas', () => {
+  it('absente des réglages = fermée ; les autres activités restent ouvertes par défaut', async () => {
+    const { activiteOuverte, activiteActivee, normaliser } = await import('@/lib/booking-settings')
+    const vide = normaliser({ online: true, activities: {} })
+    expect(activiteOuverte(vide, 'aquagym')).toBe(false)
+    expect(activiteActivee(vide, 'aquagym')).toBe(false)
+    expect(activiteOuverte(vide, 'tennis')).toBe(true)
+    expect(activiteOuverte(vide, 'tennis-coaching')).toBe(true)
+  })
+
+  it('l’interrupteur admin l’ouvre', async () => {
+    const { activiteOuverte, normaliser } = await import('@/lib/booking-settings')
+    expect(activiteOuverte(normaliser({ online: true, activities: { aquagym: true } }), 'aquagym')).toBe(true)
+    expect(activiteOuverte(normaliser({ online: false, activities: { aquagym: true } }), 'aquagym')).toBe(false)
+  })
+})

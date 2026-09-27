@@ -71,15 +71,34 @@ function couvre(c: ClosureRule, date: string, activitySlug?: string): boolean {
   return date >= debut && date <= fin
 }
 
+/**
+ * Activités FERMÉES tant que le club ne les a pas ouvertes lui-même depuis
+ * l'admin. L'aquagym (27/09/2026) : Paul gère ses séances sur WhatsApp et a
+ * demandé « pour le moment » pas de réservation en ligne ; l'activité existe
+ * dans le module, c'est à lui de l'ouvrir.
+ */
+const FERMEES_PAR_DEFAUT = new Set(['aquagym'])
+
+/** L'interrupteur de l'activité est-il sur « ouvert » (hors interrupteur général) ? */
+export function activiteActivee(
+  reglages: BookingSettingsData,
+  activitySlug: string
+): boolean {
+  const valeur = reglages.activities[activitySlug]
+  // Absent de la table = ouvert, sauf exception ci-dessus : ajouter une
+  // activité au site ne doit pas la rendre irréservable sans que personne ne
+  // l'ait décidé.
+  if (valeur === undefined) return !FERMEES_PAR_DEFAUT.has(activitySlug)
+  return valeur !== false
+}
+
 /** La réservation en ligne est-elle ouverte pour cette activité ? */
 export function activiteOuverte(
   reglages: BookingSettingsData,
   activitySlug: string
 ): boolean {
   if (!reglages.online) return false
-  // Absent de la table = ouvert : ajouter une activité au site ne doit pas la
-  // rendre irréservable sans que personne ne l'ait décidé.
-  return reglages.activities[activitySlug] !== false
+  return activiteActivee(reglages, activitySlug)
 }
 
 /** La réservation est-elle ouverte pour cette activité À CETTE DATE ? */
