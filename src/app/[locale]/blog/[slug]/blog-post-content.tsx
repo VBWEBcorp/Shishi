@@ -125,7 +125,7 @@ export default function BlogPostContent({
     <article className="min-h-screen">
       {/*
         HERO FIGÉ, puis le contenu qui remonte par-dessus dans un panneau à coins arrondis.
-        C'est le motif de TOUT le site — pages service, accueil, index du blog. L'article était
+        C'est le motif de TOUT le site, pages service, accueil, index du blog. L'article était
         la seule page à ne pas le suivre : une simple bande d'image, un titre en font-display et
         un contenu qui démarrait sans transition. Il détonnait au milieu du reste.
       */}
@@ -398,7 +398,7 @@ export default function BlogPostContent({
           text-decoration: underline;
         }
         /* Tableaux : aucune regle ne les visait non plus, donc ils tombaient sur les valeurs
-           par defaut du navigateur — sans bordure, colonnes collees, illisible sur mobile.
+           par defaut du navigateur, sans bordure, colonnes collees, illisible sur mobile.
            Le conteneur defile horizontalement pour qu'un tableau large ne pousse jamais la
            page entiere de travers. */
         .blog-content .tableau {

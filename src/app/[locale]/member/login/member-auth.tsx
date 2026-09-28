@@ -101,7 +101,7 @@ export function MemberAuth() {
       {/* Fond photo plein écran + voiles chauds + vignette premium */}
       <Image
         src="/photos/pool-panorama-portrait.webp"
-        alt="Shi Shi Samui — club à Lamai, Koh Samui"
+        alt="Shi Shi Samui, club à Lamai, Koh Samui"
         fill
         priority
         sizes="100vw"
@@ -153,8 +153,8 @@ export function MemberAuth() {
           </h1>
           <p className="mx-auto mt-3 max-w-sm text-sm text-white/75 sm:text-base">
             {fr
-              ? 'Vos crédits d’activités, la réservation anticipée et votre historique — votre expérience Shi Shi.'
-              : 'Your activity credits, early booking and your history — your Shi Shi experience.'}
+              ? 'Vos crédits d’activités, la réservation anticipée et votre historique, votre expérience Shi Shi.'
+              : 'Your activity credits, early booking and your history, your Shi Shi experience.'}
           </p>
 
           {/* Avantages en ligne (chips) */}

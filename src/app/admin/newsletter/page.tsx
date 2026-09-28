@@ -174,7 +174,7 @@ export default function AdminNewsletterPage() {
         await new Promise((r) => setTimeout(r, 600))
         setResult({
           ok: true,
-          text: `Simulation : ${emails.length} destinataire(s) — envoi non effectué (aucun contact réel pour le moment).`,
+          text: `Simulation : ${emails.length} destinataire(s), envoi non effectué (aucun contact réel pour le moment).`,
         })
         return
       }
@@ -205,7 +205,7 @@ export default function AdminNewsletterPage() {
         setResult({ ok: true, text: `${data.sent} email(s) envoyé(s)${extra}${cap}.` })
       }
     } catch {
-      setResult({ ok: false, text: 'Erreur réseau — envoi impossible. Réessayez.' })
+      setResult({ ok: false, text: 'Erreur réseau, envoi impossible. Réessayez.' })
     } finally {
       setSending(false)
     }
@@ -335,7 +335,7 @@ export default function AdminNewsletterPage() {
                       </div>
                       {isMember(c) && (
                         <span
-                          title="Adhérent — titulaire d'un compte espace adhérent"
+                          title="Adhérent, titulaire d'un compte espace adhérent"
                           className="hidden shrink-0 items-center gap-1 rounded-full border border-amber-500/30 bg-amber-500/15 px-1.5 py-0.5 text-[10px] font-semibold text-amber-700 sm:inline-flex dark:text-amber-300"
                         >
                           <Star className="size-2.5 fill-current" /> Adhérent
@@ -409,7 +409,7 @@ export default function AdminNewsletterPage() {
               />
               <p className="text-[11px] text-muted-foreground/70">
                 Variables : <code className="rounded bg-muted px-1">{'{prenom}'}</code>{' '}
-                <code className="rounded bg-muted px-1">{'{nom}'}</code> — personnalisées par destinataire.
+                <code className="rounded bg-muted px-1">{'{nom}'}</code>, personnalisées par destinataire.
               </p>
             </div>
 

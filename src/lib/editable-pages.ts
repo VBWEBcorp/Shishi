@@ -70,12 +70,12 @@ const homePage: EditablePage = {
       title: 'Nos valeurs',
       description: 'Le bandeau à trois colonnes.',
       fields: [
-        { key: 'values.0.title', label: 'Valeur 1 — titre', type: 'text' },
-        { key: 'values.0.text', label: 'Valeur 1 — texte', type: 'textarea' },
-        { key: 'values.1.title', label: 'Valeur 2 — titre', type: 'text' },
-        { key: 'values.1.text', label: 'Valeur 2 — texte', type: 'textarea' },
-        { key: 'values.2.title', label: 'Valeur 3 — titre', type: 'text' },
-        { key: 'values.2.text', label: 'Valeur 3 — texte', type: 'textarea' },
+        { key: 'values.0.title', label: 'Valeur 1, titre', type: 'text' },
+        { key: 'values.0.text', label: 'Valeur 1, texte', type: 'textarea' },
+        { key: 'values.1.title', label: 'Valeur 2, titre', type: 'text' },
+        { key: 'values.1.text', label: 'Valeur 2, texte', type: 'textarea' },
+        { key: 'values.2.title', label: 'Valeur 3, titre', type: 'text' },
+        { key: 'values.2.text', label: 'Valeur 3, texte', type: 'textarea' },
       ],
     },
     {
@@ -194,12 +194,12 @@ const aboutPage: EditablePage = {
     {
       title: 'Nos trois piliers',
       fields: [
-        { key: 'values.0.title', label: 'Pilier 1 — titre', type: 'text' },
-        { key: 'values.0.description', label: 'Pilier 1 — texte', type: 'textarea' },
-        { key: 'values.1.title', label: 'Pilier 2 — titre', type: 'text' },
-        { key: 'values.1.description', label: 'Pilier 2 — texte', type: 'textarea' },
-        { key: 'values.2.title', label: 'Pilier 3 — titre', type: 'text' },
-        { key: 'values.2.description', label: 'Pilier 3 — texte', type: 'textarea' },
+        { key: 'values.0.title', label: 'Pilier 1, titre', type: 'text' },
+        { key: 'values.0.description', label: 'Pilier 1, texte', type: 'textarea' },
+        { key: 'values.1.title', label: 'Pilier 2, titre', type: 'text' },
+        { key: 'values.1.description', label: 'Pilier 2, texte', type: 'textarea' },
+        { key: 'values.2.title', label: 'Pilier 3, titre', type: 'text' },
+        { key: 'values.2.description', label: 'Pilier 3, texte', type: 'textarea' },
       ],
     },
     {
@@ -470,5 +470,5 @@ export function priceSummary(slug: string): string | null {
   if (!tiers?.length) return null
   const prices = tiers.map((t) => `${t.label.fr} : ${t.amount} ฿`).join(' · ')
   const hours = OPENING_HOURS[slug]?.fr
-  return hours ? `${prices} — ouvert ${hours}` : prices
+  return hours ? `${prices}, ouvert ${hours}` : prices
 }

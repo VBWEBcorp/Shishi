@@ -112,7 +112,7 @@ export default async function LegalPage({
               </ul>
               <h3 className="pt-2">Services techniques complémentaires</h3>
               <ul className="list-inside list-disc space-y-1 pl-1">
-                <li><strong>Base de données :</strong> MongoDB Atlas (MongoDB Inc.) — région européenne</li>
+                <li><strong>Base de données :</strong> MongoDB Atlas (MongoDB Inc.), région européenne</li>
                 <li><strong>Emails transactionnels :</strong> Resend (envoi des confirmations de réservation, rappels et messages de contact)</li>
               </ul>
             </section>

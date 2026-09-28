@@ -51,8 +51,8 @@ export default function BlogPageContent({ initialSettings, initialPosts, locale 
     unavailable: en ? 'The blog is not available right now.' : 'Le blog n’est pas disponible pour le moment.',
     ctaTitle: en ? 'Make the most of your stay in Lamai' : 'Profitez à fond de votre séjour à Lamai',
     ctaSub: en
-      ? 'Sport, family time and great food — all in one place by the beach. Come visit Shi Shi Samui.'
-      : 'Sport, moments en famille et bonne cuisine — tout au même endroit, au bord de la plage. Venez découvrir Shi Shi Samui.',
+      ? 'Sport, family time and great food, all in one place by the beach. Come visit Shi Shi Samui.'
+      : 'Sport, moments en famille et bonne cuisine, tout au même endroit, au bord de la plage. Venez découvrir Shi Shi Samui.',
     ctaBtn: en ? 'Plan your visit' : 'Préparer votre visite',
   }
   const href = (slug: string) => `/${locale}/blog/${slug}`

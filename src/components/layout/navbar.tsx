@@ -95,7 +95,7 @@ export function Navbar() {
             <LangSwitch light={lightText} />
 
             {/* Se connecter ↔ Espace adhérent : bouton rond sur mobile, puce « compte »
-                (icône en cercle + texte) sur desktop — secondaire vs « Réserver ».
+                (icône en cercle + texte) sur desktop, secondaire vs « Réserver ».
                 Masqué tant que les abonnements ne sont pas promus (SHOW_MEMBER_AREA). */}
             {SHOW_MEMBER_AREA && (
               <Link
@@ -204,7 +204,7 @@ function FullscreenMenu({
           className="fixed inset-0 z-[100] overflow-hidden"
         >
           {/* Verre dépoli : on floute le contenu RÉEL de la page derrière le menu
-              (backdrop-blur), comme la réf. Traavellio — pas une image figée. */}
+              (backdrop-blur), comme la réf. Traavellio, pas une image figée. */}
           <div
             className="pointer-events-none absolute inset-0 backdrop-blur-[28px] [backdrop-filter:blur(28px)_saturate(1.1)]"
             aria-hidden

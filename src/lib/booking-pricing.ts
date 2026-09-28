@@ -158,9 +158,9 @@ export const PRICE_TIERS: Record<string, PriceTier[]> = {
  * Le tennis ouvre plus large que le reste depuis le 18/08/2026.
  */
 export const OPENING_HOURS: Record<string, Localized> = {
-  'kids-club': { en: '8 AM – 4 PM', fr: '8H – 16H' },
-  fitness: { en: '8 AM – 8 PM', fr: '8H – 20H' },
-  tennis: { en: '7 AM – 10 PM', fr: '7H – 22H' },
-  'tennis-coaching': { en: '7 AM – 10 PM', fr: '7H – 22H' },
+  'kids-club': { en: '8 AM to 4 PM', fr: '8H à 16H' },
+  fitness: { en: '8 AM to 8 PM', fr: '8H à 20H' },
+  tennis: { en: '7 AM to 10 PM', fr: '7H à 22H' },
+  'tennis-coaching': { en: '7 AM to 10 PM', fr: '7H à 22H' },
   pool: { en: 'All day', fr: 'À la journée' },
 }

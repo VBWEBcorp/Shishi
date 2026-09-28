@@ -397,7 +397,7 @@ export function NewBookingModal({
                   disabled={!time || endOptions.length === 0}
                 >
                   {endOptions.length === 0 ? (
-                    <option value={durationMinutes}>—</option>
+                    <option value={durationMinutes}>-</option>
                   ) : (
                     endOptions.map((o) => (
                       <option key={o.minutes} value={o.minutes}>
@@ -408,7 +408,7 @@ export function NewBookingModal({
                 </select>
                 <p className="text-[11px] text-muted-foreground">
                   {time && endOptions.length > 0
-                    ? `Séance de ${time} à ${selectedEnd || '—'}. Les créneaux du site qui chevauchent cette plage passent automatiquement en indisponible.`
+                    ? `Séance de ${time} à ${selectedEnd || '-'}. Les créneaux du site qui chevauchent cette plage passent automatiquement en indisponible.`
                     : 'Choisissez un début. Les clients réservent aussi à la demi-heure sur le site ; seuls 06:00 et l’heure qui suit la fermeture restent réservés à l’admin.'}
                 </p>
               </div>

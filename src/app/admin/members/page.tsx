@@ -87,7 +87,7 @@ function authHeaders(json = false): HeadersInit {
 }
 
 function fmtDate(s?: string | null): string {
-  if (!s) return '—'
+  if (!s) return '-'
   return new Date(s).toLocaleDateString('fr-FR', { day: '2-digit', month: 'short', year: 'numeric' })
 }
 
@@ -267,7 +267,7 @@ export default function MembersPage() {
                         )}
                       >
                         <td className="px-4 py-3">
-                          <div className="font-medium text-foreground">{m.name || '—'}</div>
+                          <div className="font-medium text-foreground">{m.name || '-'}</div>
                           <div className="text-xs text-muted-foreground">{m.email}</div>
                           {m.phone && <div className="text-xs text-muted-foreground">{m.phone}</div>}
                           {m.subscription && (
@@ -454,7 +454,7 @@ function ActivityCreditsPanel({
               {plans.map((p) => (
                 <option key={p.id} value={p.id}>
                   {p.name}
-                  {p.priceTHB > 0 ? ` — ${p.priceTHB.toLocaleString('fr-FR')} ฿/mois` : ''}
+                  {p.priceTHB > 0 ? `, ${p.priceTHB.toLocaleString('fr-FR')} ฿/mois` : ''}
                 </option>
               ))}
             </select>

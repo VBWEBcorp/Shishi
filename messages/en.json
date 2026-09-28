@@ -3,7 +3,7 @@
     "location": "Lamai · Koh Samui · Thailand",
     "badge": "Opening soon",
     "tagline": "The premium social club resort of South Samui.",
-    "description": "Tennis, the island's home of pickleball, a premium gym, a healthy restaurant, a kids club and a pool — all in one place in the heart of Lamai. We're putting the finishing touches in place. Reach out and we'll let you know the moment we open.",
+    "description": "Tennis, the island's home of pickleball, a premium gym, a healthy restaurant, a kids club and a pool, all in one place in the heart of Lamai. We're putting the finishing touches in place. Reach out and we'll let you know the moment we open.",
     "ctaWhatsapp": "Message us on WhatsApp",
     "ctaEmail": "Email us",
     "whatsappPrefill": "Hi Shi Shi Samui! I'd love to know more about the club and your opening.",
@@ -123,8 +123,8 @@
     "fSubmitting": "Processing…",
     "formError": "Something went wrong. Please try again or book via WhatsApp.",
     "requestReceived": "Your booking request has been received! We'll confirm with you shortly.",
-    "paidConfirmed": "Payment received — your booking is confirmed. A confirmation email is on its way.",
-    "paymentCancelled": "Payment was cancelled. Your slot was not booked — feel free to try again.",
+    "paidConfirmed": "Payment received, your booking is confirmed. A confirmation email is on its way.",
+    "paymentCancelled": "Payment was cancelled. Your slot was not booked, feel free to try again.",
     "fSlot": "Available times",
     "fDayAccess": "Day access",
     "fSession": "Session",
@@ -212,7 +212,7 @@
     "addressTitle": "Address",
     "hoursTitle": "Opening hours",
     "findUs": "How to find us",
-    "findUsText": "We're in Lamai, on the south coast of Koh Samui — easy to reach from Lamai Beach and South Lamai. Parking is available at the entrance.",
+    "findUsText": "We're in Lamai, on the south coast of Koh Samui, easy to reach from Lamai Beach and South Lamai. Parking is available at the entrance.",
     "directions": "Get directions",
     "followUs": "Follow us",
     "mapTitle": "Find us in Lamai",
@@ -222,7 +222,7 @@
     "formMessage": "Your message",
     "formSend": "Send message",
     "formSending": "Sending…",
-    "formSuccess": "Thanks! Your message has been sent — we'll get back to you shortly.",
+    "formSuccess": "Thanks! Your message has been sent, we'll get back to you shortly.",
     "formError": "Something went wrong. Please try again or email us at",
     "keepExploring": "Keep exploring"
   },
@@ -267,7 +267,7 @@
     "story": {
       "eyebrow": "Our story",
       "title": "A place to live, not just a club",
-      "p1": "Shi Shi Samui was born from a simple idea: to create, in the south of Koh Samui, a place to move, unwind and connect. Tennis and pickleball, a gym, a healthy restaurant, a kids club and a pool — everything in one spot to enjoy, solo, with friends or as a family.",
+      "p1": "Shi Shi Samui was born from a simple idea: to create, in the south of Koh Samui, a place to move, unwind and connect. Tennis and pickleball, a gym, a healthy restaurant, a kids club and a pool, everything in one spot to enjoy, solo, with friends or as a family.",
       "p2": "More than a gym or a court, it is a true tropical social club: stay an hour or the whole day, train in the morning and have lunch by the water, let the kids play while the parents relax. An active break, with a laid-back island vibe."
     },
     "pillars": {

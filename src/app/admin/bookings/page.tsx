@@ -162,7 +162,7 @@ function timeRangeLabel(b: Booking): string {
   if (!/^\d{2}:\d{2}$/.test(b.time ?? '')) return b.time
   const duration = Math.max(0, Math.round(Number(b.duration) || 0))
   if (!duration) return b.time
-  return `${b.time}–${toHHMM(toMinutes(b.time) + duration)}`
+  return `${b.time} à ${toHHMM(toMinutes(b.time) + duration)}`
 }
 
 /** Montant à encaisser : « Crédits » si couvert par les crédits du membre, sinon prix en ฿. */
@@ -196,7 +196,7 @@ function MemberInfo({ b }: { b: Booking }) {
       )}
       {discount > 0 && (
         <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 px-2 py-0.5 text-[11px] font-semibold text-emerald-700 ring-1 ring-inset ring-emerald-500/25 dark:text-emerald-300">
-          <BadgePercent className="size-3" aria-hidden /> −{Math.round(discount * 100)}%
+          <BadgePercent className="size-3" aria-hidden /> -{Math.round(discount * 100)}%
         </span>
       )}
     </div>
@@ -439,7 +439,7 @@ export default function AdminBookingsPage() {
     try {
       return new Date(d).toLocaleDateString('fr-FR', { day: '2-digit', month: 'short' })
     } catch {
-      return '—'
+      return '-'
     }
   }
 
@@ -477,7 +477,7 @@ export default function AdminBookingsPage() {
     const sameMonth = from.getMonth() === to.getMonth()
     const fmt = (d: Date, withMonth: boolean) =>
       new Intl.DateTimeFormat('fr-FR', withMonth ? { day: 'numeric', month: 'long' } : { day: 'numeric' }).format(d)
-    return `${fmt(from, !sameMonth)} – ${fmt(to, true)} ${to.getFullYear()}`
+    return `${fmt(from, !sameMonth)}, ${fmt(to, true)} ${to.getFullYear()}`
   }, [weekDays])
 
   const dayDetailRef = useRef<HTMLDivElement>(null)
@@ -632,7 +632,7 @@ export default function AdminBookingsPage() {
               <ul className="mt-1 space-y-0.5 text-xs text-muted-foreground">
                 {b.participants.map((pp, i) => (
                   <li key={i} className="truncate">
-                    {pp.name} — {pp.email}
+                    {pp.name}, {pp.email}
                     {pp.phone ? ` · ${pp.phone}` : ''}
                   </li>
                 ))}

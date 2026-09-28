@@ -123,7 +123,7 @@ export default async function PricesPage({
   // OfferCatalog — uniquement les offres avec un prix affiché (règle audit).
   const offers = groups.flatMap((g) =>
     g.rows.map((r) => ({
-      name: `${bySlug(g.slug).name.en} — ${r.label.en}`,
+      name: `${bySlug(g.slug).name.en}, ${r.label.en}`,
       price: r.amount,
       unit: r.label.en,
     }))

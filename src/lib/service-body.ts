@@ -52,7 +52,7 @@ export const SERVICE_BODY: Record<string, ServiceBody> = {
       },
       {
         h3: 'Cours de tennis : débuter, reprendre, progresser',
-        p: 'Le club organise du coaching privé ou en petit groupe. Trois profils reviennent le plus souvent : celui qui n’a jamais tenu une raquette, celui qui reprend après des années d’arrêt, et le joueur régulier qui veut corriger un point précis — un service, un revers, un placement. La séance s’adapte à chacun. Beaucoup de joueurs de l’île combinent un cours dans la semaine et un match libre le week-end, ce qui reste le meilleur moyen de progresser vite.',
+        p: 'Le club organise du coaching privé ou en petit groupe. Trois profils reviennent le plus souvent : celui qui n’a jamais tenu une raquette, celui qui reprend après des années d’arrêt, et le joueur régulier qui veut corriger un point précis, un service, un revers, un placement. La séance s’adapte à chacun. Beaucoup de joueurs de l’île combinent un cours dans la semaine et un match libre le week-end, ce qui reste le meilleur moyen de progresser vite.',
       },
       {
         h3: 'Vous vivez à Koh Samui',
@@ -66,11 +66,11 @@ export const SERVICE_BODY: Record<string, ServiceBody> = {
     en: [
       {
         h3: 'Court hire by the hour',
-        p: 'A court costs 600 THB an hour. You are hiring the court itself, not paying per player, so singles and doubles come to exactly the same thing. Slots run from 7 AM to 10 PM every day — early enough to play before the heat, late enough for a game after work. Book through the site or send a WhatsApp message and we confirm the slot straight away. Rackets are available on site if you are travelling light.',
+        p: 'A court costs 600 THB an hour. You are hiring the court itself, not paying per player, so singles and doubles come to exactly the same thing. Slots run from 7 AM to 10 PM every day, early enough to play before the heat, late enough for a game after work. Book through the site or send a WhatsApp message and we confirm the slot straight away. Rackets are available on site if you are travelling light.',
       },
       {
         h3: 'Coaching, whatever your starting point',
-        p: 'Private and small-group coaching is arranged through the club. Complete beginners, players returning after a long break, and regulars working on one specific thing — a serve, a backhand, court positioning — are all catered for, because the session is built around the person rather than a fixed programme. A common pattern among islanders is one coached hour midweek and a friendly match at the weekend.',
+        p: 'Private and small-group coaching is arranged through the club. Complete beginners, players returning after a long break, and regulars working on one specific thing, a serve, a backhand, court positioning, are all catered for, because the session is built around the person rather than a fixed programme. A common pattern among islanders is one coached hour midweek and a friendly match at the weekend.',
       },
       {
         h3: 'If you live on Koh Samui',
@@ -88,15 +88,15 @@ export const SERVICE_BODY: Record<string, ServiceBody> = {
     fr: [
       {
         h3: 'Le sport de raquette qui manque encore à l’île',
-        p: 'Le pickleball se joue sur un terrain plus petit qu’un court de tennis, avec une raquette pleine et une balle ajourée. Les échanges démarrent tout de suite, la marche remplace la course, et un débutant tient un vrai point dès la première partie — c’est ce qui explique sa progression fulgurante partout dans le monde. À Koh Samui, l’offre reste rare : la plupart des joueurs cherchent encore un endroit où taper régulièrement.',
+        p: 'Le pickleball se joue sur un terrain plus petit qu’un court de tennis, avec une raquette pleine et une balle ajourée. Les échanges démarrent tout de suite, la marche remplace la course, et un débutant tient un vrai point dès la première partie, c’est ce qui explique sa progression fulgurante partout dans le monde. À Koh Samui, l’offre reste rare : la plupart des joueurs cherchent encore un endroit où taper régulièrement.',
       },
       {
         h3: 'Des terrains dédiés, bientôt ouverts',
-        p: 'Shi Shi Samui prépare des terrains de pickleball dédiés à Lamai — dédiés, c’est-à-dire tracés et équipés pour ce sport, pas un court de tennis qu’on adapte le temps d’une partie. L’activité n’est pas encore ouverte à la réservation. Le plus simple est de nous écrire sur WhatsApp pour être prévenu de l’ouverture et des premiers créneaux.',
+        p: 'Shi Shi Samui prépare des terrains de pickleball dédiés à Lamai, dédiés, c’est-à-dire tracés et équipés pour ce sport, pas un court de tennis qu’on adapte le temps d’une partie. L’activité n’est pas encore ouverte à la réservation. Le plus simple est de nous écrire sur WhatsApp pour être prévenu de l’ouverture et des premiers créneaux.',
       },
       {
         h3: 'Débuter sans jamais y avoir joué',
-        p: 'Aucune expérience de la raquette n’est nécessaire. Des initiations sont prévues pour apprendre les règles en quelques minutes — le service, la zone de non-volée, le décompte des points — puis enchaîner directement sur un match. Raquettes et balles se louent sur place, ce qui évite d’acheter du matériel avant de savoir si le sport vous plaît.',
+        p: 'Aucune expérience de la raquette n’est nécessaire. Des initiations sont prévues pour apprendre les règles en quelques minutes, le service, la zone de non-volée, le décompte des points, puis enchaîner directement sur un match. Raquettes et balles se louent sur place, ce qui évite d’acheter du matériel avant de savoir si le sport vous plaît.',
       },
       {
         h3: 'Une communauté à faire naître à Koh Samui',
@@ -106,7 +106,7 @@ export const SERVICE_BODY: Record<string, ServiceBody> = {
     en: [
       {
         h3: 'The racket sport Koh Samui is still missing',
-        p: 'Pickleball is played on a court smaller than a tennis court, with a solid paddle and a perforated ball. Rallies start immediately, walking replaces sprinting, and a first-timer wins real points in their opening game — which is why it has spread so fast worldwide. On Koh Samui the supply has not caught up: most players on the island are still looking for somewhere to play regularly.',
+        p: 'Pickleball is played on a court smaller than a tennis court, with a solid paddle and a perforated ball. Rallies start immediately, walking replaces sprinting, and a first-timer wins real points in their opening game, which is why it has spread so fast worldwide. On Koh Samui the supply has not caught up: most players on the island are still looking for somewhere to play regularly.',
       },
       {
         h3: 'Dedicated courts, opening soon',
@@ -114,11 +114,11 @@ export const SERVICE_BODY: Record<string, ServiceBody> = {
       },
       {
         h3: 'Starting from zero',
-        p: 'No racket background is needed. Introduction sessions are planned to cover the rules in a few minutes — the serve, the non-volley zone, how scoring works — and then move straight into a game, because that is how the sport is actually learned. Paddles and balls can be rented here, so there is no equipment to buy before you know whether you enjoy it.',
+        p: 'No racket background is needed. Introduction sessions are planned to cover the rules in a few minutes, the serve, the non-volley zone, how scoring works, and then move straight into a game, because that is how the sport is actually learned. Paddles and balls can be rented here, so there is no equipment to buy before you know whether you enjoy it.',
       },
       {
         h3: 'Building a community on the island',
-        p: 'Pickleball is a social game before it is a competitive one: players rotate, partners change, and mixed levels still make for a good match. That is exactly what residents and expats on Koh Samui tend to be after — something regular in the diary and a way to meet people. Friendly tournaments are planned once the courts are open.',
+        p: 'Pickleball is a social game before it is a competitive one: players rotate, partners change, and mixed levels still make for a good match. That is exactly what residents and expats on Koh Samui tend to be after, something regular in the diary and a way to meet people. Friendly tournaments are planned once the courts are open.',
       },
     ],
   },
@@ -154,7 +154,7 @@ export const SERVICE_BODY: Record<string, ServiceBody> = {
       },
       {
         h3: 'Visiting: a session or a week',
-        p: 'On a short trip, the 250 THB session keeps your training going through the holiday instead of dropping it. For one to three weeks in Lamai, the 1,000 THB week pass overtakes it from the fifth visit onwards. Nothing needs arranging in advance — come by and take whichever access matches your dates.',
+        p: 'On a short trip, the 250 THB session keeps your training going through the holiday instead of dropping it. For one to three weeks in Lamai, the 1,000 THB week pass overtakes it from the fifth visit onwards. Nothing needs arranging in advance, come by and take whichever access matches your dates.',
       },
       {
         h3: 'Training while the children are looked after',
@@ -176,11 +176,11 @@ export const SERVICE_BODY: Record<string, ServiceBody> = {
       },
       {
         h3: 'Cours de natation pour les adultes',
-        p: 'Les cours ne sont pas réservés aux enfants. Deux demandes reviennent chez les adultes : celle de la personne qui n’a jamais appris et qui évite l’eau depuis toujours, et celle du nageur autonome qui veut corriger sa technique — respiration, position du corps, endurance. Les deux se travaillent dans le même bassin, à un rythme choisi, sans public et sans comparaison avec le couloir d’à côté.',
+        p: 'Les cours ne sont pas réservés aux enfants. Deux demandes reviennent chez les adultes : celle de la personne qui n’a jamais appris et qui évite l’eau depuis toujours, et celle du nageur autonome qui veut corriger sa technique, respiration, position du corps, endurance. Les deux se travaillent dans le même bassin, à un rythme choisi, sans public et sans comparaison avec le couloir d’à côté.',
       },
       {
         h3: 'Une piscine où l’on vient en famille',
-        p: 'L’ambiance est familiale plutôt que sportive : le kids club et le restaurant sont sur place, ce qui permet à des parents de rester plusieurs heures sans que la journée devienne compliquée. Les résidents de Lamai en font une habitude du week-end, les voyageurs une alternative à la plage les jours de vent — l’eau est calme, ombragée par endroits, et il n’y a ni sel ni méduses.',
+        p: 'L’ambiance est familiale plutôt que sportive : le kids club et le restaurant sont sur place, ce qui permet à des parents de rester plusieurs heures sans que la journée devienne compliquée. Les résidents de Lamai en font une habitude du week-end, les voyageurs une alternative à la plage les jours de vent, l’eau est calme, ombragée par endroits, et il n’y a ni sel ni méduses.',
       },
     ],
     en: [
@@ -194,11 +194,11 @@ export const SERVICE_BODY: Record<string, ServiceBody> = {
       },
       {
         h3: 'Swimming lessons for adults',
-        p: 'Lessons are not only for children. Two requests come up again and again from adults: the person who never learned and has quietly avoided water for decades, and the competent swimmer who wants to fix their technique — breathing, body position, staying comfortable over distance. Both are worked on in the same pool, at a chosen pace, without an audience and without the lane next door for comparison.',
+        p: 'Lessons are not only for children. Two requests come up again and again from adults: the person who never learned and has quietly avoided water for decades, and the competent swimmer who wants to fix their technique, breathing, body position, staying comfortable over distance. Both are worked on in the same pool, at a chosen pace, without an audience and without the lane next door for comparison.',
       },
       {
         h3: 'A pool families actually stay at',
-        p: 'The atmosphere is family-first rather than athletic: the kids club and the restaurant are on site, which is what lets parents stay several hours without the day turning into logistics. Lamai residents tend to make it a weekend habit; visitors use it as the alternative to the beach on windy days — calm water, shade where you want it, no salt and no jellyfish.',
+        p: 'The atmosphere is family-first rather than athletic: the kids club and the restaurant are on site, which is what lets parents stay several hours without the day turning into logistics. Lamai residents tend to make it a weekend habit; visitors use it as the alternative to the beach on windy days, calm water, shade where you want it, no salt and no jellyfish.',
       },
     ],
   },
@@ -212,7 +212,7 @@ export const SERVICE_BODY: Record<string, ServiceBody> = {
       },
       {
         h3: 'À emporter, préparé pendant que vous venez',
-        p: 'La vente à emporter est faite pour ceux qui n’ont pas le temps de s’installer. Vous passez commande — le plus simple est WhatsApp — et vous récupérez smoothies, bowls ou assiettes sur place, sans file d’attente ni service à table. C’est la formule que choisissent le plus souvent les habitants du coin le midi en semaine, et les familles qui repartent vers la plage avec le déjeuner.',
+        p: 'La vente à emporter est faite pour ceux qui n’ont pas le temps de s’installer. Vous passez commande, le plus simple est WhatsApp, et vous récupérez smoothies, bowls ou assiettes sur place, sans file d’attente ni service à table. C’est la formule que choisissent le plus souvent les habitants du coin le midi en semaine, et les familles qui repartent vers la plage avec le déjeuner.',
       },
       {
         h3: 'Ouvert à tous, pas seulement aux membres',
@@ -230,7 +230,7 @@ export const SERVICE_BODY: Record<string, ServiceBody> = {
       },
       {
         h3: 'Take away, ready when you arrive',
-        p: 'The take away service exists for the days you have no time to sit down. Place the order — WhatsApp is the quickest way — and collect your smoothies, bowls or plates at the counter with no queue and no table service. It is what people living nearby tend to use on weekday lunchtimes, and what families pick up on their way back down to the beach.',
+        p: 'The take away service exists for the days you have no time to sit down. Place the order, WhatsApp is the quickest way, and collect your smoothies, bowls or plates at the counter with no queue and no table service. It is what people living nearby tend to use on weekday lunchtimes, and what families pick up on their way back down to the beach.',
       },
       {
         h3: 'Open to everyone, not just members',
@@ -252,7 +252,7 @@ export const SERVICE_BODY: Record<string, ServiceBody> = {
       },
       {
         h3: 'Repas compris, à l’heure ou à la journée',
-        p: 'Le tarif est de 200 THB l’heure, et le kids club est ouvert de 8h à 16h. Le petit-déjeuner, le déjeuner et le goûter de 15h sont compris — vous n’avez donc rien à préparer ni à emporter. Vous pouvez déposer votre enfant pour une heure, le temps d’une séance de sport, comme pour la journée entière, sans avoir à choisir un forfait à l’avance.',
+        p: 'Le tarif est de 200 THB l’heure, et le kids club est ouvert de 8h à 16h. Le petit-déjeuner, le déjeuner et le goûter de 15h sont compris, vous n’avez donc rien à préparer ni à emporter. Vous pouvez déposer votre enfant pour une heure, le temps d’une séance de sport, comme pour la journée entière, sans avoir à choisir un forfait à l’avance.',
       },
       {
         h3: 'Une excursion où votre enfant ne peut pas venir',
@@ -278,7 +278,7 @@ export const SERVICE_BODY: Record<string, ServiceBody> = {
       },
       {
         h3: 'For families who live here',
-        p: 'Residents and expats in Lamai use it differently — not as a holiday exception but as a rhythm. Two mornings a week while one parent trains or works, a full Friday, a fallback when the usual help is away. Because it is billed by the hour, that rhythm can be adjusted week by week instead of being locked into a term.',
+        p: 'Residents and expats in Lamai use it differently, not as a holiday exception but as a rhythm. Two mornings a week while one parent trains or works, a full Friday, a fallback when the usual help is away. Because it is billed by the hour, that rhythm can be adjusted week by week instead of being locked into a term.',
       },
     ],
   },
@@ -314,7 +314,7 @@ export const SERVICE_BODY: Record<string, ServiceBody> = {
       },
       {
         h3: 'For visitors: an evening off',
-        p: 'On a trip to Lamai the most common request is the evening — dinner for two, a birthday, something that runs late. Parents get to eat properly knowing exactly where their child is and who is with them, which an arrangement improvised through the hotel does not always guarantee.',
+        p: 'On a trip to Lamai the most common request is the evening, dinner for two, a birthday, something that runs late. Parents get to eat properly knowing exactly where their child is and who is with them, which an arrangement improvised through the hotel does not always guarantee.',
       },
       {
         h3: 'For families based here: regular backup',

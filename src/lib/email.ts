@@ -34,7 +34,7 @@ type SendArgs = {
  */
 export async function sendEmail({ to, subject, html, replyTo, from }: SendArgs) {
   if (!resend) {
-    console.warn('[email] RESEND_API_KEY manquante — email non envoyé:', subject)
+    console.warn('[email] RESEND_API_KEY manquante, email non envoyé:', subject)
     return { ok: false as const, skipped: true as const, error: 'email-not-configured' }
   }
 
@@ -64,7 +64,7 @@ export async function sendEmail({ to, subject, html, replyTo, from }: SendArgs) 
  */
 export async function sendBatch(messages: SendArgs[]) {
   if (!resend) {
-    console.warn('[email] RESEND_API_KEY manquante — envoi groupé ignoré')
+    console.warn('[email] RESEND_API_KEY manquante, envoi groupé ignoré')
     return { ok: false as const, skipped: true as const, error: 'email-not-configured', sent: 0 }
   }
   if (messages.length === 0) return { ok: true as const, sent: 0 }

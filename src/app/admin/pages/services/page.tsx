@@ -13,11 +13,11 @@ const defaults = {
     image: '/photos/fitness-portrait.webp',
   },
   services: [
-    { title: 'Tennis', description: 'Un court de qualité au sud de Koh Samui : simple, double, coaching et location de raquette. 600 ฿/heure, ouvert 7h–22h.' },
+    { title: 'Tennis', description: 'Un court de qualité au sud de Koh Samui : simple, double, coaching et location de raquette. 600 ฿/heure, ouvert 7h à 22h.' },
     { title: 'Pickleball', description: 'Le repaire du pickleball à Koh Samui : terrains dédiés, initiations et matchs conviviaux pour tous les niveaux.' },
-    { title: 'Salle de sport', description: 'Espace fitness entièrement équipé (force, cardio, functional). 250 ฿/jour, 1000 ฿/semaine, 1500 ฿/mois. Ouvert 8h–20h.' },
+    { title: 'Salle de sport', description: 'Espace fitness entièrement équipé (force, cardio, functional). 250 ฿/jour, 1000 ฿/semaine, 1500 ฿/mois. Ouvert 8h à 20h.' },
     { title: 'Restaurant', description: 'Carte fraîche et healthy au bord de la piscine : smoothies, bowls et assiettes feel-good toute la journée.' },
-    { title: 'Kids Club', description: 'Espace sûr et ludique pour les enfants, activités encadrées et babysitting. 200 ฿/heure, ouvert 8h–16h.' },
+    { title: 'Kids Club', description: 'Espace sûr et ludique pour les enfants, activités encadrées et babysitting. 200 ฿/heure, ouvert 8h à 16h.' },
     { title: 'Piscine', description: 'Détente au bord de la piscine ou journée entière à lézarder, le restaurant à deux pas. 100 ฿/accès journée.' },
   ],
 }
@@ -31,11 +31,11 @@ const defaultsEn = {
     image: '/photos/fitness-portrait.webp',
   },
   services: [
-    { title: 'Tennis', description: 'A quality court in the south of Koh Samui: singles, doubles, coaching and racket rental. 600 ฿/hour, open 7am–10pm.' },
+    { title: 'Tennis', description: 'A quality court in the south of Koh Samui: singles, doubles, coaching and racket rental. 600 ฿/hour, open 7am to 10pm.' },
     { title: 'Pickleball', description: "Koh Samui's home of pickleball: dedicated courts, intro sessions and friendly matches for all levels." },
-    { title: 'Fitness gym', description: 'A fully equipped fitness space (strength, cardio, functional). 250 ฿/day, 1000 ฿/week, 1500 ฿/month. Open 8am–8pm.' },
+    { title: 'Fitness gym', description: 'A fully equipped fitness space (strength, cardio, functional). 250 ฿/day, 1000 ฿/week, 1500 ฿/month. Open 8am to 8pm.' },
     { title: 'Restaurant', description: 'A fresh, healthy menu by the pool: smoothies, bowls and feel-good plates all day.' },
-    { title: 'Kids Club', description: 'A safe, fun space for children, supervised activities and babysitting. 200 ฿/hour, open 8am–4pm.' },
+    { title: 'Kids Club', description: 'A safe, fun space for children, supervised activities and babysitting. 200 ฿/hour, open 8am to 4pm.' },
     { title: 'Swimming pool', description: 'Relax by the pool or spend the whole day lounging, with the restaurant steps away. 100 ฿/day access.' },
   ],
 }

@@ -61,7 +61,7 @@ export function ComingSoon() {
       {/* Fond cinématique : poster (LCP, visible sans JS) + vidéo de la piscine */}
       <Image
         src="/photos/pool-panorama-portrait.webp"
-        alt="Shi Shi Samui — le club resort à Lamai, Koh Samui"
+        alt="Shi Shi Samui, le club resort à Lamai, Koh Samui"
         fill
         priority
         sizes="100vw"
@@ -127,8 +127,8 @@ export function ComingSoon() {
           style={reveal(3)}
         >
           {/* H1 sémantique « à la lettre » de l'audit (lu par Google / lecteurs
-              d'écran) — le wordmark visuel reste l'identité de marque. */}
-          <span className="sr-only">Sports &amp; Social Club in Lamai, Koh Samui — Shi Shi Samui</span>
+              d'écran), le wordmark visuel reste l'identité de marque. */}
+          <span className="sr-only">Sports &amp; Social Club in Lamai, Koh Samui, Shi Shi Samui</span>
           <span aria-hidden="true">
             Shi Shi <span className="italic text-accent/95">Samui</span>
           </span>
@@ -228,8 +228,8 @@ export function ComingSoon() {
                 ? 'Code incorrect.'
                 : 'Incorrect code.'
               : l === 'fr'
-                ? 'Accès privé — aperçu client'
-                : 'Private access — client preview'}
+                ? 'Accès privé, aperçu client'
+                : 'Private access, client preview'}
           </p>
         </form>
       </div>
@@ -241,7 +241,7 @@ export function ComingSoon() {
           {siteConfig.address.postalCode} · Thailand
         </p>
         <p className="mt-1">
-          © 2026 {siteConfig.name} — {t('rights')}
+          © 2026 {siteConfig.name}, {t('rights')}
         </p>
       </footer>
     </section>

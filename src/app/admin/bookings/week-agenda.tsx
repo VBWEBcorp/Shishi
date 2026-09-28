@@ -213,7 +213,7 @@ export function WeekAgenda({
                   {d.getDate()}
                 </span>
                 <span className="text-[10px] font-medium text-muted-foreground">
-                  {count > 0 ? `${count} résa${count > 1 ? 's' : ''}` : '—'}
+                  {count > 0 ? `${count} résa${count > 1 ? 's' : ''}` : '-'}
                 </span>
               </button>
             )
@@ -331,7 +331,7 @@ export function WeekAgenda({
                       }}
                     >
                       <span className="block truncate text-[11px] font-semibold tabular-nums">
-                        {b.time} – {toHHMM(end)}
+                        {b.time}, {toHHMM(end)}
                       </span>
                       {height >= 38 && (
                         <span className="block truncate text-[10px] font-medium opacity-90">

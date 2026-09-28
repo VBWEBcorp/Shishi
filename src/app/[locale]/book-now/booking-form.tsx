@@ -575,8 +575,8 @@ export function BookingForm({
                   <span className="text-xs text-muted-foreground">
                     {useCredits
                       ? fr
-                        ? `Cette réservation en utilisera ${creditsNeeded} — rien à payer.`
-                        : `This booking will use ${creditsNeeded} — nothing to pay.`
+                        ? `Cette réservation en utilisera ${creditsNeeded}, rien à payer.`
+                        : `This booking will use ${creditsNeeded}, nothing to pay.`
                       : fr
                         ? `Il en faut ${creditsNeeded} pour couvrir cette réservation.`
                         : `${creditsNeeded} needed to cover this booking.`}
@@ -680,7 +680,7 @@ export function BookingForm({
             )}
 
             {/* Activité « bientôt disponible » (pickleball en travaux) : état
-                Coming Soon, aucune réservation ni orientation WhatsApp — pour ne
+                Coming Soon, aucune réservation ni orientation WhatsApp, pour ne
                 pas laisser croire qu'on peut la réserver en contactant le club. */}
             {activitySlug && comingSoon && (
               <div className="rounded-2xl bg-secondary/50 px-5 py-6 text-center ring-1 ring-border">
@@ -894,8 +894,8 @@ export function BookingForm({
                   <div className="flex items-start gap-2 rounded-lg bg-ocean/[0.06] px-3 py-2 text-xs text-muted-foreground ring-1 ring-ocean/15">
                     <Sparkles className="mt-0.5 size-3.5 shrink-0 text-ocean" aria-hidden />
                     {fr
-                      ? 'Vos informations sont pré-remplies depuis votre compte — modifiez-les si besoin.'
-                      : 'Your details are prefilled from your account — edit them if needed.'}
+                      ? 'Vos informations sont pré-remplies depuis votre compte, modifiez-les si besoin.'
+                      : 'Your details are prefilled from your account, edit them if needed.'}
                   </div>
                 )}
                 <div className="grid gap-5 sm:grid-cols-2">
@@ -1058,7 +1058,7 @@ export function BookingForm({
                               {fr ? `Crédits ${activityName}` : `${activityName} credits`}
                             </span>
                             <span>
-                              −{creditsNeeded} {fr ? 'crédit' : 'credit'}{creditsNeeded > 1 ? 's' : ''}
+                              -{creditsNeeded} {fr ? 'crédit' : 'credit'}{creditsNeeded > 1 ? 's' : ''}
                             </span>
                           </div>
                         )}
@@ -1135,8 +1135,8 @@ export function BookingForm({
               </h3>
               <p className="mt-2 text-sm text-muted-foreground">
                 {fr
-                  ? 'Pour réserver dès maintenant, contactez-nous directement sur WhatsApp — on vous répond rapidement !'
-                  : 'To book right now, contact us directly on WhatsApp — we’ll reply quickly!'}
+                  ? 'Pour réserver dès maintenant, contactez-nous directement sur WhatsApp, on vous répond rapidement !'
+                  : 'To book right now, contact us directly on WhatsApp, we’ll reply quickly!'}
               </p>
               <a
                 href={waPrefillLink}

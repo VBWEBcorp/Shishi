@@ -153,7 +153,7 @@ export function NotificationBell() {
                   <span className="min-w-0 flex-1">
                     <span className="block truncate text-sm font-medium text-foreground">{it.name}</span>
                     <span className="block truncate text-xs text-muted-foreground">
-                      {it.activityName} — {fmt(it.date, it.time)}
+                      {it.activityName}, {fmt(it.date, it.time)}
                     </span>
                   </span>
                   {!it.seen && (

@@ -251,7 +251,7 @@ export function PageEditor({ pageId, title, defaultContent, defaultContentEn, ch
         <p className="mt-2 max-w-4xl text-xs text-muted-foreground">
           {editLocale === 'fr'
             ? 'Vous modifiez la version française de la page.'
-            : 'Vous modifiez la version anglaise de la page — traduisez chaque champ en anglais.'}
+            : 'Vous modifiez la version anglaise de la page, traduisez chaque champ en anglais.'}
         </p>
       </div>
 

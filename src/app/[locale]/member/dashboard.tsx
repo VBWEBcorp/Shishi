@@ -79,7 +79,7 @@ export function MemberDashboard() {
   const fmtDate = (iso: string | null) =>
     iso
       ? new Date(iso).toLocaleDateString(fr ? 'fr-FR' : 'en-GB', { day: 'numeric', month: 'long', year: 'numeric' })
-      : '—'
+      : '-'
 
   const fmtBookingDate = (d: string) =>
     new Date(`${d}T12:00:00`).toLocaleDateString(fr ? 'fr-FR' : 'en-GB', {
@@ -303,8 +303,8 @@ export function MemberDashboard() {
                       icon: CalendarCheck,
                       title: fr ? 'Réservez, c’est déduit' : 'Book, it’s deducted',
                       text: fr
-                        ? 'Connecté, vos crédits sont déduits automatiquement à la réservation — et vous réservez jusqu’à 10 jours à l’avance.'
-                        : 'Signed in, credits are deducted automatically when you book — and you can book up to 10 days ahead.',
+                        ? 'Connecté, vos crédits sont déduits automatiquement à la réservation, et vous réservez jusqu’à 10 jours à l’avance.'
+                        : 'Signed in, credits are deducted automatically when you book, and you can book up to 10 days ahead.',
                     },
                   ].map((s, i) => (
                     <div key={s.title} className="relative rounded-2xl border border-border bg-card p-5">
@@ -400,7 +400,7 @@ export function MemberDashboard() {
                         </div>
                         {b.creditsUsed > 0 ? (
                           <span className="inline-flex items-center gap-1 rounded-full bg-accent/10 px-2.5 py-1 text-xs font-semibold text-accent ring-1 ring-accent/15">
-                            <Ticket className="size-3" aria-hidden /> −{b.creditsUsed} {fr ? 'crédit' : 'credit'}{b.creditsUsed > 1 ? 's' : ''}
+                            <Ticket className="size-3" aria-hidden /> -{b.creditsUsed} {fr ? 'crédit' : 'credit'}{b.creditsUsed > 1 ? 's' : ''}
                           </span>
                         ) : (
                           <span className="inline-flex items-center gap-1 text-sm font-semibold text-foreground">

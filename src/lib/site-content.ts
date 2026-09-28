@@ -147,9 +147,9 @@ export const testimonialsContent = {
   eyebrow: 'Avis Google',
   title: 'Ils adorent Shi Shi Samui',
   description:
-    'Ce que nos adhérents et visiteurs pensent du club — sport, détente et bonne humeur à Lamai.',
+    'Ce que nos adhérents et visiteurs pensent du club, sport, détente et bonne humeur à Lamai.',
   items: [
-    { name: 'James W.', company: 'Tennis · Koh Samui', text: 'Best tennis courts on the island — well maintained, easy online booking and a great vibe. My go-to spot in Lamai.', stars: 5 },
+    { name: 'James W.', company: 'Tennis · Koh Samui', text: 'Best tennis courts on the island, well maintained, easy online booking and a great vibe. My go-to spot in Lamai.', stars: 5 },
     { name: 'Sophie L.', company: 'Family visit · France', text: 'The kids club is fantastic. Our children loved it while we enjoyed the pool and a healthy lunch. Perfect for families!', stars: 5 },
     { name: 'Mark T.', company: 'Fitness · Expat', text: 'Clean, modern gym with everything you need. Flexible sessions and a friendly team. Highly recommend for anyone in Lamai.', stars: 5 },
     { name: 'Lena K.', company: 'Restaurant · Germany', text: 'Fresh smoothies and delicious healthy bowls by the pool. The take away is super handy too. We came back three times!', stars: 5 },
@@ -278,7 +278,7 @@ export const servicesContent = {
       iconName: 'Trophy',
       title: 'Tennis',
       description: 'Jouez sur un court de qualité au sud de Koh Samui : simple, double, coaching et location de raquette.',
-      points: ['600 ฿ / heure', 'Ouvert 7h – 22h', 'Réservation en ligne'],
+      points: ['600 ฿ / heure', 'Ouvert 7h à 22h', 'Réservation en ligne'],
       image: '/photos/tennis-court-portrait.webp',
     },
     {
@@ -292,7 +292,7 @@ export const servicesContent = {
       iconName: 'Dumbbell',
       title: 'Salle de sport',
       description: 'Un espace fitness entièrement équipé (force, cardio, functional training) avec l\'énergie d\'un social club.',
-      points: ['250 ฿ / jour', '1000 ฿ / semaine · 1500 ฿ / mois', 'Ouvert 8h – 20h'],
+      points: ['250 ฿ / jour', '1000 ฿ / semaine · 1500 ฿ / mois', 'Ouvert 8h à 20h'],
       image: '/photos/fitness-portrait.webp',
     },
     {
@@ -306,7 +306,7 @@ export const servicesContent = {
       iconName: 'Baby',
       title: 'Kids Club',
       description: 'Un espace sûr et ludique pour les enfants, avec activités encadrées et babysitting, pour que toute la famille profite.',
-      points: ['200 ฿ / heure', 'Ouvert 8h – 16h', 'Babysitting sur demande'],
+      points: ['200 ฿ / heure', 'Ouvert 8h à 16h', 'Babysitting sur demande'],
       image: '/photos/kids-aire-jeu-portrait.webp',
     },
     {

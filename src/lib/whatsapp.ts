@@ -30,7 +30,7 @@ export function normalizeNumber(raw?: string): string {
 
 async function postMessage(payload: Record<string, unknown>) {
   if (!whatsappEnabled) {
-    console.warn('[whatsapp] non configuré — message ignoré')
+    console.warn('[whatsapp] non configuré, message ignoré')
     return { ok: false as const, skipped: true as const }
   }
   try {
@@ -123,7 +123,7 @@ export async function notifyTeamBooking(booking: {
 }) {
   if (!whatsappTeamNumber) return { ok: false as const, error: 'no-team-number' }
   const lines = [
-    '🎾 New paid booking — Shi Shi Samui',
+    '🎾 New paid booking, Shi Shi Samui',
     `Activity: ${booking.activityName}`,
     `When: ${booking.date} at ${booking.time}`,
     `Client: ${booking.name} (${booking.email}${booking.phone ? `, ${booking.phone}` : ''})`,

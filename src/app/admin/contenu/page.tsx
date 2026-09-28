@@ -300,7 +300,7 @@ export default function AdminContentPage() {
         <div className="fixed inset-0 z-50 flex flex-col bg-background/95 backdrop-blur">
           <div className="flex items-center justify-between border-b border-border/40 px-4 py-3">
             <div className="flex items-center gap-2">
-              <span className="text-sm font-semibold">Aperçu — {page.label}</span>
+              <span className="text-sm font-semibold">Aperçu, {page.label}</span>
               <span className="rounded bg-muted px-2 py-0.5 text-xs uppercase text-muted-foreground">
                 {locale}
               </span>

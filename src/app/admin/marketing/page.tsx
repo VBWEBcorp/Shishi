@@ -215,7 +215,7 @@ export default function AdminMarketingPage() {
             <div>
               <h2 className="font-display text-lg text-foreground">Popup promotionnelle</h2>
               <p className="text-sm text-muted-foreground">
-                {settings.enabled ? 'Activée — visible sur le site.' : 'Désactivée.'}
+                {settings.enabled ? 'Activée, visible sur le site.' : 'Désactivée.'}
               </p>
             </div>
             <Toggle on={settings.enabled} onToggle={() => setSettings({ ...settings, enabled: !settings.enabled })} />
@@ -288,7 +288,7 @@ export default function AdminMarketingPage() {
             <div>
               <h2 className="font-display text-lg text-foreground">Bannière défilante</h2>
               <p className="text-sm text-muted-foreground">
-                {settings.banner.enabled ? 'Activée — visible tout en haut du site.' : 'Désactivée.'}
+                {settings.banner.enabled ? 'Activée, visible tout en haut du site.' : 'Désactivée.'}
               </p>
             </div>
             <Toggle on={settings.banner.enabled} onToggle={() => updateBanner({ enabled: !settings.banner.enabled })} />
@@ -297,7 +297,7 @@ export default function AdminMarketingPage() {
           {/* Aperçu réel */}
           <div className="overflow-hidden rounded-2xl border border-border bg-card shadow-sm">
             <div className="border-b border-border px-4 py-2 text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60">
-              Aperçu — défile en haut du site
+              Aperçu, défile en haut du site
             </div>
             <BannerMarquee
               text={settings.banner.text || 'Votre texte de bannière…'}
@@ -311,7 +311,7 @@ export default function AdminMarketingPage() {
             <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60">Contenu</p>
             <div className="space-y-1.5">
               <Label className="text-xs font-medium uppercase tracking-wide text-muted-foreground">Texte</Label>
-              <Input value={settings.banner.text} onChange={(e) => updateBanner({ text: e.target.value })} placeholder="Ouverture le 1er juillet — réservez vos cours !" />
+              <Input value={settings.banner.text} onChange={(e) => updateBanner({ text: e.target.value })} placeholder="Ouverture le 1er juillet, réservez vos cours !" />
             </div>
             <div className="space-y-1.5">
               <Label className="text-xs font-medium uppercase tracking-wide text-muted-foreground">Lien (optionnel)</Label>

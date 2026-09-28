@@ -58,7 +58,7 @@ export interface ResolvedArticle {
 //  Contenu EN — mot-clé : « things to do in Lamai »
 // ─────────────────────────────────────────────────────────────────────────────
 const EN_CONTENT = `
-<p>Looking for the best <strong>things to do in Lamai</strong>, Koh Samui? You are in the right place. Lamai is the island's second-largest beach town, and it has quietly become the most rewarding base for active travellers, families and digital nomads. In this local guide we share nine genuinely worthwhile things to do in Lamai — from racket sports and a resort pool to a kids club and healthy food — so you can plan a day that actually feels like a holiday.</p>
+<p>Looking for the best <strong>things to do in Lamai</strong>, Koh Samui? You are in the right place. Lamai is the island's second-largest beach town, and it has quietly become the most rewarding base for active travellers, families and digital nomads. In this local guide we share nine genuinely worthwhile things to do in Lamai, from racket sports and a resort pool to a kids club and healthy food, so you can plan a day that actually feels like a holiday.</p>
 
 <nav class="toc" aria-label="Table of contents">
   <strong>In this guide</strong>
@@ -80,7 +80,7 @@ const EN_CONTENT = `
 
 <h2 id="racket-sports">Play tennis and pickleball in Lamai</h2>
 <p>If you only do one active thing, make it racket sports. A proper <a href="/en/tennis-court-lamai">tennis court in Lamai</a> with floodlights means you can rally early before the heat or late after work. Beginners and competitive players both find a level here, and rackets are available if yours stayed at home.</p>
-<p>The fastest-growing of all the things to do in Lamai is <a href="/en/pickleball-club-lamai">pickleball</a>. It is easy to learn, gentle on the joints and ridiculously social — show up solo and you will leave with a group chat. Open play sessions are the perfect way to meet other travellers and locals on day one.</p>
+<p>The fastest-growing of all the things to do in Lamai is <a href="/en/pickleball-club-lamai">pickleball</a>. It is easy to learn, gentle on the joints and ridiculously social, show up solo and you will leave with a group chat. Open play sessions are the perfect way to meet other travellers and locals on day one.</p>
 <p><img src="/photos/pickleball.jpg" alt="Pickleball, one of the most popular things to do in Lamai, Koh Samui" loading="lazy" /></p>
 
 <h2 id="pool-fitness">Cool off: pool, fitness and wellness</h2>
@@ -90,15 +90,15 @@ const EN_CONTENT = `
 <p>Travelling with little ones reshapes any list of things to do in Lamai. A supervised <a href="/en/kids-club-lamai">kids club</a> lets children play, make friends and burn energy while parents finally enjoy a quiet coffee. For an evening out, trusted <a href="/en/babysitting-lamai">babysitting in Lamai</a> means date night is back on the menu.</p>
 
 <h2 id="eat">Eat well after your session</h2>
-<p>Sport and good food belong together. A <a href="/en/healthy-restaurant-lamai">healthy restaurant in Lamai</a> serving fresh smoothies, balanced bowls and proper coffee is the ideal way to refuel — no greasy crash before your afternoon swim.</p>
+<p>Sport and good food belong together. A <a href="/en/healthy-restaurant-lamai">healthy restaurant in Lamai</a> serving fresh smoothies, balanced bowls and proper coffee is the ideal way to refuel, no greasy crash before your afternoon swim.</p>
 
 <h2 id="beyond">Beaches and viewpoints nearby</h2>
 <p>When you want to explore, Lamai delivers. Walk the southern end of the beach to the Hin Ta and Hin Yai rock formations, chase the panorama from Lamai Viewpoint, or browse the night market for street food and souvenirs. These free things to do in Lamai pair perfectly with a morning of sport.</p>
 
 <h2 id="plan">Best time to visit and practical tips</h2>
-<p>February to April brings the driest, sunniest weather, while the green season (October–November) is quieter and lush. Whenever you come, book popular activities a day ahead, carry water, and start early to dodge the midday sun. Ready to lock it in? <a href="/en/book-now">Book a session online</a>, check the latest <a href="/en/prices">prices</a>, or <a href="/en/contact-location">contact us</a> with any question.</p>
+<p>February to April brings the driest, sunniest weather, while the green season (October and November) is quieter and lush. Whenever you come, book popular activities a day ahead, carry water, and start early to dodge the midday sun. Ready to lock it in? <a href="/en/book-now">Book a session online</a>, check the latest <a href="/en/prices">prices</a>, or <a href="/en/contact-location">contact us</a> with any question.</p>
 
-<h2 id="faq">FAQ — things to do in Lamai</h2>
+<h2 id="faq">FAQ, things to do in Lamai</h2>
 <p><strong>Is Lamai good for families?</strong> Yes. A swimmable beach, a kids club and babysitting make Lamai one of the most family-friendly spots on Koh Samui.</p>
 <p><strong>Do I need to be sporty?</strong> Not at all. From beginner pickleball to a relaxed pool day, the things to do in Lamai suit every energy level.</p>
 <p><strong>How do I get around?</strong> Scooters and taxis are easy, but the appeal of Lamai is that most activities sit within a few minutes of the beach.</p>
@@ -123,7 +123,7 @@ const EN_FAQ: Faq[] = [
 //  Contenu FR — mot-clé : « que faire à Lamai »
 // ─────────────────────────────────────────────────────────────────────────────
 const FR_CONTENT = `
-<p>Vous cherchez <strong>que faire à Lamai</strong>, Koh Samui ? Vous êtes au bon endroit. Lamai est la deuxième station balnéaire de l'île, et c'est devenu le camp de base idéal pour les voyageurs actifs, les familles et les nomades digitaux. Dans ce guide local, on partage neuf idées vraiment intéressantes pour savoir que faire à Lamai — du sport de raquette à la piscine, en passant par le kids club et la cuisine saine — pour composer une journée qui ressemble enfin à des vacances.</p>
+<p>Vous cherchez <strong>que faire à Lamai</strong>, Koh Samui ? Vous êtes au bon endroit. Lamai est la deuxième station balnéaire de l'île, et c'est devenu le camp de base idéal pour les voyageurs actifs, les familles et les nomades digitaux. Dans ce guide local, on partage neuf idées vraiment intéressantes pour savoir que faire à Lamai, du sport de raquette à la piscine, en passant par le kids club et la cuisine saine, pour composer une journée qui ressemble enfin à des vacances.</p>
 
 <nav class="toc" aria-label="Sommaire">
   <strong>Dans ce guide</strong>
@@ -155,15 +155,15 @@ const FR_CONTENT = `
 <p>Voyager avec des enfants change la donne quand on réfléchit à que faire à Lamai. Un <a href="/fr/kids-club-lamai">kids club</a> encadré laisse les enfants jouer, se faire des amis et se dépenser pendant que les parents savourent enfin un café tranquille. Pour une soirée à deux, un <a href="/fr/babysitting-lamai">babysitting de confiance à Lamai</a> remet la date night au programme.</p>
 
 <h2 id="eat">Bien manger après l'effort</h2>
-<p>Le sport et la bonne nourriture vont de pair. Un <a href="/fr/healthy-restaurant-lamai">restaurant healthy à Lamai</a> avec smoothies frais, bowls équilibrés et vrai café est la meilleure façon de recharger les batteries — sans coup de barre avant la baignade de l'après-midi.</p>
+<p>Le sport et la bonne nourriture vont de pair. Un <a href="/fr/healthy-restaurant-lamai">restaurant healthy à Lamai</a> avec smoothies frais, bowls équilibrés et vrai café est la meilleure façon de recharger les batteries, sans coup de barre avant la baignade de l'après-midi.</p>
 
 <h2 id="beyond">Plages et points de vue à proximité</h2>
 <p>Envie d'explorer ? Lamai répond présent. Rejoignez à pied l'extrémité sud de la plage et les rochers Hin Ta et Hin Yai, grimpez au Lamai Viewpoint pour le panorama, ou flânez au marché de nuit pour la street food et les souvenirs. Ces activités gratuites à Lamai complètent idéalement une matinée de sport.</p>
 
 <h2 id="plan">Quand venir et conseils pratiques</h2>
-<p>De février à avril, le temps est le plus sec et ensoleillé ; la saison verte (octobre–novembre) est plus calme et luxuriante. Quelle que soit la période, réservez les activités populaires la veille, emportez de l'eau et commencez tôt pour éviter le soleil de midi. Prêt à vous lancer ? <a href="/fr/book-now">Réservez une session en ligne</a>, consultez les <a href="/fr/prices">tarifs</a> ou <a href="/fr/contact-location">contactez-nous</a> pour toute question.</p>
+<p>De février à avril, le temps est le plus sec et ensoleillé ; la saison verte (octobre et novembre) est plus calme et luxuriante. Quelle que soit la période, réservez les activités populaires la veille, emportez de l'eau et commencez tôt pour éviter le soleil de midi. Prêt à vous lancer ? <a href="/fr/book-now">Réservez une session en ligne</a>, consultez les <a href="/fr/prices">tarifs</a> ou <a href="/fr/contact-location">contactez-nous</a> pour toute question.</p>
 
-<h2 id="faq">FAQ — que faire à Lamai</h2>
+<h2 id="faq">FAQ, que faire à Lamai</h2>
 <p><strong>Lamai est-elle adaptée aux familles ?</strong> Oui. Une plage baignable, un kids club et un service de babysitting font de Lamai l'un des endroits les plus family-friendly de Koh Samui.</p>
 <p><strong>Faut-il être sportif ?</strong> Pas du tout. Du pickleball pour débutants à une journée piscine détendue, les activités à Lamai conviennent à tous les niveaux d'énergie.</p>
 <p><strong>Comment se déplacer ?</strong> Scooters et taxis sont pratiques, mais l'atout de Lamai est que la plupart des activités se trouvent à quelques minutes de la plage.</p>
@@ -188,7 +188,7 @@ const FR_FAQ: Faq[] = [
 //  Article 2 — EN, mot-clé : « where to play pickleball in koh samui »
 // ─────────────────────────────────────────────────────────────────────────────
 const EN_CONTENT_PICKLEBALL = `
-<p>Wondering <strong>where to play pickleball in Koh Samui</strong>? The short answer is Lamai, on the island's south-east coast. Pickleball is the fastest-growing sport in the world, and Koh Samui has caught the bug — this local guide explains exactly where to play, what to expect on court, how much it costs and how to book your first game, whether you are a curious beginner or a paddle-carrying regular.</p>
+<p>Wondering <strong>where to play pickleball in Koh Samui</strong>? The short answer is Lamai, on the island's south-east coast. Pickleball is the fastest-growing sport in the world, and Koh Samui has caught the bug, this local guide explains exactly where to play, what to expect on court, how much it costs and how to book your first game, whether you are a curious beginner or a paddle-carrying regular.</p>
 
 <nav class="toc" aria-label="Table of contents">
   <strong>In this guide</strong>
@@ -204,28 +204,28 @@ const EN_CONTENT_PICKLEBALL = `
 </nav>
 
 <h2 id="why-samui">Why Koh Samui is a rising pickleball destination</h2>
-<p>Pickleball blends tennis, badminton and table tennis into a game that takes five minutes to learn and years to master. It is low-impact, intensely social and perfectly suited to the tropical climate, because rallies are short and shaded courts keep play comfortable through the heat of the day. With a large community of expats, digital nomads and returning holidaymakers, Koh Samui has become fertile ground for the sport — and demand for proper, dedicated courts has grown fast. If you are brand new to the rules, <a href="https://usapickleball.org/what-is-pickleball/" target="_blank" rel="noopener">USA Pickleball</a> has a clear beginner overview to get you started.</p>
+<p>Pickleball blends tennis, badminton and table tennis into a game that takes five minutes to learn and years to master. It is low-impact, intensely social and perfectly suited to the tropical climate, because rallies are short and shaded courts keep play comfortable through the heat of the day. With a large community of expats, digital nomads and returning holidaymakers, Koh Samui has become fertile ground for the sport, and demand for proper, dedicated courts has grown fast. If you are brand new to the rules, <a href="https://usapickleball.org/what-is-pickleball/" target="_blank" rel="noopener">USA Pickleball</a> has a clear beginner overview to get you started.</p>
 
 <h2 id="where">Where to play pickleball in Koh Samui</h2>
-<p>If you are deciding where to play pickleball in Koh Samui, head to Lamai. At <a href="/en/pickleball-club-lamai">Shi Shi Samui's pickleball club</a> you'll find courts built specifically for the sport — not lined-over tennis courts — inside a sports and social club just a few minutes from Lamai Beach. It sits alongside <a href="/en/tennis-court-lamai">tennis courts</a>, a pool, a gym and a healthy restaurant, so a pickleball session slots neatly into a full day out rather than being a trip on its own.</p>
-<p><img src="/photos/pickleball.jpg" alt="Dedicated pickleball courts in Lamai — where to play pickleball in Koh Samui" loading="lazy" /></p>
+<p>If you are deciding where to play pickleball in Koh Samui, head to Lamai. At <a href="/en/pickleball-club-lamai">Shi Shi Samui's pickleball club</a> you'll find courts built specifically for the sport, not lined-over tennis courts, inside a sports and social club just a few minutes from Lamai Beach. It sits alongside <a href="/en/tennis-court-lamai">tennis courts</a>, a pool, a gym and a healthy restaurant, so a pickleball session slots neatly into a full day out rather than being a trip on its own.</p>
+<p><img src="/photos/pickleball.jpg" alt="Dedicated pickleball courts in Lamai, where to play pickleball in Koh Samui" loading="lazy" /></p>
 
 <h2 id="courts">The courts, open play and rentals</h2>
 <p>Dedicated courts make a real difference. Correct dimensions, the right net height and a good playing surface mean better, safer and more enjoyable rallies. Open play sessions are the heart of any pickleball club: you turn up, rotate through games and meet players of every level, from first-timers to competitive paddlers. Paddles and balls are available to rent, so you can try the sport before spending anything on gear, and social tournaments and friendly mixers keep the calendar lively for regulars.</p>
 
 <h2 id="beginners">New to the game? Start here</h2>
-<p>Pickleball is famously beginner-friendly. The court is small, the underarm serve is easy to learn, and the "kitchen" (the no-volley zone near the net) keeps points fun rather than ferocious. Join a beginner-friendly open play or a short introduction session and you will be rallying within minutes. If you already play tennis or badminton you will feel at home immediately — many players try it once and never look back.</p>
+<p>Pickleball is famously beginner-friendly. The court is small, the underarm serve is easy to learn, and the "kitchen" (the no-volley zone near the net) keeps points fun rather than ferocious. Join a beginner-friendly open play or a short introduction session and you will be rallying within minutes. If you already play tennis or badminton you will feel at home immediately, many players try it once and never look back.</p>
 
 <h2 id="book">How to book a pickleball court in Koh Samui</h2>
 <p>Reserving a spot is simple. Check the latest <a href="/en/prices">prices</a>, then <a href="/en/book-now">book your session online</a> or message the club directly on WhatsApp for the quickest confirmation. If you have questions about levels, equipment or group bookings, the <a href="/en/contact-location">contact page</a> has everything you need, including the location map and opening hours.</p>
 
 <h2 id="day">Make a day of it</h2>
-<p>One of the best things about playing here is everything that surrounds the court. Cool off in the <a href="/en/swimming-pool-lamai">swimming pool</a>, refuel at the <a href="/en/healthy-restaurant-lamai">healthy restaurant</a>, or bring the whole family — there is a <a href="/en/kids-club-lamai">kids club</a> so the little ones are looked after while you play. It turns a quick game into a proper half-day on the island.</p>
+<p>One of the best things about playing here is everything that surrounds the court. Cool off in the <a href="/en/swimming-pool-lamai">swimming pool</a>, refuel at the <a href="/en/healthy-restaurant-lamai">healthy restaurant</a>, or bring the whole family, there is a <a href="/en/kids-club-lamai">kids club</a> so the little ones are looked after while you play. It turns a quick game into a proper half-day on the island.</p>
 
-<h2 id="faq">FAQ — where to play pickleball in Koh Samui</h2>
+<h2 id="faq">FAQ, where to play pickleball in Koh Samui</h2>
 <p><strong>Where can I play pickleball in Koh Samui?</strong> On dedicated courts at Shi Shi Samui in Lamai, south-east Koh Samui, suitable for beginners and experienced players alike.</p>
 <p><strong>Do I need my own paddle?</strong> No. Paddle and ball rental is available, so you can simply turn up and play.</p>
-<p><strong>Is pickleball good for beginners?</strong> Yes — it is one of the easiest racket sports to pick up. An open play or intro session gets you rallying in minutes.</p>
+<p><strong>Is pickleball good for beginners?</strong> Yes, it is one of the easiest racket sports to pick up. An open play or intro session gets you rallying in minutes.</p>
 `
 
 const EN_FAQ_PICKLEBALL: Faq[] = [
@@ -239,7 +239,7 @@ const EN_FAQ_PICKLEBALL: Faq[] = [
   },
   {
     q: 'Is pickleball suitable for beginners?',
-    a: 'Yes. Pickleball is one of the easiest racket sports to pick up — a beginner-friendly open play or introduction session gets you rallying within minutes.',
+    a: 'Yes. Pickleball is one of the easiest racket sports to pick up, a beginner-friendly open play or introduction session gets you rallying within minutes.',
   },
 ]
 
@@ -247,7 +247,7 @@ const EN_FAQ_PICKLEBALL: Faq[] = [
 //  Article 2 — FR, mot-clé : « où jouer au pickleball à Koh Samui »
 // ─────────────────────────────────────────────────────────────────────────────
 const FR_CONTENT_PICKLEBALL = `
-<p>Vous vous demandez <strong>où jouer au pickleball à Koh Samui</strong> ? Réponse courte : à Lamai, sur la côte sud-est de l'île. Le pickleball est le sport qui connaît la plus forte croissance au monde, et Koh Samui n'y échappe pas — ce guide local vous explique précisément où jouer, à quoi vous attendre sur le terrain, combien ça coûte et comment réserver votre première partie, que vous soyez débutant curieux ou joueur régulier raquette à la main.</p>
+<p>Vous vous demandez <strong>où jouer au pickleball à Koh Samui</strong> ? Réponse courte : à Lamai, sur la côte sud-est de l'île. Le pickleball est le sport qui connaît la plus forte croissance au monde, et Koh Samui n'y échappe pas, ce guide local vous explique précisément où jouer, à quoi vous attendre sur le terrain, combien ça coûte et comment réserver votre première partie, que vous soyez débutant curieux ou joueur régulier raquette à la main.</p>
 
 <nav class="toc" aria-label="Sommaire">
   <strong>Dans ce guide</strong>
@@ -266,14 +266,14 @@ const FR_CONTENT_PICKLEBALL = `
 <p>Le pickleball mélange tennis, badminton et tennis de table dans un jeu qui s'apprend en cinq minutes et se perfectionne pendant des années. Peu traumatisant pour les articulations, très convivial et parfaitement adapté au climat tropical : les échanges sont courts et les terrains ombragés gardent le jeu agréable même aux heures chaudes. Avec sa large communauté d'expatriés, de nomades digitaux et de vacanciers fidèles, Koh Samui est devenue un terreau idéal pour ce sport, et la demande de vrais terrains dédiés a explosé. Si vous débutez, <a href="https://usapickleball.org/what-is-pickleball/" target="_blank" rel="noopener">USA Pickleball</a> propose une présentation claire des règles pour bien commencer.</p>
 
 <h2 id="where">Où jouer au pickleball à Koh Samui</h2>
-<p>Si vous hésitez sur où jouer au pickleball à Koh Samui, direction Lamai. Au <a href="/fr/pickleball-club-lamai">club de pickleball de Shi Shi Samui</a>, vous trouverez des terrains conçus spécifiquement pour ce sport — et non de simples courts de tennis retracés — au sein d'un club sportif et social à quelques minutes de la plage de Lamai. Il jouxte des <a href="/fr/tennis-court-lamai">courts de tennis</a>, une piscine, une salle de sport et un restaurant healthy : une session de pickleball s'intègre parfaitement à une journée complète plutôt que d'être une sortie à part.</p>
-<p><img src="/photos/pickleball.jpg" alt="Terrains de pickleball dédiés à Lamai — où jouer au pickleball à Koh Samui" loading="lazy" /></p>
+<p>Si vous hésitez sur où jouer au pickleball à Koh Samui, direction Lamai. Au <a href="/fr/pickleball-club-lamai">club de pickleball de Shi Shi Samui</a>, vous trouverez des terrains conçus spécifiquement pour ce sport, et non de simples courts de tennis retracés, au sein d'un club sportif et social à quelques minutes de la plage de Lamai. Il jouxte des <a href="/fr/tennis-court-lamai">courts de tennis</a>, une piscine, une salle de sport et un restaurant healthy : une session de pickleball s'intègre parfaitement à une journée complète plutôt que d'être une sortie à part.</p>
+<p><img src="/photos/pickleball.jpg" alt="Terrains de pickleball dédiés à Lamai, où jouer au pickleball à Koh Samui" loading="lazy" /></p>
 
 <h2 id="courts">Les terrains, le jeu libre et la location</h2>
-<p>Des terrains dédiés changent tout : bonnes dimensions, hauteur de filet correcte et surface de qualité, pour des échanges meilleurs, plus sûrs et plus agréables. Les sessions de jeu libre sont le cœur d'un club de pickleball — vous arrivez, vous enchaînez les parties et vous rencontrez des joueurs de tous niveaux, du tout débutant au compétiteur. Raquettes et balles sont disponibles à la location : testez le sport avant d'investir dans le matériel. Tournois conviviaux et rencontres amicales animent le calendrier des habitués.</p>
+<p>Des terrains dédiés changent tout : bonnes dimensions, hauteur de filet correcte et surface de qualité, pour des échanges meilleurs, plus sûrs et plus agréables. Les sessions de jeu libre sont le cœur d'un club de pickleball, vous arrivez, vous enchaînez les parties et vous rencontrez des joueurs de tous niveaux, du tout débutant au compétiteur. Raquettes et balles sont disponibles à la location : testez le sport avant d'investir dans le matériel. Tournois conviviaux et rencontres amicales animent le calendrier des habitués.</p>
 
 <h2 id="beginners">Débutant ? Commencez ici</h2>
-<p>Le pickleball est réputé accessible. Le terrain est petit, le service à la cuillère s'apprend vite, et la « cuisine » (la zone de non-volée près du filet) rend les points ludiques plutôt que féroces. Rejoignez un jeu libre ouvert aux débutants ou une courte initiation, et vous échangerez en quelques minutes. Si vous pratiquez déjà le tennis ou le badminton, vous serez tout de suite à l'aise — beaucoup essaient une fois et ne s'arrêtent plus.</p>
+<p>Le pickleball est réputé accessible. Le terrain est petit, le service à la cuillère s'apprend vite, et la « cuisine » (la zone de non-volée près du filet) rend les points ludiques plutôt que féroces. Rejoignez un jeu libre ouvert aux débutants ou une courte initiation, et vous échangerez en quelques minutes. Si vous pratiquez déjà le tennis ou le badminton, vous serez tout de suite à l'aise, beaucoup essaient une fois et ne s'arrêtent plus.</p>
 
 <h2 id="book">Comment réserver un terrain de pickleball à Koh Samui</h2>
 <p>Réserver est simple. Consultez les <a href="/fr/prices">tarifs</a>, puis <a href="/fr/book-now">réservez votre session en ligne</a> ou écrivez directement au club sur WhatsApp pour une confirmation immédiate. Pour toute question sur les niveaux, le matériel ou les réservations de groupe, la <a href="/fr/contact-location">page contact</a> regroupe tout : carte de localisation et horaires inclus.</p>
@@ -281,10 +281,10 @@ const FR_CONTENT_PICKLEBALL = `
 <h2 id="day">Faites-en une vraie sortie</h2>
 <p>L'un des grands atouts ici, c'est tout ce qui entoure le terrain. Rafraîchissez-vous dans la <a href="/fr/swimming-pool-lamai">piscine</a>, rechargez les batteries au <a href="/fr/healthy-restaurant-lamai">restaurant healthy</a>, ou venez en famille : un <a href="/fr/kids-club-lamai">kids club</a> s'occupe des enfants pendant que vous jouez. De quoi transformer une simple partie en une vraie demi-journée sur l'île.</p>
 
-<h2 id="faq">FAQ — où jouer au pickleball à Koh Samui</h2>
+<h2 id="faq">FAQ, où jouer au pickleball à Koh Samui</h2>
 <p><strong>Où peut-on jouer au pickleball à Koh Samui ?</strong> Sur des terrains dédiés chez Shi Shi Samui à Lamai, au sud-est de Koh Samui, adaptés aux débutants comme aux joueurs confirmés.</p>
 <p><strong>Faut-il sa propre raquette ?</strong> Non. La location de raquette et de balles est disponible : vous pouvez simplement venir jouer.</p>
-<p><strong>Le pickleball est-il adapté aux débutants ?</strong> Oui — c'est l'un des sports de raquette les plus faciles à prendre en main. Un jeu libre ou une initiation suffit pour échanger en quelques minutes.</p>
+<p><strong>Le pickleball est-il adapté aux débutants ?</strong> Oui, c'est l'un des sports de raquette les plus faciles à prendre en main. Un jeu libre ou une initiation suffit pour échanger en quelques minutes.</p>
 `
 
 const FR_FAQ_PICKLEBALL: Faq[] = [
@@ -298,7 +298,7 @@ const FR_FAQ_PICKLEBALL: Faq[] = [
   },
   {
     q: 'Le pickleball est-il adapté aux débutants ?',
-    a: 'Oui. C’est l’un des sports de raquette les plus faciles à prendre en main — un jeu libre ouvert aux débutants ou une initiation suffit pour échanger en quelques minutes.',
+    a: 'Oui. C’est l’un des sports de raquette les plus faciles à prendre en main, un jeu libre ouvert aux débutants ou une initiation suffit pour échanger en quelques minutes.',
   },
 ]
 
@@ -322,11 +322,11 @@ const ARTICLES: BuiltinArticle[] = [
       fr: 'Où jouer au pickleball à Koh Samui : guide 2026',
     },
     metaDescription: {
-      en: 'Wondering where to play pickleball in Koh Samui? Dedicated courts in Lamai, open play, paddle rental and easy booking — your 2026 guide to the island.',
+      en: 'Wondering where to play pickleball in Koh Samui? Dedicated courts in Lamai, open play, paddle rental and easy booking, your 2026 guide to the island.',
       fr: 'Où jouer au pickleball à Koh Samui ? Terrains dédiés à Lamai, jeu libre, location de raquette et réservation simple : votre guide 2026 sur l’île.',
     },
     excerpt: {
-      en: 'Where to play pickleball in Koh Samui — dedicated courts in Lamai, open play sessions, beginner tips, paddle rental and how to book your first game.',
+      en: 'Where to play pickleball in Koh Samui, dedicated courts in Lamai, open play sessions, beginner tips, paddle rental and how to book your first game.',
       fr: 'Où jouer au pickleball à Koh Samui : terrains dédiés à Lamai, jeu libre, conseils débutants, location de raquette et comment réserver votre première partie.',
     },
     focusKeyword: {
@@ -334,8 +334,8 @@ const ARTICLES: BuiltinArticle[] = [
       fr: 'où jouer au pickleball à Koh Samui',
     },
     coverAlt: {
-      en: 'Dedicated pickleball courts in Lamai — where to play pickleball in Koh Samui',
-      fr: 'Terrains de pickleball dédiés à Lamai — où jouer au pickleball à Koh Samui',
+      en: 'Dedicated pickleball courts in Lamai, where to play pickleball in Koh Samui',
+      fr: 'Terrains de pickleball dédiés à Lamai, où jouer au pickleball à Koh Samui',
     },
     category: {
       en: 'Sports guide',
@@ -367,11 +367,11 @@ const ARTICLES: BuiltinArticle[] = [
       fr: 'Que faire à Lamai, Koh Samui : 9 idées',
     },
     metaDescription: {
-      en: 'Looking for things to do in Lamai, Koh Samui? Tennis, pickleball, a pool, a kids club and healthy food — your 2026 local guide to the best of Lamai.',
+      en: 'Looking for things to do in Lamai, Koh Samui? Tennis, pickleball, a pool, a kids club and healthy food, your 2026 local guide to the best of Lamai.',
       fr: 'Que faire à Lamai, Koh Samui ? Tennis, pickleball, piscine, kids club et cuisine healthy : votre guide local 2026 pour profiter du meilleur de Lamai.',
     },
     excerpt: {
-      en: 'Nine genuinely worthwhile things to do in Lamai, Koh Samui — racket sports, a pool, a kids club, healthy food and the best nearby spots.',
+      en: 'Nine genuinely worthwhile things to do in Lamai, Koh Samui, racket sports, a pool, a kids club, healthy food and the best nearby spots.',
       fr: 'Neuf idées vraiment intéressantes pour savoir que faire à Lamai, Koh Samui : sports de raquette, piscine, kids club, cuisine saine et bons coins à proximité.',
     },
     focusKeyword: {
@@ -379,8 +379,8 @@ const ARTICLES: BuiltinArticle[] = [
       fr: 'que faire à Lamai',
     },
     coverAlt: {
-      en: 'Resort pool in Lamai — things to do in Lamai, Koh Samui',
-      fr: 'Piscine du club à Lamai — que faire à Lamai, Koh Samui',
+      en: 'Resort pool in Lamai, things to do in Lamai, Koh Samui',
+      fr: 'Piscine du club à Lamai, que faire à Lamai, Koh Samui',
     },
     category: {
       en: 'Travel guide',

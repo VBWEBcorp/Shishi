@@ -304,7 +304,7 @@ export async function ServicePage({
                   ) : (
                     <>
                       <p className="text-sm text-muted-foreground">{t('pricingNote')}</p>
-                      <PriceRow label={t('onRequest')} hint={t('onRequestHint')} value="฿—" />
+                      <PriceRow label={t('onRequest')} hint={t('onRequestHint')} value="฿ -" />
                     </>
                   )}
                 </ul>
@@ -363,7 +363,7 @@ export async function ServicePage({
                 >
                   <Image
                     src={src}
-                    alt={`${service.altImages[i % service.altImages.length]} — ${i + 1}`}
+                    alt={`${service.altImages[i % service.altImages.length]}, ${i + 1}`}
                     fill
                     sizes="(min-width:1024px) 18rem, 50vw"
                     className="object-cover transition-transform duration-700 group-hover:scale-[1.06]"

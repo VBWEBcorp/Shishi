@@ -196,15 +196,15 @@ export const activities: Activity[] = [
       {
         q: { en: 'Is pickleball good for beginners?', fr: 'Le pickleball est-il accessible aux débutants ?' },
         a: {
-          en: 'Absolutely. Pickleball is easy to pick up — join an introduction session or a friendly match and play within minutes.',
-          fr: 'Tout à fait. Le pickleball s’apprend très vite — rejoignez une initiation ou un match convivial et jouez en quelques minutes.',
+          en: 'Absolutely. Pickleball is easy to pick up, join an introduction session or a friendly match and play within minutes.',
+          fr: 'Tout à fait. Le pickleball s’apprend très vite, rejoignez une initiation ou un match convivial et jouez en quelques minutes.',
         },
       },
       {
         q: { en: 'How do I book a pickleball court?', fr: 'Comment réserver un terrain de pickleball ?' },
         a: {
-          en: 'Book online on our Book Now page or message us on WhatsApp — we confirm your slot right away.',
-          fr: 'Réservez en ligne via notre page Réservation ou écrivez-nous sur WhatsApp — nous confirmons votre créneau aussitôt.',
+          en: 'Book online on our Book Now page or message us on WhatsApp, we confirm your slot right away.',
+          fr: 'Réservez en ligne via notre page Réservation ou écrivez-nous sur WhatsApp, nous confirmons votre créneau aussitôt.',
         },
       },
     ],
@@ -279,8 +279,8 @@ export const activities: Activity[] = [
       {
         q: { en: 'How do I book a tennis court?', fr: 'Comment réserver un court de tennis ?' },
         a: {
-          en: 'Reserve online on our Book Now page or message us on WhatsApp — we confirm your slot instantly.',
-          fr: 'Réservez en ligne via notre page Réservation ou écrivez-nous sur WhatsApp — confirmation immédiate de votre créneau.',
+          en: 'Reserve online on our Book Now page or message us on WhatsApp, we confirm your slot instantly.',
+          fr: 'Réservez en ligne via notre page Réservation ou écrivez-nous sur WhatsApp, confirmation immédiate de votre créneau.',
         },
       },
       {
@@ -362,8 +362,8 @@ export const activities: Activity[] = [
       {
         q: { en: 'Do you offer day passes and memberships?', fr: 'Proposez-vous des pass journée et des abonnements ?' },
         a: {
-          en: 'Yes — day passes, weekly and monthly memberships are available. See our Prices page for details.',
-          fr: 'Oui — pass journée, abonnements à la semaine et au mois sont disponibles. Détails sur notre page Tarifs.',
+          en: 'Yes, day passes, weekly and monthly memberships are available. See our Prices page for details.',
+          fr: 'Oui, pass journée, abonnements à la semaine et au mois sont disponibles. Détails sur notre page Tarifs.',
         },
       },
       {
@@ -442,8 +442,8 @@ export const activities: Activity[] = [
       {
         q: { en: 'Can I eat without doing sport?', fr: 'Puis-je manger sans faire de sport ?' },
         a: {
-          en: 'Of course — the restaurant is open to everyone, whether you train, swim or simply come to eat.',
-          fr: 'Bien sûr — le restaurant est ouvert à tous, que vous veniez vous entraîner, nager ou simplement déjeuner.',
+          en: 'Of course, the restaurant is open to everyone, whether you train, swim or simply come to eat.',
+          fr: 'Bien sûr, le restaurant est ouvert à tous, que vous veniez vous entraîner, nager ou simplement déjeuner.',
         },
       },
       {
@@ -559,8 +559,8 @@ export const activities: Activity[] = [
       {
         q: { en: 'Do you also offer babysitting?', fr: 'Proposez-vous aussi du babysitting ?' },
         a: {
-          en: 'Yes, a babysitting service is available on request — see our Babysitting page.',
-          fr: 'Oui, un service de babysitting est disponible sur demande — voir notre page Babysitting.',
+          en: 'Yes, a babysitting service is available on request, see our Babysitting page.',
+          fr: 'Oui, un service de babysitting est disponible sur demande, voir notre page Babysitting.',
         },
       },
     ],
@@ -689,8 +689,8 @@ export const babysitting: Activity = {
     fr: 'Une garde d’enfants de confiance',
   },
   description: {
-    en: 'A practical babysitting and childcare service in Lamai for families, expats and tourists — so parents can play, train or relax with complete peace of mind.',
-    fr: 'Un service de babysitting et de garde d’enfants à Lamai pour les familles, expatriés et touristes — pour que les parents jouent, s’entraînent ou se détendent l’esprit tranquille.',
+    en: 'A practical babysitting and childcare service in Lamai for families, expats and tourists, so parents can play, train or relax with complete peace of mind.',
+    fr: 'Un service de babysitting et de garde d’enfants à Lamai pour les familles, expatriés et touristes, pour que les parents jouent, s’entraînent ou se détendent l’esprit tranquille.',
   },
   icon: 'kids',
   image: '/photos/equipe-kids-portrait.webp',

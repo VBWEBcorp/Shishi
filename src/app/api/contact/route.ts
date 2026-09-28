@@ -46,7 +46,7 @@ export async function POST(request: NextRequest) {
       to: emailConfig.contactTo,
       from: emailConfig.notificationsFrom,
       replyTo: email,
-      subject: `Nouveau message de contact — ${name}`,
+      subject: `Nouveau message de contact, ${name}`,
       html,
     })
 

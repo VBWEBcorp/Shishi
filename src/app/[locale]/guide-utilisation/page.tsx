@@ -70,7 +70,7 @@ const SECTIONS: Section[] = [
     where: 'Admin → Adhérents',
     steps: [
       'Ouvrez la fiche de l’adhérent.',
-      'Ajoutez des crédits sur une activité — soit ponctuels (valables 1 mois), soit en recharge automatique mensuelle.',
+      'Ajoutez des crédits sur une activité, soit ponctuels (valables 1 mois), soit en recharge automatique mensuelle.',
       'Enregistrez : les crédits apparaissent aussitôt dans son espace.',
     ],
     tip: '1 crédit = 1 h (ou 1 accès) de l’activité. Les crédits tennis servent au tennis, ceux de piscine à la piscine, etc.',
@@ -114,7 +114,7 @@ const SECTIONS: Section[] = [
     steps: [
       'Rédigez le message (promo, événement, info…) et un lien éventuel.',
       'Activez la pop-up ou la bannière d’annonce.',
-      'Désactivez-la quand vous voulez — c’est instantané.',
+      'Désactivez-la quand vous voulez, c’est instantané.',
     ],
   },
   {
@@ -168,8 +168,8 @@ export default async function GuideUtilisationPage() {
     )
   }
 
-  const adminEmail = process.env.ADMIN_EMAIL || '(défini sur Netlify — variable ADMIN_EMAIL)'
-  const adminPassword = process.env.ADMIN_PASSWORD || '(défini sur Netlify — variable ADMIN_PASSWORD)'
+  const adminEmail = process.env.ADMIN_EMAIL || '(défini sur Netlify, variable ADMIN_EMAIL)'
+  const adminPassword = process.env.ADMIN_PASSWORD || '(défini sur Netlify, variable ADMIN_PASSWORD)'
 
   return (
     <div className="mx-auto max-w-4xl px-4 pb-24 pt-24 sm:px-6 lg:px-8">
@@ -213,7 +213,7 @@ export default async function GuideUtilisationPage() {
               <BellRing className="size-4" aria-hidden /> À savoir
             </p>
             <p className="mt-1.5 text-xs leading-relaxed text-muted-foreground">
-              Le code d’aperçu et le mot de passe admin se ressemblent — attention aux majuscules.
+              Le code d’aperçu et le mot de passe admin se ressemblent, attention aux majuscules.
               Ne partagez ce guide qu’aux personnes de confiance.
             </p>
           </div>
@@ -286,7 +286,7 @@ export default async function GuideUtilisationPage() {
           <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
             Le site est en « aperçu privé » : seules les personnes avec le code le voient. Pour le
             lancer officiellement (visible de tous et référencé sur Google), il suffit de nous le
-            demander — la bascule prend quelques minutes.
+            demander, la bascule prend quelques minutes.
           </p>
         </div>
       </section>

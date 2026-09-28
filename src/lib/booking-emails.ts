@@ -197,7 +197,7 @@ function participantsBlock(participants?: { name: string; email: string; phone?:
   const items = participants
     .map(
       (pp) =>
-        `<li style="margin:0 0 5px">${esc(pp.name)} — <a href="mailto:${esc(pp.email)}" style="color:${ACCENT};text-decoration:none">${esc(pp.email)}</a>${pp.phone ? ` · ${esc(pp.phone)}` : ''}</li>`
+        `<li style="margin:0 0 5px">${esc(pp.name)}, <a href="mailto:${esc(pp.email)}" style="color:${ACCENT};text-decoration:none">${esc(pp.email)}</a>${pp.phone ? ` · ${esc(pp.phone)}` : ''}</li>`
     )
     .join('')
   return `<p style="margin:18px 0 6px;font-weight:700;font-size:13px;letter-spacing:.03em;text-transform:uppercase;color:${MUTED}">Participants additionnels</p><ul style="margin:0 0 4px;padding-left:18px;color:${INK};font-size:14px;line-height:1.6">${items}</ul>`
@@ -230,7 +230,7 @@ export async function sendBookingConfirmation(b: BookingEmailData) {
           pill: '✓ Booking confirmed',
           title: 'Your booking is confirmed',
           hi: `Hi ${first},`,
-          intro: 'Good news — your booking is confirmed. Here are the details:',
+          intro: 'Good news, your booking is confirmed. Here are the details:',
           outro: 'Payment is made directly on site, on the day. See you soon at Shi Shi Samui! 🌴',
           contact: 'Contact us',
           rDuration: 'Duration',
@@ -299,13 +299,13 @@ async function sendAdminBookingAlert(b: BookingEmailData) {
  */
 export async function notifyNewBooking(b: BookingEmailData) {
   const client = await sendBookingConfirmation(b).catch((e) => {
-    console.error('[booking-emails] confirmation client — exception:', e)
+    console.error('[booking-emails] confirmation client, exception:', e)
     return { ok: false as const, error: 'exception' }
   })
   if (!client?.ok) console.warn('[booking-emails] confirmation client non envoyée:', client)
 
   const admin = await sendAdminBookingAlert(b).catch((e) => {
-    console.error('[booking-emails] alerte interne — exception:', e)
+    console.error('[booking-emails] alerte interne, exception:', e)
     return { ok: false as const, error: 'exception' }
   })
   if (!admin?.ok) console.warn('[booking-emails] alerte interne non envoyée:', admin)

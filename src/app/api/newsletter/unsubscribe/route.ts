@@ -9,7 +9,7 @@ function page(title: string, message: string): NextResponse {
   const html = `<!doctype html><html lang="fr"><head><meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
   <meta name="robots" content="noindex"/>
-  <title>${title} — ${siteConfig.name}</title></head>
+  <title>${title}, ${siteConfig.name}</title></head>
   <body style="margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;background:#f4f4f5;font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;color:#111">
     <div style="max-width:440px;margin:24px;padding:32px;background:#fff;border:1px solid #ececec;border-radius:16px;text-align:center">
       <div style="font-size:18px;font-weight:700;margin-bottom:12px">${siteConfig.name}</div>

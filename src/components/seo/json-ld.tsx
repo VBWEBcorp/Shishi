@@ -171,7 +171,7 @@ export function sportsActivityLocationJsonLd(
   return {
     '@context': 'https://schema.org',
     '@type': 'SportsActivityLocation',
-    name: `${siteConfig.name} — ${name}`,
+    name: `${siteConfig.name}, ${name}`,
     description,
     ...(image ? { image: `${siteConfig.url}${image}` } : {}),
     url: pageUrl(path, locale),
@@ -198,7 +198,7 @@ export function healthClubJsonLd(
   return {
     '@context': 'https://schema.org',
     '@type': 'HealthClub',
-    name: `${siteConfig.name} — ${name}`,
+    name: `${siteConfig.name}, ${name}`,
     description,
     ...(image ? { image: `${siteConfig.url}${image}` } : {}),
     url: pageUrl(path, locale),
@@ -225,7 +225,7 @@ export function restaurantJsonLd(
   return {
     '@context': 'https://schema.org',
     '@type': 'Restaurant',
-    name: `${siteConfig.name} — ${name}`,
+    name: `${siteConfig.name}, ${name}`,
     description,
     ...(image ? { image: `${siteConfig.url}${image}` } : {}),
     url: pageUrl(path, locale),

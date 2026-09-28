@@ -66,7 +66,7 @@ function authHeaders(): HeadersInit {
 }
 
 function fmtDate(s?: string | null): string {
-  if (!s) return '—'
+  if (!s) return '-'
   return new Date(s).toLocaleDateString('fr-FR', { day: '2-digit', month: 'short', year: 'numeric' })
 }
 
@@ -89,7 +89,7 @@ function isMember(c: Contact): boolean {
 function MemberSticker() {
   return (
     <span
-      title="Adhérent — titulaire d'un compte espace adhérent"
+      title="Adhérent, titulaire d'un compte espace adhérent"
       className="inline-flex shrink-0 items-center gap-1 rounded-full border border-amber-500/30 bg-amber-500/15 px-1.5 py-0.5 text-[10px] font-semibold leading-none text-amber-700 dark:text-amber-300"
     >
       <Star className="size-2.5 fill-current" /> Adhérent
@@ -456,7 +456,7 @@ export default function AdminContactsPage() {
                       >
                         <td className="px-4 py-3">
                           <div className="flex items-center gap-2">
-                            <span className="font-medium text-foreground">{c.name || '—'}</span>
+                            <span className="font-medium text-foreground">{c.name || '-'}</span>
                             {isMember(c) && <MemberSticker />}
                           </div>
                           <div className="text-xs text-muted-foreground">{c.email}</div>
@@ -468,7 +468,7 @@ export default function AdminContactsPage() {
                               {c.phone}
                             </span>
                           ) : (
-                            '—'
+                            '-'
                           )}
                         </td>
                         <td className="px-4 py-3">
@@ -525,7 +525,7 @@ export default function AdminContactsPage() {
                   <div className="flex items-start justify-between gap-3">
                     <div className="min-w-0">
                       <div className="flex items-center gap-2">
-                        <span className="truncate font-medium text-foreground">{c.name || '—'}</span>
+                        <span className="truncate font-medium text-foreground">{c.name || '-'}</span>
                         {isMember(c) && <MemberSticker />}
                       </div>
                       <div className="truncate text-xs text-muted-foreground">{c.email}</div>
