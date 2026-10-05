@@ -202,8 +202,15 @@ export function BookingForm({
   const fr = locale === 'fr'
   const unitPrice = activitySlug ? getActivityPrice(activitySlug) : 0
   const perPerson = activitySlug ? isPricePerPerson(activitySlug) : false
-  const partyPriced = activitySlug ? priceDependsOnPartySize(activitySlug) : false
   const courtSplit = activitySlug ? getCourtPlusPerPerson(activitySlug) : null
+  // Sélecteur « Participants » : uniquement sur les cours de tennis, à la
+  // demande du club (05/10/2026). Les activités facturées par personne gardent
+  // leur liste « Ajouter une personne ».
+  const partyPriced = !!courtSplit
+  // Le nombre de personnes ne s'affiche au récapitulatif que là où il fait le
+  // prix : pour la location du court, « 1 personne » à côté de 600 ฿ laissait
+  // croire à un prix par tête.
+  const showPartyInRecap = activitySlug ? priceDependsOnPartySize(activitySlug) : false
   const hasDuration = activitySlug ? hasVariableDuration(activitySlug) : false
   /** Durée de référence de l'activité (l'heure pour tennis et Kids Club). */
   const slotMinutes = activitySlug ? (getBookingConfig(activitySlug)?.slotMinutes ?? 60) : 60
@@ -1138,9 +1145,13 @@ export function BookingForm({
                       <span className="text-sm text-muted-foreground">
                         {useCredits
                           ? fr ? 'Total' : 'Total'
-                          : fr ? 'À régler sur place' : 'Payable on-site'}
-                        {' · '}
-                        {partySize} {fr ? (partySize > 1 ? 'personnes' : 'personne') : partySize > 1 ? 'people' : 'person'}
+                          : fr ? 'Prix total, à régler sur place' : 'Total price, payable on-site'}
+                        {showPartyInRecap && (
+                          <span className="whitespace-nowrap">
+                            {' · '}
+                            {partySize} {fr ? (partySize > 1 ? 'personnes' : 'personne') : partySize > 1 ? 'people' : 'person'}
+                          </span>
+                        )}
                       </span>
                       <span className="shrink-0 whitespace-nowrap font-display text-lg font-bold text-foreground">
                         {useCredits ? (fr ? 'Inclus' : 'Included') : `${fmtPrice(netTotal)} ฿`}
