@@ -267,8 +267,10 @@ export function BookingForm({
    * repasser ce drapeau à `true` rallume l'espace adhérent, ses crédits et ce
    * bandeau, sans rien réécrire.
    */
-  // Un crédit vaut une heure : une demi-heure entamée en consomme un entier.
-  const creditsNeeded = Math.max(1, Math.ceil(effectiveDuration / 60))
+  // Un crédit vaut une heure : une demi-heure entamée en consomme un entier,
+  // et un par personne quand le prix dépend du groupe.
+  const creditsNeeded =
+    Math.max(1, Math.ceil(effectiveDuration / 60)) * (partyPriced ? partySize : 1)
   const activityWallet = member?.activityCredits?.find((w) => w.activity === activitySlug)
   const walletCredits = activityWallet?.credits ?? 0
   const useCredits = SHOW_MEMBER_AREA && !!member && walletCredits >= creditsNeeded
@@ -315,9 +317,12 @@ export function BookingForm({
     return dateKey(d)
   }, [today, advanceDays])
 
-  // L'activité change → on réinitialise la durée à 1 h.
+  // L'activité change → on réinitialise la durée à 1 h et le groupe à une
+  // personne : 3 participants réglés sur le cours ne doivent pas tripler en
+  // silence le prix du Kids Club choisi ensuite.
   useEffect(() => {
     setDurationMinutes(60)
+    setPartyCount(1)
   }, [activitySlug])
 
   // Ferme le popup « réservation → WhatsApp » sur Échap.
@@ -1024,6 +1029,7 @@ export function BookingForm({
                     <button
                       type="button"
                       onClick={addParticipant}
+                      disabled={participants.length >= MAX_PARTY_SIZE - 1}
                       className="inline-flex items-center gap-1.5 rounded-lg border border-border px-3 py-1.5 text-xs font-semibold text-foreground transition-colors hover:bg-muted"
                     >
                       <Plus className="size-3.5" aria-hidden /> {fr ? 'Ajouter une personne' : 'Add a person'}
@@ -1136,7 +1142,7 @@ export function BookingForm({
                         {' · '}
                         {partySize} {fr ? (partySize > 1 ? 'personnes' : 'personne') : partySize > 1 ? 'people' : 'person'}
                       </span>
-                      <span className="font-display text-lg font-bold text-foreground">
+                      <span className="shrink-0 whitespace-nowrap font-display text-lg font-bold text-foreground">
                         {useCredits ? (fr ? 'Inclus' : 'Included') : `${fmtPrice(netTotal)} ฿`}
                       </span>
                     </div>

@@ -55,8 +55,8 @@ const TITLE = {
 } as const
 
 const DESCRIPTION = {
-  en: 'Private tennis lessons with Coach Paul at Shi Shi Samui, Lamai. 1,200 THB per hour, court and equipment included. Book online, pay at the club.',
-  fr: 'Cours de tennis avec Coach Paul chez Shi Shi Samui, à Lamai. 1 200 THB l’heure, court et matériel compris. Réservez en ligne, payez au club.',
+  en: 'Tennis lessons with Coach Paul at Shi Shi Samui, Lamai. 1,200 THB per hour for one person, +600 THB per extra participant, court and equipment included. Book online, pay at the club.',
+  fr: 'Cours de tennis avec Coach Paul chez Shi Shi Samui, à Lamai. 1 200 THB l’heure pour une personne, +600 THB par participant, court et matériel compris. Réservez en ligne, payez au club.',
 } as const
 
 const KEYWORDS = [
@@ -200,8 +200,8 @@ const FAQ = [
       fr: 'Y a-t-il des cours collectifs ?',
     },
     a: {
-      en: 'Not yet: group classes by age and level are coming soon. For now, lessons are one-to-one.',
-      fr: 'Pas encore : des cours collectifs par âge et par niveau arrivent bientôt. Pour l’instant, les cours sont particuliers.',
+      en: 'You can already come with friends or family: book one lesson and choose the number of participants, 600 THB per extra person. Group classes by age and level are coming soon.',
+      fr: 'Vous pouvez déjà venir à plusieurs : réservez un cours et indiquez le nombre de participants, 600 THB par personne en plus. Des cours collectifs par âge et par niveau arrivent bientôt.',
     },
   },
 ] as const

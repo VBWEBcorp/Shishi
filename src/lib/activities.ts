@@ -286,8 +286,8 @@ export const activities: Activity[] = [
       {
         q: { en: 'Can I rent a racket or take a lesson?', fr: 'Puis-je louer une raquette ou prendre un cours ?' },
         a: {
-          en: 'Yes. Racket rental is available, and Coach Paul gives private lessons on the court: 1,200 THB per hour, court included, bookable online from the tennis coach page.',
-          fr: 'Oui. La location de raquette est disponible, et Coach Paul donne des cours particuliers sur le court : 1 200 THB l’heure, court compris, à réserver en ligne depuis la page coach de tennis.',
+          en: 'Yes. Racket rental is available, and Coach Paul gives lessons on the court: 1,200 THB per hour for one person, court included, +600 THB per extra participant, bookable online from the tennis coach page.',
+          fr: 'Oui. La location de raquette est disponible, et Coach Paul donne des cours sur le court : 1 200 THB l’heure pour une personne, court compris, +600 THB par participant en plus, à réserver en ligne depuis la page coach de tennis.',
         },
       },
     ],
@@ -767,8 +767,9 @@ export const babysitting: Activity = {
  *
  * Ce n'est pas un septième pôle : hors menu et hors tuiles d'accueil, il a sa
  * propre page (/tennis-coaching-lamai, hors route dynamique). Il n'existe que
- * pour le moteur de réservation, qui le vend 1 200 ฿ l'heure (600 ฿ de coaching
- * + 600 ฿ de court, tarifs du flyer) et lui fait partager LE court de tennis :
+ * pour le moteur de réservation, qui le vend 600 ฿ de court + 600 ฿ par
+ * participant l'heure (1 200 ฿ seul, demande du club du 05/10/2026, cf.
+ * COURT_PLUS_PER_PERSON) et lui fait partager LE court de tennis :
  * un cours et une location ne peuvent pas tomber sur le même créneau (cf.
  * `SHARED_RESOURCE` dans availability.ts).
  */
@@ -800,8 +801,8 @@ export const tennisCoaching: Activity = {
     fr: 'Coach de Tennis à Lamai, Koh Samui | Shi Shi Samui',
   },
   metaDescription: {
-    en: 'Private tennis lessons with Coach Paul at Shi Shi Samui, Lamai. 1,200 THB per hour, court and equipment included. Book online, pay at the club.',
-    fr: 'Cours de tennis avec Coach Paul chez Shi Shi Samui, à Lamai. 1 200 THB l’heure, court et matériel compris. Réservez en ligne, payez au club.',
+    en: 'Tennis lessons with Coach Paul at Shi Shi Samui, Lamai. 1,200 THB per hour for one person, +600 THB per extra participant, court and equipment included. Book online, pay at the club.',
+    fr: 'Cours de tennis avec Coach Paul chez Shi Shi Samui, à Lamai. 1 200 THB l’heure pour une personne, +600 THB par participant, court et matériel compris. Réservez en ligne, payez au club.',
   },
   keywordsPrimary: ['tennis coach koh samui', 'tennis lessons koh samui'],
   keywordsSecondary: ['cours de tennis koh samui', 'tennis coaching lamai'],
@@ -901,10 +902,10 @@ export const lessons: Lesson[] = [
     image: '/photos/coach-paul-portrait.webp',
     name: { en: 'Tennis coach', fr: 'Coach de tennis' },
     tagline: {
-      en: 'One-to-one lessons with Coach Paul, adults and kids',
-      fr: 'Cours particuliers avec Coach Paul, adultes et enfants',
+      en: 'Lessons with Coach Paul, alone or in a small group, adults and kids',
+      fr: 'Cours avec Coach Paul, seul ou à plusieurs, adultes et enfants',
     },
-    price: { en: '1,200 THB / hour', fr: '1 200 THB / heure' },
+    price: { en: 'From 1,200 THB / hour', fr: 'Dès 1 200 THB / heure' },
     bookableOnline: true,
   },
   {

@@ -2,6 +2,7 @@ import 'server-only'
 import { connectDB } from '@/lib/db'
 import User, { type IActivityCredit } from '@/models/User'
 import { MEMBER_ADVANCE_DAYS, PUBLIC_ADVANCE_DAYS } from '@/lib/membership-plans'
+import { priceDependsOnPartySize } from '@/lib/booking-pricing'
 
 /**
  * Système de CRÉDITS PAR ACTIVITÉ — logique SERVEUR.
@@ -104,14 +105,18 @@ export async function resolveMemberBenefits(opts: {
   partySize: number
   baseAmount: number
 }): Promise<MemberBenefits> {
-  const { member, activitySlug, hours, baseAmount } = opts
+  const { member, activitySlug, hours, partySize, baseAmount } = opts
   if (!member?.id) return NO_BENEFITS(baseAmount)
 
   await connectDB()
   const user = await User.findById(member.id).select('activityCredits')
   if (!user) return NO_BENEFITS(baseAmount)
 
-  const creditsNeeded = Math.max(1, Math.floor(hours) || 1)
+  // Un crédit par heure, et par personne quand le prix dépend du groupe : un
+  // cours à quatre ne se règle pas avec le crédit d'un seul adhérent.
+  const creditsNeeded =
+    Math.max(1, Math.floor(hours) || 1) *
+    (priceDependsOnPartySize(activitySlug) ? Math.max(1, Math.floor(partySize) || 1) : 1)
   const wallet = (user.activityCredits || []).find((w) => w.activity === activitySlug)
 
   if (wallet) {

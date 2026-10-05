@@ -69,7 +69,7 @@ const T = {
     descs: {
       goodToKnow: 'what the price includes, how each activity works, how to book',
       services: 'everything the club offers, on one page',
-      coaching: 'private lessons with Coach Paul on the club court, 1,200 THB per hour court included, 1,000 THB per session from 6 lessons, bookable online, paid at the club',
+      coaching: 'lessons with Coach Paul on the club court, 1,200 THB per hour for one person court included, +600 THB per extra participant, 1,000 THB per session from 6 lessons, bookable online, paid at the club',
       aquagym: '45-minute class for 400 THB, equipment, instructor and towel included, pool access all day, booked with the instructor on WhatsApp, paid at the club',
       prices: 'rates for courts, activities and memberships',
       book: 'book a court, the gym, the pool or the kids club',
@@ -115,7 +115,7 @@ const T = {
     descs: {
       goodToKnow: 'ce que le tarif comprend, comment marche chaque activité, comment réserver',
       services: 'tout ce que propose le club, sur une page',
-      coaching: 'cours particuliers avec Coach Paul sur le court du club, 1 200 THB l’heure court compris, 1 000 THB la séance dès 6 cours, réservables en ligne, payés au club',
+      coaching: 'cours avec Coach Paul sur le court du club, 1 200 THB l’heure pour une personne court compris, +600 THB par participant en plus, 1 000 THB la séance dès 6 cours, réservables en ligne, payés au club',
       aquagym: 'séance de 45 minutes à 400 THB, matériel, professeure et serviette compris, piscine en accès libre la journée, réservation auprès de la professeure sur WhatsApp, payée au club',
       prices: 'prix des terrains, des activités et des abonnements',
       book: 'réserver un terrain, la salle, la piscine ou le club enfants',

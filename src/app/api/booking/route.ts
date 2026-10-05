@@ -7,6 +7,7 @@ import {
   getBookingAmountForMinutes,
   hasVariableDuration,
   MAX_PARTY_SIZE,
+  priceDependsOnPartySize,
 } from '@/lib/booking-pricing'
 import {
   bookingInterval,
@@ -56,8 +57,11 @@ export async function POST(request: NextRequest) {
     // Nombre de participants saisi directement (titulaire inclus), sans exiger
     // le nom et l'email de chacun : c'est lui qui fait le prix du cours de
     // tennis (600 ฿ de court + 600 ฿ par participant). Jamais moins que les
-    // personnes détaillées.
-    const partyCount = Math.min(MAX_PARTY_SIZE, Math.max(1, Math.floor(Number(body.partySize)) || 1))
+    // personnes détaillées. Retenu seulement là où il fait le prix : pour la
+    // location du court, un appel direct ne gonfle pas le groupe sans nom.
+    const partyCount = priceDependsOnPartySize(activitySlug)
+      ? Math.min(MAX_PARTY_SIZE, Math.max(1, Math.floor(Number(body.partySize)) || 1))
+      : 1
     const partySize = Math.max(partyCount, 1 + participants.length)
     // Langue des emails CLIENT : français si le téléphone est d'un pays
     // francophone (ex: +33), sinon anglais par défaut. L'alerte interne envoyée
