@@ -6,6 +6,7 @@ import {
   getActivityBySlug,
   getBookingAmountForMinutes,
   hasVariableDuration,
+  MAX_PARTY_SIZE,
 } from '@/lib/booking-pricing'
 import {
   bookingInterval,
@@ -51,8 +52,13 @@ export async function POST(request: NextRequest) {
         }
       })
       .filter((pp: { name: string; email: string }) => pp.name && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(pp.email))
-      .slice(0, 20)
-    const partySize = 1 + participants.length
+      .slice(0, MAX_PARTY_SIZE - 1)
+    // Nombre de participants saisi directement (titulaire inclus), sans exiger
+    // le nom et l'email de chacun : c'est lui qui fait le prix du cours de
+    // tennis (600 ฿ de court + 600 ฿ par participant). Jamais moins que les
+    // personnes détaillées.
+    const partyCount = Math.min(MAX_PARTY_SIZE, Math.max(1, Math.floor(Number(body.partySize)) || 1))
+    const partySize = Math.max(partyCount, 1 + participants.length)
     // Langue des emails CLIENT : français si le téléphone est d'un pays
     // francophone (ex: +33), sinon anglais par défaut. L'alerte interne envoyée
     // à Shi Shi Samui reste, elle, toujours en français.

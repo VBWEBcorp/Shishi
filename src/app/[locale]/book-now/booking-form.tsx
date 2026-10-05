@@ -29,10 +29,13 @@ import {
 import {
   getActivityPrice,
   getBookingAmountForMinutes,
+  getCourtPlusPerPerson,
   getUnitLabel,
   hasVariableDuration,
   isPricePerPerson,
   LAUNCH_OFFER,
+  MAX_PARTY_SIZE,
+  priceDependsOnPartySize,
 } from '@/lib/booking-pricing'
 import { PUBLIC_ADVANCE_DAYS } from '@/lib/membership-plans'
 import { SHOW_MEMBER_AREA } from '@/lib/launch'
@@ -171,6 +174,10 @@ export function BookingForm({
 
   // Réservation pour plusieurs personnes : participants additionnels (hors titulaire).
   const [participants, setParticipants] = useState<Participant[]>([])
+  // Nombre de participants saisi d'un clic (titulaire inclus) : il fait le prix
+  // des activités facturées par personne et du cours de tennis (court +
+  // participants). Le détail nominatif plus bas reste facultatif.
+  const [partyCount, setPartyCount] = useState(1)
   const addParticipant = () =>
     setParticipants((list) => [...list, { name: '', email: '', phone: '' }])
   const removeParticipant = (i: number) =>
@@ -195,6 +202,8 @@ export function BookingForm({
   const fr = locale === 'fr'
   const unitPrice = activitySlug ? getActivityPrice(activitySlug) : 0
   const perPerson = activitySlug ? isPricePerPerson(activitySlug) : false
+  const partyPriced = activitySlug ? priceDependsOnPartySize(activitySlug) : false
+  const courtSplit = activitySlug ? getCourtPlusPerPerson(activitySlug) : null
   const hasDuration = activitySlug ? hasVariableDuration(activitySlug) : false
   /** Durée de référence de l'activité (l'heure pour tennis et Kids Club). */
   const slotMinutes = activitySlug ? (getBookingConfig(activitySlug)?.slotMinutes ?? 60) : 60
@@ -232,7 +241,8 @@ export function BookingForm({
     const end = h * 60 + m + effectiveDuration
     return `${String(Math.floor(end / 60)).padStart(2, '0')}:${String(end % 60).padStart(2, '0')}`
   }, [selectedTime, hasDuration, effectiveDuration])
-  const partySize = 1 + participants.length
+  const minParty = 1 + participants.length
+  const partySize = Math.min(MAX_PARTY_SIZE, Math.max(partyPriced ? partyCount : 1, minParty))
   const grossTotal = activitySlug
     ? getBookingAmountForMinutes(activitySlug, partySize, effectiveDuration)
     : 0
@@ -406,6 +416,7 @@ export function BookingForm({
       notes: String(fd.get('notes') || ''),
       newsletterOptIn: fd.get('newsletterOptIn') === 'on',
       durationMinutes: effectiveDuration,
+      partySize,
       participants: participants
         .map((pp) => ({ name: pp.name.trim(), email: pp.email.trim(), phone: pp.phone.trim() }))
         .filter((pp) => pp.name && pp.email),
@@ -660,14 +671,27 @@ export function BookingForm({
                   <Wallet className="size-4 text-accent" aria-hidden />
                   {fr ? 'Tarif' : 'Price'}
                 </span>
-                <span className="text-sm font-semibold text-foreground">
-                  {fmtPrice(unitPrice)} ฿
-                  <span className="font-normal text-muted-foreground">
-                    {' / '}
-                    {unitWord}
-                    {perPerson ? (fr ? ' · par pers.' : ' · per person') : ''}
+                {courtSplit ? (
+                  <span className="text-right text-sm font-semibold text-foreground">
+                    {fmtPrice(courtSplit.court)} ฿{' '}
+                    <span className="font-normal text-muted-foreground">{fr ? 'court' : 'court'}</span>
+                    {' + '}
+                    {fmtPrice(courtSplit.perPerson)} ฿
+                    <span className="font-normal text-muted-foreground">
+                      {fr ? ' / pers. · ' : ' / person · '}
+                      {unitWord}
+                    </span>
                   </span>
-                </span>
+                ) : (
+                  <span className="text-sm font-semibold text-foreground">
+                    {fmtPrice(unitPrice)} ฿
+                    <span className="font-normal text-muted-foreground">
+                      {' / '}
+                      {unitWord}
+                      {perPerson ? (fr ? ' · par pers.' : ' · per person') : ''}
+                    </span>
+                  </span>
+                )}
               </div>
             )}
 
@@ -877,6 +901,46 @@ export function BookingForm({
                         aria-label={fr ? 'Plus' : 'More'}
                         onClick={() => setDurationMinutes(Math.min(maxDuration, effectiveDuration + STEP_MINUTES))}
                         disabled={effectiveDuration >= maxDuration}
+                        className="flex size-8 items-center justify-center rounded-full border border-border text-foreground transition-colors hover:bg-muted disabled:opacity-40"
+                      >
+                        <Plus className="size-4" aria-hidden />
+                      </button>
+                    </div>
+                  </div>
+                )}
+
+                {/* Participants : demandé par le club le 05/10/2026, pour que le
+                    client voie le prix du cours de tennis monter avec le
+                    groupe (600 ฿ de court + 600 ฿ par participant). */}
+                {partyPriced && selectedTime && (
+                  <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-border bg-background/50 px-4 py-3">
+                    <span className="inline-flex flex-col gap-0.5 text-sm font-medium text-foreground">
+                      <span className="inline-flex items-center gap-2">
+                        <Users className="size-4 text-accent" aria-hidden />
+                        {fr ? 'Participants' : 'Participants'}
+                      </span>
+                      <span className="text-xs font-normal text-muted-foreground" aria-live="polite">
+                        {fr ? 'Total' : 'Total'} : {fmtPrice(grossTotal)} ฿
+                      </span>
+                    </span>
+                    <div className="flex items-center gap-3">
+                      <button
+                        type="button"
+                        aria-label={fr ? 'Un participant de moins' : 'One participant less'}
+                        onClick={() => setPartyCount(Math.max(minParty, partySize - 1))}
+                        disabled={partySize <= minParty}
+                        className="flex size-8 items-center justify-center rounded-full border border-border text-foreground transition-colors hover:bg-muted disabled:opacity-40"
+                      >
+                        <Minus className="size-4" aria-hidden />
+                      </button>
+                      <span className="w-16 text-center font-semibold text-foreground" data-testid="party-size">
+                        {partySize}
+                      </span>
+                      <button
+                        type="button"
+                        aria-label={fr ? 'Un participant de plus' : 'One participant more'}
+                        onClick={() => setPartyCount(Math.min(MAX_PARTY_SIZE, partySize + 1))}
+                        disabled={partySize >= MAX_PARTY_SIZE}
                         className="flex size-8 items-center justify-center rounded-full border border-border text-foreground transition-colors hover:bg-muted disabled:opacity-40"
                       >
                         <Plus className="size-4" aria-hidden />

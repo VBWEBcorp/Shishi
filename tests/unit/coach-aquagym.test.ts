@@ -22,7 +22,10 @@ import {
 import {
   getActivityBySlug,
   getBookingAmountForMinutes,
+  getCourtPlusPerPerson,
   hasVariableDuration,
+  MAX_PARTY_SIZE,
+  priceDependsOnPartySize,
   PRICE_TIERS,
 } from '@/lib/booking-pricing'
 import { routes } from '@/lib/seo'
@@ -47,24 +50,42 @@ describe('Cours de tennis : une activité du calendrier, pas un pôle', () => {
   })
 })
 
-describe('Prix du cours (flyer : 600 de coaching + 600 de court)', () => {
-  it('1 h = 1 200 ฿, 1 h 30 = 1 800 ฿, 2 h = 2 400 ฿', () => {
+describe('Prix du cours : 600 ฿ de court + 600 ฿ par participant (club, 05/10/2026)', () => {
+  it('seul : 1 h = 1 200 ฿, 1 h 30 = 1 800 ฿, 2 h = 2 400 ฿', () => {
     expect(getBookingAmountForMinutes('tennis-coaching', 1, 60)).toBe(1200)
     expect(getBookingAmountForMinutes('tennis-coaching', 1, 90)).toBe(1800)
     expect(getBookingAmountForMinutes('tennis-coaching', 1, 120)).toBe(2400)
   })
 
-  it('le prix ne double pas avec un deuxième joueur (prix du cours, pas par tête)', () => {
-    expect(getBookingAmountForMinutes('tennis-coaching', 2, 60)).toBe(1200)
+  it('chaque participant ajoute 600 ฿ l’heure : 1 800 ฿ à deux, 2 400 ฿ à trois', () => {
+    expect(getBookingAmountForMinutes('tennis-coaching', 2, 60)).toBe(1800)
+    expect(getBookingAmountForMinutes('tennis-coaching', 3, 60)).toBe(2400)
+    expect(getBookingAmountForMinutes('tennis-coaching', 4, 60)).toBe(3000)
   })
 
-  it('la location seule reste à 600 ฿ l’heure et 300 ฿ la demi-heure', () => {
+  it('le prix de groupe suit la durée : 3 personnes 1 h 30 = 3 600 ฿', () => {
+    expect(getBookingAmountForMinutes('tennis-coaching', 3, 90)).toBe(3600)
+  })
+
+  it('le nombre de participants est borné et jamais sous 1', () => {
+    expect(getBookingAmountForMinutes('tennis-coaching', 0, 60)).toBe(1200)
+    expect(getBookingAmountForMinutes('tennis-coaching', 999, 60)).toBe(600 + 600 * MAX_PARTY_SIZE)
+  })
+
+  it('le sélecteur de participants concerne le cours, pas la location du court', () => {
+    expect(priceDependsOnPartySize('tennis-coaching')).toBe(true)
+    expect(priceDependsOnPartySize('tennis')).toBe(false)
+    expect(getCourtPlusPerPerson('tennis-coaching')).toEqual({ court: 600, perPerson: 600 })
+  })
+
+  it('la location seule reste à 600 ฿ l’heure et 300 ฿ la demi-heure, quel que soit le nombre de joueurs', () => {
     expect(getBookingAmountForMinutes('tennis', 1, 60)).toBe(600)
+    expect(getBookingAmountForMinutes('tennis', 4, 60)).toBe(600)
     expect(getBookingAmountForMinutes('tennis', 1, 30)).toBe(300)
   })
 
-  it('la grille affiche l’heure et le forfait dès 6 cours', () => {
-    expect(PRICE_TIERS['tennis-coaching'].map((t) => t.amount)).toEqual([1200, 1000])
+  it('la grille affiche l’heure seul, le participant en plus et le forfait dès 6 cours', () => {
+    expect(PRICE_TIERS['tennis-coaching'].map((t) => t.amount)).toEqual([1200, 600, 1000])
     expect(PRICE_TIERS.aquagym.map((t) => t.amount)).toEqual([400])
   })
 })

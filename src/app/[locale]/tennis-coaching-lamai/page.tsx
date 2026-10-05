@@ -36,7 +36,8 @@ import { alternatesFor, siteConfig } from '@/lib/seo'
  * TOUT CE QUI EST ÉCRIT ICI VIENT DU FLYER : ancien joueur de compétition,
  * coaching axé performance, progression sur mesure, adultes et enfants, tous
  * niveaux, français et anglais, raquettes, balles, serviette et eau comprises,
- * 1 200 ฿ l'heure (600 de coaching + 600 de court), 1 000 ฿ la séance dès six
+ * 1 200 ฿ l'heure seul (600 de court + 600 par participant, demande du club du
+ * 05/10/2026 : 2 400 ฿ à trois), 1 000 ฿ la séance dès six
  * cours, cours collectifs à venir. Rien d'autre sur le parcours du coach tant
  * que le club ne l'a pas donné.
  *
@@ -87,7 +88,7 @@ const T = {
     tarifsTitre: 'Prices',
     tarif1Titre: '1 hour lesson',
     tarif1Prix: '1,200 THB',
-    tarif1Detail: '600 THB coaching + 600 THB court',
+    tarif1Detail: '600 THB court + 600 THB per participant: 2,400 THB for three',
     tarif2Titre: 'Special package',
     tarif2Prix: '1,000 THB',
     tarif2Unite: '/ session',
@@ -121,7 +122,7 @@ const T = {
     tarifsTitre: 'Tarifs',
     tarif1Titre: 'Cours d’1 heure',
     tarif1Prix: '1 200 THB',
-    tarif1Detail: '600 THB de coaching + 600 THB de court',
+    tarif1Detail: '600 THB de court + 600 THB par participant : 2 400 THB à trois',
     tarif2Titre: 'Forfait',
     tarif2Prix: '1 000 THB',
     tarif2Unite: '/ séance',
@@ -149,8 +150,8 @@ const FAQ = [
       fr: 'Combien coûte un cours de tennis ?',
     },
     a: {
-      en: '1,200 THB for one hour: 600 THB for the coaching and 600 THB for the court. From 6 lessons, the package brings it down to 1,000 THB per session.',
-      fr: '1 200 THB l’heure : 600 THB pour le coaching et 600 THB pour le court. Dès 6 cours, le forfait le ramène à 1 000 THB la séance.',
+      en: '1,200 THB for one hour on your own. The price is 600 THB for the court plus 600 THB per participant, so 1,800 THB for two and 2,400 THB for three: choose the number of participants when you book and the total updates. From 6 private lessons, the package brings it down to 1,000 THB per session.',
+      fr: '1 200 THB l’heure pour une personne. Le prix se compose de 600 THB pour le court et de 600 THB par participant, soit 1 800 THB à deux et 2 400 THB à trois : choisissez le nombre de participants en réservant, le total se met à jour. Dès 6 cours particuliers, le forfait le ramène à 1 000 THB la séance.',
     },
   },
   {

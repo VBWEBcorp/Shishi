@@ -15,7 +15,7 @@ import {
   toHHMM,
   toMinutes,
 } from '@/lib/availability'
-import { isPricePerPerson } from '@/lib/booking-pricing'
+import { priceDependsOnPartySize } from '@/lib/booking-pricing'
 import { cn } from '@/lib/utils'
 
 type Mode = 'booking' | 'block'
@@ -107,7 +107,8 @@ export function NewBookingModal({
 
   const activity = useMemo(() => BOOKABLE.find((a) => a.slug === activitySlug), [activitySlug])
   const dayPass = isDayPass(activitySlug) // fitness / pool : accès à la journée, horaire imposé
-  const perPerson = isPricePerPerson(activitySlug) // fitness / pool / kids-club : facturé par personne
+  // fitness / pool / kids-club facturés par personne, cours de tennis = court + participants
+  const perPerson = priceDependsOnPartySize(activitySlug)
 
   // Charge la grille INTERNE (demi-heures) pour l'activité + la date choisies.
   // On conserve aussi les créneaux complets : ils restent visibles (grisés) pour

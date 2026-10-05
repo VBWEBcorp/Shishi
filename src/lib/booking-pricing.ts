@@ -9,7 +9,8 @@ import { getBookingConfig, MAX_BOOKING_MINUTES } from '@/lib/availability'
 const DROP_IN_PRICE: Record<string, number> = {
   pickleball: 500,
   tennis: 600, // 600 ฿ / heure
-  // Cours avec le coach : 600 ฿ de coaching + 600 ฿ de court (flyer, 25/09/2026).
+  // Cours avec le coach, prix pour UNE personne : 600 ฿ de court + 600 ฿ de
+  // coaching. À plusieurs, chaque participant ajoute 600 ฿ (cf. COURT_PLUS_PER_PERSON).
   'tennis-coaching': 1200,
   fitness: 250, // 250 ฿ / jour
   restaurant: 0,
@@ -70,8 +71,8 @@ export const LAUNCH_OFFER: Record<string, Localized> = {
   },
   // Pas une offre de lancement : le détail du prix du cours, lu dans le calendrier.
   'tennis-coaching': {
-    en: '1,200 THB per hour: 600 THB coaching + 600 THB court. Package from 6 lessons: 1,000 THB per session. Paid at the club, nothing online.',
-    fr: '1 200 THB l’heure : 600 THB de coaching + 600 THB de court. Forfait dès 6 cours : 1 000 THB la séance. Paiement au club, rien en ligne.',
+    en: '600 THB for the court + 600 THB per participant, per hour: 1,200 THB alone, 1,800 THB for two, 2,400 THB for three. Package from 6 private lessons: 1,000 THB per session. Paid at the club, nothing online.',
+    fr: '600 THB de court + 600 THB par participant, l’heure : 1 200 THB seul, 1 800 THB à deux, 2 400 THB à trois. Forfait dès 6 cours particuliers : 1 000 THB la séance. Paiement au club, rien en ligne.',
   },
 }
 
@@ -88,6 +89,34 @@ export function isPricePerPerson(slug: string): boolean {
 }
 
 /**
+ * Activités facturées « court + participants » : une part fixe pour le terrain,
+ * payée une fois, plus un tarif par participant. Demande du club le 05/10/2026
+ * pour le cours de tennis : « prix de base 600 baht pour la réservation du
+ * terrain et en plus 600 baht par participant », soit 1 200 ฿ seul et 2 400 ฿
+ * à trois. Montants à l'heure, proratisés comme le reste.
+ */
+const COURT_PLUS_PER_PERSON: Record<string, { court: number; perPerson: number }> = {
+  'tennis-coaching': { court: 600, perPerson: 600 },
+}
+
+/** Détail « court + par participant » d'une activité, ou null. */
+export function getCourtPlusPerPerson(slug: string): { court: number; perPerson: number } | null {
+  return COURT_PLUS_PER_PERSON[slug] ?? null
+}
+
+/**
+ * Le montant dépend-il du nombre de participants ? Vrai pour les activités
+ * facturées par personne et pour le cours de tennis (court + participants).
+ * C'est ce qui décide d'afficher le sélecteur « Participants ».
+ */
+export function priceDependsOnPartySize(slug: string): boolean {
+  return PRICE_PER_PERSON.has(slug) || slug in COURT_PLUS_PER_PERSON
+}
+
+/** Plafond de participants pour une réservation, site comme admin. */
+export const MAX_PARTY_SIZE = 20
+
+/**
  * Montant total d'une réservation, site comme espace admin.
  *  · `partySize` : nombre de participants (multiplie le tarif si l'activité est
  *    facturée par personne).
@@ -102,8 +131,13 @@ export function getBookingAmountForMinutes(
   durationMinutes: number
 ): number {
   const unit = getActivityPrice(slug)
-  const n = Math.max(1, Math.floor(partySize) || 1)
-  const base = isPricePerPerson(slug) ? unit * n : unit
+  const n = Math.min(MAX_PARTY_SIZE, Math.max(1, Math.floor(partySize) || 1))
+  const split = COURT_PLUS_PER_PERSON[slug]
+  const base = split
+    ? split.court + split.perPerson * n
+    : isPricePerPerson(slug)
+      ? unit * n
+      : unit
 
   const cfg = getBookingConfig(slug)
   // Pass journée (ou activité inconnue) : tarif forfaitaire.
@@ -139,7 +173,8 @@ export const PRICE_TIERS: Record<string, PriceTier[]> = {
   'kids-club': [{ label: { en: 'Per hour', fr: 'Par heure' }, amount: 200 }],
   tennis: [{ label: { en: 'Per hour', fr: 'Par heure' }, amount: 600 }],
   'tennis-coaching': [
-    { label: { en: '1 hour lesson', fr: 'Cours d’1 heure' }, amount: 1200 },
+    { label: { en: '1 hour lesson, 1 person', fr: 'Cours d’1 heure, 1 personne' }, amount: 1200 },
+    { label: { en: 'Each extra participant', fr: 'Par participant en plus' }, amount: 600 },
     { label: { en: 'Per session, 6+ lessons', fr: 'La séance, dès 6 cours' }, amount: 1000 },
   ],
   fitness: [
