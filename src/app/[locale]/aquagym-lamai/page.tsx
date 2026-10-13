@@ -42,15 +42,14 @@ import { alternatesFor, siteConfig } from '@/lib/seo'
  * lien que contient celui de Paul : wa.me/qr/5XV6VKX2BOCCF1. S'il réinitialise
  * son QR dans WhatsApp, ce lien meurt : il faudra refaire l'image ET la constante.
  *
- * La photo de la prof de piscine est attendue : en attendant, la piscine du club.
+ * Photo de la prof d'aquagym reçue le 12/10/2026 (PHOTO_2) ; le hero reste la piscine.
  */
 
 /** Lien WhatsApp de Paul Poulain (contenu de son QR code). */
 const WHATSAPP_AQUAGYM = 'https://wa.me/qr/5XV6VKX2BOCCF1'
 const QR_IMAGE = '/photos/aquagym-whatsapp-qr.png'
-/** À remplacer par la photo de la prof de piscine dès qu'elle arrive. */
 const PHOTO = '/photos/pool-panorama-portrait.webp'
-const PHOTO_2 = '/photos/pool-transats-portrait.webp'
+const PHOTO_2 = '/photos/aquagym-coach-portrait.webp'
 
 const TITLE = {
   en: 'Aqua Aerobics in Lamai, Koh Samui',

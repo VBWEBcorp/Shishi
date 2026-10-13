@@ -91,6 +91,10 @@ const CONTENU: Record<string, BonASavoir[]> = {
       fr: 'Aire de jeu extérieure et espace couvert climatisé.',
       en: 'Outdoor play area and an air-conditioned indoor space.',
     },
+    {
+      fr: 'Ouvert 7 jours sur 7, même les jours de pluie.',
+      en: 'Open 7 days a week, rain or shine.',
+    },
   ],
 
   pool: [

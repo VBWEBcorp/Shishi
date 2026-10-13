@@ -40,6 +40,10 @@ const ALTS: Record<string, { en: string; fr: string }> = {
     en: `Pool terrace with the tennis and pickleball courts behind, ${CLUB.en}, ${LIEU.en}`,
     fr: `Terrasse de la piscine avec les terrains de tennis et de pickleball en fond, ${CLUB.fr}, ${LIEU.fr}`,
   },
+  'aquagym-coach-portrait.webp': {
+    en: `Aqua aerobics instructor with water dumbbells by the pool at ${CLUB.en} in ${LIEU.en}`,
+    fr: `Professeure d’aquagym avec des haltères aquatiques au bord de la piscine de ${CLUB.fr} à ${LIEU.fr}`,
+  },
   'pool-transats-portrait.webp': {
     en: `Sun loungers and parasols along the pool at ${CLUB.en} in ${LIEU.en}`,
     fr: `Transats et parasols au bord de la piscine de ${CLUB.fr} à ${LIEU.fr}`,

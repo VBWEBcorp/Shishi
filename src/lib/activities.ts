@@ -517,12 +517,14 @@ export const activities: Activity[] = [
         'Babies & toddlers welcome, up to 5 years',
         'Breakfast, lunch and 3 pm snack included',
         'By the hour or for the full day',
+        'Open 7 days a week, rain or shine',
         'Safe & shaded play area, supervised throughout',
       ],
       fr: [
         'Bébés et tout-petits acceptés, jusqu’à 5 ans',
         'Petit-déjeuner, déjeuner et goûter de 15h compris',
         'À l’heure ou à la journée complète',
+        'Ouvert 7 jours sur 7, même sous la pluie',
         'Aire de jeu sûre & ombragée, encadrée en permanence',
       ],
     },
@@ -554,6 +556,13 @@ export const activities: Activity[] = [
         a: {
           en: 'Yes. Breakfast in the morning for children who have not eaten at home, lunch at midday and a snack at 3 pm are all included.',
           fr: 'Oui. Le petit-déjeuner du matin pour les enfants qui n’ont pas eu le temps de manger à la maison, le déjeuner du midi et le goûter de 15h sont compris.',
+        },
+      },
+      {
+        q: { en: 'Is the kids club open when it rains?', fr: 'Le kids club est-il ouvert les jours de pluie ?' },
+        a: {
+          en: 'Yes. The kids club is open 7 days a week, from 8 AM to 4 PM, rain or shine. There is an air-conditioned indoor space next to the outdoor play area, so a shower does not change anything.',
+          fr: 'Oui. Le kids club est ouvert 7 jours sur 7, de 8h à 16h, qu’il pleuve ou non. Un espace couvert et climatisé jouxte l’aire de jeu extérieure : une averse ne change rien.',
         },
       },
       {

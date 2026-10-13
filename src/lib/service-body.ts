@@ -252,7 +252,7 @@ export const SERVICE_BODY: Record<string, ServiceBody> = {
       },
       {
         h3: 'Repas compris, à l’heure ou à la journée',
-        p: 'Le tarif est de 200 THB l’heure, et le kids club est ouvert de 8h à 16h. Le petit-déjeuner, le déjeuner et le goûter de 15h sont compris, vous n’avez donc rien à préparer ni à emporter. Vous pouvez déposer votre enfant pour une heure, le temps d’une séance de sport, comme pour la journée entière, sans avoir à choisir un forfait à l’avance.',
+        p: 'Le tarif est de 200 THB l’heure par enfant, et le kids club est ouvert de 8h à 16h, 7 jours sur 7, y compris les jours de pluie. Le petit-déjeuner, le déjeuner et le goûter de 15h sont compris, vous n’avez donc rien à préparer ni à emporter. Vous pouvez déposer votre enfant pour une heure, le temps d’une séance de sport, comme pour la journée entière, sans avoir à choisir un forfait à l’avance.',
       },
       {
         h3: 'Une excursion où votre enfant ne peut pas venir',
@@ -270,7 +270,7 @@ export const SERVICE_BODY: Record<string, ServiceBody> = {
       },
       {
         h3: 'Meals included, by the hour or the full day',
-        p: 'The rate is 200 THB an hour and the club runs from 8 AM to 4 PM. Breakfast, lunch and a 3 PM snack are included, so there is nothing to pack or prepare beforehand. You can leave your child for a single hour while you train, or for the whole day, without committing to a package in advance or explaining your plans.',
+        p: 'The rate is 200 THB an hour per child, and the club runs from 8 AM to 4 PM, 7 days a week, rain included. Breakfast, lunch and a 3 PM snack are included, so there is nothing to pack or prepare beforehand. You can leave your child for a single hour while you train, or for the whole day, without committing to a package in advance or explaining your plans.',
       },
       {
         h3: 'For the excursion your little one cannot join',
