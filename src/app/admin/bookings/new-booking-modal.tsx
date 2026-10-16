@@ -1,6 +1,6 @@
 'use client'
 
-import { Ban, CalendarPlus, Loader2, Plus, X } from 'lucide-react'
+import { Ban, CalendarPlus, Loader2, Pencil, Plus, X } from 'lucide-react'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 
 import { ActivityIcon } from '@/components/activity-icon'
@@ -19,6 +19,22 @@ import { priceDependsOnPartySize } from '@/lib/booking-pricing'
 import { cn } from '@/lib/utils'
 
 type Mode = 'booking' | 'block'
+/** Réservation existante à modifier (sous-ensemble de ce que renvoie l'API). */
+export type EditableBooking = {
+  _id: string
+  activitySlug: string
+  date: string
+  time: string
+  duration: number
+  name: string
+  email: string
+  phone?: string
+  notes?: string
+  partySize?: number
+  participants?: { name: string; email: string; phone?: string }[]
+  blocked?: boolean
+  locale?: 'en' | 'fr'
+}
 type Slot = { time: string; endTime: string; capacity: number; available: number }
 /** Fin possible pour la plage en cours de saisie. */
 type EndOption = { end: string; minutes: number }
@@ -79,29 +95,34 @@ export function NewBookingModal({
   onClose,
   onCreated,
   initialDate,
+  editing,
 }: {
   onClose: () => void
   onCreated: () => void
   /** Date pré-remplie (ex. jour cliqué dans le calendrier). Défaut : aujourd'hui. */
   initialDate?: string
+  /** Si fourni, la modale MODIFIE cette réservation au lieu d'en créer une. */
+  editing?: EditableBooking
 }) {
-  const [mode, setMode] = useState<Mode>('booking')
-  const [activitySlug, setActivitySlug] = useState(BOOKABLE[0]?.slug ?? '')
-  const [date, setDate] = useState(initialDate || todayYmd())
-  const [time, setTime] = useState('')
+  const [mode, setMode] = useState<Mode>(editing?.blocked ? 'block' : 'booking')
+  const [activitySlug, setActivitySlug] = useState(editing?.activitySlug ?? BOOKABLE[0]?.slug ?? '')
+  const [date, setDate] = useState(editing?.date || initialDate || todayYmd())
+  const [time, setTime] = useState(editing?.time ?? '')
   const [slots, setSlots] = useState<Slot[]>([])
   const [stepMinutes, setStepMinutes] = useState(ADMIN_STEP_MINUTES)
   const [slotsLoading, setSlotsLoading] = useState(false)
-  const [durationMinutes, setDurationMinutes] = useState(DEFAULT_DURATION_MINUTES)
-  const [partySize, setPartySize] = useState(1)
-  const [name, setName] = useState('')
-  const [email, setEmail] = useState('')
-  const [phone, setPhone] = useState('')
-  const [notes, setNotes] = useState('')
-  const [sendEmail, setSendEmail] = useState(true)
+  const [durationMinutes, setDurationMinutes] = useState(editing?.duration || DEFAULT_DURATION_MINUTES)
+  const [partySize, setPartySize] = useState(editing?.partySize || 1)
+  const [name, setName] = useState(editing && !editing.blocked ? editing.name : '')
+  const [email, setEmail] = useState(editing?.email ?? '')
+  const [phone, setPhone] = useState(editing?.phone ?? '')
+  const [notes, setNotes] = useState(editing?.notes ?? '')
+  const [sendEmail, setSendEmail] = useState(!editing)
   const [newsletterOptIn, setNewsletterOptIn] = useState(false)
-  const [locale, setLocale] = useState<'fr' | 'en'>('fr')
-  const [participants, setParticipants] = useState<{ name: string; email: string; phone: string }[]>([])
+  const [locale, setLocale] = useState<'fr' | 'en'>(editing?.locale === 'en' ? 'en' : 'fr')
+  const [participants, setParticipants] = useState<{ name: string; email: string; phone: string }[]>(
+    (editing?.participants ?? []).map((p) => ({ name: p.name ?? '', email: p.email ?? '', phone: p.phone ?? '' }))
+  )
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -119,7 +140,7 @@ export function NewBookingModal({
     setSlotsLoading(true)
     try {
       const res = await fetch(
-        `/api/availability?activity=${encodeURIComponent(activitySlug)}&date=${encodeURIComponent(date)}&scope=admin`,
+        `/api/availability?activity=${encodeURIComponent(activitySlug)}&date=${encodeURIComponent(date)}&scope=admin${editing ? `&exclude=${editing._id}` : ''}`,
         { cache: 'no-store' }
       )
       const data = await res.json()
@@ -133,7 +154,7 @@ export function NewBookingModal({
     } finally {
       setSlotsLoading(false)
     }
-  }, [activitySlug, date])
+  }, [activitySlug, date, editing])
 
   useEffect(() => {
     loadSlots()
@@ -215,8 +236,8 @@ export function NewBookingModal({
     }
     setSubmitting(true)
     try {
-      const res = await fetch('/api/bookings', {
-        method: 'POST',
+      const res = await fetch(editing ? `/api/bookings/${editing._id}` : '/api/bookings', {
+        method: editing ? 'PATCH' : 'POST',
         headers: { ...authHeaders(), 'Content-Type': 'application/json' },
         body: JSON.stringify({
           mode,
@@ -279,8 +300,12 @@ export function NewBookingModal({
         {/* En-tête */}
         <div className="flex shrink-0 items-center justify-between gap-3 border-b border-border px-5 py-4">
           <h2 className="flex items-center gap-2 font-display text-base font-semibold text-foreground">
-            <CalendarPlus className="size-5 text-accent" aria-hidden />
-            Nouvelle réservation
+            {editing ? (
+              <Pencil className="size-5 text-accent" aria-hidden />
+            ) : (
+              <CalendarPlus className="size-5 text-accent" aria-hidden />
+            )}
+            {editing ? 'Modifier la réservation' : 'Nouvelle réservation'}
           </h2>
           <button
             onClick={onClose}
@@ -292,6 +317,7 @@ export function NewBookingModal({
         </div>
 
         {/* Choix du mode — hors zone défilante : toujours sous les yeux */}
+        {!editing && (
         <div className="shrink-0 border-b border-border px-5 py-3">
           <div className="inline-flex w-full rounded-xl border border-border bg-muted/40 p-1">
             {([
@@ -312,6 +338,7 @@ export function NewBookingModal({
             ))}
           </div>
         </div>
+        )}
 
         <div className="grid flex-1 gap-x-6 gap-y-4 overflow-y-auto p-5 lg:grid-cols-2 lg:items-start">
           {/* ── Colonne « quand » ─────────────────────────────────────────── */}
@@ -524,6 +551,7 @@ export function NewBookingModal({
                 ))}
               </div>
 
+              {!editing && (
               <label className="flex items-center gap-2 text-sm text-foreground">
                 <input
                   type="checkbox"
@@ -533,6 +561,8 @@ export function NewBookingModal({
                 />
                 Le client accepte de recevoir la newsletter
               </label>
+              )}
+              {!editing && (
               <label className="flex items-start gap-2 text-sm text-foreground">
                 <input
                   type="checkbox"
@@ -547,6 +577,7 @@ export function NewBookingModal({
                   </span>
                 </span>
               </label>
+              )}
             </div>
           )}
 
@@ -590,12 +621,18 @@ export function NewBookingModal({
               >
                 {submitting ? (
                   <Loader2 className="size-4 animate-spin" aria-hidden />
+                ) : editing ? (
+                  <Pencil className="size-4" aria-hidden />
                 ) : mode === 'block' ? (
                   <Ban className="size-4" aria-hidden />
                 ) : (
                   <CalendarPlus className="size-4" aria-hidden />
                 )}
-                {mode === 'block' ? 'Bloquer le créneau' : 'Créer la réservation'}
+                {editing
+                  ? 'Enregistrer les modifications'
+                  : mode === 'block'
+                    ? 'Bloquer le créneau'
+                    : 'Créer la réservation'}
               </button>
             </div>
           </div>

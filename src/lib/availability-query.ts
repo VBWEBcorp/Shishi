@@ -1,4 +1,5 @@
 import 'server-only'
+import { Types } from 'mongoose'
 import { connectDB } from '@/lib/db'
 import { Booking } from '@/models/Booking'
 import { creneauOuvert } from '@/lib/booking-settings'
@@ -26,7 +27,11 @@ import {
  * qui permet de compter correctement une saisie admin à la demi-heure face à
  * la grille horaire du site.
  */
-async function loadActiveRanges(activitySlug: string, date: string): Promise<TimeRange[]> {
+async function loadActiveRanges(
+  activitySlug: string,
+  date: string,
+  excludeId?: string
+): Promise<TimeRange[]> {
   await connectDB()
   const cutoff = new Date(Date.now() - PENDING_HOLD_MS)
 
@@ -34,6 +39,8 @@ async function loadActiveRanges(activitySlug: string, date: string): Promise<Tim
   const bookings = await Booking.find({
     activitySlug: { $in: resourceSlugs(activitySlug) },
     date,
+    // Modification d'une réservation : elle ne doit pas se bloquer elle-même.
+    ...(excludeId && Types.ObjectId.isValid(excludeId) ? { _id: { $ne: excludeId } } : {}),
     $or: [{ status: 'paid' }, { status: 'pending', createdAt: { $gte: cutoff } }],
   })
     .select('time duration')
@@ -58,7 +65,8 @@ async function loadActiveRanges(activitySlug: string, date: string): Promise<Tim
 export async function getAvailability(
   activitySlug: string,
   date: string,
-  options: SlotGridOptions = {}
+  options: SlotGridOptions = {},
+  excludeId?: string
 ): Promise<SlotAvailability[]> {
   if (!getBookingConfig(activitySlug)) return []
 
@@ -70,7 +78,7 @@ export async function getAvailability(
     if (!creneauOuvert(reglages, activitySlug, date)) return []
   }
 
-  const booked = await loadActiveRanges(activitySlug, date)
+  const booked = await loadActiveRanges(activitySlug, date, excludeId)
   return computeAvailability(activitySlug, booked, options)
 }
 
@@ -85,13 +93,14 @@ export async function isRangeAvailable(
   date: string,
   time: string,
   durationMinutes: number,
-  scope: BookingScope = 'public'
+  scope: BookingScope = 'public',
+  excludeId?: string
 ): Promise<boolean> {
   const cfg = getBookingConfig(activitySlug)
   if (!cfg) return false
   const range = bookingInterval(activitySlug, time, durationMinutes, scope)
   if (!range) return false
-  const booked = await loadActiveRanges(activitySlug, date)
+  const booked = await loadActiveRanges(activitySlug, date, excludeId)
   return maxOverlap(booked, range.start, range.end) < cfg.capacity
 }
 

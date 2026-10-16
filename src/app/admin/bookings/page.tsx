@@ -22,6 +22,7 @@ import {
   Table2,
   Ticket,
   TrendingUp,
+  Pencil,
   Trash2,
   User,
   Users,
@@ -276,6 +277,7 @@ export default function AdminBookingsPage() {
 
   const [view, setView] = useState<View>('calendar')
   const [showNew, setShowNew] = useState(false)
+  const [editing, setEditing] = useState<Booking | null>(null)
   // Données pour l'onglet Statistiques : toutes les réservations, indépendamment du filtre de statut.
   const [allBookings, setAllBookings] = useState<Booking[] | null>(null)
   const [statsLoading, setStatsLoading] = useState(false)
@@ -660,6 +662,14 @@ export default function AdminBookingsPage() {
               <X className="size-3.5" aria-hidden /> Annuler
             </button>
           )}
+          <button
+            onClick={() => setEditing(b)}
+            disabled={busyId === b._id}
+            title="Modifier l'horaire, la durée, les personnes ou les coordonnées"
+            className="inline-flex items-center gap-1.5 rounded-lg bg-accent/15 px-3 py-1.5 text-xs font-semibold text-accent transition-colors hover:bg-accent/25 disabled:opacity-40"
+          >
+            <Pencil className="size-3.5" aria-hidden /> Modifier
+          </button>
           {b.status !== 'cancelled' && (
             <button
               onClick={() => reconduire(b)}
@@ -716,10 +726,15 @@ export default function AdminBookingsPage() {
         </div>
       </div>
 
-      {showNew && (
+      {(showNew || editing) && (
         <NewBookingModal
+          key={editing?._id ?? 'new'}
           initialDate={selectedDay}
-          onClose={() => setShowNew(false)}
+          editing={editing ?? undefined}
+          onClose={() => {
+            setShowNew(false)
+            setEditing(null)
+          }}
           onCreated={() => {
             load(filter)
             setAllBookings(null) // invalide le cache stats
@@ -1280,6 +1295,14 @@ export default function AdminBookingsPage() {
                           <X className="size-4" aria-hidden />
                         </button>
                       )}
+                      <button
+                        onClick={() => setEditing(b)}
+                        disabled={busyId === b._id}
+                        title="Modifier"
+                        className="flex size-8 items-center justify-center rounded-lg text-accent transition-colors hover:bg-accent/15 disabled:opacity-40"
+                      >
+                        <Pencil className="size-4" aria-hidden />
+                      </button>
                       <button
                         onClick={() => remove(b._id)}
                         disabled={busyId === b._id}

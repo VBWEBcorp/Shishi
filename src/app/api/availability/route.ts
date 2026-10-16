@@ -38,7 +38,9 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'not-bookable', bookable: false }, { status: 200 })
     }
 
-    const slots = await getAvailability(activity, date, { scope })
+    // ?exclude=<id> : modification d'une réservation, qui ne doit pas bloquer son propre créneau.
+    const exclude = (searchParams.get('exclude') || '').trim() || undefined
+    const slots = await getAvailability(activity, date, { scope }, exclude)
     const cfg = getBookingConfig(activity)
     const win = bookingWindow(activity, scope)
 
