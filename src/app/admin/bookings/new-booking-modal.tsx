@@ -607,7 +607,9 @@ export function NewBookingModal({
           )}
           <div className="flex flex-wrap items-center justify-between gap-3">
             <p className="min-w-0 flex-1 truncate text-xs text-muted-foreground">{recap}</p>
-            <div className="flex shrink-0 items-center gap-2">
+            {/* Sur téléphone, les actions prennent toute la largeur : « Enregistrer les
+                modifications » débordait de la modale à 375 px. */}
+            <div className="flex w-full items-center gap-2 sm:w-auto sm:shrink-0">
               <button
                 onClick={onClose}
                 className="rounded-xl border border-border bg-card px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-muted"
@@ -617,7 +619,7 @@ export function NewBookingModal({
               <button
                 onClick={submit}
                 disabled={submitting || !time}
-                className="inline-flex items-center gap-2 rounded-xl bg-accent px-4 py-2 text-sm font-semibold text-accent-foreground transition-all hover:brightness-105 disabled:opacity-40"
+                className="inline-flex min-w-0 flex-1 items-center justify-center gap-2 rounded-xl bg-accent px-4 py-2 text-sm font-semibold text-accent-foreground transition-all hover:brightness-105 disabled:opacity-40 sm:flex-none"
               >
                 {submitting ? (
                   <Loader2 className="size-4 animate-spin" aria-hidden />
