@@ -1,6 +1,7 @@
 import { formatDuration } from '@/lib/availability'
 import { emailConfig, sendEmail } from '@/lib/email'
 import { mapsDirectionsUrl, siteConfig } from '@/lib/seo'
+import { bonASavoirReservation } from '@/lib/service-good-to-know'
 
 type Lang = 'en' | 'fr'
 
@@ -8,6 +9,8 @@ export interface BookingEmailData {
   name: string
   email: string
   activityName: string
+  /** Slug de l'activité : ajoute son « Bon à savoir » à la confirmation. */
+  activitySlug?: string
   date: string // YYYY-MM-DD
   time: string // HH:mm
   duration?: number
@@ -138,6 +141,15 @@ function p(text: string): string {
   return `<p style="margin:0 0 14px;line-height:1.68;color:${BODY}">${text}</p>`
 }
 
+/** « Bon à savoir » de l'activité : ce que les clients demandaient sur WhatsApp après avoir réservé. */
+function infosBlock(title: string, lignes: string[]): string {
+  if (lignes.length === 0) return ''
+  const items = lignes
+    .map((l) => `<li style="margin:0 0 6px;line-height:1.6;color:${BODY}">${esc(l)}</li>`)
+    .join('')
+  return `<p style="margin:18px 0 8px;font-weight:600;color:${BODY}">${esc(title)}</p><ul style="margin:0 0 16px;padding-left:20px">${items}</ul>`
+}
+
 /** Carte « hero » : met en avant l'activité + la date + l'heure (barre orange à gauche). */
 function heroCard(activityName: string, dateStr: string, time: string, lang: Lang): string {
   const kicker = lang === 'fr' ? 'Votre réservation' : 'Your booking'
@@ -221,6 +233,7 @@ export async function sendBookingConfirmation(b: BookingEmailData) {
           outro:
             'Le règlement se fait directement sur place, le jour même. On vous attend, à très bientôt chez Shi Shi Samui ! 🌴',
           contact: 'Nous contacter',
+          infos: 'Bon à savoir avant de venir',
           rDuration: 'Durée',
           rPeople: 'Personnes',
         }
@@ -233,6 +246,7 @@ export async function sendBookingConfirmation(b: BookingEmailData) {
           intro: 'Good news, your booking is confirmed. Here are the details:',
           outro: 'Payment is made directly on site, on the day. See you soon at Shi Shi Samui! 🌴',
           contact: 'Contact us',
+          infos: 'Good to know before you come',
           rDuration: 'Duration',
           rPeople: 'People',
         }
@@ -251,6 +265,7 @@ export async function sendBookingConfirmation(b: BookingEmailData) {
     p(t.intro) +
     heroCard(b.activityName, dateStr, timeLabel(b, lang), lang) +
     detailRows(secondary) +
+    infosBlock(t.infos, b.activitySlug ? bonASavoirReservation(b.activitySlug, lang) : []) +
     p(t.outro) +
     button(`${siteConfig.url}/${lang}/contact-location`, t.contact)
 

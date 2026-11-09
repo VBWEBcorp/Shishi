@@ -12,7 +12,13 @@ import type { Locale } from '@/lib/activities'
  * lumières sont parfaites pour le soir. Il y a juste ces informations là, et
  * c'est tout. »
  *
- * D'où le format : quatre lignes maximum par activité, la plus décisive en
+ * Réunion du 09/11/2026 : les clients réservent puis écrivent quand même sur
+ * WhatsApp deux jours avant (raquettes incluses ? chaussures ? et s'il pleut ?).
+ * Le tennis gagne donc la pluie et les chaussures, et ces lignes partent aussi
+ * dans l'e-mail de confirmation (booking-emails.ts). Le club annule lui-même
+ * le court mouillé, au plus tard 1 h avant : un joueur s'est déjà blessé.
+ *
+ * D'où le format : quelques lignes par activité, la plus décisive en
  * premier. Ce n'est pas une plaquette, c'est une réponse.
  *
  * Le tennis est le seul dont le contenu vient mot pour mot du client. Les autres
@@ -41,6 +47,14 @@ const CONTENU: Record<string, BonASavoir[]> = {
     {
       fr: 'Un seul terrain, donc pensez à réserver votre créneau.',
       en: 'One court only, so it is worth booking your slot ahead.',
+    },
+    {
+      fr: 'Prévoyez des chaussures de sport à semelle plate.',
+      en: 'Bring flat-soled sports shoes.',
+    },
+    {
+      fr: 'S’il pleut, le court mouillé glisse : on annule et on vous prévient au plus tard 1 h avant. Rien n’est payé en ligne, donc rien à rembourser, et on vous propose un autre créneau.',
+      en: 'If it rains, a wet court is slippery: we cancel and let you know at least 1 hour before. Nothing is paid online, so there is nothing to refund, and we offer you another slot.',
     },
   ],
 
@@ -86,6 +100,10 @@ const CONTENU: Record<string, BonASavoir[]> = {
     {
       fr: 'Repas compris pour la formule à la journée.',
       en: 'Meals included with the full-day option.',
+    },
+    {
+      fr: 'Une chambre au calme pour la sieste des petits.',
+      en: 'A quiet room for the little ones’ nap.',
     },
     {
       fr: 'Aire de jeu extérieure et espace couvert climatisé.',
@@ -150,6 +168,14 @@ const CONTENU: Record<string, BonASavoir[]> = {
 /** Les lignes « Bon à savoir » d'une activité, dans la langue affichée. */
 export function bonASavoir(slug: string, locale: Locale): string[] {
   return (CONTENU[slug] ?? []).map((x) => x[locale])
+}
+
+/** Le cours de tennis se joue sur le même court : mêmes infos pratiques. */
+const MEMES_INFOS: Record<string, string> = { 'tennis-coaching': 'tennis' }
+
+/** « Bon à savoir » d'une activité réservable (slug du module de réservation). */
+export function bonASavoirReservation(activitySlug: string, locale: Locale): string[] {
+  return bonASavoir(MEMES_INFOS[activitySlug] ?? activitySlug, locale)
 }
 
 /** Toutes les activités qui ont un « Bon à savoir » (pour la page Infos pratiques). */

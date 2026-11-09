@@ -22,6 +22,13 @@ const CookieConsent = dynamic(
   () => import('@/components/layout/cookie-consent').then((m) => m.CookieConsent),
   { ssr: false }
 )
+// Assistant du site (bulle « Une question ? ») : affiché seulement quand la clé
+// de l'API est posée sur Netlify et que NEXT_PUBLIC_CHAT_ENABLED vaut 1.
+const ChatLauncher = dynamic(() => import('@/components/chat/chat-launcher').then((m) => m.ChatLauncher), {
+  ssr: false,
+})
+const CHAT_ENABLED = process.env.NEXT_PUBLIC_CHAT_ENABLED === '1'
+
 const MarketingPopup = dynamic(
   () => import('@/components/marketing-popup').then((m) => m.MarketingPopup),
   { ssr: false }
@@ -72,6 +79,7 @@ export function RootWrapper({ children }: { children: React.ReactNode }) {
       <main className="flex-1">{children}</main>
       <Footer />
       <FloatingWhatsApp />
+      {CHAT_ENABLED && <ChatLauncher />}
       <MarketingPopup />
       <CookieConsent />
     </>

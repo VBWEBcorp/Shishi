@@ -176,6 +176,26 @@ const FAQ = [
   },
   {
     q: {
+      en: 'What should I wear on court?',
+      fr: 'Que faut-il prévoir pour le cours ?',
+    },
+    a: {
+      en: 'Flat-soled sports shoes and comfortable clothes. Rackets, balls, a towel and water are waiting for you on court.',
+      fr: 'Des chaussures de sport à semelle plate et une tenue confortable. Raquettes, balles, serviette et eau vous attendent sur le court.',
+    },
+  },
+  {
+    q: {
+      en: 'What happens if it rains?',
+      fr: 'Que se passe-t-il s’il pleut ?',
+    },
+    a: {
+      en: 'A wet court is slippery, so we cancel for your safety and let you know at least 1 hour before. Nothing is paid online, so there is nothing to refund: we simply offer you another slot.',
+      fr: 'Un court mouillé glisse : on annule pour votre sécurité et on vous prévient au plus tard 1 h avant. Rien n’est payé en ligne, donc rien à rembourser : on vous propose simplement un autre créneau.',
+    },
+  },
+  {
+    q: {
       en: 'Can children take lessons?',
       fr: 'Les enfants peuvent-ils prendre des cours ?',
     },

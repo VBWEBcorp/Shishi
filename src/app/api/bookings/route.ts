@@ -237,6 +237,7 @@ export async function POST(request: NextRequest) {
             name: name || 'Client',
             email,
             activityName,
+            activitySlug,
             date,
             time,
             duration,
