@@ -37,6 +37,14 @@ const nextConfig: NextConfig = {
         protocol: 'https',
         hostname: '*.r2.dev',
       },
+      // Couvertures des articles publiés par PHARE : sans cette entrée,
+      // /_next/image répond 400 « not an allowed pattern » et la vignette
+      // manque en tête d'article et dans la liste du blog (constaté le 09/11/2026).
+      {
+        protocol: 'https',
+        hostname: 'app.vbweb.fr',
+        pathname: '/api/media/**',
+      },
     ],
   },
   experimental: {
