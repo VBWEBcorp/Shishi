@@ -68,13 +68,14 @@ export const BOOKING_CONFIG: Record<string, ActivityBookingConfig> = {
     minMinutes: 60,
   },
   // Aquagym : séance de 45 min avec la prof, pendant les heures de la piscine.
-  // Une réservation = un créneau avec la prof (le groupe se déclare en
-  // participants, facturés 400 ฿ chacun).
+  // Depuis le 20/11/2026 : séances collectives du lundi et du vendredi à 9 h,
+  // une inscription par client (formulaire de /aquagym-lamai). La capacité
+  // laisse l'admin ajouter plusieurs inscrits sur la même séance.
   aquagym: {
     open: '08:00',
     close: '20:00',
     slotMinutes: 45,
-    capacity: 1,
+    capacity: 30,
     unit: 'hour',
     fixedMinutes: 45,
   },

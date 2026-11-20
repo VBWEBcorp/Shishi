@@ -14,6 +14,7 @@ import {
   computeAvailability,
   fixedMinutes,
   generateSlots,
+  getBookingConfig,
   isBookable,
   minPublicMinutes,
   resourceSlugs,
@@ -164,12 +165,12 @@ describe('Pages coach et aquagym', () => {
     expect(src).toContain('Paiement directement au Shi Shi Samui')
   })
 
-  it('la page aquagym suit l’interrupteur admin : calendrier si ouvert, WhatsApp de Paul sinon', () => {
+  it('la page aquagym inscrit par le formulaire (lundi et vendredi 9 h), WhatsApp pour les questions', () => {
     const src = page('aquagym-lamai/page.tsx')
-    expect(src).toMatch(/activiteOuverte\(await lireReglages\(\), aquagym\.slug\)/)
-    expect(src).toMatch(/\{enLigne && \(/)
+    expect(src).toMatch(/<AquagymForm locale=\{l\} seances=\{seances\} \/>/)
+    expect(src).toMatch(/prochainesSeances\(\)\.filter\(\(d\) => !dateFermee\(reglages, d, 'aquagym'\)\)/)
+    expect(src).not.toContain('BookingWidget')
     expect(src).toContain('export const revalidate = 60')
-    expect(src).toMatch(/<BookingWidget initialActivity=\{aquagym\.slug\} \/>/)
     expect(src).toContain('https://wa.me/qr/5XV6VKX2BOCCF1')
     expect(src).toContain('aquagym-whatsapp-qr.png')
     expect(src).toContain('400 THB')
@@ -234,13 +235,15 @@ describe('Aquagym dans le module de réservation', () => {
   })
 
   it('une séance à 10:00 bloque 09:30 et 10:30, pas 09:00 ni 11:00', () => {
+    // Séance collective depuis le 20/11/2026 : une place de moins, pas le créneau fermé.
     const grid = computeAvailability('aquagym', [r('10:00', '10:45')])
     const at = (t: string) => grid.find((s) => s.time === t)!.available
-    expect(at('09:00')).toBe(1)
-    expect(at('09:30')).toBe(0)
-    expect(at('10:00')).toBe(0)
-    expect(at('10:30')).toBe(0)
-    expect(at('11:00')).toBe(1)
+    const cap = getBookingConfig('aquagym')!.capacity
+    expect(at('09:00')).toBe(cap)
+    expect(at('09:30')).toBe(cap)
+    expect(at('10:00')).toBe(cap - 1)
+    expect(at('10:30')).toBe(cap - 1)
+    expect(at('11:00')).toBe(cap)
   })
 
   it('n’occupe pas le court ni la piscine à la journée', () => {
