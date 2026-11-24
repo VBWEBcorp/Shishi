@@ -10,7 +10,14 @@ import { BookingForm } from './booking-form'
  * Widget de réservation à deux panneaux (intégré dans la page /book-now).
  * Le fond du panneau visuel change selon l'activité choisie dans le formulaire.
  */
-export function BookingWidget({ initialActivity }: { initialActivity?: string }) {
+export function BookingWidget({
+  initialActivity,
+  priceOnRequestFor,
+}: {
+  initialActivity?: string
+  /** Activité dont le prix ne s'affiche pas dans ce calendrier (« nous contacter »). */
+  priceOnRequestFor?: string
+}) {
   // Initialisé avec l'activité de l'URL (rendue côté serveur) → bon fond dès le
   // premier rendu, sans flash ; puis mis à jour au fil des choix de l'utilisateur.
   const [slug, setSlug] = useState(initialActivity || '')
@@ -20,7 +27,12 @@ export function BookingWidget({ initialActivity }: { initialActivity?: string })
         <BookingVisualPanel image={activityBackground(slug)} />
         <div>
           <Suspense fallback={null}>
-            <BookingForm bare initialActivity={initialActivity} onActivityChange={setSlug} />
+            <BookingForm
+              bare
+              initialActivity={initialActivity}
+              onActivityChange={setSlug}
+              priceOnRequestFor={priceOnRequestFor}
+            />
           </Suspense>
         </div>
       </div>

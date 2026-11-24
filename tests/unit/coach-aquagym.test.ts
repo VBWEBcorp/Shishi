@@ -159,7 +159,10 @@ describe('Pages coach et aquagym', () => {
 
   it('la page coach intègre le calendrier sur le cours et « qui je suis », sans flyer', () => {
     const src = page('tennis-coaching-lamai/page.tsx')
-    expect(src).toMatch(/<BookingWidget initialActivity=\{tennisCoaching\.slug\} \/>/)
+    expect(src).toMatch(/<BookingWidget initialActivity=\{tennisCoaching\.slug\} priceOnRequestFor=\{tennisCoaching\.slug\} \/>/)
+    // Prix retirés de la page le 24/11/2026 (« nous contacter » jusqu'aux nouveaux prix).
+    expect(src).not.toContain('tarif1Prix')
+    expect(src).toContain('Nous contacter')
     expect(src).not.toContain('coach-paul-flyer.webp')
     expect(src).toContain('Qui je suis ?')
     expect(src).toContain('Paiement directement au Shi Shi Samui')

@@ -3,6 +3,7 @@ import {
   CalendarCheck,
   Check,
   Languages,
+  MessageCircle,
   Trophy,
   Users,
   Wallet,
@@ -85,13 +86,11 @@ const T = {
       'I coach in French and in English. Rackets, balls, a towel and water are waiting for you at the court.',
     ],
     tarifsTitre: 'Prices',
-    tarif1Titre: '1 hour lesson',
-    tarif1Prix: '1,200 THB',
-    tarif1Detail: '600 THB court + 600 THB per participant: 2,400 THB for three',
-    tarif2Titre: 'Special package',
-    tarif2Prix: '1,000 THB',
-    tarif2Unite: '/ session',
-    tarif2Detail: 'From 6 lessons',
+    tarifsTexte:
+      'Contact us for lesson and package prices: tell us how many people are coming and your level, and we reply with all the details.',
+    tarifsCta: 'Contact us',
+    tarifsWhatsapp: 'WhatsApp',
+    tarifsPrefill: 'Hello, I would like to know the prices of the tennis lessons with Coach Paul.',
     paiement: 'Paid directly at Shi Shi Samui, on the day. Nothing to pay online.',
     groupes: 'Group classes coming soon, by age and level.',
     reserverTitre: 'Book your lesson',
@@ -116,13 +115,11 @@ const T = {
       'Je donne mes cours en français et en anglais. Raquettes, balles, serviette et eau vous attendent sur le court.',
     ],
     tarifsTitre: 'Tarifs',
-    tarif1Titre: 'Cours d’1 heure',
-    tarif1Prix: '1 200 THB',
-    tarif1Detail: '600 THB de court + 600 THB par participant : 2 400 THB à trois',
-    tarif2Titre: 'Forfait',
-    tarif2Prix: '1 000 THB',
-    tarif2Unite: '/ séance',
-    tarif2Detail: 'Dès 6 cours',
+    tarifsTexte:
+      'Contactez-nous pour connaître les tarifs des cours et des forfaits : dites-nous combien vous êtes et votre niveau, on vous répond avec toutes les informations.',
+    tarifsCta: 'Nous contacter',
+    tarifsWhatsapp: 'WhatsApp',
+    tarifsPrefill: 'Bonjour, je souhaite connaître les tarifs des cours de tennis avec Coach Paul.',
     paiement: 'Paiement directement au Shi Shi Samui, le jour du cours. Rien à régler en ligne.',
     groupes: 'Cours collectifs bientôt, par âge et par niveau.',
     reserverTitre: 'Réservez votre cours',
@@ -143,8 +140,8 @@ const FAQ = [
       fr: 'Combien coûte un cours de tennis ?',
     },
     a: {
-      en: '1,200 THB for one hour on your own. The price is 600 THB for the court plus 600 THB per participant, so 1,800 THB for two and 2,400 THB for three: choose the number of participants when you book and the total updates. From 6 private lessons, the package brings it down to 1,000 THB per session.',
-      fr: '1 200 THB l’heure pour une personne. Le prix se compose de 600 THB pour le court et de 600 THB par participant, soit 1 800 THB à deux et 2 400 THB à trois : choisissez le nombre de participants en réservant, le total se met à jour. Dès 6 cours particuliers, le forfait le ramène à 1 000 THB la séance.',
+      en: 'Contact us for lesson and package prices: we reply with all the details.',
+      fr: 'Contactez-nous pour connaître les tarifs des cours et des forfaits : on vous répond avec toutes les informations.',
     },
   },
   {
@@ -213,8 +210,8 @@ const FAQ = [
       fr: 'Y a-t-il des cours collectifs ?',
     },
     a: {
-      en: 'You can already come with friends or family: book one lesson and choose the number of participants, 600 THB per extra person. Group classes by age and level are coming soon.',
-      fr: 'Vous pouvez déjà venir à plusieurs : réservez un cours et indiquez le nombre de participants, 600 THB par personne en plus. Des cours collectifs par âge et par niveau arrivent bientôt.',
+      en: 'You can already come with friends or family: book one lesson and choose the number of participants. Group classes by age and level are coming soon.',
+      fr: 'Vous pouvez déjà venir à plusieurs : réservez un cours et indiquez le nombre de participants. Des cours collectifs par âge et par niveau arrivent bientôt.',
     },
   },
 ] as const
@@ -403,32 +400,33 @@ export default async function TennisCoachingPage({
         </div>
       </section>
 
-      {/* Tarifs (flyer retiré le 24/11/2026, demande du club : nouveau flyer mi-décembre) */}
+      {/* Tarifs : flyer puis prix retirés le 24/11/2026 (demandes du club) ; nouveau
+          flyer mi-décembre, nouveaux prix fin décembre. D'ici là, « nous contacter ». */}
       <section className="border-y border-border bg-muted/40">
         <div className="mx-auto max-w-5xl px-4 py-16 sm:px-6 lg:px-8 lg:py-20">
           <div>
             <h2 className="font-editorial text-[1.8rem] font-normal leading-[1.1] text-foreground sm:text-[2.2rem]">
               {t.tarifsTitre}
             </h2>
-            <div className="mt-7 grid gap-4 sm:grid-cols-2">
-              <div className="rounded-2xl border border-border bg-card p-6 text-center">
-                <p className="text-xs font-semibold uppercase tracking-[0.22em] text-foreground">
-                  {t.tarif1Titre}
-                </p>
-                <p className="mt-3 rounded-xl bg-accent px-3 py-2 font-display text-2xl font-bold text-accent-foreground">
-                  {t.tarif1Prix}
-                </p>
-                <p className="mt-3 text-sm text-muted-foreground">{t.tarif1Detail}</p>
-              </div>
-              <div className="rounded-2xl border border-border bg-card p-6 text-center">
-                <p className="text-xs font-semibold uppercase tracking-[0.22em] text-foreground">
-                  {t.tarif2Titre}
-                </p>
-                <p className="mt-3 rounded-xl bg-accent px-3 py-2 font-display text-2xl font-bold text-accent-foreground">
-                  {t.tarif2Prix} <span className="text-base font-medium">{t.tarif2Unite}</span>
-                </p>
-                <p className="mt-3 text-sm text-muted-foreground">{t.tarif2Detail}</p>
-              </div>
+            <p className="mt-4 max-w-2xl text-[0.97rem] leading-relaxed text-foreground">
+              {t.tarifsTexte}
+            </p>
+            <div className="mt-6 flex flex-wrap gap-3">
+              <Link
+                href="/contact-location"
+                className="inline-flex items-center gap-2 rounded-xl bg-accent px-5 py-3 text-sm font-semibold text-accent-foreground transition-all hover:brightness-105"
+              >
+                {t.tarifsCta}
+              </Link>
+              <a
+                href={`https://wa.me/${siteConfig.whatsapp}?text=${encodeURIComponent(t.tarifsPrefill)}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 rounded-xl bg-[#25D366]/10 px-5 py-3 text-sm font-semibold text-[#1d9e4f] ring-1 ring-[#25D366]/25 transition-colors hover:bg-[#25D366]/15"
+              >
+                <MessageCircle className="size-4" aria-hidden />
+                {t.tarifsWhatsapp}
+              </a>
             </div>
             <ul className="mt-6 space-y-3">
               <li className="flex items-start gap-3 text-sm leading-relaxed text-foreground">
@@ -452,7 +450,7 @@ export default async function TennisCoachingPage({
         <p className="mb-8 mt-3 max-w-2xl text-sm leading-relaxed text-muted-foreground">
           {t.reserverTexte}
         </p>
-        <BookingWidget initialActivity={tennisCoaching.slug} />
+        <BookingWidget initialActivity={tennisCoaching.slug} priceOnRequestFor={tennisCoaching.slug} />
 
         <div className="mt-10 rounded-3xl border border-border bg-card p-7">
           <h3 className="font-display text-lg font-semibold text-foreground">{t.courtTitre}</h3>

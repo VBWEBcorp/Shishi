@@ -85,6 +85,7 @@ export function BookingForm({
   variant = 'page',
   bare = false,
   onActivityChange,
+  priceOnRequestFor,
 }: {
   /** Pré-remplissage direct (utilisé par le popup d'accueil). Prioritaire sur l'URL. */
   initialActivity?: string
@@ -100,6 +101,12 @@ export function BookingForm({
    * (pré-remplissage + scroll via l'URL) avec le rendu du popup.
    */
   bare?: boolean
+  /**
+   * Activité dont le prix n'est pas affiché ici : « nous contacter » à la place
+   * (page coach, demande du club du 24/11/2026). Le montant enregistré avec la
+   * réservation ne change pas.
+   */
+  priceOnRequestFor?: string
 } = {}) {
   const t = useTranslations('Booking')
   const locale = useLocale() as Locale
@@ -200,6 +207,7 @@ export function BookingForm({
 
   // Prix : tarif unitaire + total selon participants, heures et avantages membre.
   const fr = locale === 'fr'
+  const priceOnRequest = !!priceOnRequestFor && activitySlug === priceOnRequestFor
   const unitPrice = activitySlug ? getActivityPrice(activitySlug) : 0
   const perPerson = activitySlug ? isPricePerPerson(activitySlug) : false
   const courtSplit = activitySlug ? getCourtPlusPerPerson(activitySlug) : null
@@ -683,7 +691,14 @@ export function BookingForm({
                   <Wallet className="size-4 text-accent" aria-hidden />
                   {fr ? 'Tarif' : 'Price'}
                 </span>
-                {courtSplit ? (
+                {priceOnRequest ? (
+                  <Link
+                    href="/contact-location"
+                    className="text-right text-sm font-semibold text-foreground underline underline-offset-4"
+                  >
+                    {fr ? 'Nous contacter' : 'Contact us'}
+                  </Link>
+                ) : courtSplit ? (
                   <span className="text-right text-sm font-semibold text-foreground">
                     {fmtPrice(courtSplit.court)} ฿{' '}
                     <span className="font-normal text-muted-foreground">{fr ? 'court' : 'court'}</span>
@@ -708,7 +723,7 @@ export function BookingForm({
             )}
 
             {/* Offre de lancement (tennis) — en attendant les abonnements */}
-            {bookable && activitySlug && LAUNCH_OFFER[activitySlug] && (
+            {bookable && activitySlug && !priceOnRequest && LAUNCH_OFFER[activitySlug] && (
               <div className="flex items-start gap-2.5 rounded-xl bg-secondary/60 px-4 py-3 ring-1 ring-border">
                 <Sparkles className="mt-0.5 size-4 shrink-0 text-accent" aria-hidden />
                 <p className="text-sm text-foreground">{LAUNCH_OFFER[activitySlug][locale]}</p>
@@ -931,9 +946,11 @@ export function BookingForm({
                         <Users className="size-4 text-accent" aria-hidden />
                         {fr ? 'Participants' : 'Participants'}
                       </span>
-                      <span className="text-xs font-normal text-muted-foreground" aria-live="polite">
-                        {fr ? 'Total' : 'Total'} : {fmtPrice(grossTotal)} ฿
-                      </span>
+                      {!priceOnRequest && (
+                        <span className="text-xs font-normal text-muted-foreground" aria-live="polite">
+                          {fr ? 'Total' : 'Total'} : {fmtPrice(grossTotal)} ฿
+                        </span>
+                      )}
                     </span>
                     <div className="flex items-center gap-3">
                       <button
@@ -1117,7 +1134,7 @@ export function BookingForm({
                 {/* Récap : sous-total, crédits utilisés, montant à régler sur place (aucun paiement en ligne) */}
                 {bookable && activitySlug && (
                   <div className="rounded-xl border border-accent/20 bg-accent/[0.04] px-4 py-3">
-                    {(useCredits || (hasDuration && effectiveDuration !== slotMinutes)) && (
+                    {!priceOnRequest && (useCredits || (hasDuration && effectiveDuration !== slotMinutes)) && (
                       <div className="mb-2 space-y-1 border-b border-border/60 pb-2 text-sm">
                         <div className="flex justify-between text-muted-foreground">
                           <span>
@@ -1145,7 +1162,9 @@ export function BookingForm({
                       <span className="text-sm text-muted-foreground">
                         {useCredits
                           ? fr ? 'Total' : 'Total'
-                          : fr ? 'Prix total, à régler sur place' : 'Total price, payable on-site'}
+                          : priceOnRequest
+                            ? fr ? 'Prix à régler sur place' : 'Price payable on-site'
+                            : fr ? 'Prix total, à régler sur place' : 'Total price, payable on-site'}
                         {showPartyInRecap && (
                           <span className="whitespace-nowrap">
                             {' · '}
@@ -1154,7 +1173,11 @@ export function BookingForm({
                         )}
                       </span>
                       <span className="shrink-0 whitespace-nowrap font-display text-lg font-bold text-foreground">
-                        {useCredits ? (fr ? 'Inclus' : 'Included') : `${fmtPrice(netTotal)} ฿`}
+                        {useCredits
+                          ? fr ? 'Inclus' : 'Included'
+                          : priceOnRequest
+                            ? fr ? 'Sur demande' : 'On request'
+                            : `${fmtPrice(netTotal)} ฿`}
                       </span>
                     </div>
                     <p className="mt-1 text-[11px] text-muted-foreground">
