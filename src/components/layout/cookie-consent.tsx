@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { useLocale } from 'next-intl'
 
 import { ActivityIcon } from '@/components/activity-icon'
 import { CONSENT_EVENT, CONSENT_KEY } from '@/components/analytics/google-analytics'
@@ -9,6 +10,7 @@ import { Link } from '@/i18n/navigation'
 
 export function CookieConsent() {
   const [visible, setVisible] = useState(false)
+  const en = useLocale() === 'en'
 
   useEffect(() => {
     const consent = localStorage.getItem(CONSENT_KEY)
@@ -52,12 +54,14 @@ export function CookieConsent() {
             </div>
 
             <p id="cookie-desc" className="mt-2.5 text-xs leading-relaxed text-muted-foreground">
-              On utilise des cookies pour améliorer votre visite.{' '}
+              {en
+                ? 'With your consent, we use Google Analytics to measure site traffic. You can decline.'
+                : 'Avec votre accord, on utilise Google Analytics pour mesurer la fréquentation du site. Vous pouvez refuser.'}{' '}
               <Link
                 href="/politique-cookies"
                 className="text-accent underline-offset-2 hover:underline"
               >
-                En savoir plus
+                {en ? 'Learn more' : 'En savoir plus'}
               </Link>
             </p>
 
@@ -67,13 +71,13 @@ export function CookieConsent() {
                 onClick={() => decide('refused')}
                 className="flex-1 rounded-full px-3 py-1.5 text-xs font-medium text-muted-foreground ring-1 ring-border transition-colors hover:bg-muted hover:text-foreground"
               >
-                Refuser
+                {en ? 'Decline' : 'Refuser'}
               </button>
               <button
                 onClick={() => decide('accepted')}
                 className="flex-1 rounded-full bg-foreground px-3 py-1.5 text-xs font-semibold text-background transition-opacity hover:opacity-90"
               >
-                Accepter
+                {en ? 'Accept' : 'Accepter'}
               </button>
             </div>
           </div>
