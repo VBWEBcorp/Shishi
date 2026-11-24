@@ -1,5 +1,5 @@
 import { activities, aquagym, babysitting, tennisCoaching, type Activity } from '@/lib/activities'
-import { getActivityPrice, OPENING_HOURS, PRICE_TIERS } from '@/lib/booking-pricing'
+import { getActivityPrice, isPriceOnRequest, OPENING_HOURS, PRICE_TIERS } from '@/lib/booking-pricing'
 import { HOME_FAQ } from '@/lib/home-faq'
 import { PUBLIC_ADVANCE_DAYS } from '@/lib/membership-plans'
 import { siteConfig } from '@/lib/seo'
@@ -28,7 +28,9 @@ function ficheActivite(a: Activity): string {
   lignes.push(`Réservable en ligne : ${a.bookable && !a.comingSoon ? 'oui' : 'non'}`)
   lignes.push(`Description : ${a.description.fr}`)
   const tiers = PRICE_TIERS[a.slug]
-  if (tiers) {
+  if (isPriceOnRequest(a.slug)) {
+    lignes.push(`Tarifs : non affichés, contacter le club (WhatsApp https://wa.me/${siteConfig.whatsapp} ou ${URL}/fr/contact-location). Ne donner aucun montant pour cette activité.`)
+  } else if (tiers) {
     lignes.push('Tarifs : ' + tiers.map((t) => `${t.label.fr} ${t.amount} THB`).join(' ; '))
   } else if (a.slug !== 'restaurant' && a.slug !== 'babysitting' && !a.comingSoon) {
     lignes.push(`Tarif : ${getActivityPrice(a.slug)} THB`)

@@ -286,8 +286,8 @@ export const activities: Activity[] = [
       {
         q: { en: 'Can I rent a racket or take a lesson?', fr: 'Puis-je louer une raquette ou prendre un cours ?' },
         a: {
-          en: 'Yes. Racket rental is available, and Coach Paul gives lessons on the court: 1,200 THB per hour for one person, court included, +600 THB per extra participant, bookable online from the tennis coach page.',
-          fr: 'Oui. La location de raquette est disponible, et Coach Paul donne des cours sur le court : 1 200 THB l’heure pour une personne, court compris, +600 THB par participant en plus, à réserver en ligne depuis la page coach de tennis.',
+          en: 'Yes. Racket rental is available, and Coach Paul gives lessons on the court, bookable online from the tennis coach page. Contact us for lesson prices.',
+          fr: 'Oui. La location de raquette est disponible, et Coach Paul donne des cours sur le court, à réserver en ligne depuis la page coach de tennis. Contactez-nous pour connaître les tarifs des cours.',
         },
       },
     ],
@@ -914,7 +914,7 @@ export const lessons: Lesson[] = [
       en: 'Lessons with Coach Paul, alone or in a small group, adults and kids',
       fr: 'Cours avec Coach Paul, seul ou à plusieurs, adultes et enfants',
     },
-    price: { en: 'From 1,200 THB / hour', fr: 'Dès 1 200 THB / heure' },
+    price: { en: 'Contact us', fr: 'Nous contacter' },
     bookableOnline: true,
   },
   {

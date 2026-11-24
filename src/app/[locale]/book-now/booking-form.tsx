@@ -33,6 +33,7 @@ import {
   getUnitLabel,
   hasVariableDuration,
   isPricePerPerson,
+  isPriceOnRequest,
   LAUNCH_OFFER,
   MAX_PARTY_SIZE,
   priceDependsOnPartySize,
@@ -85,7 +86,6 @@ export function BookingForm({
   variant = 'page',
   bare = false,
   onActivityChange,
-  priceOnRequestFor,
 }: {
   /** Pré-remplissage direct (utilisé par le popup d'accueil). Prioritaire sur l'URL. */
   initialActivity?: string
@@ -101,12 +101,6 @@ export function BookingForm({
    * (pré-remplissage + scroll via l'URL) avec le rendu du popup.
    */
   bare?: boolean
-  /**
-   * Activité dont le prix n'est pas affiché ici : « nous contacter » à la place
-   * (page coach, demande du club du 24/11/2026). Le montant enregistré avec la
-   * réservation ne change pas.
-   */
-  priceOnRequestFor?: string
 } = {}) {
   const t = useTranslations('Booking')
   const locale = useLocale() as Locale
@@ -207,7 +201,8 @@ export function BookingForm({
 
   // Prix : tarif unitaire + total selon participants, heures et avantages membre.
   const fr = locale === 'fr'
-  const priceOnRequest = !!priceOnRequestFor && activitySlug === priceOnRequestFor
+  // « Nous contacter » à la place du prix (cours de tennis, 24/11/2026).
+  const priceOnRequest = !!activitySlug && isPriceOnRequest(activitySlug)
   const unitPrice = activitySlug ? getActivityPrice(activitySlug) : 0
   const perPerson = activitySlug ? isPricePerPerson(activitySlug) : false
   const courtSplit = activitySlug ? getCourtPlusPerPerson(activitySlug) : null

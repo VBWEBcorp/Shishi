@@ -12,11 +12,8 @@ import { BookingForm } from './booking-form'
  */
 export function BookingWidget({
   initialActivity,
-  priceOnRequestFor,
 }: {
   initialActivity?: string
-  /** Activité dont le prix ne s'affiche pas dans ce calendrier (« nous contacter »). */
-  priceOnRequestFor?: string
 }) {
   // Initialisé avec l'activité de l'URL (rendue côté serveur) → bon fond dès le
   // premier rendu, sans flash ; puis mis à jour au fil des choix de l'utilisateur.
@@ -31,7 +28,6 @@ export function BookingWidget({
               bare
               initialActivity={initialActivity}
               onActivityChange={setSlug}
-              priceOnRequestFor={priceOnRequestFor}
             />
           </Suspense>
         </div>

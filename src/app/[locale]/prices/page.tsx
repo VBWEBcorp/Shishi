@@ -11,7 +11,7 @@ import {
 import { Link } from '@/i18n/navigation'
 import { activities, AQUAGYM_PATH, BOOK_NOW_PATH, tennisCoaching } from '@/lib/activities'
 import type { Locale, Localized } from '@/lib/activities'
-import { getActivityPrice, PRICE_TIERS } from '@/lib/booking-pricing'
+import { getActivityPrice, isPriceOnRequest, PRICE_TIERS } from '@/lib/booking-pricing'
 import { getPageContent, orDefault } from '@/lib/page-content'
 import { alternatesFor, siteConfig } from '@/lib/seo'
 
@@ -57,6 +57,8 @@ type Row = { label: Localized; amount: number }
 /** Groupe tarifaire par activité (uniquement des prix réellement affichés). */
 function priceGroups(): { slug: string; rows: Row[] }[] {
   return CARDS.map((a) => {
+    // Prix sur demande : « nous contacter » sur la carte, aucune offre structurée.
+    if (isPriceOnRequest(a.slug)) return { slug: a.slug, rows: [] }
     const tiers = PRICE_TIERS[a.slug]
     if (tiers && tiers.length > 0) {
       return { slug: a.slug, rows: tiers.map((t) => ({ label: t.label, amount: t.amount })) }
@@ -199,6 +201,15 @@ export default async function PricesPage({
                         <span className="shrink-0 font-editorial text-base font-medium text-foreground">{fmt(r.amount)}</span>
                       </li>
                     ))
+                  ) : isPriceOnRequest(g.slug) ? (
+                    <li>
+                      <Link
+                        href="/contact-location"
+                        className="text-sm font-semibold text-foreground underline underline-offset-4"
+                      >
+                        {l === 'fr' ? 'Nous contacter' : 'Contact us'}
+                      </Link>
+                    </li>
                   ) : (
                     <li className="text-sm text-muted-foreground">{t('aLaCarte')}</li>
                   )}

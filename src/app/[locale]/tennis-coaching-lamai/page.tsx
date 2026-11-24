@@ -450,7 +450,7 @@ export default async function TennisCoachingPage({
         <p className="mb-8 mt-3 max-w-2xl text-sm leading-relaxed text-muted-foreground">
           {t.reserverTexte}
         </p>
-        <BookingWidget initialActivity={tennisCoaching.slug} priceOnRequestFor={tennisCoaching.slug} />
+        <BookingWidget initialActivity={tennisCoaching.slug} />
 
         <div className="mt-10 rounded-3xl border border-border bg-card p-7">
           <h3 className="font-display text-lg font-semibold text-foreground">{t.courtTitre}</h3>

@@ -25,6 +25,7 @@ import {
   getBookingAmountForMinutes,
   getCourtPlusPerPerson,
   hasVariableDuration,
+  isPriceOnRequest,
   MAX_PARTY_SIZE,
   priceDependsOnPartySize,
   PRICE_TIERS,
@@ -88,6 +89,20 @@ describe('Prix du cours : 600 ฿ de court + 600 ฿ par participant (club, 05/1
   it('la grille affiche l’heure seul, le participant en plus et le forfait dès 6 cours', () => {
     expect(PRICE_TIERS['tennis-coaching'].map((t) => t.amount)).toEqual([1200, 600, 1000])
     expect(PRICE_TIERS.aquagym.map((t) => t.amount)).toEqual([400])
+  })
+})
+
+describe('Prix du cours : « nous contacter » partout sur le site (club, 24/11/2026)', () => {
+  it('seul le cours de tennis est sur demande', () => {
+    expect(bookableActivities.filter((a) => isPriceOnRequest(a.slug)).map((a) => a.slug)).toEqual(['tennis-coaching'])
+  })
+
+  it('menu, cartes, FAQ tennis et assistant ne donnent plus le prix du cours', async () => {
+    const { lessons, getActivity } = await import('@/lib/activities')
+    const { CHAT_SYSTEM } = await import('@/lib/chat-knowledge')
+    expect(lessons.find((x) => x.slug === 'tennis-coaching')?.price.fr).toBe('Nous contacter')
+    expect(JSON.stringify(getActivity('tennis')?.faq)).not.toMatch(/1[ ,]200/)
+    expect(CHAT_SYSTEM).not.toMatch(/1[ \u00a0\u202f,]?200/)
   })
 })
 
@@ -159,7 +174,7 @@ describe('Pages coach et aquagym', () => {
 
   it('la page coach intègre le calendrier sur le cours et « qui je suis », sans flyer', () => {
     const src = page('tennis-coaching-lamai/page.tsx')
-    expect(src).toMatch(/<BookingWidget initialActivity=\{tennisCoaching\.slug\} priceOnRequestFor=\{tennisCoaching\.slug\} \/>/)
+    expect(src).toMatch(/<BookingWidget initialActivity=\{tennisCoaching\.slug\} \/>/)
     // Prix retirés de la page le 24/11/2026 (« nous contacter » jusqu'aux nouveaux prix).
     expect(src).not.toContain('tarif1Prix')
     expect(src).toContain('Nous contacter')

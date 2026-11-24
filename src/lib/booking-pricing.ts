@@ -165,6 +165,21 @@ export interface PriceTier {
 }
 
 /**
+ * Activités dont le prix ne s'affiche plus sur le site : « nous contacter » à la
+ * place (cours de tennis, demande du club du 24/11/2026, nouveaux prix fin
+ * décembre). Le montant calculé et enregistré avec une réservation ne change pas.
+ * Pour réafficher les prix : retirer l'activité d'ici, remettre `price` dans
+ * `lessons` et la réponse de la FAQ tennis (activities.ts), et le bloc Tarifs de
+ * la page coach.
+ */
+const PRICE_ON_REQUEST = new Set(['tennis-coaching'])
+
+/** Le prix de l'activité est-il remplacé par « nous contacter » sur le site ? */
+export function isPriceOnRequest(slug: string): boolean {
+  return PRICE_ON_REQUEST.has(slug)
+}
+
+/**
  * Grille tarifaire officielle par activité (affichage page activité).
  * Source : charte tarifaire client. Les activités absentes utilisent le
  * placeholder "sur demande".
