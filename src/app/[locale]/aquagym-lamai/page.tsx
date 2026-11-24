@@ -12,7 +12,8 @@ import {
 import { Link } from '@/i18n/navigation'
 import { AquagymForm } from '@/app/[locale]/aquagym-lamai/aquagym-form'
 import { AQUAGYM_PATH, type Locale } from '@/lib/activities'
-import { prochainesSeances } from '@/lib/aquagym-sessions'
+import { placesRestantes } from '@/lib/aquagym-places'
+import { AQUAGYM_PLACES, prochainesSeances } from '@/lib/aquagym-sessions'
 import { dateFermee } from '@/lib/booking-settings'
 import { lireReglages } from '@/lib/booking-settings-server'
 import { photoAlt } from '@/lib/photo-alt'
@@ -24,7 +25,7 @@ import { alternatesFor, siteConfig } from '@/lib/seo'
  * Demandée le 25/09/2026 par Paul Poulain : une page aquagym avec son QR code
  * WhatsApp pour le contacter et réserver un créneau (il gérait les séances sur
  * un groupe WhatsApp). Le 27/09/2026, Victor l'a ajoutée au module de
- * réservation : l'activité `aquagym` (45 min, 400 ฿ par personne) existe côté
+ * réservation : l'activité `aquagym` (séance d'1 h, 400 ฿ par personne) existe côté
  * site et admin, mais Paul gère encore ses séances sur WhatsApp. D'où
  * l'interrupteur « aquagym » de l'espace admin (bookingsettings.activities) :
  *  · fermé (réglage de départ) → la page met le WhatsApp de Paul en avant,
@@ -34,7 +35,7 @@ import { alternatesFor, siteConfig } from '@/lib/seo'
  * déploiement. FAQ et données structurées suivent le même état, pour que
  * Google et les IA décrivent la façon réelle de réserver.
  *
- * Tarif donné par le club : 400 ฿ la séance de 45 minutes, matériel,
+ * Tarif donné par le club : 400 ฿ la séance (1 h depuis le 24/11/2026), matériel,
  * professeur et serviette compris, avec accès à la piscine toute la journée.
  * Les jours et heures des séances ne sont pas publiés : ils se calent sur le
  * groupe WhatsApp.
@@ -50,6 +51,7 @@ import { alternatesFor, siteConfig } from '@/lib/seo'
  * (aquagym-form.tsx → /api/aquagym). Les inscrits se retrouvent séance par
  * séance dans l'admin (/admin/aquagym). Le calendrier libre et l'interrupteur
  * ne pilotent plus cette page ; le WhatsApp reste pour les questions.
+ * 24/11/2026 (Paul Poulain) : séance d'1 h, 8 personnes au plus par séance.
  */
 
 /** Lien WhatsApp de Paul Poulain (contenu de son QR code). */
@@ -82,12 +84,12 @@ const T = {
   en: {
     eyebrow: 'Aqua aerobics',
     intro:
-      'A 45-minute aqua aerobics class in the club pool, led by our instructor. Then stay: your pass gives you the pool for the rest of the day.',
+      'A 1-hour aqua aerobics class in the club pool, led by our instructor. Then stay: your pass gives you the pool for the rest of the day.',
     cta: 'Sign up for a class',
     ctaWhatsapp: 'Message us on WhatsApp',
     prixTitre: 'One class',
     prix: '400 THB',
-    duree: '45 minutes',
+    duree: '1 hour',
     inclusTitre: 'Included',
     inclus: [
       { Icon: Droplets, texte: 'All the equipment' },
@@ -97,7 +99,7 @@ const T = {
     ],
     reserverTitre: 'Sign up for a class',
     reserverTexte:
-      'Classes take place every Monday and Friday at 9:00 am. Pick your class and sign up: 45 minutes, 400 THB per person, paid at the club.',
+      'Classes take place every Monday and Friday at 9:00 am. Pick your class and sign up: 1 hour, 400 THB per person, paid at the club.',
     whatsappTitre: 'A question?',
     whatsappTexte: 'Scan the QR code with your phone, or tap the button, to message our instructor directly.',
     qrAlt: 'WhatsApp QR code to message the aqua aerobics instructor at Shi Shi Samui',
@@ -110,12 +112,12 @@ const T = {
   fr: {
     eyebrow: 'Aquagym',
     intro:
-      'Une séance d’aquagym de 45 minutes dans la piscine du club, encadrée par notre professeure. Et après, restez : votre séance vous donne la piscine pour le reste de la journée.',
+      'Une séance d’aquagym d’1 heure dans la piscine du club, encadrée par notre professeure. Et après, restez : votre séance vous donne la piscine pour le reste de la journée.',
     cta: 'S’inscrire à une séance',
     ctaWhatsapp: 'Écrire sur WhatsApp',
     prixTitre: 'La séance',
     prix: '400 THB',
-    duree: '45 minutes',
+    duree: '1 heure',
     inclusTitre: 'Compris',
     inclus: [
       { Icon: Droplets, texte: 'Tout le matériel' },
@@ -125,7 +127,7 @@ const T = {
     ],
     reserverTitre: 'S’inscrire à une séance',
     reserverTexte:
-      'Les séances ont lieu chaque lundi et chaque vendredi à 9 h. Choisissez votre séance et inscrivez-vous : 45 minutes, 400 THB par personne, réglés au club.',
+      'Les séances ont lieu chaque lundi et chaque vendredi à 9 h. Choisissez votre séance et inscrivez-vous : 1 heure, 400 THB par personne, réglés au club.',
     whatsappTitre: 'Une question ?',
     whatsappTexte: 'Scannez le QR code avec votre téléphone, ou touchez le bouton, pour écrire directement à notre professeure.',
     qrAlt: 'QR code WhatsApp pour écrire à la professeure d’aquagym de Shi Shi Samui',
@@ -144,8 +146,8 @@ const FAQ = [
       fr: 'Combien coûte une séance d’aquagym ?',
     },
     a: {
-      en: '400 THB for a 45-minute class, with the equipment, the instructor and a towel included.',
-      fr: '400 THB la séance de 45 minutes, matériel, professeure et serviette compris.',
+      en: '400 THB for a 1-hour class, with the equipment, the instructor and a towel included.',
+      fr: '400 THB la séance d’1 heure, matériel, professeure et serviette compris.',
     },
   },
   {
@@ -223,7 +225,10 @@ export default async function AquagymPage({
 
   // Prochaines séances (lundi et vendredi 9 h), sans les jours fermés dans l'admin.
   const reglages = await lireReglages()
-  const seances = prochainesSeances().filter((d) => !dateFermee(reglages, d, 'aquagym'))
+  const dates = prochainesSeances().filter((d) => !dateFermee(reglages, d, 'aquagym'))
+  // Base injoignable : on affiche les séances, l'API revérifie à l'envoi.
+  const restantes = await placesRestantes(dates).catch(() => null)
+  const seances = dates.map((date) => ({ date, places: restantes?.[date] ?? AQUAGYM_PLACES }))
   const faq = FAQ.map((item) => ({ q: item.q[l], a: item.a[l] }))
 
   const jsonLd = {

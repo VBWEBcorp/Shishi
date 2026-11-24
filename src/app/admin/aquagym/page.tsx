@@ -3,7 +3,7 @@
 import { Phone, RefreshCw, Users, Waves } from 'lucide-react'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 
-import { prochainesSeances } from '@/lib/aquagym-sessions'
+import { AQUAGYM_PLACES, prochainesSeances } from '@/lib/aquagym-sessions'
 import { cn } from '@/lib/utils'
 
 /**
@@ -133,7 +133,8 @@ export default function AquagymAdminPage() {
                 <h2 className="text-base font-semibold text-foreground">{libelle(s.date, s.time)}</h2>
                 <span className="inline-flex items-center gap-1.5 rounded-full bg-accent/15 px-3 py-1 text-xs font-semibold text-foreground">
                   <Users className="size-3.5" />
-                  {personnes} {personnes > 1 ? 'personnes' : 'personne'}
+                  {personnes} / {AQUAGYM_PLACES} personnes
+                  {personnes >= AQUAGYM_PLACES && ' · complet'}
                 </span>
               </div>
               {s.inscrits.length === 0 ? (

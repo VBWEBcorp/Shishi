@@ -4,9 +4,10 @@ import { verifyAuth } from '@/lib/auth'
 import {
   AQUAGYM_DUREE,
   AQUAGYM_HEURE,
-  AQUAGYM_MAX_PERSONNES,
+  AQUAGYM_PLACES,
   seanceOuverte,
 } from '@/lib/aquagym-sessions'
+import { personnesInscrites, placesRestantes } from '@/lib/aquagym-places'
 import { getBookingAmountForMinutes } from '@/lib/booking-pricing'
 import { notifyNewBooking } from '@/lib/booking-emails'
 import { dateFermee } from '@/lib/booking-settings'
@@ -21,8 +22,8 @@ import { Booking } from '@/models/Booking'
  *
  * POST (public) : le formulaire de /aquagym-lamai. Une inscription = une
  * réservation `aquagym` confirmée, comme le reste du module : e-mail au
- * client, alerte e-mail et notification au club, fiche CRM. Pas de limite
- * de places tant que le club n'en a pas donné.
+ * client, alerte e-mail et notification au club, fiche CRM. 8 personnes au
+ * plus par séance (club, 24/11/2026) ; l'admin, lui, n'est pas bloqué.
  *
  * GET (admin) : les inscriptions regroupées par séance, pour /admin/aquagym.
  */
@@ -39,7 +40,7 @@ export async function POST(request: NextRequest) {
     const notes = String(body.notes || '').trim().slice(0, 1000)
     const locale: 'fr' | 'en' = body.locale === 'fr' ? 'fr' : 'en'
     const partySize = Math.min(
-      AQUAGYM_MAX_PERSONNES,
+      AQUAGYM_PLACES,
       Math.max(1, Math.floor(Number(body.partySize)) || 1)
     )
 
@@ -74,6 +75,11 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ ok: true, already: true })
     }
 
+    const places = (await placesRestantes([date]))[date]
+    if (partySize > places) {
+      return NextResponse.json({ error: 'session-full', places }, { status: 409 })
+    }
+
     const activityName = locale === 'fr' ? 'Aquagym' : 'Aqua aerobics'
     const booking = await Booking.create({
       activitySlug: 'aquagym',
@@ -93,6 +99,13 @@ export async function POST(request: NextRequest) {
       locale,
       seen: false,
     })
+
+    // Deux inscriptions au même instant : si la séance dépasse, on retire celle-ci.
+    if ((await personnesInscrites([date]))[date] > AQUAGYM_PLACES) {
+      await Booking.deleteOne({ _id: booking._id })
+      const reste = (await placesRestantes([date]))[date]
+      return NextResponse.json({ error: 'session-full', places: reste }, { status: 409 })
+    }
 
     try {
       await upsertContact({

@@ -41,7 +41,7 @@ export interface ActivityBookingConfig {
    */
   minMinutes?: number
   /**
-   * Séance à DURÉE FIXE (aquagym : 45 min), site comme admin. Le départ reste
+   * Séance à DURÉE FIXE (aquagym : 1 h), site comme admin. Le départ reste
    * sur la demi-heure, mais la durée n'est pas au choix et n'a pas à être un
    * multiple de 30.
    */
@@ -67,17 +67,17 @@ export const BOOKING_CONFIG: Record<string, ActivityBookingConfig> = {
     unit: 'hour',
     minMinutes: 60,
   },
-  // Aquagym : séance de 45 min avec la prof, pendant les heures de la piscine.
+  // Aquagym : séance d'1 h avec la prof, pendant les heures de la piscine.
   // Depuis le 20/11/2026 : séances collectives du lundi et du vendredi à 9 h,
   // une inscription par client (formulaire de /aquagym-lamai). La capacité
   // laisse l'admin ajouter plusieurs inscrits sur la même séance.
   aquagym: {
     open: '08:00',
     close: '20:00',
-    slotMinutes: 45,
+    slotMinutes: 60,
     capacity: 30,
     unit: 'hour',
-    fixedMinutes: 45,
+    fixedMinutes: 60,
   },
   // Salle de sport : accès illimité à la journée.
   fitness: { open: '08:00', close: '20:00', slotMinutes: 720, capacity: 20, unit: 'day' },
@@ -137,7 +137,7 @@ export function resourceSlugs(slug: string): string[] {
   return SHARED_RESOURCE.find((g) => g.includes(slug)) ?? [slug]
 }
 
-/** Durée imposée d'une séance (aquagym : 45 min), ou null si elle est au choix. */
+/** Durée imposée d'une séance (aquagym : 1 h), ou null si elle est au choix. */
 export function fixedMinutes(slug: string): number | null {
   const cfg = getBookingConfig(slug)
   return cfg && cfg.unit !== 'day' && cfg.fixedMinutes ? cfg.fixedMinutes : null

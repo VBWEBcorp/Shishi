@@ -2,7 +2,7 @@
  * Séances d'aquagym à heure fixe (demande de Paul Poulain, 20/11/2026) :
  * le lundi et le vendredi à 9 h, heure de Koh Samui. Tous les clients
  * s'inscrivent par le formulaire de la page /aquagym-lamai ; chaque
- * inscription est une réservation `aquagym` de 45 min, que l'espace admin
+ * inscription est une réservation `aquagym` d'1 h, que l'espace admin
  * regroupe séance par séance (/admin/aquagym).
  *
  * Logique pure, sans base ni réseau : testable et utilisable côté client.
@@ -13,11 +13,11 @@ export const AQUAGYM_JOURS = [1, 5] as const
 /** Heure de début, heure de Bangkok. */
 export const AQUAGYM_HEURE = '09:00'
 /** Durée d'une séance, en minutes. */
-export const AQUAGYM_DUREE = 45
+export const AQUAGYM_DUREE = 60
 /** Nombre de semaines ouvertes à l'inscription. */
 export const AQUAGYM_SEMAINES = 4
-/** Personnes au plus par inscription. */
-export const AQUAGYM_MAX_PERSONNES = 10
+/** Personnes au plus par séance (Paul Poulain, 24/11/2026 : « 8 pour le moment »). */
+export const AQUAGYM_PLACES = 8
 
 const BANGKOK_OFFSET_MS = 7 * 60 * 60 * 1000
 

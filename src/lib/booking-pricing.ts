@@ -16,7 +16,7 @@ const DROP_IN_PRICE: Record<string, number> = {
   restaurant: 0,
   'kids-club': 200, // 200 ฿ / heure
   pool: 100, // 100 ฿ / jour
-  aquagym: 400, // 400 ฿ la séance de 45 min, par personne (25/09/2026)
+  aquagym: 400, // 400 ฿ la séance d'1 h, par personne (25/09/2026)
 }
 
 const DEFAULT_PRICE = 500
@@ -56,7 +56,7 @@ export function getUnitLabel(slug: string, locale: 'en' | 'fr'): string | null {
  */
 export function hasVariableDuration(slug: string): boolean {
   const cfg = getBookingConfig(slug)
-  // Aquagym : horaire au choix mais séance de 45 min, pas de sélecteur de durée.
+  // Aquagym : horaire au choix mais séance d'1 h, pas de sélecteur de durée.
   return cfg?.unit === 'hour' && !cfg.fixedMinutes
 }
 
@@ -183,7 +183,7 @@ export const PRICE_TIERS: Record<string, PriceTier[]> = {
     { label: { en: 'Month', fr: 'Mois' }, amount: 1500 },
   ],
   pool: [{ label: { en: 'Day access', fr: 'Accès journée' }, amount: 100 }],
-  aquagym: [{ label: { en: '45-minute class', fr: 'Séance de 45 min' }, amount: 400 }],
+  aquagym: [{ label: { en: '1-hour class', fr: 'Séance d’1 heure' }, amount: 400 }],
 }
 
 /**

@@ -169,7 +169,7 @@ export function NewBookingModal({
     if (dayPass) return []
     const startIndex = slots.findIndex((s) => s.time === time)
     if (startIndex < 0) return []
-    // Séance à durée fixe (aquagym, 45 min) : une seule fin possible. La grille
+    // Séance à durée fixe (aquagym, 1 h) : une seule fin possible. La grille
     // grise déjà les départs où la séance entière ne tient pas.
     const fixe = fixedMinutes(activitySlug)
     if (fixe !== null) {

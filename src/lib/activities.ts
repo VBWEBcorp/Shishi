@@ -830,7 +830,7 @@ export const AQUAGYM_PATH = '/aquagym-lamai'
 
 /**
  * Aquagym : comme le cours de tennis, une activité du calendrier et pas un
- * pôle. Séance de 45 min à 400 ฿ par personne (matériel, prof, serviette et
+ * pôle. Séance d'1 h (24/11/2026) à 400 ฿ par personne (matériel, prof, serviette et
  * piscine à la journée compris). D'abord gérée sur le WhatsApp de Paul, puis
  * ajoutée au module de réservation, site et admin, le 27/09/2026.
  */
@@ -840,12 +840,12 @@ export const aquagym: Activity = {
   path: AQUAGYM_PATH,
   name: { en: 'Aqua aerobics', fr: 'Aquagym' },
   tagline: {
-    en: '45-minute class with our instructor',
-    fr: 'Séance de 45 min avec notre professeure',
+    en: '1-hour class with our instructor',
+    fr: 'Séance d’1 heure avec notre professeure',
   },
   description: {
-    en: 'A 45-minute aqua aerobics class in the club pool, equipment, instructor and towel included, with pool access all day.',
-    fr: 'Une séance d’aquagym de 45 minutes dans la piscine du club, matériel, professeure et serviette compris, avec la piscine toute la journée.',
+    en: 'A 1-hour aqua aerobics class in the club pool, equipment, instructor and towel included, with pool access all day.',
+    fr: 'Une séance d’aquagym d’1 heure dans la piscine du club, matériel, professeure et serviette compris, avec la piscine toute la journée.',
   },
   icon: 'pool',
   image: '/photos/pool-panorama-portrait.webp',
@@ -925,8 +925,8 @@ export const lessons: Lesson[] = [
     image: '/photos/pool-transats-portrait.webp',
     name: { en: 'Aqua aerobics', fr: 'Aquagym' },
     tagline: {
-      en: '45-minute class with our instructor, pool all day',
-      fr: 'Séance de 45 min avec notre professeure, piscine à la journée',
+      en: '1-hour class with our instructor, pool all day',
+      fr: 'Séance d’1 heure avec notre professeure, piscine à la journée',
     },
     price: { en: '400 THB / class', fr: '400 THB / séance' },
     // WhatsApp reste la voie annoncée : Paul gère ses séances là, et le reste

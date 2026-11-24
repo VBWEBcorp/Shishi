@@ -47,7 +47,6 @@ import { alternatesFor, siteConfig } from '@/lib/seo'
 
 const PATH = '/tennis-coaching-lamai'
 const PORTRAIT = '/photos/coach-paul-portrait.webp'
-const FLYER = '/photos/coach-paul-flyer.webp'
 
 const TITLE = {
   en: 'Tennis Coach in Lamai, Koh Samui',
@@ -95,9 +94,6 @@ const T = {
     tarif2Detail: 'From 6 lessons',
     paiement: 'Paid directly at Shi Shi Samui, on the day. Nothing to pay online.',
     groupes: 'Group classes coming soon, by age and level.',
-    flyerTitre: 'The flyer',
-    flyerAlt: 'Coach Paul tennis flyer at Shi Shi Samui, Koh Samui: prices and contact',
-    flyerOuvrir: 'Open full size',
     reserverTitre: 'Book your lesson',
     reserverTexte: `Pick a day and a time: lessons last one hour or more, up to ${PUBLIC_ADVANCE_DAYS} days ahead. Taking the 6-lesson package? Say so in the Notes field, the club applies the package price when you pay.`,
     courtTitre: 'Just want to play?',
@@ -129,9 +125,6 @@ const T = {
     tarif2Detail: 'Dès 6 cours',
     paiement: 'Paiement directement au Shi Shi Samui, le jour du cours. Rien à régler en ligne.',
     groupes: 'Cours collectifs bientôt, par âge et par niveau.',
-    flyerTitre: 'Le flyer',
-    flyerAlt: 'Flyer de Coach Paul, coach de tennis chez Shi Shi Samui à Koh Samui : tarifs et contact',
-    flyerOuvrir: 'Voir en grand',
     reserverTitre: 'Réservez votre cours',
     reserverTexte: `Choisissez un jour et une heure : un cours dure une heure ou plus, jusqu’à ${PUBLIC_ADVANCE_DAYS} jours à l’avance. Vous prenez le forfait de 6 cours ? Dites-le dans le champ Remarques, le club applique le tarif forfait au paiement.`,
     courtTitre: 'Vous voulez juste jouer ?',
@@ -410,9 +403,9 @@ export default async function TennisCoachingPage({
         </div>
       </section>
 
-      {/* Tarifs + flyer */}
+      {/* Tarifs (flyer retiré le 24/11/2026, demande du club : nouveau flyer mi-décembre) */}
       <section className="border-y border-border bg-muted/40">
-        <div className="mx-auto grid max-w-6xl gap-10 px-4 py-16 sm:px-6 md:grid-cols-[1.2fr_1fr] lg:px-8 lg:py-20">
+        <div className="mx-auto max-w-5xl px-4 py-16 sm:px-6 lg:px-8 lg:py-20">
           <div>
             <h2 className="font-editorial text-[1.8rem] font-normal leading-[1.1] text-foreground sm:text-[2.2rem]">
               {t.tarifsTitre}
@@ -448,25 +441,6 @@ export default async function TennisCoachingPage({
               </li>
             </ul>
           </div>
-
-          <figure className="mx-auto w-full max-w-sm">
-            <a href={FLYER} target="_blank" rel="noopener noreferrer" className="group block">
-              <Image
-                src={FLYER}
-                alt={t.flyerAlt}
-                width={1200}
-                height={1697}
-                sizes="(min-width:768px) 24rem, 90vw"
-                className="h-auto w-full rounded-2xl shadow-[0_30px_70px_-30px_oklch(0.16_0_0/0.45)] ring-1 ring-border transition-transform duration-500 group-hover:-translate-y-1"
-              />
-            </a>
-            <figcaption className="mt-3 text-center text-xs text-muted-foreground">
-              {t.flyerTitre} ·{' '}
-              <a href={FLYER} target="_blank" rel="noopener noreferrer" className="underline hover:text-foreground">
-                {t.flyerOuvrir}
-              </a>
-            </figcaption>
-          </figure>
         </div>
       </section>
 

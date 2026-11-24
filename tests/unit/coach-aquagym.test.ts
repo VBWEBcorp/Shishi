@@ -157,10 +157,10 @@ describe('Pages coach et aquagym', () => {
     expect(routes).toContain('/aquagym-lamai')
   })
 
-  it('la page coach intègre le calendrier sur le cours, le flyer et « qui je suis »', () => {
+  it('la page coach intègre le calendrier sur le cours et « qui je suis », sans flyer', () => {
     const src = page('tennis-coaching-lamai/page.tsx')
     expect(src).toMatch(/<BookingWidget initialActivity=\{tennisCoaching\.slug\} \/>/)
-    expect(src).toContain('coach-paul-flyer.webp')
+    expect(src).not.toContain('coach-paul-flyer.webp')
     expect(src).toContain('Qui je suis ?')
     expect(src).toContain('Paiement directement au Shi Shi Samui')
   })
@@ -174,7 +174,8 @@ describe('Pages coach et aquagym', () => {
     expect(src).toContain('https://wa.me/qr/5XV6VKX2BOCCF1')
     expect(src).toContain('aquagym-whatsapp-qr.png')
     expect(src).toContain('400 THB')
-    expect(src).toContain('45 minutes')
+    expect(src).toContain("duree: '1 heure'")
+    expect(src).toContain('placesRestantes(dates)')
   })
 
   it('aucun tiret long dans les textes des deux pages', () => {
@@ -212,31 +213,31 @@ describe('Aquagym dans le module de réservation', () => {
     expect(lessonsOf('tennis').map((l) => l.slug)).toEqual(['tennis-coaching'])
   })
 
-  it('séance fixe de 45 min, sans sélecteur de durée', () => {
-    expect(fixedMinutes('aquagym')).toBe(45)
+  it('séance fixe d’1 h, sans sélecteur de durée', () => {
+    expect(fixedMinutes('aquagym')).toBe(60)
     expect(fixedMinutes('tennis')).toBeNull()
     expect(hasVariableDuration('aquagym')).toBe(false)
-    expect(bookingInterval('aquagym', '10:00', 45, 'public')).toEqual(r('10:00', '10:45'))
-    expect(bookingInterval('aquagym', '10:30', 45, 'public')).toEqual(r('10:30', '11:15'))
+    expect(bookingInterval('aquagym', '10:00', 60, 'public')).toEqual(r('10:00', '11:00'))
+    expect(bookingInterval('aquagym', '10:30', 60, 'public')).toEqual(r('10:30', '11:30'))
     expect(bookingInterval('aquagym', '10:00', 30, 'public')).toBeNull()
-    expect(bookingInterval('aquagym', '10:00', 60, 'public')).toBeNull()
-    expect(bookingInterval('aquagym', '10:00', 45, 'admin')).toEqual(r('10:00', '10:45'))
+    expect(bookingInterval('aquagym', '10:00', 45, 'public')).toBeNull()
+    expect(bookingInterval('aquagym', '10:00', 60, 'admin')).toEqual(r('10:00', '11:00'))
   })
 
   it('400 ฿ par personne', () => {
-    expect(getBookingAmountForMinutes('aquagym', 1, 45)).toBe(400)
-    expect(getBookingAmountForMinutes('aquagym', 3, 45)).toBe(1200)
+    expect(getBookingAmountForMinutes('aquagym', 1, 60)).toBe(400)
+    expect(getBookingAmountForMinutes('aquagym', 3, 60)).toBe(1200)
   })
 
-  it('dernier départ public 19:00 (fin 19:45 avant la fermeture de 20:00)', () => {
+  it('dernier départ public 19:00 (fin à la fermeture de 20:00)', () => {
     const slots = generateSlots('aquagym')
     expect(slots[0]).toBe('08:00')
     expect(slots.at(-1)).toBe('19:00')
   })
 
-  it('une séance à 10:00 bloque 09:30 et 10:30, pas 09:00 ni 11:00', () => {
+  it('une séance à 10:00 occupe 10:00 et 10:30, pas 09:00 ni 11:00', () => {
     // Séance collective depuis le 20/11/2026 : une place de moins, pas le créneau fermé.
-    const grid = computeAvailability('aquagym', [r('10:00', '10:45')])
+    const grid = computeAvailability('aquagym', [r('10:00', '11:00')])
     const at = (t: string) => grid.find((s) => s.time === t)!.available
     const cap = getBookingConfig('aquagym')!.capacity
     expect(at('09:00')).toBe(cap)
